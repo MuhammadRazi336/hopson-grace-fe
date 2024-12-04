@@ -2,6 +2,7 @@ import {defer} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link} from '@remix-run/react';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
+import { requireAuth } from "~/utils/auth-guard.js";
 
 /**
  * @type {MetaFunction}
@@ -15,12 +16,14 @@ export const meta = () => {
  */
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
+  const {request ,context} = args
   const deferredData = loadDeferredData(args);
 
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
+  const user = await requireAuth(request,context);
 
-  return defer({...deferredData, ...criticalData});
+  return defer({...deferredData, ...criticalData ,user});
 }
 
 /**

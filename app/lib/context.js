@@ -2,6 +2,7 @@ import {createHydrogenContext} from '@shopify/hydrogen';
 import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
 import {getLocaleFromRequest} from '~/lib/i18n';
+import { createClient } from "~/lib/client"
 
 /**
  * The context implementation is separate from server.ts
@@ -35,9 +36,11 @@ export async function createAppLoadContext(request, env, executionContext) {
       queryFragment: CART_QUERY_FRAGMENT,
     },
   });
+  const { client } = createClient()
 
   return {
     ...hydrogenContext,
+    client
     // declare additional Remix loader context
   };
 }
