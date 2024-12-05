@@ -1,6 +1,7 @@
-import {Aside} from '~/components/Aside';
-import {Footer} from '~/components/Footer';
-import {Header} from '~/components/Header';
+import { Aside } from "~/components/Aside";
+import { Footer } from "~/components/Footer";
+import { Header } from "~/components/Header";
+import { PrivateHeader } from "~/components/PrivateHeader.jsx";
 
 export function PageLayout({
                              cart,
@@ -9,23 +10,12 @@ export function PageLayout({
                              header,
                              isLoggedIn,
                              publicStoreDomain,
+                             token
                            }) {
   return (
     <Aside.Provider>
-      {header && (
-        <Header
-          header={header}
-          cart={cart}
-          isLoggedIn={isLoggedIn}
-          publicStoreDomain={publicStoreDomain}
-        />
-      )}
+      {token ? <PrivateHeader /> : <Header />}
       <main>{children}</main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
     </Aside.Provider>
   );
 }

@@ -16,6 +16,7 @@ import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from '~/components/PageLayout';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import { requireAuth } from "~/utils/auth-guard.js";
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -59,7 +60,8 @@ export function links() {
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-
+  const {context} = args
+  const token = await requireAuth(context)
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
@@ -81,6 +83,7 @@ export async function loader(args) {
       country: args.context.storefront.i18n.country,
       language: args.context.storefront.i18n.language,
     },
+    token
   });
 }
 
