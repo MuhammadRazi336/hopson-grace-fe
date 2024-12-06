@@ -1,6 +1,6 @@
 import CustomTabs from "~/components/Tabs.jsx";
 import CustomSelect from "~/components/CustomSelect";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Card from "~/components/Card.jsx";
 import Accordiance from "~/components/Accordiance.jsx";
 import ButtonComponent from "~/components/Button.jsx";
@@ -9,6 +9,8 @@ import FundCard from "~/components/FundCard";
 import { products } from "~/data";
 import { requireAuth } from "~/utils/auth-guard.js";
 import { defer, redirect } from "@shopify/remix-oxygen";
+import HelloWorld from "~/.client/HelloWorld.jsx";
+import { useHydrated } from "~/utils/helpers.js";
 
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
@@ -97,11 +99,13 @@ const RegistryTab = (props) => {
       : selectedCards.filter((cardIndex) => cardIndex !== index);
     setSelectedCards(updatedSelection);
   };
+  const isHydrated = useHydrated();
 
 
   return (
     <div>
       <div className="flex gap-8">
+        {isHydrated && <HelloWorld />}
         <div className="flex flex-col gap-4 flex-2">
           <div>
             <CustomSelect
