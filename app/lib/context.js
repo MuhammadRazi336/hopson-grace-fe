@@ -36,11 +36,14 @@ export async function createAppLoadContext(request, env, executionContext) {
       queryFragment: CART_QUERY_FRAGMENT,
     },
   });
-  const { client } = createClient()
+  const { ClientDelete,ClientGet,ClientPost,ClientPut } = createClient()
 
   return {
     ...hydrogenContext,
-    client
+    ClientDelete,
+    ClientGet,
+    ClientPost,
+    ClientPut
     // declare additional Remix loader context
   };
 }

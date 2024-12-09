@@ -1,23 +1,47 @@
-
 export function createClient() {
-  const client = async function (body, route, customRequest) {
-    if (!body) {
-      throw new Error("Provide a Query to admin Client")
+  // Shared logic for making the API call
+  async function baseClient(method, body, route, context) {
+    const token = context?.session?.get("user_token")?.accessToken;
+    console.log(token , "TOKEN");
+    if ((method === "POST" || method === "PUT") && !body) {
+      throw new Error(`Provide a body for the ${method} request`);
     }
+
     const endPoint = `https://qa-hopsongrace.codup.io/api/${route}`;
     const options = {
-      method: "POST",
+      method,
       headers: {
-        "Content-Type": "application/json", // Specifies JSON payload
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
-      body:JSON.stringify(body)
-    }
+      ...(body && { body: JSON.stringify(body) }), // Add body if applicable
+    };
+
     const request = await fetch(endPoint, options);
     const response = await request.json();
-    if (response?.error?.length) {
-      throw new Error(response?.errors[0]?.message)
+    if (response?.message?.length && response?.message !== "Success") {
+      throw new Error(response?.message[0]);
     }
+
     return response;
   }
-  return { client }
+
+  // Separate functions for each HTTP method
+  async function ClientPost(body, route, context) {
+    return baseClient("POST", body, route, context);
+  }
+
+  async function ClientPut(body, route, context) {
+    return baseClient("PUT", body, route, context);
+  }
+
+  async function ClientGet(route, context) {
+    return baseClient("GET", null, route, context);
+  }
+
+  async function ClientDelete(route, context) {
+    return baseClient("DELETE", null, route, context);
+  }
+
+  return { ClientPost, ClientPut, ClientGet, ClientDelete };
 }
