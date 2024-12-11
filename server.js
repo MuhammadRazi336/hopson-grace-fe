@@ -4,6 +4,7 @@ import * as remixBuild from 'virtual:remix/server-build';
 import {storefrontRedirect} from '@shopify/hydrogen';
 import {createRequestHandler} from '@shopify/remix-oxygen';
 import {createAppLoadContext} from '~/lib/context';
+import { setHydrogenContext } from "~/lib/hydrogenManager.js";
 
 /**
  * Export a fetch handler in module format.
@@ -15,6 +16,7 @@ export default {
    * @param {ExecutionContext} executionContext
    * @return {Promise<Response>}
    */
+
   async fetch(request, env, executionContext) {
     try {
       const appLoadContext = await createAppLoadContext(
@@ -54,7 +56,7 @@ export default {
           storefront: appLoadContext.storefront,
         });
       }
-
+      setHydrogenContext(response);
       return response;
     } catch (error) {
       // eslint-disable-next-line no-console

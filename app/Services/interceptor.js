@@ -2,15 +2,14 @@ import axios from 'axios';
 
 
 const axiosInstance = axios.create({
-  baseURL: 'https://qa-hopsongrace.codup.io/api/', // Set your API URL here
+  baseURL: 'https://dev-hopsongrace.codup.io/api/', // Set your API URL here
   // baseURL: 'http://localhost:3001/api/', // Set your API URL here
   timeout: 20000
 });
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
-  (config) => {
-    // Modify request config if needed sessionStorage.getItem('@ANOTHER-TOKEN');
+  (config,token) => {
     return config;
   },
   (error) => {
@@ -24,7 +23,7 @@ axiosInstance.interceptors.response.use(
     // If method is not GET, trigger success message
     console.log('response.config.method', response.config.method);
 
-    return response;
+    return response.data;
   },
   (error) => {
     // Handle errors for non-GET methods

@@ -16,12 +16,13 @@ import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from '~/components/PageLayout';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
-import { requireAuth } from "~/utils/auth-guard.js";
+import {requireAuth} from '~/utils/auth-guard.js';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
  * @type {ShouldRevalidateFunction}
  */
+
 export const shouldRevalidate = ({
   formMethod,
   currentUrl,

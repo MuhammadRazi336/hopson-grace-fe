@@ -45,7 +45,7 @@ export default async function handleRequest(
 
   responseHeaders.set("Content-Type", "text/html");
   responseHeaders.set("Content-Security-Policy", header);
-  const additionalDomain = "https://qa-hopsongrace.codup.io";
+  const additionalDomain = "https://dev-hopsongrace.codup.io";
   const existingCSP = responseHeaders.get("Content-Security-Policy") || ""; // Get the current CSP header
   const updatedCSP = existingCSP.includes("connect-src")
     ? existingCSP.replace(

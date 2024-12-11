@@ -2,12 +2,11 @@ export function createClient() {
   // Shared logic for making the API call
   async function baseClient(method, body, route, context) {
     const token = context?.session?.get("user_token")?.accessToken;
-    console.log(token , "TOKEN");
     if ((method === "POST" || method === "PUT") && !body) {
       throw new Error(`Provide a body for the ${method} request`);
     }
 
-    const endPoint = `https://qa-hopsongrace.codup.io/api/${route}`;
+    const endPoint = `https://dev-hopsongrace.codup.io/api/${route}`;
     const options = {
       method,
       headers: {
