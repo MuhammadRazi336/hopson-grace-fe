@@ -12,7 +12,7 @@ import Registry_Services from "~/Services/Registry.js";
 
 const OnboardingClient = ({}) => {
   const { user } = useLoaderData();
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(1);
   const [eventTypes, setEventTypes] = useState([]);
   const formDataRef = useState({
     phoneNumber: "",
@@ -20,14 +20,29 @@ const OnboardingClient = ({}) => {
     postalCode: "",
     city: "",
     province: "",
-    country: ""
+    country: "",
+    shippingId: null
   });
-  const [noOfGuest, setNoOfGuest] = useState("");
-
+  const [eventData, setEventData] = useState({
+    noOfGuest: "",
+    selectedOption: "",
+    selectedDate: new Date(),
+    eventName: "",
+    id: null,
+    eventId: null
+  });
   const handleGuestNoChange = (e) => {
-    setNoOfGuest(e.target.value);
+    setEventData({
+      ...eventData,
+      noOfGuest: e.target.value
+    });
   };
-
+  const setSelectedDate = (date) => {
+    setEventData({
+      ...eventData,
+      selectedDate: date
+    });
+  };
   // General change handler for all fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,12 +52,17 @@ const OnboardingClient = ({}) => {
   useEffect(() => {
     getEvents();
   }, []);
+
   useEffect(() => {
     if (user) {
       const token = user.accessToken;
       localStorage.setItem("@Token", token);
     }
   }, [user]);
+  useEffect(() => {
+    const event = localStorage.getItem("@EventData");
+    if (event) setEventData(JSON.parse(event));
+  }, []);
   const getEvents = async () => {
     try {
       const data = await Registry_Services.getEvents();
@@ -56,29 +76,47 @@ const OnboardingClient = ({}) => {
     } catch (e) {
       console.log(e, "Catch");
     }
-
   };
 
-  const [selectedOption, setSelectedOption] = useState("");
   const handleSelectChange = (value) => {
-    setSelectedOption(value);
+    setEventData({
+      ...eventData,
+      selectedOption: value
+    });
   };
-  const [eventName, setEventName] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Main state for selected date
+  // Main state for selected date
   const handleEventNameChange = (e) => {
-    setEventName(e.target.value);
+    setEventData({
+      ...eventData,
+      eventName: e.target.value
+    });
   };
 
   const handleRegistry = async () => {
     const payload = {
-      name: eventName,
-      eventDate: moment(selectedDate).format("YYYY-MM-DD"),
-      eventTypeId: Number(selectedOption.value)
+      name: eventData.eventName,
+      eventDate: moment(eventData.selectedDate).format("YYYY-MM-DD"),
+      eventTypeId: Number(eventData.selectedOption.value),
+      ...(eventData.id && { id: eventData.id})
     };
     const token = localStorage.getItem("@Token");
+    let data = null;
     try {
-      const data = await Registry_Services.createRegistry(payload, token);
-      if (data) setStep(step + 1);
+      if (payload.id) {
+        data = await Registry_Services.updateRegistry(payload, token);
+      } else {
+        data = await Registry_Services.createRegistry(payload, token);
+      }
+      if (data) {
+        const event = {
+          ...eventData,
+          id: data.data.registry.id,
+          eventId: data.data.event.id
+        };
+        localStorage.setItem("@EventData", JSON.stringify(event));
+        setEventData(event);
+        setStep(step + 1);
+      }
     } catch (e) {
       console.log(e, "eee");
     }
@@ -95,27 +133,42 @@ const OnboardingClient = ({}) => {
     };
     const token = localStorage.getItem("@Token");
     try {
-      const data = await Registry_Services.addShippingAddress(payload,token)
-      console.log(data , "Shipping Data")
+      const data = await Registry_Services.addShippingAddress(payload, token);
+      // const shippindData = {
+      //   ...formDataRef,
+      //   id:data.data
+      // }
     } catch (e) {
-      console.log(e , "Exception")
+      console.log(e, "Exception");
     }
   };
   const handleNoOfGuest = async () => {
+    const payload = {
+      noOfGuest: eventData.noOfGuest,
+      id: eventData.eventId
+    };
+    const token = localStorage.getItem("@Token");
 
-  }
+    try {
+      const data = await Registry_Services.updateEvent(payload, token);
+      console.log(data, "Dataaa");
+    } catch (e) {
+
+    }
+  };
+
   // Handlers for navigation
   async function goNext() {
     if (step === 1) {
       setStep(step + 1);
     } else if (step === 2) {
-      setStep(step + 1);
-    } else if (step === 3) {
       await handleRegistry();
+    } else if (step === 3) {
+      await handleNoOfGuest();
     } else if (step === 4) {
-      await handleNoOfGuest()
-    } else if (step === 5) {
       await handleShipping();
+    } else if (step === 5) {
+
     }
   }
 
@@ -135,31 +188,27 @@ const OnboardingClient = ({}) => {
     switch (currentStep) {
       case 1:
         return (
-          <Step1 />
+          <Step1
+            setSelectedDate={setSelectedDate}
+            selectedDate={eventData.selectedDate}
+          />
         );
       case 2:
         return (
           <Step2
-            setSelectedDate={setSelectedDate}
-            selectedDate={selectedDate}
-          />
-        );
-      case 3:
-        return (
-          <Step3
             eventData={eventTypes}
             setSelectedDate={setSelectedDate}
-            selectedDate={selectedDate}
+            selectedDate={eventData.selectedDate}
             handleEventNameChange={handleEventNameChange}
-            eventName={eventName}
-            selectedOption={selectedOption}
+            eventName={eventData.eventName}
+            selectedOption={eventData.selectedOption}
             handleSelectChange={handleSelectChange}
           />
         );
+      case 3:
+        return <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} />;
       case 4:
-        return <Step4 value={noOfGuest} onChange={handleGuestNoChange} />;
-      case 5:
-        return <Step5 formData={formDataRef} handleInputChange={handleInputChange} />;
+        return <Step4 formData={formDataRef} handleInputChange={handleInputChange} />;
       default:
         return null;
     }
@@ -179,8 +228,8 @@ const OnboardingClient = ({}) => {
         </div>
 
         {/* Back and Next buttons */}
-        <div className="flex justify-end mt-4">
-          {/*<Button text="Back" onClick={goBack} disabled={step === 1} />*/}
+        <div className="flex justify-between mt-4">
+          <Button text="Back" onClick={goBack} disabled={step === 1} />
           <Button text={step === 3 ? "Submit" : "Next"} onClick={goNext} />
         </div>
       </div>
@@ -188,81 +237,8 @@ const OnboardingClient = ({}) => {
   );
 };
 
-const Step1 = ({ formData, handleSubmit, handleInputChange }) => {
-  return (
-    <>
-      <div className="text-center">
-        <Heading text="Lovely to meet you" />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="First Name"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleInputChange}
-        />
-        <Input
-          label="Last Name"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="text-center">
-        <Heading text="And your Fiance?" />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Fiance First Name"
-          name="fianceFirstName"
-          value={formData.fianceFirstName}
-          onChange={handleInputChange}
-        />
-        <Input
-          label="Fiance Last Name"
-          name="fianceLastName"
-          value={formData.fianceLastName}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Email"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-        />
-        <Input
-          label="Confirm Email"
-          name="confirmEmail"
-          value={formData.confirmEmail}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="text-center">
-        <Heading text="Create your account" className="text-center" />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleInputChange}
-        />
-        <Input
-          label="Confirm Password"
-          name="confirmPassword"
-          type="password"
-          value={formData.confirmPassword}
-          onChange={handleInputChange}
-        />
-      </div>
-    </>
-  );
-};
 
-const Step2 = ({ selectedDate, setSelectedDate }) => {
+const Step1 = ({ selectedDate, setSelectedDate }) => {
   return (
     <div>
       <div className="p-4">
@@ -280,7 +256,7 @@ const Step2 = ({ selectedDate, setSelectedDate }) => {
   );
 };
 
-const Step3 = ({
+const Step2 = ({
                  setSelectedDate,
                  selectedDate,
                  handleEventNameChange,
@@ -327,7 +303,7 @@ const Step3 = ({
     </div>
   );
 };
-const Step4 = ({ value, onChange }) => {
+const Step3 = ({ value, onChange }) => {
 
   return (
     <div>
@@ -348,7 +324,7 @@ const Step4 = ({ value, onChange }) => {
   );
 };
 
-const Step5 = ({ formData, handleInputChange }) => {
+const Step4 = ({ formData, handleInputChange }) => {
 
 
   // Submit handler to log the form data

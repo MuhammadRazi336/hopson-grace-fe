@@ -7,6 +7,16 @@ const Registry_Services = {
       Authorization: `Bearer ${token}`
     }
   }),
+  updateRegistry: (payload, token) => axiosInstance.put(`registries/${payload.id}`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }),
+  updateEvent: (payload, token) => axiosInstance.put(`events/${payload.id}`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }),
   addShippingAddress: (payload, token) => axiosInstance.post("users/shippingAddress", payload, {
     headers: {
       Authorization: `Bearer ${token}`
