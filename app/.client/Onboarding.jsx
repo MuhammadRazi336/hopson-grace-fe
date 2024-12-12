@@ -6,49 +6,13 @@ import Input from "~/components/Input.jsx";
 import Button from "~/components/Button.jsx";
 import Stepper from "~/components/Stepper.jsx";
 import CustomSelect from "~/components/CustomSelect.jsx";
-import { redirect, json } from "@shopify/remix-oxygen";
 import DatePicker from "~/components/Datepicker.jsx";
 import moment from "moment";
-import { getHydrogenContext } from "~/lib/hydrogenManager.js";
-import { getCookie } from "~/utils/helpers.js";
 import Registry_Services from "~/Services/Registry.js";
-import axiosInstance from "~/Services/interceptor.js";
-// export async function action({ request, context }) {
-//   const body = await request.json();
-//   try {
-//     const { payload } = body;
-//     let signup = payload.signupPayload;
-//     let registry = payload.registryPayload;
-//     const signupRes = await context.ClientPost(signup);
-//     const bearerToken = signupRes.data.accessToken;
-//     context.session.set('user_token', bearerToken);
-//     const cookie = await context.session.commit();
-//     new Response('Set-Cookie', {
-//       headers: cookie,
-//     });
-//     const registryRes = context.ClientPost(registry);
-//     console.log(registryRes)
-//     return redirect("/" );
-//     // return json({ data: signupResponse.data, requestType });
-//   } catch (error) {
-//     return json({ data: error });
-//   }
-// }
 
-// export const loader = async ({ context }) => {
-//   const data = await context.ClientGet("eventTypes", context);
-//   const events = data.data.map((e) => {
-//     return {
-//       label: e.name,
-//       value: e.id
-//     };
-//   });
-//   return json({ events });
-// };
 const OnboardingClient = ({}) => {
   const { user } = useLoaderData();
-  console.log(user, "User");
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(3);
   const [eventTypes, setEventTypes] = useState([]);
   const formDataRef = useState({
     phoneNumber: "",
@@ -137,7 +101,9 @@ const OnboardingClient = ({}) => {
       console.log(e , "Exception")
     }
   };
+  const handleNoOfGuest = async () => {
 
+  }
   // Handlers for navigation
   async function goNext() {
     if (step === 1) {
@@ -147,9 +113,9 @@ const OnboardingClient = ({}) => {
     } else if (step === 3) {
       await handleRegistry();
     } else if (step === 4) {
+      await handleNoOfGuest()
     } else if (step === 5) {
       await handleShipping();
-
     }
   }
 
