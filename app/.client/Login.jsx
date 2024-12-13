@@ -14,18 +14,18 @@ const Login = ({ session }) => {
     formData[name] = value;
   };
 
-  const onLogin = async  () => {
+  const onLogin = async () => {
     const payload = {
-      email:formData.email,
-      password:formData.password
-    }
+      email: formData.email,
+      password: formData.password
+    };
     try {
       const data = await Auth.Login(payload);
       if (data) {
-        console.log(data.data ,' Data')
+        console.log(data.data, " Data");
       }
     } catch (e) {
-    console.log(e , "E")
+      console.log(e, "E");
     }
   };
   return (<div className="bg-gray-100 flex items-center justify-center min-h-screen">

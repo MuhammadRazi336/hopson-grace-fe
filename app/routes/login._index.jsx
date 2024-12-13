@@ -1,13 +1,11 @@
-import { useFetcher, useLoaderData } from "@remix-run/react";
-import { defer, json, redirect } from "@shopify/remix-oxygen";
+import { useFetcher } from "@remix-run/react";
+import {  redirect } from "@shopify/remix-oxygen";
 import { requireAuth } from "~/utils/auth-guard.js";
 
-import Button from "~/components/Button.jsx";
 import Input from "~/components/Input.jsx";
-import { useRef, useState } from "react";
-import Login from "~/.client/Login.jsx";
-import { useHydrated } from "~/utils/helpers.js";
+import {  useState } from "react";
 import ButtonComponent from "~/components/Button.jsx";
+
 
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
@@ -21,9 +19,12 @@ export async function action({ request, context }) {
   const body = await request.json();
   const { payload } = body;
   try {
-    const response = await context.ClientPost(payload, "auth/login",context);
+    const response = await context.ClientPost(payload, "auth/login", context, {
+      pending: "Loading...",
+      success: "User Sign in successfully!",
+      error: "Failed to Sign in user."
+    });
     const user = response.data;
-    console.log(user , "USER")
     context.session.set("@User", user);
     const cookie = await context.session.commit();
     return redirect("/", {
@@ -32,10 +33,9 @@ export async function action({ request, context }) {
       }
     });
   } catch (e) {
-    console.log(e);
-    return null
+    console.log(e, "E");
+    return null;
   }
-  return null
 }
 
 const LoginIndex = () => {

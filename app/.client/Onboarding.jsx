@@ -9,6 +9,7 @@ import CustomSelect from "~/components/CustomSelect.jsx";
 import DatePicker from "~/components/Datepicker.jsx";
 import moment from "moment";
 import Registry_Services from "~/Services/Registry.js";
+import { toast } from "react-toastify";
 
 const OnboardingClient = ({}) => {
   const { user } = useLoaderData();
@@ -160,6 +161,7 @@ const OnboardingClient = ({}) => {
   // Handlers for navigation
   async function goNext() {
     if (step === 1) {
+      toast("Wow so easy!");
       setStep(step + 1);
     } else if (step === 2) {
       await handleRegistry();
