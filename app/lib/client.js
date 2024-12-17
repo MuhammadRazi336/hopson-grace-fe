@@ -1,11 +1,9 @@
-import ToastUtils from "~/utils/ToastUtil.js"; // Adjust path as necessary
-
 export function createClient() {
   // Shared logic for making the API call
-  async function baseClient(method, body, route, context, toastMessages = null) {
-    const token = context?.session?.get("user_token")?.accessToken;
+  async function baseClient(method, body, route, context) {
+    const token = context?.session?.get("@User")?.accessToken;
     if ((method === "POST" || method === "PUT") && !body) {
-      return Promise.reject(new Error(`Provide a body for the ${method} request`));
+      throw new Error(`Provide a body for the ${method} request`);
     }
 
     const endPoint = `https://dev-hopsongrace.codup.io/api/${route}`;
@@ -18,43 +16,31 @@ export function createClient() {
       ...(body && { body: JSON.stringify(body) }), // Add body if applicable
     };
 
-    const apiCall = async () => {
-      try {
-        const request = await fetch(endPoint, options);
-        const response = await request.json();
-        return response;
-      } catch (err) {
-        return err
-      }
-    };
-
-    // Use ToastUtils.promise for toast-based feedback
-    if (toastMessages) {
-      return ToastUtils.promise(apiCall(), {
-        pending: toastMessages.pending || "Processing request...",
-        success: toastMessages.success || "Request successful!",
-        error: toastMessages.error || ((err) => err.message || "An error occurred."),
-      });
-    } else {
-      return apiCall();
+    const request = await fetch(endPoint, options);
+    const response = await request.json();
+    if (response?.message?.length && response?.message !== "Success") {
+      console.log(response?.message)
+       return(response?.message[0]);
     }
+
+    return response;
   }
 
   // Separate functions for each HTTP method
-  async function ClientPost(body, route, context, toastMessages) {
-    return baseClient("POST", body, route, context, toastMessages);
+  async function ClientPost(body, route, context) {
+    return baseClient("POST", body, route, context);
   }
 
-  async function ClientPut(body, route, context, toastMessages) {
-    return baseClient("PUT", body, route, context, toastMessages);
+  async function ClientPut(body, route, context) {
+    return baseClient("PUT", body, route, context);
   }
 
-  async function ClientGet(route, context, toastMessages) {
-    return baseClient("GET", null, route, context, toastMessages);
+  async function ClientGet(route, context) {
+    return baseClient("GET", null, route, context);
   }
 
-  async function ClientDelete(route, context, toastMessages) {
-    return baseClient("DELETE", null, route, context, toastMessages);
+  async function ClientDelete(route, context) {
+    return baseClient("DELETE", null, route, context);
   }
 
   return { ClientPost, ClientPut, ClientGet, ClientDelete };

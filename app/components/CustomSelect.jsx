@@ -11,7 +11,7 @@ const CustomSelect = ({ label, options, selected, setSelected }) => {
       {/* Select Component */}
       <div className="relative">
         <Select
-          value={selected?.value || ""}
+          value={selected?.label || ""}
           onChange={(value) => {
             const selectedOption = options.find((option) => option.value === value);
             setSelected(selectedOption);
@@ -25,7 +25,7 @@ const CustomSelect = ({ label, options, selected, setSelected }) => {
           {options.map((option) => (
             <Option
               key={option.value}
-              value={option.value}
+              value={option.label}
               className="hover:bg-gray-200 text-sm text-center py-2"
             >
               {option.label}

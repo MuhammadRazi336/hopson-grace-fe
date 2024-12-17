@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useLoaderData, useFetcher } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { useLoaderData } from "@remix-run/react";
 
 import Heading from "~/components/Heading.jsx";
 import Input from "~/components/Input.jsx";
@@ -26,12 +26,13 @@ const OnboardingClient = ({}) => {
   });
   const [eventData, setEventData] = useState({
     noOfGuest: "",
-    selectedOption: "",
+    selectedOption: {  },
     selectedDate: new Date(),
     eventName: "",
     id: null,
     eventId: null
   });
+  console.log(eventData.selectedOption,"Selected")
   const handleGuestNoChange = (e) => {
     setEventData({
       ...eventData,
@@ -58,12 +59,22 @@ const OnboardingClient = ({}) => {
     if (user) {
       const token = user.accessToken;
       localStorage.setItem("@Token", token);
+      if (user.stepNumber !== 0) {
+        setStep(user.stepNumber);
+      }
+      if (user.registry?.events?.length) {
+        setEventData({
+          noOfGuest: user.registry?.events[0].noOfGuest,
+          selectedOption: { label: user.registry?.events[0].eventType.name, id: user.registry?.events[0].eventType.id },
+          selectedDate: user.registry?.events[0].eventDate,
+          eventName: user.registry?.events[0].name,
+          id: user.registry.id,
+          eventId: user.registry?.events[0].id
+        });
+      }
     }
   }, [user]);
-  useEffect(() => {
-    const event = localStorage.getItem("@EventData");
-    if (event) setEventData(JSON.parse(event));
-  }, []);
+
   const getEvents = async () => {
     try {
       const data = await Registry_Services.getEvents();
@@ -79,10 +90,10 @@ const OnboardingClient = ({}) => {
     }
   };
 
-  const handleSelectChange = (value) => {
+  const handleSelectChange = (value, id) => {
     setEventData({
       ...eventData,
-      selectedOption: value
+      selectedOption: { label:value.label, id:value.id }
     });
   };
   // Main state for selected date
@@ -97,8 +108,8 @@ const OnboardingClient = ({}) => {
     const payload = {
       name: eventData.eventName,
       eventDate: moment(eventData.selectedDate).format("YYYY-MM-DD"),
-      eventTypeId: Number(eventData.selectedOption.value),
-      ...(eventData.id && { id: eventData.id})
+      eventTypeId: Number(eventData.selectedOption.id),
+      ...(eventData.id && { id: eventData.id })
     };
     const token = localStorage.getItem("@Token");
     let data = null;
@@ -111,10 +122,9 @@ const OnboardingClient = ({}) => {
       if (data) {
         const event = {
           ...eventData,
-          id: data.data.registry.id,
-          eventId: data.data.event.id
+          id: data.data.id,
+          ...(!payload.id && { eventId: data.data.event.id })
         };
-        localStorage.setItem("@EventData", JSON.stringify(event));
         setEventData(event);
         setStep(step + 1);
       }
@@ -145,14 +155,14 @@ const OnboardingClient = ({}) => {
   };
   const handleNoOfGuest = async () => {
     const payload = {
-      noOfGuest: eventData.noOfGuest,
-      id: eventData.eventId
+      noOfGuest: Number(eventData.noOfGuest),
+      id: Number(eventData.eventId)
     };
     const token = localStorage.getItem("@Token");
 
     try {
       const data = await Registry_Services.updateEvent(payload, token);
-      console.log(data, "Dataaa");
+      console.log(data , "DATa")
     } catch (e) {
 
     }
@@ -161,7 +171,6 @@ const OnboardingClient = ({}) => {
   // Handlers for navigation
   async function goNext() {
     if (step === 1) {
-      toast("Wow so easy!");
       setStep(step + 1);
     } else if (step === 2) {
       await handleRegistry();
@@ -279,7 +288,7 @@ const Step2 = ({
         <CustomSelect
           title={"Event Type"}
           options={eventData}
-          value={selectedOption}
+          selected={selectedOption}
           setSelected={handleSelectChange}
           placeholder="Choose an option"
         />

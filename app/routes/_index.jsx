@@ -17,13 +17,24 @@ export async function loader(args) {
   // Await the critical data required to render initial state of the page
   const user = await requireAuth(context);
   if (!user) {
-    return redirect('/login');
-  } else if (user.stepNumber === 1) {
-    return redirect('/onboarding');
+    return redirect("/login");
+  } else if (!user?.user?.isOnboard) {
+    const getUser = await context.ClientGet(`users/${user.user.id}`, context);
+    const sessionUser = {
+      accessToken: user.accessToken,
+      ...getUser
+    };
+    context.session.set("@User", sessionUser);
+    const cookie = await context.session.commit();
+    return redirect("/onboarding", {
+      headers: {
+        "Set-Cookie": cookie
+      }
+    });
   } else {
     return defer({ user });
   }
-};
+}
 
 const Dashboard_index = () => {
   const tabData = [
@@ -78,7 +89,10 @@ const Dashboard_index = () => {
 export default Dashboard_index;
 
 const RegistryTab = (props) => {
-  const [selected, setSelected] = useState({ label: "Wedding Registry", value: "wedding" });
+  const [selected, setSelected] = useState({
+    label: "Wedding Registry",
+    value: "wedding"
+  });
 
   const options = [
     { label: "Wedding Registry", value: "wedding" },
@@ -113,16 +127,15 @@ const RegistryTab = (props) => {
             />
           </div>
           <div>
-            <h2>
-              Gift Tracker
-            </h2>
+            <h2>Gift Tracker</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {cardData.map((card, index) => (
                 <div
                   key={index}
-                  className={`${index === cardData.length - 1 && cardData.length % 2 !== 0
-                    ? "col-span-full" // Make the last card take full width if odd
-                    : ""
+                  className={`${
+                    index === cardData.length - 1 && cardData.length % 2 !== 0
+                      ? "col-span-full" // Make the last card take full width if odd
+                      : ""
                   }`}
                 >
                   <Card
@@ -130,7 +143,9 @@ const RegistryTab = (props) => {
                     value={card.value}
                     label={card.label}
                     selectable={card.selectable}
-                    onCardSelect={(isSelected) => handleCardSelect(isSelected, index)}
+                    onCardSelect={(isSelected) =>
+                      handleCardSelect(isSelected, index)
+                    }
                   />
                 </div>
               ))}
@@ -176,9 +191,14 @@ const RegistryTab = (props) => {
                 {/* Empty card */}
               </div>
               <div className="flex-1 flex flex-col justify-center">
-                <h2 className="text-lg font-normal my-5">Want to see how your registry appears to your guests?</h2>
+                <h2 className="text-lg font-normal my-5">
+                  Want to see how your registry appears to your guests?
+                </h2>
                 <p className="mt-2 text-center my-5">Preview as a guest</p>
-                <ButtonComponent className="mt-5 w-1/1.3" text="Preview Registry" />
+                <ButtonComponent
+                  className="mt-5 w-1/1.3"
+                  text="Preview Registry"
+                />
               </div>
             </div>
           </div>
@@ -191,10 +211,17 @@ const RegistryTab = (props) => {
                 </div>
                 <div className="flex-1 flex flex-col justify-center">
                   <h2 className="text-lg font-semibold">Jocelyn Robinson</h2>
-                  <h3 className="font-normal">jocelyn@registry.com | 403-123-4567</h3>
-                  <p className="mt-2 mt-5 mb-3">Hi! I'm your registry advisor. I'm here to help you through the
-                    process.</p>
-                  <ButtonComponent className="mt-5 w-1/1.3" text="Contact Your Advisor" />
+                  <h3 className="font-normal">
+                    jocelyn@registry.com | 403-123-4567
+                  </h3>
+                  <p className="mt-2 mt-5 mb-3">
+                    Hi! I'm your registry advisor. I'm here to help you through
+                    the process.
+                  </p>
+                  <ButtonComponent
+                    className="mt-5 w-1/1.3"
+                    text="Contact Your Advisor"
+                  />
                 </div>
               </div>
             </div>
@@ -207,88 +234,142 @@ const RegistryTab = (props) => {
 
 const RegistryHomePage = () => {
   return (
-    <div class="min-h-screen flex items-center justify-center">
-      <div class="shadow-lg rounded-lg p-8 w-full max-w-4xl border bg-gray-100">
-        <h1 class="text-2xl font-bold mb-6">Edit Page</h1>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="shadow-lg rounded-lg p-8 w-full max-w-4xl border bg-gray-100">
+        <h1 className="text-2xl font-bold mb-6">Edit Page</h1>
 
-        <div class="flex gap-8">
-          <div class="flex-1">
-            <div class="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
-              <button class="bg-white text-gray-700 border border-gray-400 px-4 py-2 rounded-lg">Upload New Photo
+        <div className="flex gap-8">
+          <div className="flex-1">
+            <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
+              <button className="bg-white text-gray-700 border border-gray-400 px-4 py-2 rounded-lg">
+                Upload New Photo
               </button>
             </div>
           </div>
 
-          <div class="flex-1">
-            <div class="grid grid-cols-2 gap-4">
-              <div class="col-span-2">
-                <label class="block font-medium mb-1" for="coupleName">Couple Name</label>
-                <input id="coupleName" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
+          <div className="flex-1">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="block font-medium mb-1" htmlFor="coupleName">
+                  Couple Name
+                </label>
+                <input
+                  id="coupleName"
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
               </div>
 
-              <div class="col-span-2">
-                <label class="block font-medium mb-1" for="hashtag">Hashtag</label>
-                <input id="hashtag" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
-              </div>
-
-              <div>
-                <label class="block font-medium mb-1" for="weddingDate">Wedding Date</label>
-                <input id="weddingDate" type="date" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
-              </div>
-
-              <div>
-                <label class="block font-medium mb-1" for="weddingTime">Wedding Time</label>
-                <input id="weddingTime" type="time" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
-              </div>
-
-              <div class="col-span-2">
-                <label class="block font-medium mb-1" for="location">Location</label>
-                <input id="location" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
+              <div className="col-span-2">
+                <label className="block font-medium mb-1" htmlFor="hashtag">
+                  Hashtag
+                </label>
+                <input
+                  id="hashtag"
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
               </div>
 
               <div>
-                <label class="block font-medium mb-1" for="city">City</label>
-                <input id="city" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
+                <label className="block font-medium mb-1" htmlFor="weddingDate">
+                  Wedding Date
+                </label>
+                <input
+                  id="weddingDate"
+                  type="date"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
               </div>
 
               <div>
-                <label class="block font-medium mb-1" for="province">Province</label>
-                <input id="province" type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
+                <label className="block font-medium mb-1" htmlFor="weddingTime">
+                  Wedding Time
+                </label>
+                <input
+                  id="weddingTime"
+                  type="time"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
               </div>
 
-              <div class="col-span-2">
-                <label class="block font-medium mb-1" for="guests">Number of Guests</label>
-                <input id="guests" type="number" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
+              <div className="col-span-2">
+                <label className="block font-medium mb-1" htmlFor="location">
+                  Location
+                </label>
+                <input
+                  id="location"
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium mb-1" htmlFor="city">
+                  City
+                </label>
+                <input
+                  id="city"
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium mb-1" htmlFor="province">
+                  Province
+                </label>
+                <input
+                  id="province"
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block font-medium mb-1" htmlFor="guests">
+                  Number of Guests
+                </label>
+                <input
+                  id="guests"
+                  type="number"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2"
+                />
               </div>
             </div>
           </div>
         </div>
 
-        <div class="mt-6">
-          <label class="block font-medium mb-1" for="welcomeMessage">Welcome Message</label>
-          <textarea id="welcomeMessage" class="w-full border border-gray-300 rounded-lg px-4 py-2 h-28"></textarea>
+        <div className="mt-6">
+          <label className="block font-medium mb-1" htmlFor="welcomeMessage">
+            Welcome Message
+          </label>
+          <textarea
+            id="welcomeMessage"
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 h-28"
+          ></textarea>
         </div>
 
-        <div class="flex gap-4 mt-6">
-          <button class="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg">Change Page Style</button>
-          <button class="bg-black text-white px-6 py-2 rounded-lg">Save</button>
+        <div className="flex gap-4 mt-6">
+          <button className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg">
+            Change Page Style
+          </button>
+          <button className="bg-black text-white px-6 py-2 rounded-lg">
+            Save
+          </button>
         </div>
       </div>
     </div>
-
   );
 };
 
-
 const RegistryProfile = () => {
-  return (<div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
+  return (
+    <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
       <div className="flex flex-col space-x-4 md:flex-row">
         <div className="flex-1 h-64 bg-gray-300 rounded-lg">
-          <div className="h-64">
-
-          </div>
-
+          <div className="h-64"></div>
         </div>
 
         <div className="flex-1 mt-4 lg:mt-0">
@@ -303,14 +384,10 @@ const RegistryProfile = () => {
             Please enter any message you want to share with your guests.
           </p>
           <div className="mt-4 flex space-x-2">
-            <button
-              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-            >
+            <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
               Share Registry
             </button>
-            <button
-              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-            >
+            <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
               Edit Registry Page
             </button>
           </div>
@@ -318,16 +395,21 @@ const RegistryProfile = () => {
       </div>
 
       <div className="mt-8 border-t border-gray-300 pt-4 border-b">
-        <Accordiance title="Selected Wedding Registry Gifts" ContentComponent={() => <ProductPage />} />
+        <Accordiance
+          title="Selected Wedding Registry Gifts"
+          ContentComponent={() => <ProductPage />}
+        />
       </div>
 
       <div className="mt-4 border-t border-gray-300 pt-4 border-b">
-        <Accordiance title="Selected Wedding Cash Funds" ContentComponent={() => <FundPage />} />
+        <Accordiance
+          title="Selected Wedding Cash Funds"
+          ContentComponent={() => <FundPage />}
+        />
       </div>
     </div>
   );
 };
-
 
 const ProductPage = () => {
   return (
@@ -348,7 +430,6 @@ const ProductPage = () => {
         ))}
       </div>
     </div>
-
   );
 };
 

@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 
 const showToast = ({ type, message, options, promise, promiseHandlers, updateId }) => {
+  console.log(type , "IM her with Type")
   switch (type) {
     case "success":
       return toast.success(message, options);
@@ -20,11 +21,13 @@ const showToast = ({ type, message, options, promise, promiseHandlers, updateId 
       return toast.update(updateId, options);
     case "promise":
       if (!promise || !promiseHandlers) {
+        console.log("IM Here in Promise")
         console.error(
           "Promise and promiseHandlers are required for 'promise' type."
         );
         return;
       }
+      console.log("Im here" , promise)
       return toast.promise(promise, promiseHandlers, options);
     default:
       return toast(message, options);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export const useHydrated = () => {
   const [hydrated, setHydrated] = useState(false);
@@ -10,19 +10,28 @@ export const useHydrated = () => {
   return hydrated;
 };
 
-export function getCookie(request, name) {
-  if (typeof document !== "undefined") {
-    // Client-side
-    const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-    return match ? decodeURIComponent(match[1]) : null;
-  }
+export const useToastSubmitPromise = (initialState) => {
+  const promisefy = useRef(deferred());
+  useEffect(() => {
+    if (initialState.state === "idle" && initialState.data && initialState.data.success) {
+      promisefy.current.resolve();
+      promisefy.current = deferred(); // reset promise state for pending.
+    }
 
-  // Server-side
-  const cookieHeader = request.headers.get("Cookie");
-  if (!cookieHeader) return null;
+    if (initialState.data && !initialState.data.success) promisefy.current.reject();
 
-  const cookies = Object.fromEntries(
-    cookieHeader.split(";").map((cookie) => cookie.trim().split("="))
-  );
-  return cookies[name] || null;
+  }, [initialState.state, initialState.data]);
+
+  return promisefy.current.promise;
+};
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  return { resolve, reject, promise };
 }
