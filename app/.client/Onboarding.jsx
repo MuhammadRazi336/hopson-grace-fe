@@ -9,30 +9,29 @@ import CustomSelect from "~/components/CustomSelect.jsx";
 import DatePicker from "~/components/Datepicker.jsx";
 import moment from "moment";
 import Registry_Services from "~/Services/Registry.js";
-import { toast } from "react-toastify";
+import { setActive } from "@material-tailwind/react/components/Tabs/TabsContext.js";
 
 const OnboardingClient = ({}) => {
   const { user } = useLoaderData();
   const [step, setStep] = useState(1);
   const [eventTypes, setEventTypes] = useState([]);
-  const formDataRef = useState({
+  const [addressData, setAddressData] = useState({
     phoneNumber: "",
     address: "",
     postalCode: "",
     city: "",
     province: "",
     country: "",
-    shippingId: null
+    id: null
   });
   const [eventData, setEventData] = useState({
     noOfGuest: "",
-    selectedOption: {  },
+    selectedOption: {},
     selectedDate: new Date(),
     eventName: "",
     id: null,
     eventId: null
   });
-  console.log(eventData.selectedOption,"Selected")
   const handleGuestNoChange = (e) => {
     setEventData({
       ...eventData,
@@ -48,20 +47,23 @@ const OnboardingClient = ({}) => {
   // General change handler for all fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // Directly modifying the ref object to store new value
-    formDataRef[name] = value;
+    setAddressData({
+      ...addressData,
+      [name]: value
+    });
   };
   useEffect(() => {
     getEvents();
   }, []);
-
   useEffect(() => {
     if (user) {
       const token = user.accessToken;
       localStorage.setItem("@Token", token);
       if (user.stepNumber !== 0) {
-        setStep(user.stepNumber);
+        setStep(user.stepNumber === 0 ? 1 : user.StepNumber === 1 ? 3 : user.StepNumber === 2 ? 4 : user.stepNumber === 3 ? 5 : 1);
       }
+      const event = localStorage.getItem("@EventData");
+      const shipping = localStorage.getItem("@ShippingData");
       if (user.registry?.events?.length) {
         setEventData({
           noOfGuest: user.registry?.events[0].noOfGuest,
@@ -71,7 +73,23 @@ const OnboardingClient = ({}) => {
           id: user.registry.id,
           eventId: user.registry?.events[0].id
         });
+      } else if (event) {
+        setEventData(JSON.parse(event));
       }
+      if (user.shippingAddress) {
+        setAddressData({
+          address: user.shippingAddress.address,
+          city: user.shippingAddress.city,
+          country: user.shippingAddress.country,
+          id: user.shippingAddress.id,
+          phoneNumber: user.shippingAddress.phoneNumber,
+          postalCode: user.shippingAddress.postalCode,
+          province: user.shippingAddress.province
+        });
+      } else if (shipping) {
+        setAddressData(JSON.parse(shipping));
+      }
+
     }
   }, [user]);
 
@@ -81,7 +99,7 @@ const OnboardingClient = ({}) => {
       const events = data.data.map((e) => {
         return {
           label: e.name,
-          value: e.id
+          id: e.id
         };
       });
       setEventTypes(events);
@@ -90,10 +108,10 @@ const OnboardingClient = ({}) => {
     }
   };
 
-  const handleSelectChange = (value, id) => {
+  const handleSelectChange = (value) => {
     setEventData({
       ...eventData,
-      selectedOption: { label:value.label, id:value.id }
+      selectedOption: { label: value.label, id: value.id }
     });
   };
   // Main state for selected date
@@ -111,6 +129,7 @@ const OnboardingClient = ({}) => {
       eventTypeId: Number(eventData.selectedOption.id),
       ...(eventData.id && { id: eventData.id })
     };
+
     const token = localStorage.getItem("@Token");
     let data = null;
     try {
@@ -125,6 +144,7 @@ const OnboardingClient = ({}) => {
           id: data.data.id,
           ...(!payload.id && { eventId: data.data.event.id })
         };
+        localStorage.setItem("@EventData", JSON.stringify(event));
         setEventData(event);
         setStep(step + 1);
       }
@@ -135,20 +155,29 @@ const OnboardingClient = ({}) => {
 
   const handleShipping = async () => {
     const payload = {
-      phoneNumber: formDataRef.phoneNumber,
-      address: formDataRef.address,
-      postalCode: formDataRef.postalCode,
-      city: formDataRef.city,
-      province: formDataRef.province,
-      country: formDataRef.country
+      phoneNumber: addressData.phoneNumber,
+      address: addressData.address,
+      postalCode: addressData.postalCode,
+      city: addressData.city,
+      province: addressData.province,
+      country: addressData.country,
+      ...(addressData.id && { id: Number(addressData.id) })
     };
     const token = localStorage.getItem("@Token");
     try {
-      const data = await Registry_Services.addShippingAddress(payload, token);
-      // const shippindData = {
-      //   ...formDataRef,
-      //   id:data.data
-      // }
+      let data;
+      if (payload?.id) {
+        data = await Registry_Services.updateShippingAddress(payload, token);
+      } else {
+        data = await Registry_Services.addShippingAddress(payload, token);
+      }
+      const shippingData = {
+        ...addressData,
+        id: data.data.id
+      };
+      localStorage.setItem("@ShippingData", JSON.stringify(shippingData));
+      setAddressData(shippingData);
+      setStep(step + 1);
     } catch (e) {
       console.log(e, "Exception");
     }
@@ -162,7 +191,8 @@ const OnboardingClient = ({}) => {
 
     try {
       const data = await Registry_Services.updateEvent(payload, token);
-      console.log(data , "DATa")
+      setStep(step + 1);
+
     } catch (e) {
 
     }
@@ -219,7 +249,13 @@ const OnboardingClient = ({}) => {
       case 3:
         return <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} />;
       case 4:
-        return <Step4 formData={formDataRef} handleInputChange={handleInputChange} />;
+        return <Step4 formData={addressData} handleInputChange={handleInputChange} />;
+      case 5:
+        return <Step5 />;
+      case 6:
+        return <Step6 />;
+      case 7:
+        return <Step7 />;
       default:
         return null;
     }
@@ -409,7 +445,7 @@ const Step4 = ({ formData, handleInputChange }) => {
   );
 };
 
-const Step6 = () => {
+const Step5 = () => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   // Options for the grid
@@ -443,7 +479,7 @@ const Step6 = () => {
   );
 };
 
-const Step7 = () => {
+const Step6 = () => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   // Options for the grid
@@ -479,7 +515,7 @@ const Step7 = () => {
   );
 };
 
-const Step8 = () => {
+const Step7 = () => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   // Options for the grid

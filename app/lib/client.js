@@ -20,7 +20,7 @@ export function createClient() {
     const response = await request.json();
     if (response?.message?.length && response?.message !== "Success") {
       console.log(response?.message)
-       return(response?.message[0]);
+       return(response?.message);
     }
 
     return response;

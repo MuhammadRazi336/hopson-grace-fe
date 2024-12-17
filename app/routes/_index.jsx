@@ -16,6 +16,7 @@ export async function loader(args) {
 
   // Await the critical data required to render initial state of the page
   const user = await requireAuth(context);
+  console.log(user , "USER")
   if (!user) {
     return redirect("/login");
   } else if (!user?.user?.isOnboard) {

@@ -21,6 +21,11 @@ const Registry_Services = {
     headers: {
       Authorization: `Bearer ${token}`
     }
+  }),
+  updateShippingAddress: (payload, token) => axiosInstance.put(`users/shippingAddress/${payload.id}`, payload, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   })
 };
 

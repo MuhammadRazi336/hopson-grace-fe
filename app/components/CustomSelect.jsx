@@ -13,7 +13,8 @@ const CustomSelect = ({ label, options, selected, setSelected }) => {
         <Select
           value={selected?.label || ""}
           onChange={(value) => {
-            const selectedOption = options.find((option) => option.value === value);
+            const selectedOption = options.find((option) => option.label === value);
+            console.log(selectedOption,"po")
             setSelected(selectedOption);
           }}
           className="appearance-none px-4 py-5 border border-gray-300 rounded-md w-full text-left flex items-center bg-gray-300"
