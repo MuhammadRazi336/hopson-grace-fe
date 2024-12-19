@@ -6,88 +6,35 @@ import Accordiance from "~/components/Accordiance.jsx";
 import ButtonComponent from "~/components/Button.jsx";
 import ProductCard from "~/components/Product";
 import FundCard from "~/components/FundCard";
+import RegistryProduct from "~/components/RegistryProduct.jsx";
 import { products } from "~/data";
-import { requireAuth } from "~/utils/auth-guard.js";
-import { defer, redirect } from "@shopify/remix-oxygen";
-
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
-  const { context, request } = args;
-
-  // Await the critical data required to render initial state of the page
-  const user = await requireAuth(context);
-  console.log(user , "USER")
-  if (!user) {
-    return redirect("/login");
-  } else if (!user?.user?.isOnboard) {
-    const getUser = await context.ClientGet(`users/${user.user.id}`, context);
-    const sessionUser = {
-      accessToken: user.accessToken,
-      ...getUser
-    };
-    context.session.set("@User", sessionUser);
-    const cookie = await context.session.commit();
-    return redirect("/onboarding", {
-      headers: {
-        "Set-Cookie": cookie
-      }
-    });
-  } else {
-    return defer({ user });
-  }
+  // const { context, request } = args;
+  //
+  // // Await the critical data required to render initial state of the page
+  // const user = await requireAuth(context);
+  // if (!user) {
+  //   return redirect("/login");
+  // } else if (!user?.user?.isOnboard) {
+  //   const getUser = await context.ClientGet(`users/${user.user.id}`, context);
+  //   const sessionUser = {
+  //     accessToken: user.accessToken,
+  //     ...getUser
+  //   };
+  //   context.session.set("@User", sessionUser);
+  //   const cookie = await context.session.commit();
+  //   return redirect("/onboarding", {
+  //     headers: {
+  //       "Set-Cookie": cookie
+  //     }
+  //   });
+  // } else {
+  //   return defer({ user });
+  // }
+  return null;
 }
 
-const Dashboard_index = () => {
-  const tabData = [
-    {
-      label: "Registry Detail",
-      value: "registry",
-      desc: <RegistryTab />
-    },
-    {
-      label: "Registry Homepage",
-      value: "home",
-      desc: <RegistryProfile />
-    },
-    {
-      label: "Add or Edit Gifts",
-      value: "gifts",
-      desc: <h1>Add or Edit Gifts</h1>
-    },
-    {
-      label: "Add Cash Funds",
-      value: "cashfunds",
-      desc: <h1>Add Cash Funds</h1>
-    },
-    {
-      label: "Gifts & Thank You Tracker",
-      value: "giftsthanks",
-      desc: <h1>Gifts & Thank You Tracker</h1>
-    },
-    {
-      label: "Ship My Gifts",
-      value: "shipgifts",
-      desc: <h1>Ship My Gifts</h1>
-    },
-    {
-      label: "Contact My Advisor",
-      value: "contactadvisor",
-      desc: <h1>Contact My Advisor</h1>
-    }
-  ];
-
-  return (
-    <div>
-      <CustomTabs
-        tabsData={tabData}
-        defaultActive="registry"
-        headerClassName="bg-gray-100 rounded-md"
-      />
-    </div>
-  );
-};
-
-export default Dashboard_index;
 
 const RegistryTab = (props) => {
   const [selected, setSelected] = useState({
@@ -487,4 +434,62 @@ const FundPage = () => {
       ))}
     </div>
   );
+};
+
+const AddEditGift = () => {
+  const options = [
+    { label: "Wedding Registry", value: "wedding" },
+    { label: "Baby Registry", value: "baby" },
+    { label: "Birthday Registry", value: "birthday" }
+  ];
+  const [selected, setSelected] = useState({
+    label: "Wedding Registry",
+    value: "wedding"
+  });
+  // const products = [
+//   { image: "https://via.placeholder.com/150", productName: "Product One", price: 499.99, description: "Description for Product One" },
+//   { image: "https://via.placeholder.com/150", productName: "Product Two", price: 299.99, description: "Description for Product Two" },
+//   { image: "https://via.placeholder.com/150", productName: "Product Three", price: 199.99, description: "Description for Product Three" },
+//   { image: "https://via.placeholder.com/150", productName: "Product Four", price: 99.99, description: "Description for Product Four" },
+// ];
+  return (<div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
+    <div className={"flex flex-row gap-4"}>
+      <div className={"flex-1"}>
+        <CustomSelect
+          options={options}
+          selected={selected}
+          setSelected={setSelected}
+        />
+      </div>
+      <div className={"flex-1"}>
+        <CustomSelect
+          options={options}
+          selected={selected}
+          setSelected={setSelected}
+        />
+      </div>
+      <div className={"flex-1"}>
+        <CustomSelect
+          options={options}
+          selected={selected}
+          setSelected={setSelected}
+        />
+      </div>
+      <div className={"flex-1"}>
+        <ButtonComponent className={"flex-1 w-full"} text={"Apply Filter"} />
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+      {products.map((product, index) => (<RegistryProduct
+        key={index}
+        image={product.image}
+        productName={product.productName}
+        price={product.price}
+        description={product.description}
+        onAddToRegistry={(quantity, isGroupGift) => console.log(`Added ${quantity} items to cart, Group Gift: ${isGroupGift}`)}
+        onGroupGiftTagChange={(isGroupGift) => console.log(`Group Gift tag changed: ${isGroupGift}`)}
+      />))}
+    </div>
+  </div>);
 };

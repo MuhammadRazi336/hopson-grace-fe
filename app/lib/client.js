@@ -19,7 +19,6 @@ export function createClient() {
     const request = await fetch(endPoint, options);
     const response = await request.json();
     if (response?.message?.length && response?.message !== "Success") {
-      console.log(response?.message)
        return(response?.message);
     }
 
@@ -45,3 +44,5 @@ export function createClient() {
 
   return { ClientPost, ClientPut, ClientGet, ClientDelete };
 }
+
+

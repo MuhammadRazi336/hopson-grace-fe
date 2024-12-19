@@ -9,7 +9,6 @@ import CustomSelect from "~/components/CustomSelect.jsx";
 import DatePicker from "~/components/Datepicker.jsx";
 import moment from "moment";
 import Registry_Services from "~/Services/Registry.js";
-import { setActive } from "@material-tailwind/react/components/Tabs/TabsContext.js";
 
 const OnboardingClient = ({}) => {
   const { user } = useLoaderData();

@@ -4,7 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline'; // For Heroicons 
 
 const CustomSelect = ({ label, options, selected, setSelected }) => {
   return (
-    <div className="w-full space-y-1">
+    <div className="w-full">
       {/* Dynamic Label */}
       {label && <label className="text-sm font-medium text-gray-800">{label}</label>}
 
@@ -33,9 +33,6 @@ const CustomSelect = ({ label, options, selected, setSelected }) => {
             </Option>
           ))}
         </Select>
-
-        {/* Chevron Icon */}
-        <ChevronDownIcon className="w-5 h-5 text-gray-500 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
       </div>
     </div>
   );
