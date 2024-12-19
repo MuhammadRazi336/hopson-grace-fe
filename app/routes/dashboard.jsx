@@ -21,27 +21,27 @@ const Dashboard_index = () => {
     },
     {
       label: 'Add or Edit Gifts',
-      value: 3,
+      value: 4,
       route: 'addgifts',
     },
     {
       label: 'Add Cash Funds',
-      value: 4,
+      value: 5,
       route: 'cashfunds',
     },
     {
       label: 'Gifts & Thank You Tracker',
-      value: 5,
+      value: 6,
       route: 'giftsthanks',
     },
     {
       label: 'Ship My Gifts',
-      value: 6,
+      value: 7,
       route: 'shipgifts',
     },
     {
       label: 'Contact My Advisor',
-      value: 7,
+      value: 8,
       route: 'contactadvisor',
     },
   ];
