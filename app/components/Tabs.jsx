@@ -10,7 +10,7 @@ import { Link } from "@remix-run/react";
 
 const CustomTabs = ({
                       tabsData,
-                      defaultActive = "",
+                      defaultActive = 1,
                       className,
                       headerClassName,
                       bodyClassName
@@ -20,14 +20,14 @@ const CustomTabs = ({
   return (
     <Tabs value={activeTab} className={className}>
       <TabsHeader className={headerClassName}>
-        {tabsData.map(({ label, value }) => (
+        {tabsData.map(({ label, value ,route}) => (
           <Link className={`px-4 py-2 text-sm font-medium rounded-md transition-all ease-in-out
               hover:bg-gray-200 hover:text-gray-900
-              ${activeTab === value ? "bg-gray-300 text-gray-900" : "text-gray-600"}`} to={value}>
+              ${activeTab === route ? "bg-gray-300 text-gray-900" : "text-gray-600"}`} to={route}>
             <Tab
-              key={value}
-              value={value}
-              onClick={() => setActiveTab(value)}
+              key={route}
+              value={route}
+              onClick={() => setActiveTab(route)}
             >
               {label}
             </Tab>

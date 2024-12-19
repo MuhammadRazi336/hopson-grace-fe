@@ -1,37 +1,49 @@
 // import { Link } from "remix";
-import { Outlet } from "@remix-run/react";
-import CustomTabs from "~/components/Tabs.jsx";
+import {Outlet} from '@remix-run/react';
+import CustomTabs from '~/components/Tabs.jsx';
 
 const Dashboard_index = () => {
   const tabData = [
     {
-      label: "Registry Detail",
-      value: "",
+      label: 'Registry Detail',
+      value: 1,
+      route: '',
     },
     {
-      label: "Registry Homepage",
-      value: "profile",
+      label: 'Profile',
+      value: 2,
+      route: 'profile',
     },
     {
-      label: "Add or Edit Gifts",
-      value: "addgifts",
+      label: 'Registry',
+      value: 3,
+      route: 'registry',
     },
     {
-      label: "Add Cash Funds",
-      value: "cashfunds",
+      label: 'Add or Edit Gifts',
+      value: 3,
+      route: 'addgifts',
     },
     {
-      label: "Gifts & Thank You Tracker",
-      value: "giftsthanks",
+      label: 'Add Cash Funds',
+      value: 4,
+      route: 'cashfunds',
     },
     {
-      label: "Ship My Gifts",
-      value: "shipgifts",
+      label: 'Gifts & Thank You Tracker',
+      value: 5,
+      route: 'giftsthanks',
     },
     {
-      label: "Contact My Advisor",
-      value: "contactadvisor",
-    }
+      label: 'Ship My Gifts',
+      value: 6,
+      route: 'shipgifts',
+    },
+    {
+      label: 'Contact My Advisor',
+      value: 7,
+      route: 'contactadvisor',
+    },
   ];
 
   return (
@@ -39,11 +51,14 @@ const Dashboard_index = () => {
       <div>
         <CustomTabs
           tabsData={tabData}
-          defaultActive="registry"
+          defaultActive={1}
           headerClassName="bg-gray-100 rounded-md"
         />
       </div>
-      <Outlet />
+      <div className={"p-4"}>
+        <Outlet />
+      </div>
+
     </div>
   );
 };

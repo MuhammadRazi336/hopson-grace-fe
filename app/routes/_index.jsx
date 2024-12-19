@@ -8,6 +8,10 @@ import ProductCard from "~/components/Product";
 import FundCard from "~/components/FundCard";
 import RegistryProduct from "~/components/RegistryProduct.jsx";
 import { products } from "~/data";
+import { requireAuth } from "~/utils/auth-guard.js";
+import { defer, redirect } from "@shopify/remix-oxygen";
+import { Outlet } from "@remix-run/react";
+
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
   // const { context, request } = args;
@@ -35,6 +39,59 @@ export async function loader(args) {
   return null;
 }
 
+const Dashboard_index = () => {
+  const tabData = [
+    {
+      label: "Registry Detail",
+      value: "home",
+      desc: <RegistryTab />
+    },
+    {
+      label: "Registry Homepage",
+      value: "profile",
+      desc: <RegistryProfile />
+    },
+    {
+      label: "Add or Edit Gifts",
+      value: "addgifts",
+      desc: <AddEditGift />
+    },
+    {
+      label: "Add Cash Funds",
+      value: "cashfunds",
+      desc: <h1>Add Cash Funds</h1>
+    },
+    {
+      label: "Gifts & Thank You Tracker",
+      value: "giftsthanks",
+      desc: <h1>Gifts & Thank You Tracker</h1>
+    },
+    {
+      label: "Ship My Gifts",
+      value: "shipgifts",
+      desc: <h1>Ship My Gifts</h1>
+    },
+    {
+      label: "Contact My Advisor",
+      value: "contactadvisor",
+      desc: <h1>Contact My Advisor</h1>
+    }
+  ];
+
+  return (
+    <div>
+      <div>
+        <CustomTabs
+          tabsData={tabData}
+          defaultActive={1}
+          headerClassName="bg-gray-100 rounded-md"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard_index;
 
 const RegistryTab = (props) => {
   const [selected, setSelected] = useState({
