@@ -7,18 +7,28 @@ import { defer } from "@shopify/remix-oxygen";
 import CategoryTile from "~/components/CategoryTile.jsx";
 
 export async function loader({ request, context }) {
-  const data = await loadCriticalData({ context });
-  return defer({ ...data });
+  const {products} = await loadCriticalData({ context });
+  const { collections } = await loadCollectionData({context})
+  return defer({ products , collections });
 }
 
 async function loadCriticalData({ context }) {
-  const [{ products, collections }] = await Promise.all([
+  const [{ products }] = await Promise.all([
     context.storefront.query(PRODUCT_QUERY),
-    context.storefront.query(COLLECTION_QUERY)
     // Add other queries here, so that they are loaded in parallel
   ]);
   return {
     products: products.edges
+  };
+}
+async function loadCollectionData({ context }) {
+  const [{  collections }] = await Promise.all([
+    context.storefront.query(COLLECTION_QUERY)
+    // Add other queries here, so that they are loaded in parallel
+  ]);
+  console.log(collections.nodes , "collection")
+  return {
+    collections: collections.nodes
   };
 }
 
@@ -32,19 +42,12 @@ const index = () => {
     label: "Wedding Registry",
     value: "wedding"
   });
-  const tiles = [
-    "Registry Essentials",
-    "Most Popular",
-    "For Coffee Lovers",
-    "New Arrivals",
-    "Build Your Bar",
-    "Outdoor Adventure"
-  ];
 
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const { products } = useLoaderData();
+  const { products,collections } = useLoaderData();
+  console.log(collections , "Collection")
   return (<div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
     <div className={"flex flex-row gap-4"}>
       <div className={"flex-1"}>
@@ -90,11 +93,11 @@ const index = () => {
 
       {/* Grid Layout */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {tiles.map((tile) => (
+        {collections.map((col) => (
           <CategoryTile
-            key={tile}
-            title={tile}
-            onClick={() => handleTileClick(tile)}
+            key={col.title}
+            title={col.title}
+            onClick={() => handleTileClick(col.title)}
           />
         ))}
       </div>
@@ -115,11 +118,11 @@ const index = () => {
 
       {/* Grid Layout */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        {tiles.map((tile) => (
+        {collections.map((col) => (
           <CategoryTile
-            key={tile}
-            title={tile}
-            onClick={() => handleTileClick(tile)}
+            key={col.title}
+            title={col.title}
+            onClick={() => handleTileClick(col.title)}
           />
         ))}
       </div>
