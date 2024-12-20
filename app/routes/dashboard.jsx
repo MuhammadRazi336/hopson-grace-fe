@@ -58,7 +58,6 @@ const Dashboard_index = () => {
       <div className={"p-4"}>
         <Outlet />
       </div>
-
     </div>
   );
 };

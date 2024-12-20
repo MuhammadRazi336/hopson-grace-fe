@@ -2,6 +2,25 @@ import CustomSelect from "~/components/CustomSelect.jsx";
 import ButtonComponent from "~/components/Button.jsx";
 import RegistryProduct from "~/components/RegistryProduct.jsx";
 import { useState } from "react";
+import { useLoaderData } from "@remix-run/react";
+import { defer } from "@shopify/remix-oxygen";
+import CategoryTile from "~/components/CategoryTile.jsx";
+
+export async function loader({ request, context }) {
+  const data = await loadCriticalData({ context });
+  return defer({ ...data });
+}
+
+async function loadCriticalData({ context }) {
+  const [{ products, collections }] = await Promise.all([
+    context.storefront.query(PRODUCT_QUERY),
+    context.storefront.query(COLLECTION_QUERY)
+    // Add other queries here, so that they are loaded in parallel
+  ]);
+  return {
+    products: products.edges
+  };
+}
 
 const index = () => {
   const options = [
@@ -13,13 +32,19 @@ const index = () => {
     label: "Wedding Registry",
     value: "wedding"
   });
-  const products = [
-  { image: "https://via.placeholder.com/150", productName: "Product One", price: 499.99, description: "Description for Product One" },
-  { image: "https://via.placeholder.com/150", productName: "Product Two", price: 299.99, description: "Description for Product Two" },
-  { image: "https://via.placeholder.com/150", productName: "Product Three", price: 199.99, description: "Description for Product Three" },
-  { image: "https://via.placeholder.com/150", productName: "Product Four", price: 99.99, description: "Description for Product Four" },
-];
+  const tiles = [
+    "Registry Essentials",
+    "Most Popular",
+    "For Coffee Lovers",
+    "New Arrivals",
+    "Build Your Bar",
+    "Outdoor Adventure"
+  ];
 
+  const handleTileClick = (title) => {
+    alert(`You clicked on ${title}`);
+  };
+  const { products } = useLoaderData();
   return (<div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
     <div className={"flex flex-row gap-4"}>
       <div className={"flex-1"}>
@@ -51,15 +76,97 @@ const index = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
       {products.map((product, index) => (<RegistryProduct
         key={index}
-        image={product.image}
-        productName={product.productName}
-        price={product.price}
-        description={product.description}
+        image={product.node.images.edges[0].node.src}
+        productName={product.node.title}
+        price={11}
+        description={product.node.description}
         onAddToRegistry={(quantity, isGroupGift) => console.log(`Added ${quantity} items to cart, Group Gift: ${isGroupGift}`)}
         onGroupGiftTagChange={(isGroupGift) => console.log(`Group Gift tag changed: ${isGroupGift}`)}
       />))}
+    </div>
+    <div className="pt-6 font-sans">
+      {/* Heading */}
+      <h2 className="text-2xl font-semibold mb-6">Browse Curated Collections</h2>
+
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {tiles.map((tile) => (
+          <CategoryTile
+            key={tile}
+            title={tile}
+            onClick={() => handleTileClick(tile)}
+          />
+        ))}
+      </div>
+
+      {/* See More Button */}
+      <div className="flex justify-center">
+        <button
+          className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
+          onClick={() => alert("See More clicked")}
+        >
+          See More
+        </button>
+      </div>
+    </div>
+    <div className="pt-6 font-sans">
+      {/* Heading */}
+      <h2 className="text-2xl font-semibold mb-6">Browse By Categories</h2>
+
+      {/* Grid Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {tiles.map((tile) => (
+          <CategoryTile
+            key={tile}
+            title={tile}
+            onClick={() => handleTileClick(tile)}
+          />
+        ))}
+      </div>
+
+      {/* See More Button */}
+      <div className="flex justify-center">
+        <button
+          className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
+          onClick={() => alert("See More clicked")}
+        >
+          See More
+        </button>
+      </div>
     </div>
   </div>);
 };
 
 export default index;
+
+const PRODUCT_QUERY = `#graphql
+      query {
+      products(first: 10) {
+        edges {
+          node {
+            description
+            id
+            title
+            images(first:10) {
+            edges {
+            node {
+            id
+            src
+            }
+            }
+            }
+          }
+        }
+      }
+    }`;
+
+const COLLECTION_QUERY = `#graphql
+query {
+collections(first: 10) {
+nodes {
+description
+title
+}
+}
+}
+`;
