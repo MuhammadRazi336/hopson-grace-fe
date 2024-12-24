@@ -13,10 +13,9 @@ import { defer, redirect } from "@shopify/remix-oxygen";
 import { Outlet } from "@remix-run/react";
 
 export async function loader(args) {
-  // Start fetching non-critical data without blocking time to first byte
-  // const { context, request } = args;
-  //
-  // // Await the critical data required to render initial state of the page
+  const { context, request } = args;
+
+  // Await the critical data required to render initial state of the page
   // const user = await requireAuth(context);
   // if (!user) {
   //   return redirect("/login");
@@ -34,9 +33,8 @@ export async function loader(args) {
   //     }
   //   });
   // } else {
-  //   return defer({ user });
+  //   return redirect("/dashboard");
   // }
-  return null;
 }
 
 const Dashboard_index = () => {
