@@ -6,6 +6,7 @@ import { useFetcher, useLoaderData } from "@remix-run/react";
 import { defer, redirect } from "@shopify/remix-oxygen";
 import CategoryTile from "~/components/CategoryTile.jsx";
 import { requireAuth } from "~/utils/auth-guard.js";
+import { extractShopifyId } from "~/utils/helpers.js";
 
 export async function loader({ request, context }) {
   const { products } = await loadCriticalData({ context });
@@ -18,12 +19,10 @@ export async function action({ request, context }) {
 
   const body = await request.json();
   const { payload } = body;
-  console.log(payload , "payload")
   try {
     const response = await context.ClientPost(payload, "registryProducts", context);
-    const data = response.data;
-    console.log(data, "Dataa ");
-    return defer({ data });
+    console.log(response, "Dataa ");
+    return defer({ response });
   } catch (e) {
     console.log(e, "ERROR");
     return defer({ e });
@@ -65,10 +64,8 @@ const index = () => {
     alert(`You clicked on ${title}`);
   };
   const { products, collections, user } = useLoaderData();
-  console.log(user, "User");
   const fetcher = useFetcher();
   const handleAddtoRegistry = ({ id, price, quantity }) => {
-    console.log(id , "Id")
     const payload = {
       shopifyProductId: id,
       shopifyProductAmount: price,
@@ -83,7 +80,6 @@ const index = () => {
       }
     );
   };
-  console.log(products , "products")
   return (<div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
     <div className={"flex flex-row gap-4"}>
       <div className={"flex-1"}>
@@ -120,7 +116,7 @@ const index = () => {
         price={11}
         description={product.node.description}
         onAddToRegistry={(quantity, isGroupGift) => handleAddtoRegistry({
-          id: product.node.id,
+          id: Number(extractShopifyId(product.node.id)),
           price: 11,
           quantity: quantity
         })}

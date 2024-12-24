@@ -18,8 +18,6 @@ export function createClient() {
 
     const request = await fetch(endPoint, options);
     const response = await request.json();
-    console.log(response.message , "Response")
-
     if (response?.message?.length && response?.message !== "Success") {
        throw Error(response?.message);
     }

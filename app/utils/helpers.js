@@ -35,3 +35,8 @@ function deferred() {
 
   return { resolve, reject, promise };
 }
+
+export function extractShopifyId(id) {
+  const match = id.match(/\d+/); // Matches the first sequence of digits
+  return match ? match[0] : null; // Returns the number or null if not found
+}
