@@ -1,20 +1,20 @@
-import CustomTabs from "~/components/Tabs.jsx";
-import CustomSelect from "~/components/CustomSelect";
-import { useState, useEffect } from "react";
-import Card from "~/components/Card.jsx";
-import Accordiance from "~/components/Accordiance.jsx";
-import ButtonComponent from "~/components/Button.jsx";
-import ProductCard from "~/components/Product";
-import FundCard from "~/components/FundCard";
-import RegistryProduct from "~/components/RegistryProduct.jsx";
-import { products } from "~/data";
-import { requireAuth } from "~/utils/auth-guard.js";
-import { defer, redirect } from "@shopify/remix-oxygen";
-import { Outlet } from "@remix-run/react";
+import CustomTabs from '~/components/Tabs.jsx';
+import CustomSelect from '~/components/CustomSelect';
+import {useState, useEffect} from 'react';
+import Card from '~/components/Card.jsx';
+import Accordiance from '~/components/Accordiance.jsx';
+import ButtonComponent from '~/components/Button.jsx';
+import ProductCard from '~/components/Product';
+import FundCard from '~/components/FundCard';
+import RegistryProduct from '~/components/RegistryProduct.jsx';
+import {products} from '~/data';
+import {requireAuth} from '~/utils/auth-guard.js';
+import {defer, redirect} from '@shopify/remix-oxygen';
+import {Outlet} from '@remix-run/react';
 
 export async function loader(args) {
-  const { context, request } = args;
-
+  const {context, request} = args;
+  return null;
   // Await the critical data required to render initial state of the page
   // const user = await requireAuth(context);
   // if (!user) {
@@ -40,40 +40,40 @@ export async function loader(args) {
 const Dashboard_index = () => {
   const tabData = [
     {
-      label: "Registry Detail",
-      value: "home",
-      desc: <RegistryTab />
+      label: 'Registry Detail',
+      value: 'home',
+      desc: <RegistryTab />,
     },
     {
-      label: "Registry Homepage",
-      value: "profile",
-      desc: <RegistryProfile />
+      label: 'Registry Homepage',
+      value: 'profile',
+      desc: <RegistryProfile />,
     },
     {
-      label: "Add or Edit Gifts",
-      value: "addgifts",
-      desc: <AddEditGift />
+      label: 'Add or Edit Gifts',
+      value: 'addgifts',
+      desc: <AddEditGift />,
     },
     {
-      label: "Add Cash Funds",
-      value: "cashfunds",
-      desc: <h1>Add Cash Funds</h1>
+      label: 'Add Cash Funds',
+      value: 'cashfunds',
+      desc: <h1>Add Cash Funds</h1>,
     },
     {
-      label: "Gifts & Thank You Tracker",
-      value: "giftsthanks",
-      desc: <h1>Gifts & Thank You Tracker</h1>
+      label: 'Gifts & Thank You Tracker',
+      value: 'giftsthanks',
+      desc: <h1>Gifts & Thank You Tracker</h1>,
     },
     {
-      label: "Ship My Gifts",
-      value: "shipgifts",
-      desc: <h1>Ship My Gifts</h1>
+      label: 'Ship My Gifts',
+      value: 'shipgifts',
+      desc: <h1>Ship My Gifts</h1>,
     },
     {
-      label: "Contact My Advisor",
-      value: "contactadvisor",
-      desc: <h1>Contact My Advisor</h1>
-    }
+      label: 'Contact My Advisor',
+      value: 'contactadvisor',
+      desc: <h1>Contact My Advisor</h1>,
+    },
   ];
 
   return (
@@ -93,19 +93,19 @@ export default Dashboard_index;
 
 const RegistryTab = (props) => {
   const [selected, setSelected] = useState({
-    label: "Wedding Registry",
-    value: "wedding"
+    label: 'Wedding Registry',
+    value: 'wedding',
   });
 
   const options = [
-    { label: "Wedding Registry", value: "wedding" },
-    { label: "Baby Registry", value: "baby" },
-    { label: "Birthday Registry", value: "birthday" }
+    {label: 'Wedding Registry', value: 'wedding'},
+    {label: 'Baby Registry', value: 'baby'},
+    {label: 'Birthday Registry', value: 'birthday'},
   ];
   const cardData = [
-    { value: "$100", label: "Gifts Available", selectable: true },
-    { value: "$52", label: "Gifts Purchased", selectable: false },
-    { value: "$22,102", label: "Registry Fund Balance", selectable: false }
+    {value: '$100', label: 'Gifts Available', selectable: true},
+    {value: '$52', label: 'Gifts Purchased', selectable: false},
+    {value: '$22,102', label: 'Registry Fund Balance', selectable: false},
   ];
 
   const [selectedCards, setSelectedCards] = useState([]);
@@ -137,8 +137,8 @@ const RegistryTab = (props) => {
                   key={index}
                   className={`${
                     index === cardData.length - 1 && cardData.length % 2 !== 0
-                      ? "col-span-full" // Make the last card take full width if odd
-                      : ""
+                      ? 'col-span-full' // Make the last card take full width if odd
+                      : ''
                   }`}
                 >
                   <Card
@@ -441,34 +441,34 @@ const FundPage = () => {
   const fundData = [
     {
       id: 1,
-      title: "Honeymoon Fund",
+      title: 'Honeymoon Fund',
       totalAmount: 4000,
-      collectedAmount: 100
+      collectedAmount: 100,
     },
     {
       id: 2,
-      title: "Home Down Payment",
+      title: 'Home Down Payment',
       totalAmount: 15000,
-      collectedAmount: 100
+      collectedAmount: 100,
     },
     {
       id: 3,
-      title: "Date Night Fund",
+      title: 'Date Night Fund',
       totalAmount: 100,
-      collectedAmount: 100
+      collectedAmount: 100,
     },
     {
       id: 4,
-      title: "Travel Fund",
+      title: 'Travel Fund',
       totalAmount: 5000,
-      collectedAmount: 2500
+      collectedAmount: 2500,
     },
     {
       id: 5,
-      title: "Education Fund",
+      title: 'Education Fund',
       totalAmount: 20000,
-      collectedAmount: 12000
-    }
+      collectedAmount: 12000,
+    },
   ];
 
   // Function to handle view contributors button click
@@ -493,58 +493,68 @@ const FundPage = () => {
 
 const AddEditGift = () => {
   const options = [
-    { label: "Wedding Registry", value: "wedding" },
-    { label: "Baby Registry", value: "baby" },
-    { label: "Birthday Registry", value: "birthday" }
+    {label: 'Wedding Registry', value: 'wedding'},
+    {label: 'Baby Registry', value: 'baby'},
+    {label: 'Birthday Registry', value: 'birthday'},
   ];
   const [selected, setSelected] = useState({
-    label: "Wedding Registry",
-    value: "wedding"
+    label: 'Wedding Registry',
+    value: 'wedding',
   });
   // const products = [
-//   { image: "https://via.placeholder.com/150", productName: "Product One", price: 499.99, description: "Description for Product One" },
-//   { image: "https://via.placeholder.com/150", productName: "Product Two", price: 299.99, description: "Description for Product Two" },
-//   { image: "https://via.placeholder.com/150", productName: "Product Three", price: 199.99, description: "Description for Product Three" },
-//   { image: "https://via.placeholder.com/150", productName: "Product Four", price: 99.99, description: "Description for Product Four" },
-// ];
-  return (<div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
-    <div className={"flex flex-row gap-4"}>
-      <div className={"flex-1"}>
-        <CustomSelect
-          options={options}
-          selected={selected}
-          setSelected={setSelected}
-        />
+  //   { image: "https://via.placeholder.com/150", productName: "Product One", price: 499.99, description: "Description for Product One" },
+  //   { image: "https://via.placeholder.com/150", productName: "Product Two", price: 299.99, description: "Description for Product Two" },
+  //   { image: "https://via.placeholder.com/150", productName: "Product Three", price: 199.99, description: "Description for Product Three" },
+  //   { image: "https://via.placeholder.com/150", productName: "Product Four", price: 99.99, description: "Description for Product Four" },
+  // ];
+  return (
+    <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
+      <div className={'flex flex-row gap-4'}>
+        <div className={'flex-1'}>
+          <CustomSelect
+            options={options}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        </div>
+        <div className={'flex-1'}>
+          <CustomSelect
+            options={options}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        </div>
+        <div className={'flex-1'}>
+          <CustomSelect
+            options={options}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        </div>
+        <div className={'flex-1'}>
+          <ButtonComponent className={'flex-1 w-full'} text={'Apply Filter'} />
+        </div>
       </div>
-      <div className={"flex-1"}>
-        <CustomSelect
-          options={options}
-          selected={selected}
-          setSelected={setSelected}
-        />
-      </div>
-      <div className={"flex-1"}>
-        <CustomSelect
-          options={options}
-          selected={selected}
-          setSelected={setSelected}
-        />
-      </div>
-      <div className={"flex-1"}>
-        <ButtonComponent className={"flex-1 w-full"} text={"Apply Filter"} />
-      </div>
-    </div>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-      {products.map((product, index) => (<RegistryProduct
-        key={index}
-        image={product.image}
-        productName={product.productName}
-        price={product.price}
-        description={product.description}
-        onAddToRegistry={(quantity, isGroupGift) => console.log(`Added ${quantity} items to cart, Group Gift: ${isGroupGift}`)}
-        onGroupGiftTagChange={(isGroupGift) => console.log(`Group Gift tag changed: ${isGroupGift}`)}
-      />))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+        {products.map((product, index) => (
+          <RegistryProduct
+            key={index}
+            image={product.image}
+            productName={product.productName}
+            price={product.price}
+            description={product.description}
+            onAddToRegistry={(quantity, isGroupGift) =>
+              console.log(
+                `Added ${quantity} items to cart, Group Gift: ${isGroupGift}`,
+              )
+            }
+            onGroupGiftTagChange={(isGroupGift) =>
+              console.log(`Group Gift tag changed: ${isGroupGift}`)
+            }
+          />
+        ))}
+      </div>
     </div>
-  </div>);
+  );
 };

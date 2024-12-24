@@ -1,25 +1,24 @@
-import CustomSelect from "~/components/CustomSelect.jsx";
-import Card from "~/components/Card.jsx";
-import Accordiance from "~/components/Accordiance.jsx";
-import ButtonComponent from "~/components/Button.jsx";
-import { useState } from "react";
+import CustomSelect from '~/components/CustomSelect.jsx';
+import Card from '~/components/Card.jsx';
+import Accordiance from '~/components/Accordiance.jsx';
+import ButtonComponent from '~/components/Button.jsx';
+import {useState} from 'react';
 
 const index = () => {
-
   const [selected, setSelected] = useState({
-    label: "Wedding Registry",
-    value: "wedding"
+    label: 'Wedding Registry',
+    value: 'wedding',
   });
 
   const options = [
-    { label: "Wedding Registry", value: "wedding" },
-    { label: "Baby Registry", value: "baby" },
-    { label: "Birthday Registry", value: "birthday" }
+    {label: 'Wedding Registry', value: 'wedding'},
+    {label: 'Baby Registry', value: 'baby'},
+    {label: 'Birthday Registry', value: 'birthday'},
   ];
   const cardData = [
-    { value: "$100", label: "Gifts Available", selectable: true },
-    { value: "$52", label: "Gifts Purchased", selectable: false },
-    { value: "$22,102", label: "Registry Fund Balance", selectable: false }
+    {value: '$100', label: 'Gifts Available', selectable: true},
+    {value: '$52', label: 'Gifts Purchased', selectable: false},
+    {value: '$22,102', label: 'Registry Fund Balance', selectable: false},
   ];
 
   const [selectedCards, setSelectedCards] = useState([]);
@@ -50,8 +49,8 @@ const index = () => {
                   key={index}
                   className={`${
                     index === cardData.length - 1 && cardData.length % 2 !== 0
-                      ? "col-span-full" // Make the last card take full width if odd
-                      : ""
+                      ? 'col-span-full' // Make the last card take full width if odd
+                      : ''
                   }`}
                 >
                   <Card

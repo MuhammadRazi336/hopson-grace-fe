@@ -1,5 +1,5 @@
-import { useNonce, getShopAnalytics, Analytics } from "@shopify/hydrogen";
-import { defer } from "@shopify/remix-oxygen";
+import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
+import {defer} from '@shopify/remix-oxygen';
 import {
   Links,
   Meta,
@@ -8,20 +8,20 @@ import {
   useRouteError,
   useRouteLoaderData,
   ScrollRestoration,
-  isRouteErrorResponse
-} from "@remix-run/react";
-import favicon from "~/assets/favicon.svg";
-import resetStyles from "~/styles/reset.css?url";
-import appStyles from "~/styles/app.css?url";
-import tailwindCss from "./styles/tailwind.css?url";
-import toastStyles from "react-toastify/dist/ReactToastify.css?url";
+  isRouteErrorResponse,
+} from '@remix-run/react';
+import favicon from '~/assets/favicon.svg';
+import resetStyles from '~/styles/reset.css?url';
+import appStyles from '~/styles/app.css?url';
+import tailwindCss from './styles/tailwind.css?url';
+import toastStyles from 'react-toastify/dist/ReactToastify.css?url';
 
-import { PageLayout } from "~/components/PageLayout";
-import { FOOTER_QUERY, HEADER_QUERY } from "~/lib/fragments";
-import { requireAuth } from "~/utils/auth-guard.js";
-import { getToast } from "remix-toast";
-import { ToastContainer, toast as notify } from "react-toastify";
-import { useEffect } from "react";
+import {PageLayout} from '~/components/PageLayout';
+import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import {requireAuth} from '~/utils/auth-guard.js';
+import {getToast} from 'remix-toast';
+import {ToastContainer, toast as notify} from 'react-toastify';
+import {useEffect} from 'react';
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -29,13 +29,13 @@ import { useEffect } from "react";
  */
 
 export const shouldRevalidate = ({
-                                   formMethod,
-                                   currentUrl,
-                                   nextUrl,
-                                   defaultShouldRevalidate
-                                 }) => {
+  formMethod,
+  currentUrl,
+  nextUrl,
+  defaultShouldRevalidate,
+}) => {
   // revalidate when a mutation is performed e.g add to cart, login...
-  if (formMethod && formMethod !== "GET") return true;
+  if (formMethod && formMethod !== 'GET') return true;
 
   // revalidate when manually revalidating via useRevalidator
   if (currentUrl.toString() === nextUrl.toString()) return true;
@@ -45,19 +45,19 @@ export const shouldRevalidate = ({
 
 export function links() {
   return [
-    { rel: "stylesheet", href: tailwindCss },
-    { rel: "stylesheet", href: toastStyles },
-    { rel: "stylesheet", href: resetStyles },
-    { rel: "stylesheet", href: appStyles },
+    {rel: 'stylesheet', href: tailwindCss},
+    {rel: 'stylesheet', href: toastStyles},
+    {rel: 'stylesheet', href: resetStyles},
+    {rel: 'stylesheet', href: appStyles},
     {
-      rel: "preconnect",
-      href: "https://cdn.shopify.com"
+      rel: 'preconnect',
+      href: 'https://cdn.shopify.com',
     },
     {
-      rel: "preconnect",
-      href: "https://shop.app"
+      rel: 'preconnect',
+      href: 'https://shop.app',
     },
-    { rel: "icon", type: "image/svg+xml", href: favicon }
+    {rel: 'icon', type: 'image/svg+xml', href: favicon},
   ];
 }
 
@@ -67,20 +67,20 @@ export function links() {
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-  const { context, request } = args;
+  const {context, request} = args;
   const token = await requireAuth(context);
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  const { storefront, env } = args.context;
-  const { toast, headers } = await getToast(request);
+  const {storefront, env} = args.context;
+  const {toast, headers} = await getToast(request);
   return defer({
     ...deferredData,
     ...criticalData,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
     shop: getShopAnalytics({
       storefront,
-      publicStorefrontId: env.PUBLIC_STOREFRONT_ID
+      publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
     }),
     consent: {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
@@ -88,11 +88,11 @@ export async function loader(args) {
       withPrivacyBanner: false,
       // localize the privacy banner
       country: args.context.storefront.i18n.country,
-      language: args.context.storefront.i18n.language
+      language: args.context.storefront.i18n.language,
     },
     token,
     toast,
-    headers
+    headers,
   });
 }
 
@@ -101,20 +101,20 @@ export async function loader(args) {
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  * @param {LoaderFunctionArgs}
  */
-async function loadCriticalData({ context }) {
-  const { storefront } = context;
+async function loadCriticalData({context}) {
+  const {storefront} = context;
 
   const [header] = await Promise.all([
     storefront.query(HEADER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
-        headerMenuHandle: "main-menu" // Adjust to your header menu handle
-      }
-    })
+        headerMenuHandle: 'main-menu', // Adjust to your header menu handle
+      },
+    }),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return { header };
+  return {header};
 }
 
 /**
@@ -123,16 +123,16 @@ async function loadCriticalData({ context }) {
  * Make sure to not throw any errors here, as it will cause the page to 500.
  * @param {LoaderFunctionArgs}
  */
-function loadDeferredData({ context }) {
-  const { storefront, customerAccount, cart } = context;
+function loadDeferredData({context}) {
+  const {storefront, customerAccount, cart} = context;
 
   // defer the footer query (below the fold)
   const footer = storefront
     .query(FOOTER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
-        footerMenuHandle: "footer" // Adjust to your footer menu handle
-      }
+        footerMenuHandle: 'footer', // Adjust to your footer menu handle
+      },
     })
     .catch((error) => {
       // Log query errors, but don't throw them so the page can still render
@@ -142,50 +142,48 @@ function loadDeferredData({ context }) {
   return {
     cart: cart.get(),
     isLoggedIn: customerAccount.isLoggedIn(),
-    footer
+    footer,
   };
 }
 
 /**
  * @param {{children?: React.ReactNode}}
  */
-export function Layout({ children }) {
+export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
-  const data = useRouteLoaderData("root");
-  const { toast } = data;
+  const data = useRouteLoaderData('root');
+  const {toast} = data;
   useEffect(() => {
     if (toast) {
       // notify on a toast message
-      notify(toast.message, { type: toast.type });
+      notify(toast.message, {type: toast.type});
     }
   }, [toast]);
   return (
     <html lang="en">
-    <head>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="width=device-width,initial-scale=1" />
-      <Meta />
-      <Links />
-    </head>
-    <body>
-    {data ? (
-      <Analytics.Provider
-        cart={data.cart}
-        shop={data.shop}
-        consent={data.consent}
-      >
-        <PageLayout {...data}>{children}</PageLayout>
-      </Analytics.Provider>
-    ) : (
-      children
-    )}
-    <ToastContainer
-      position="bottom-center"
-    />
-    <ScrollRestoration nonce={nonce} />
-    <Scripts nonce={nonce} />
-    </body>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        {data ? (
+          <Analytics.Provider
+            cart={data.cart}
+            shop={data.shop}
+            consent={data.consent}
+          >
+            <PageLayout {...data}>{children}</PageLayout>
+          </Analytics.Provider>
+        ) : (
+          children
+        )}
+        <ToastContainer position="bottom-center" />
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
+      </body>
     </html>
   );
 }
@@ -196,7 +194,7 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  let errorMessage = "Unknown error";
+  let errorMessage = 'Unknown error';
   let errorStatus = 500;
 
   if (isRouteErrorResponse(error)) {
