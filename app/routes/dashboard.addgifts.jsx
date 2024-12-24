@@ -2,31 +2,49 @@ import CustomSelect from "~/components/CustomSelect.jsx";
 import ButtonComponent from "~/components/Button.jsx";
 import RegistryProduct from "~/components/RegistryProduct.jsx";
 import { useState } from "react";
-import { useLoaderData } from "@remix-run/react";
-import { defer } from "@shopify/remix-oxygen";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { defer, redirect } from "@shopify/remix-oxygen";
 import CategoryTile from "~/components/CategoryTile.jsx";
+import { requireAuth } from "~/utils/auth-guard.js";
 
 export async function loader({ request, context }) {
-  const {products} = await loadCriticalData({ context });
-  const { collections } = await loadCollectionData({context})
-  return defer({ products , collections });
+  const { products } = await loadCriticalData({ context });
+  const { collections } = await loadCollectionData({ context });
+  const user = await requireAuth(context);
+  return defer({ products, collections, user });
+}
+
+export async function action({ request, context }) {
+
+  const body = await request.json();
+  const { payload } = body;
+  console.log(payload , "payload")
+  try {
+    const response = await context.ClientPost(payload, "registryProducts", context);
+    const data = response.data;
+    console.log(data, "Dataa ");
+    return defer({ data });
+  } catch (e) {
+    console.log(e, "ERROR");
+    return defer({ e });
+  }
 }
 
 async function loadCriticalData({ context }) {
   const [{ products }] = await Promise.all([
-    context.storefront.query(PRODUCT_QUERY),
+    context.storefront.query(PRODUCT_QUERY)
     // Add other queries here, so that they are loaded in parallel
   ]);
   return {
     products: products.edges
   };
 }
+
 async function loadCollectionData({ context }) {
-  const [{  collections }] = await Promise.all([
+  const [{ collections }] = await Promise.all([
     context.storefront.query(COLLECTION_QUERY)
     // Add other queries here, so that they are loaded in parallel
   ]);
-  console.log(collections.nodes , "collection")
   return {
     collections: collections.nodes
   };
@@ -46,8 +64,26 @@ const index = () => {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const { products,collections } = useLoaderData();
-  console.log(collections , "Collection")
+  const { products, collections, user } = useLoaderData();
+  console.log(user, "User");
+  const fetcher = useFetcher();
+  const handleAddtoRegistry = ({ id, price, quantity }) => {
+    console.log(id , "Id")
+    const payload = {
+      shopifyProductId: id,
+      shopifyProductAmount: price,
+      registryId: Number(user.registry.id),
+      quantity
+    };
+    fetcher.submit(
+      { payload }, // Send data as key-value pairs
+      {
+        method: "post",
+        encType: "application/json"
+      }
+    );
+  };
+  console.log(products , "products")
   return (<div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
     <div className={"flex flex-row gap-4"}>
       <div className={"flex-1"}>
@@ -83,7 +119,11 @@ const index = () => {
         productName={product.node.title}
         price={11}
         description={product.node.description}
-        onAddToRegistry={(quantity, isGroupGift) => console.log(`Added ${quantity} items to cart, Group Gift: ${isGroupGift}`)}
+        onAddToRegistry={(quantity, isGroupGift) => handleAddtoRegistry({
+          id: product.node.id,
+          price: 11,
+          quantity: quantity
+        })}
         onGroupGiftTagChange={(isGroupGift) => console.log(`Group Gift tag changed: ${isGroupGift}`)}
       />))}
     </div>
@@ -167,9 +207,9 @@ const COLLECTION_QUERY = `#graphql
 query {
 collections(first: 10) {
 nodes {
-description
-title
-}
-}
-}
+        description
+        title
+      }
+    }
+  }
 `;

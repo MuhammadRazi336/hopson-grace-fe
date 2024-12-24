@@ -24,10 +24,8 @@ export async function action({ request, context }) {
       success: "User Sign in successfully!",
       error: "Failed to Sign in user."
     });
-    console.log(response , "Response")
     const user = response.data;
     context.session.set("@User", user);
-    console.log(user , "SSS")
     const cookie = await context.session.commit();
     return redirect("/", {
       headers: {
@@ -35,7 +33,6 @@ export async function action({ request, context }) {
       }
     });
   } catch (e) {
-    console.log(e, "E");
     return null;
   }
 }
