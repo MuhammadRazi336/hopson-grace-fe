@@ -8,7 +8,8 @@ import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
 
-export async function loader({request, context}) {
+export async function loader({request, context,params}) {
+  console.log(params.handle , "Params")
   const {collections} = await loadCollectionData({context});
   const user = await requireAuth(context);
   return defer({collections, user});
@@ -40,7 +41,7 @@ async function loadCollectionData({context}) {
   };
 }
 
-const index = () => {
+const GiftDetail = () => {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
@@ -49,12 +50,12 @@ const index = () => {
   return (
     <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-        product details
+        product detailsasdada
       </div>
       <div className="pt-6 font-sans">
         {/* Heading */}
         <h2 className="text-2xl font-semibold mb-6">
-          Browse Curated Collections
+          Browse Curated Collectionssada
         </h2>
         {/* Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -105,7 +106,7 @@ const index = () => {
   );
 };
 
-export default index;
+export default GiftDetail;
 
 const COLLECTION_QUERY = `#graphql
 query {

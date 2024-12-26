@@ -7,6 +7,7 @@ import {defer, redirect} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
+import AddGift from './dashboard.giftdetail';
 
 export async function loader({request, context}) {
   const {products} = await loadCriticalData({context});
@@ -51,7 +52,7 @@ async function loadCollectionData({context}) {
   };
 }
 
-const index = () => {
+export default function AddGifts() {
   const options = [
     {label: 'Wedding Registry', value: 'wedding'},
     {label: 'Baby Registry', value: 'baby'},
@@ -189,7 +190,6 @@ const index = () => {
   );
 };
 
-export default index;
 
 const PRODUCT_QUERY = `#graphql
       query {
