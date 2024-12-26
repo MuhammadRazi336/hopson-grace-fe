@@ -37,15 +37,15 @@ const GiftDetail = ({
             <div
               key={index}
               onClick={() => setSelectedImage(image)}
-              className={`cursor-pointer w-16 h-16 rounded-md flex items-center justify-center ${
-                selectedImage === image ? 'border-2 border-black' : ''
+              className={`cursor-pointer w-28 h-28 rounded-md flex items-center justify-center ${
+                selectedImage === image ? "border-2 border-black" : ""
               }`}
             >
               <img
                 src={image}
                 alt={`Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover rounded-md"
-              />
+                className="w-12 h-12 object-cover rounded-md"
+                />
             </div>
           ))}
         </div>
