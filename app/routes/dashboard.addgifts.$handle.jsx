@@ -2,17 +2,16 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import {useState} from 'react';
-import {useFetcher, useLoaderData, Link} from '@remix-run/react';
+import {useFetcher, useLoaderData} from '@remix-run/react';
 import {defer, redirect} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
 
 export async function loader({request, context}) {
-  const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const user = await requireAuth(context);
-  return defer({products, collections, user});
+  return defer({collections, user});
 }
 
 export async function action({request, context}) {
@@ -31,16 +30,6 @@ export async function action({request, context}) {
   }
 }
 
-async function loadCriticalData({context}) {
-  const [{products}] = await Promise.all([
-    context.storefront.query(PRODUCT_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-  return {
-    products: products.edges,
-  };
-}
-
 async function loadCollectionData({context}) {
   const [{collections}] = await Promise.all([
     context.storefront.query(COLLECTION_QUERY),
@@ -52,93 +41,21 @@ async function loadCollectionData({context}) {
 }
 
 const index = () => {
-  const options = [
-    {label: 'Wedding Registry', value: 'wedding'},
-    {label: 'Baby Registry', value: 'baby'},
-    {label: 'Birthday Registry', value: 'birthday'},
-  ];
-  const [selected, setSelected] = useState({
-    label: 'Wedding Registry',
-    value: 'wedding',
-  });
-
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const {products, collections, user} = useLoaderData();
-  const fetcher = useFetcher();
-  const handleAddtoRegistry = ({id, price, quantity}) => {
-    const payload = {
-      shopifyProductId: id,
-      shopifyProductAmount: price,
-      registryId: Number(user.registry.id),
-      quantity,
-    };
-    fetcher.submit(
-      {payload}, // Send data as key-value pairs
-      {
-        method: 'post',
-        encType: 'application/json',
-      },
-    );
-  };
+  const {collections} = useLoaderData();
+
   return (
     <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
-      <div className={'flex flex-row gap-4'}>
-        <div className={'flex-1'}>
-          <CustomSelect
-            options={options}
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </div>
-        <div className={'flex-1'}>
-          <CustomSelect
-            options={options}
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </div>
-        <div className={'flex-1'}>
-          <CustomSelect
-            options={options}
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </div>
-        <div className={'flex-1'}>
-          <ButtonComponent className={'flex-1 w-full'} text={'Apply Filter'} />
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-        {products.map((product, index) => (
-          <Link key={index} to={`${extractShopifyId(product.node.id)}`}>
-            <RegistryProduct
-              image={product.node.images.edges[0].node.src}
-              productName={product.node.title}
-              price={11}
-              description={product.node.description}
-              onAddToRegistry={(quantity, isGroupGift) =>
-                handleAddtoRegistry({
-                  id: Number(extractShopifyId(product.node.id)),
-                  price: 11,
-                  quantity,
-                })
-              }
-              onGroupGiftTagChange={(isGroupGift) =>
-                console.log(`Group Gift tag changed: ${isGroupGift}`)
-              }
-            />
-          </Link>
-        ))}
+        product details
       </div>
       <div className="pt-6 font-sans">
         {/* Heading */}
         <h2 className="text-2xl font-semibold mb-6">
           Browse Curated Collections
         </h2>
-
         {/* Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {collections.map((col) => (
@@ -163,7 +80,6 @@ const index = () => {
       <div className="pt-6 font-sans">
         {/* Heading */}
         <h2 className="text-2xl font-semibold mb-6">Browse By Categories</h2>
-
         {/* Grid Layout */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {collections.map((col) => (
@@ -190,27 +106,6 @@ const index = () => {
 };
 
 export default index;
-
-const PRODUCT_QUERY = `#graphql
-      query {
-      products(first: 10) {
-        edges {
-          node {
-            description
-            id
-            title
-            images(first:10) {
-            edges {
-            node {
-            id
-            src
-            }
-            }
-            }
-          }
-        }
-      }
-    }`;
 
 const COLLECTION_QUERY = `#graphql
 query {
