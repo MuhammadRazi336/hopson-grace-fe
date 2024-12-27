@@ -12,8 +12,8 @@ export async function loader(args) {
   const {request, context} = args;
   const {collections} = await loadCollectionData({context});
   const {product} = await loadProductData(args);
-
-  return defer({collections, product});
+  const user = await requireAuth(context);
+  return defer({collections, product, user});
 }
 
 export async function action({request, context}) {
@@ -25,6 +25,7 @@ export async function action({request, context}) {
       'registryProducts',
       context,
     );
+    console.log(response , "Response")
     return defer({response});
   } catch (e) {
     console.log(e, 'ERROR');
@@ -59,18 +60,41 @@ async function loadProductData({context, params, request}) {
 }
 
 const GiftDetailHandle = () => {
+  const fetcher = useFetcher();
+  const {collections, product, user} = useLoaderData();
+
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const {collections,product} = useLoaderData();
-  console.log(product , "Product")
+  const handleAddtoRegistry = ({id, price, quantity}) => {
+    const payload = {
+      shopifyProductId: id,
+      shopifyProductAmount: price,
+      registryId: Number(user.registry.id),
+      quantity,
+    };
+    fetcher.submit(
+      {payload}, // Send data as key-value pairs
+      {
+        method: 'post',
+        encType: 'application/json',
+      },
+    );
+  };
   return (
     <div>
       <GiftDetail
         productTitle={product.title}
-        productPrice={11}
+        productPrice={product.variants.edges[0].node.price}
         productDescription={product.description}
-        productImages={[1, 2, 3]}
+        productImages={product.images.edges}
+        onRegistryPress={({quantity}) => {
+          handleAddtoRegistry({
+            id: Number(extractShopifyId(product.id)),
+            price: product.variants.edges[0].node.price.amount,
+            quantity,
+          });
+        }}
       />
       <div className="max-w-6xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
         <div className="pt-6 font-sans">
@@ -137,16 +161,55 @@ query getProductByHandle($handle: String!) {
     title
     descriptionHtml
     description
+    images(first:10) {
+            edges {
+            node {
+            id
+            src
+            }
+            }
+            }
     variants(first: 10) {
       edges {
         node {
           id
           title
+           price {
+      amount
+      currencyCode
+    }
         }
       }
     }
   }
 }`;
+// const PRODUCT_QUERY = `graphql
+// query getProductByIdentifier($value: String!) {
+//   products(first: 10, query: $value) {
+//     edges {
+//       node {
+//         id
+//         title
+//          descriptionHtml
+//     description
+//     images(first:10) {
+//             edges {
+//             node {
+//             id
+//             src
+//             }
+//             }
+//             }
+//         variants(first: 10){
+//           nodes{
+//             price
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// `;
 const COLLECTION_QUERY = `#graphql
 query {
 collections(first: 10) {
