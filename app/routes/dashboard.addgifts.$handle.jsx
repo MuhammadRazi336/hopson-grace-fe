@@ -7,12 +7,13 @@ import {defer, redirect} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
-
-export async function loader({request, context,params}) {
-  console.log(params.handle , "Params")
+import GiftDetail from '~/components/GiftDetail';
+export async function loader(args) {
+  const {request, context} = args;
   const {collections} = await loadCollectionData({context});
-  const user = await requireAuth(context);
-  return defer({collections, user});
+  const {product} = await loadProductData(args);
+
+  return defer({collections, product});
 }
 
 export async function action({request, context}) {
@@ -40,73 +41,112 @@ async function loadCollectionData({context}) {
     collections: collections.nodes,
   };
 }
+async function loadProductData({context, params, request}) {
+  const {handle} = params;
+  const {storefront} = context;
 
-export default function GiftDetails() {
+  if (!handle) {
+    throw new Error('Expected product handle to be defined');
+  }
+  const [{productByHandle}] = await Promise.all([
+    storefront.query(PRODUCT_QUERY, {
+      variables: {handle},
+    }),
+  ]);
+  return {
+    product: productByHandle,
+  };
+}
+
+const GiftDetailHandle = () => {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const {collections} = useLoaderData();
-
+  const {collections,product} = useLoaderData();
+  console.log(product , "Product")
   return (
-    <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-        product detailsasdada
-      </div>
-      <div className="pt-6 font-sans">
-        {/* Heading */}
-        <h2 className="text-2xl font-semibold mb-6">
-          Browse Curated Collectionssada
-        </h2>
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {collections.map((col) => (
-            <CategoryTile
-              key={col.title}
-              title={col.title}
-              onClick={() => handleTileClick(col.title)}
-            />
-          ))}
-        </div>
+    <div>
+      <GiftDetail
+        productTitle={product.title}
+        productPrice={11}
+        productDescription={product.description}
+        productImages={[1, 2, 3]}
+      />
+      <div className="max-w-6xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
+        <div className="pt-6 font-sans">
+          {/* Heading */}
+          <h2 className="text-2xl font-semibold mb-6">
+            Browse Curated Collectionssada
+          </h2>
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            {collections.map((col) => (
+              <CategoryTile
+                key={col.title}
+                title={col.title}
+                onClick={() => handleTileClick(col.title)}
+              />
+            ))}
+          </div>
 
-        {/* See More Button */}
-        <div className="flex justify-center">
-          <button
-            className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
-            onClick={() => alert('See More clicked')}
-          >
-            See More
-          </button>
+          {/* See More Button */}
+          <div className="flex justify-center">
+            <button
+              className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
+              onClick={() => alert('See More clicked')}
+            >
+              See More
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="pt-6 font-sans">
-        {/* Heading */}
-        <h2 className="text-2xl font-semibold mb-6">Browse By Categories</h2>
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {collections.map((col) => (
-            <CategoryTile
-              key={col.title}
-              title={col.title}
-              onClick={() => handleTileClick(col.title)}
-            />
-          ))}
-        </div>
+        <div className="pt-6 font-sans">
+          {/* Heading */}
+          <h2 className="text-2xl font-semibold mb-6">Browse By Categories</h2>
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            {collections.map((col) => (
+              <CategoryTile
+                key={col.title}
+                title={col.title}
+                onClick={() => handleTileClick(col.title)}
+              />
+            ))}
+          </div>
 
-        {/* See More Button */}
-        <div className="flex justify-center">
-          <button
-            className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
-            onClick={() => alert('See More clicked')}
-          >
-            See More
-          </button>
+          {/* See More Button */}
+          <div className="flex justify-center">
+            <button
+              className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
+              onClick={() => alert('See More clicked')}
+            >
+              See More
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
+export default GiftDetailHandle;
 
+const PRODUCT_QUERY = `#graphql
+query getProductByHandle($handle: String!) {
+  productByHandle(handle: $handle) {
+    id
+    title
+    descriptionHtml
+    description
+    variants(first: 10) {
+      edges {
+        node {
+          id
+          title
+        }
+      }
+    }
+  }
+}`;
 const COLLECTION_QUERY = `#graphql
 query {
 collections(first: 10) {

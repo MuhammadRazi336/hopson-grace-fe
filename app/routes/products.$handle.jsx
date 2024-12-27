@@ -39,7 +39,7 @@ export async function loader(args) {
 async function loadCriticalData({context, params, request}) {
   const {handle} = params;
   const {storefront} = context;
-
+  console.log(handle, 'handle');
   if (!handle) {
     throw new Error('Expected product handle to be defined');
   }
