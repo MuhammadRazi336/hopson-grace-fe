@@ -114,7 +114,7 @@ export default function AddGifts() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
         {products.map((product, index) => (
-          <Link key={index} to={`${extractShopifyId(product.node.id)}`}>
+          <Link key={index} to={`/dashboard/addgifts/${extractShopifyId(product.node.id)}`}>
             <RegistryProduct
               image={product.node.images.edges[0].node.src}
               productName={product.node.title}

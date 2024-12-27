@@ -41,7 +41,7 @@ async function loadCollectionData({context}) {
   };
 }
 
-const GiftDetail = () => {
+export default function GiftDetails() {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
@@ -106,7 +106,6 @@ const GiftDetail = () => {
   );
 };
 
-export default GiftDetail;
 
 const COLLECTION_QUERY = `#graphql
 query {
