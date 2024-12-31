@@ -1,13 +1,14 @@
-import React from "react";
+import {Money} from '@shopify/hydrogen';
+import React from 'react';
 
 const ProductCard = ({
-                       productName,
-                       productImage,
-                       price,
-                       collected,
-                       isGroupGift,
-                       onContributorsClick,
-                     }) => {
+  productName,
+  productImage,
+  price,
+  collected,
+  isGroupGift,
+  onContributorsClick,
+}) => {
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
       <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
@@ -21,7 +22,9 @@ const ProductCard = ({
       {/* Product Info */}
       <div className="mt-4">
         <h2 className="text-lg font-bold">{productName}</h2>
-        <p className="text-gray-600">${price}</p>
+        {/* <p className="text-gray-600">${price}</p> */}
+        <Money className="text-gray-600" data={price} />
+
         <p className="text-gray-600">${collected} Collected</p>
         {isGroupGift && (
           <p className="text-gray-800 font-semibold mt-2">Group Gift</p>
