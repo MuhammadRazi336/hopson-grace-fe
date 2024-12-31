@@ -67,13 +67,13 @@ export default function AddGifts() {
     alert(`You clicked on ${title}`);
   };
   const {products, collections, user} = useLoaderData();
-  console.log(products, 'PRoducts');
   const fetcher = useFetcher();
   const handleAddtoRegistry = ({id, price, quantity}) => {
     const payload = {
       shopifyProductId: id,
       shopifyProductAmount: price,
       registryId: Number(user.registry.id),
+      productTypeId: 1,
       quantity,
     };
     fetcher.submit(
@@ -115,10 +115,7 @@ export default function AddGifts() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
         {products.map((product, index) => (
-          <Link
-            key={index}
-            to={`/dashboard/addgifts/${product.node.handle}`}
-          >
+          <Link key={index} to={`/dashboard/addgifts/${product.node.handle}`}>
             <RegistryProduct
               image={product.node.images.edges[0].node.src}
               productName={product.node.title}

@@ -19,13 +19,14 @@ export async function loader(args) {
 export async function action({request, context}) {
   const body = await request.json();
   const {payload} = body;
+  console.log(payload, 'payload');
   try {
     const response = await context.ClientPost(
       payload,
       'registryProducts',
       context,
     );
-    console.log(response , "Response")
+    console.log(response, 'Response');
     return defer({response});
   } catch (e) {
     console.log(e, 'ERROR');
@@ -69,8 +70,9 @@ const GiftDetailHandle = () => {
   const handleAddtoRegistry = ({id, price, quantity}) => {
     const payload = {
       shopifyProductId: id,
-      shopifyProductAmount: price,
+      shopifyProductAmount: Number(price),
       registryId: Number(user.registry.id),
+      "productTypeId": 1,
       quantity,
     };
     fetcher.submit(
