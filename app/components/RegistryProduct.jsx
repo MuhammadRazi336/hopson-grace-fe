@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 
 const ProductCard = ({
-                       image,
-                       productName,
-                       price,
-                       description,
-                       onAddToRegistry,
-                       onGroupGiftTagChange
-                     }) => {
+  image,
+  productName,
+  price,
+  description,
+  onAddToRegistry,
+  onGroupGiftTagChange,
+}) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
 

@@ -1,10 +1,10 @@
-import { useHydrated } from "~/utils/helpers.js";
+import {useHydrated} from '~/utils/helpers.js';
 import Onboarding from '~/.client/Onboarding.jsx';
-import { requireAuth } from "~/utils/auth-guard.js";
+import {requireAuth} from '~/utils/auth-guard.js';
 
-export async function loader({ request, context }) {
+export async function loader({request, context}) {
   const user = await requireAuth(context);
-  return { user, context };
+  return {user, context};
 }
 
 const OnboardingIndex = () => {

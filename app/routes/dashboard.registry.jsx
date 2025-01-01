@@ -1,7 +1,7 @@
-import Accordiance from "~/components/Accordiance.jsx";
-import { products } from "~/data/index.jsx";
-import ProductCard from "~/components/Product.jsx";
-import FundCard from "~/components/FundCard.jsx";
+import Accordiance from '~/components/Accordiance.jsx';
+import {products} from '~/data/index.jsx';
+import ProductCard from '~/components/Product.jsx';
+import FundCard from '~/components/FundCard.jsx';
 
 const index = () => {
   return (
@@ -77,34 +77,34 @@ const FundPage = () => {
   const fundData = [
     {
       id: 1,
-      title: "Honeymoon Fund",
+      title: 'Honeymoon Fund',
       totalAmount: 4000,
-      collectedAmount: 100
+      collectedAmount: 100,
     },
     {
       id: 2,
-      title: "Home Down Payment",
+      title: 'Home Down Payment',
       totalAmount: 15000,
-      collectedAmount: 100
+      collectedAmount: 100,
     },
     {
       id: 3,
-      title: "Date Night Fund",
+      title: 'Date Night Fund',
       totalAmount: 100,
-      collectedAmount: 100
+      collectedAmount: 100,
     },
     {
       id: 4,
-      title: "Travel Fund",
+      title: 'Travel Fund',
       totalAmount: 5000,
-      collectedAmount: 2500
+      collectedAmount: 2500,
     },
     {
       id: 5,
-      title: "Education Fund",
+      title: 'Education Fund',
       totalAmount: 20000,
-      collectedAmount: 12000
-    }
+      collectedAmount: 12000,
+    },
   ];
 
   // Function to handle view contributors button click

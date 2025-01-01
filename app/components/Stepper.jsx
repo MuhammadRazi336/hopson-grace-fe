@@ -1,4 +1,4 @@
-export default function Stepper({ step, totalSteps }) {
+export default function Stepper({step, totalSteps}) {
   return (
     <div className="flex justify-between mb-4">
       {[...Array(totalSteps)].map((_, index) => (
