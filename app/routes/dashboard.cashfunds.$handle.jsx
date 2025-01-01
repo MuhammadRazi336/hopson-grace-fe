@@ -1,5 +1,30 @@
 import React, {useState} from 'react';
+import {useFetcher, useLoaderData} from '@remix-run/react';
+import {requireAuth} from '~/utils/auth-guard';
+import {defer, redirect} from '@shopify/remix-oxygen';
 
+export async function loader({request, context}) {
+  const user = await requireAuth(context);
+  return defer({user});
+}
+
+export async function action({request, context}) {
+  const body = await request.json();
+  const {payload} = body;
+  console.log(payload, 'payload');
+  try {
+    const response = await context.ClientPost(
+      payload,
+      'registryProducts/cash-fund',
+      context,
+    );
+    console.log(response, 'Response of cashfund');
+    return defer({response});
+  } catch (e) {
+    console.log(e, 'ERROR');
+    return defer({e});
+  }
+}
 function NewCashFund() {
   const [photo, setPhoto] = useState(null);
   const [cashFundName, setCashFundName] = useState('');
@@ -9,7 +34,8 @@ function NewCashFund() {
   const [hideFromGuests, setHideFromGuests] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [noteToFamily, setNoteToFamily] = useState('');
-
+  const fetcher = useFetcher();
+  const {user} = useLoaderData();
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -24,18 +50,22 @@ function NewCashFund() {
     }
 
     // Handle form submission (e.g., send data to a server)
-    const formData = {
-      photo,
-      cashFundName,
-      allowAnyAmount,
-      allowFixedAmount,
-      totalGoal,
-      hideFromGuests,
-      noteToFamily,
+    const payload = {
+      name: cashFundName,
+      isAnyAmount: allowAnyAmount,
+      isFixedAmount: allowFixedAmount,
+      amount: Number(totalGoal),
+      isAmountHide: hideFromGuests,
+      note: noteToFamily,
+      registryId: Number(user.registry.id),
     };
-
-    console.log('Form Submitted', formData);
-    alert('Cash fund successfully added!');
+    fetcher.submit(
+      {payload}, // Send data as key-value pairs
+      {
+        method: 'post',
+        encType: 'application/json',
+      },
+    );
   };
 
   return (
