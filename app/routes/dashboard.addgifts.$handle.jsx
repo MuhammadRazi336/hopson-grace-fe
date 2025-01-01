@@ -72,7 +72,7 @@ const GiftDetailHandle = () => {
       shopifyProductId: id,
       shopifyProductAmount: Number(price),
       registryId: Number(user.registry.id),
-      "productTypeId": 1,
+      productTypeId: 1,
       quantity,
     };
     fetcher.submit(

@@ -1,18 +1,17 @@
-import { useRef } from "react";
-import Heading from "~/components/Heading.jsx";
-import Input from "~/components/Input.jsx";
-import Stepper from "~/components/Stepper.jsx";
-import Button from "~/components/Button.jsx";
-
+import {useRef} from 'react';
+import Heading from '~/components/Heading.jsx';
+import Input from '~/components/Input.jsx';
+import Stepper from '~/components/Stepper.jsx';
+import Button from '~/components/Button.jsx';
 
 const Signup = () => {
   const formDataRef = useRef({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    confirmEmail: ""
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    confirmEmail: '',
   });
   const handleSignup = async () => {
     const signupPayload = {
@@ -24,13 +23,10 @@ const Signup = () => {
       confirmEmail: formDataRef.current.confirmEmail,
     };
     try {
-
-    } catch (e) {
-
-    }
+    } catch (e) {}
   };
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     // Directly modifying the ref object to store new value
     formDataRef.current[name] = value;
   };
@@ -118,7 +114,7 @@ const Signup = () => {
         {/* Back and Next buttons */}
         <div className="flex justify-end mt-4">
           {/*<Button text="Back" onClick={goBack} disabled={step === 1} />*/}
-          <Button text={"Next"} />
+          <Button text={'Next'} />
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import {useEffect, useState, useRef} from 'react';
 
 export const useHydrated = () => {
   const [hydrated, setHydrated] = useState(false);
@@ -13,13 +13,17 @@ export const useHydrated = () => {
 export const useToastSubmitPromise = (initialState) => {
   const promisefy = useRef(deferred());
   useEffect(() => {
-    if (initialState.state === "idle" && initialState.data && initialState.data.success) {
+    if (
+      initialState.state === 'idle' &&
+      initialState.data &&
+      initialState.data.success
+    ) {
       promisefy.current.resolve();
       promisefy.current = deferred(); // reset promise state for pending.
     }
 
-    if (initialState.data && !initialState.data.success) promisefy.current.reject();
-
+    if (initialState.data && !initialState.data.success)
+      promisefy.current.reject();
   }, [initialState.state, initialState.data]);
 
   return promisefy.current.promise;
@@ -33,7 +37,7 @@ function deferred() {
     reject = rej;
   });
 
-  return { resolve, reject, promise };
+  return {resolve, reject, promise};
 }
 
 export function extractShopifyId(id) {

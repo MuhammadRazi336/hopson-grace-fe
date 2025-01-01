@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 
-const Card = ({ value, label, selectable = false, onCardSelect }) => {
+const Card = ({value, label, selectable = false, onCardSelect}) => {
   const [isSelected, setIsSelected] = useState(false);
 
   const handleSelect = () => {
@@ -14,8 +14,8 @@ const Card = ({ value, label, selectable = false, onCardSelect }) => {
   return (
     <div
       className={`w-64 h-28 bg-gray-100 border rounded-lg flex flex-col justify-center items-center p-4 
-        ${selectable ? "cursor-pointer" : "cursor-default"} 
-        ${isSelected ? "border-indigo-500 border-2" : "border-gray-300"}
+        ${selectable ? 'cursor-pointer' : 'cursor-default'} 
+        ${isSelected ? 'border-indigo-500 border-2' : 'border-gray-300'}
       `}
       onClick={handleSelect}
     >
