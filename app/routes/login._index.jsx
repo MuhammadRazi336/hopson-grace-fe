@@ -18,12 +18,7 @@ export async function action({request, context}) {
   const body = await request.json();
   const {payload} = body;
   try {
-    const response = await context.ClientPost(payload, 'auth/login', context, {
-      pending: 'Loading...',
-      success: 'User Sign in successfully!',
-      error: 'Failed to Sign in user.',
-    });
-    console.log(response, 'Response');
+    const response = await context.ClientPost(payload, 'auth/login', context);
     const user = response.data;
     context.session.set('@User', user);
     const cookie = await context.session.commit();
@@ -40,7 +35,7 @@ export async function action({request, context}) {
 const LoginIndex = () => {
   const fetcher = useFetcher();
   const formData = useState({
-    email: 'subhan@mailinator.com',
+    email: '',
     password: '',
   });
   const handleInputChange = (e) => {

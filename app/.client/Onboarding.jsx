@@ -562,7 +562,7 @@ const Step7 = () => {
           >
             {/* Image */}
             <div className="flex justify-center items-center mb-4 h-28 w-28 bg-gray-200 rounded-md">
-              <img src={option.imgSrc} />
+              <img alt="option" src={option.imgSrc} />
             </div>
             {/* Label */}
             <p className="text-sm font-medium">{option.label}</p>

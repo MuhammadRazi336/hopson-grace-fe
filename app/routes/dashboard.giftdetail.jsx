@@ -1,15 +1,9 @@
-import CustomSelect from '~/components/CustomSelect.jsx';
-import ButtonComponent from '~/components/Button.jsx';
-import RegistryProduct from '~/components/RegistryProduct.jsx';
-import {useState} from 'react';
-import {useFetcher, useLoaderData} from '@remix-run/react';
+
+import {useLoaderData} from '@remix-run/react';
 import {defer, redirect} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
-import {requireAuth} from '~/utils/auth-guard.js';
-import {extractShopifyId} from '~/utils/helpers.js';
 import GiftDetail from '~/components/GiftDetail';
 export async function loader({request, context, params}) {
-  console.log(params.handle, 'Params');
   const {collections} = await loadCollectionData({context});
   return defer({collections});
 }

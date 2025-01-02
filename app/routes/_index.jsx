@@ -1,6 +1,6 @@
 import CustomTabs from '~/components/Tabs.jsx';
 import CustomSelect from '~/components/CustomSelect';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import Card from '~/components/Card.jsx';
 import Accordiance from '~/components/Accordiance.jsx';
 import ButtonComponent from '~/components/Button.jsx';
@@ -9,32 +9,30 @@ import FundCard from '~/components/FundCard';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import {products} from '~/data';
 import {requireAuth} from '~/utils/auth-guard.js';
-import {defer, redirect} from '@shopify/remix-oxygen';
-import {Outlet} from '@remix-run/react';
+import {redirect} from '@shopify/remix-oxygen';
 
 export async function loader(args) {
   const {context, request} = args;
-  return null;
   // Await the critical data required to render initial state of the page
-  // const user = await requireAuth(context);
-  // if (!user) {
-  //   return redirect("/login");
-  // } else if (!user?.user?.isOnboard) {
-  //   const getUser = await context.ClientGet(`users/${user.user.id}`, context);
-  //   const sessionUser = {
-  //     accessToken: user.accessToken,
-  //     ...getUser
-  //   };
-  //   context.session.set("@User", sessionUser);
-  //   const cookie = await context.session.commit();
-  //   return redirect("/onboarding", {
-  //     headers: {
-  //       "Set-Cookie": cookie
-  //     }
-  //   });
-  // } else {
-  //   return redirect("/dashboard");
-  // }
+  const user = await requireAuth(context);
+  if (!user) {
+    return redirect('/login');
+  } else if (user?.user?.isOnboard) {
+    const getUser = await context.ClientGet(`users/${user.user.id}`, context);
+    const sessionUser = {
+      accessToken: user.accessToken,
+      ...getUser,
+    };
+    context.session.set('@User', sessionUser);
+    const cookie = await context.session.commit();
+    return redirect('/onboarding', {
+      headers: {
+        'Set-Cookie': cookie,
+      },
+    });
+  } else {
+    return redirect('/dashboard');
+  }
 }
 
 const Dashboard_index = () => {

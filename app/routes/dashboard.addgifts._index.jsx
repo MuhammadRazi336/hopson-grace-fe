@@ -70,8 +70,8 @@ export default function AddGifts() {
   const fetcher = useFetcher();
   const handleAddtoRegistry = ({id, price, quantity}) => {
     const payload = {
-      shopifyProductId: id,
-      shopifyProductAmount: price,
+      productId: id,
+      amount: price,
       registryId: Number(user.registry.id),
       productTypeId: 1,
       quantity,
