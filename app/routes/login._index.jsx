@@ -66,10 +66,12 @@ const LoginIndex = () => {
             name="email"
             value={formData?.email}
             onChange={handleInputChange}
+            type="email"
           />
         </div>
         <div className="mb-6">
           <Input
+            required={true}
             label="Password"
             name="password"
             value={formData?.password}
