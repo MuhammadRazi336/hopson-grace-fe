@@ -62,16 +62,16 @@ const LoginIndex = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
         <div className="mb-4">
           <Input
+            required={true}
             label="Email"
             name="email"
             value={formData?.email}
             onChange={handleInputChange}
-            type="email"
           />
         </div>
         <div className="mb-6">
           <Input
-            required={true}
+            
             label="Password"
             name="password"
             value={formData?.password}
