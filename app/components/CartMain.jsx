@@ -1,72 +1,72 @@
-import {useOptimisticCart} from '@shopify/hydrogen';
-import {Link} from '@remix-run/react';
-import {useAside} from '~/components/Aside';
-import {CartLineItem} from '~/components/CartLineItem';
-import {CartSummary} from './CartSummary';
+import { Link } from '@remix-run/react';
 
-/**
- * The main cart component that displays the cart items and summary.
- * It is used by both the /cart route and the cart aside dialog.
- * @param {CartMainProps}
- */
-export function CartMain({layout, cart: originalCart}) {
-  // The useOptimisticCart hook applies pending actions to the cart
-  // so the user immediately sees feedback when they modify the cart.
-  const cart = useOptimisticCart(originalCart);
+export function CartMain({ layout }) {
+  // Static data for cart items
+  const cartItems = [
+    {
+      id: 1,
+      title: 'Gift Item',
+      quantity: 2,
+      price: 100,
+      subtotal: 200,
+    },
+    {
+      id: 2,
+      title: 'Group Gift',
+      contribution: 100,
+    },
+    {
+      id: 3,
+      title: 'Cash Funds',
+      contribution: 100,
+    },
+  ];
 
-  const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
-  const withDiscount =
-    cart &&
-    Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
-  const cartHasItems = cart?.totalQuantity > 0;
+  const tax = 10;
+  const total =
+    cartItems.reduce((acc, item) => {
+      return acc + (item.subtotal || item.contribution);
+    }, 0) + tax;
 
   return (
-    <div className={className}>
-      <CartEmpty hidden={linesCount} layout={layout} />
+    <div className="cart-main">
+      <div className="cart-header">
+        <h1>Your Cart</h1>
+      </div>
       <div className="cart-details">
-        <div aria-labelledby="cart-lines">
+        <div className="cart-items">
           <ul>
-            {(cart?.lines?.nodes ?? []).map((line) => (
-              <CartLineItem key={line.id} line={line} layout={layout} />
+            {cartItems.map((item) => (
+              <li key={item.id} className="cart-line">
+                <div className="cart-item">
+                  <p>{item.title}</p>
+                  {item.quantity ? (
+                    <>
+                      <p>Quantity: {item.quantity}</p>
+                      <p>Price: ${item.price.toFixed(2)}</p>
+                      <p>Subtotal: ${item.subtotal.toFixed(2)}</p>
+                    </>
+                  ) : (
+                    <p>Contribution: ${item.contribution.toFixed(2)}</p>
+                  )}
+                  <button className="delete-item">Delete Item</button>
+                </div>
+              </li>
             ))}
           </ul>
         </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
+        <div className="cart-summary">
+          <h4>Totals</h4>
+          <p>Tax: ${tax.toFixed(2)}</p>
+          <p>Total: ${total.toFixed(2)}</p>
+        </div>
+      </div>
+      <div className="cart-footer">
+        <Link to="/products" className="continue-shopping">
+          Continue Shopping
+        </Link>
+        <button className="finalize-gifts">Finalize Gifts</button>
       </div>
     </div>
   );
 }
-
-/**
- * @param {{
- *   hidden: boolean;
- *   layout?: CartMainProps['layout'];
- * }}
- */
-function CartEmpty({hidden = false}) {
-  const {close} = useAside();
-  return (
-    <div hidden={hidden}>
-      <br />
-      <p>
-        Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-        started!
-      </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
-      </Link>
-    </div>
-  );
-}
-
-/** @typedef {'page' | 'aside'} CartLayout */
-/**
- * @typedef {{
- *   cart: CartApiQueryFragment | null;
- *   layout: CartLayout;
- * }} CartMainProps
- */
-
-/** @typedef {import('storefrontapi.generated').CartApiQueryFragment} CartApiQueryFragment */
