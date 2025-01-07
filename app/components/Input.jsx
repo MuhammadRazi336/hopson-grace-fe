@@ -1,7 +1,9 @@
-export default function Input({ label, name, value, onChange, type = 'text' }) {
+export default function Input({label, name, value, onChange, type = 'text'}) {
   return (
     <div className="flex flex-col">
-      <label htmlFor={name} className="text-sm font-medium">{label}</label>
+      <label htmlFor={name} className="text-sm font-medium">
+        {label}
+      </label>
       <input
         id={name}
         name={name}

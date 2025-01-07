@@ -1,4 +1,4 @@
-import { NavLink } from "@remix-run/react";
+import {NavLink} from '@remix-run/react';
 
 export function Header() {
   return (
@@ -45,22 +45,25 @@ export function Header() {
       {/* Icons and CTA */}
       <div className="flex items-center gap-4">
         {/* User Icon */}
-        <NavLink
-          to="/login"
-          className="text-xl hover:text-blue-500"
-        >
-          <span role="img" aria-label="User Icon">👤</span>
+        <NavLink to="/login" className="text-xl hover:text-blue-500">
+          <span role="img" aria-label="User Icon">
+            👤
+          </span>
         </NavLink>
-        <button className="text-xl hover:text-blue-500">
-        </button>
+        <button className="text-xl hover:text-blue-500"></button>
 
         {/* Search Icon */}
         <button className="text-xl hover:text-blue-500">
-          <span role="img" aria-label="Search Icon">🔍</span>
+          <span role="img" aria-label="Search Icon">
+            🔍
+          </span>
         </button>
 
         {/* CTA Button */}
-        <NavLink to="/onboarding" className="px-4 py-2 border border-black rounded hover:bg-gray-100">
+        <NavLink
+          to="/onboarding"
+          className="px-4 py-2 border border-black rounded hover:bg-gray-100"
+        >
           Start a Registry
         </NavLink>
       </div>

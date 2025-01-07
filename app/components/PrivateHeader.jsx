@@ -1,4 +1,4 @@
-import { NavLink } from "@remix-run/react";
+import {NavLink} from '@remix-run/react';
 
 export function PrivateHeader() {
   return (
@@ -26,13 +26,19 @@ export function PrivateHeader() {
 
         {/* Icons */}
         <NavLink to="/profile" className="text-xl hover:text-blue-500">
-          <span role="img" aria-label="Profile Icon">👤</span>
+          <span role="img" aria-label="Profile Icon">
+            👤
+          </span>
         </NavLink>
         <NavLink to="/notifications" className="text-xl hover:text-blue-500">
-          <span role="img" aria-label="Notifications Icon">🔔</span>
+          <span role="img" aria-label="Notifications Icon">
+            🔔
+          </span>
         </NavLink>
         <NavLink to="/help" className="text-xl hover:text-blue-500">
-          <span role="img" aria-label="Help Icon">❓</span>
+          <span role="img" aria-label="Help Icon">
+            ❓
+          </span>
         </NavLink>
       </div>
     </header>

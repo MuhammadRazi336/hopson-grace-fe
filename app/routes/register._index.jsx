@@ -1,12 +1,12 @@
-import { useRef, useState } from "react";
-import Heading from "~/components/Heading.jsx";
-import Input from "~/components/Input.jsx";
-import Stepper from "~/components/Stepper.jsx";
-import Button from "~/components/Button.jsx";
-import { useFetcher } from "@remix-run/react";
-import { redirect } from "@shopify/remix-oxygen";
+import {useRef, useState} from 'react';
+import Heading from '~/components/Heading.jsx';
+import Input from '~/components/Input.jsx';
+import Stepper from '~/components/Stepper.jsx';
+import Button from '~/components/Button.jsx';
+import {useFetcher} from '@remix-run/react';
+import {redirect} from '@shopify/remix-oxygen';
 
-export async function action ({request,context}) {
+export async function action({request, context}) {
   const body = await request.json();
   const {payload} = body;
   try {
@@ -17,24 +17,24 @@ export async function action ({request,context}) {
     return redirect('/onboarding', {
       headers: {
         'Set-Cookie': cookie,
-      }
+      },
     });
   } catch (e) {
     console.log(e);
-    return null
+    return null;
   }
 }
 const RegisterIndex = () => {
   const fetcher = useFetcher(); // For triggering server actions
   const formDataRef = useState({
-    firstName: "",
-    lastName: "",
-    fianceFirstName: "",
-    fianceLastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    confirmEmail: ""
+    firstName: '',
+    lastName: '',
+    fianceFirstName: '',
+    fianceLastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    confirmEmail: '',
   });
   const handleSignup = async () => {
     const payload = {
@@ -45,18 +45,18 @@ const RegisterIndex = () => {
       email: formDataRef.email,
       password: formDataRef.password,
       confirmPassword: formDataRef.confirmPassword,
-      confirmEmail: formDataRef.confirmEmail
+      confirmEmail: formDataRef.confirmEmail,
     };
     fetcher.submit(
       {payload}, // Send data as key-value pairs
       {
         method: 'post',
         encType: 'application/json',
-      }
+      },
     );
   };
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     // Directly modifying the ref object to store new value
     formDataRef[name] = value;
   };
@@ -144,7 +144,7 @@ const RegisterIndex = () => {
         {/* Back and Next buttons */}
         <div className="flex justify-end mt-4">
           {/*<Button text="Back" onClick={goBack} disabled={step === 1} />*/}
-          <Button text={"Next"} onClick={handleSignup} />
+          <Button text={'Next'} onClick={handleSignup} />
         </div>
       </div>
     </div>

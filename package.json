@@ -9,6 +9,7 @@
     "dev": "shopify hydrogen dev --codegen",
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern --ext .js,.ts,.jsx,.tsx .",
+    "format": "prettier --write .",
     "codegen": "shopify hydrogen codegen"
   },
   "prettier": "@shopify/prettier-config",

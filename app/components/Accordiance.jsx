@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'; // Ensure this import is correct
+import React, {useState} from 'react';
+import {ChevronDownIcon, ChevronRightIcon} from '@heroicons/react/24/outline'; // Ensure this import is correct
 
-const Accordiance = ({ onChange, ContentComponent, title,icon = true,componentClass }) => {
+const Accordiance = ({
+  onChange,
+  ContentComponent,
+  title,
+  icon = true,
+  componentClass,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = () => {
@@ -23,7 +29,6 @@ const Accordiance = ({ onChange, ContentComponent, title,icon = true,componentCl
             <ChevronRightIcon className="w-5 h-5" />
           )}
         </div>
-
       </div>
       {isOpen && (
         <div className={`p-2 ${componentClass}`}>
