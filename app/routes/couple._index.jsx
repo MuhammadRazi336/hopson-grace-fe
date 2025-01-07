@@ -16,6 +16,7 @@ export default function FindCoupleForm() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const {data, name} = useLoaderData();
+  console.log(data, 'Data ');
   return (
     <div>
       {name?.firstName ? (
@@ -84,7 +85,9 @@ function CoupleListing({data}) {
         <tbody>
           {data.map((couple) => (
             <tr key={couple.id}>
-              <td className="py-2 px-4 border-b text-center">{couple.firstName + couple.lastName}</td>
+              <td className="py-2 px-4 border-b text-center">
+                {couple.firstName + couple.lastName}
+              </td>
               <td className="py-2 px-4 border-b text-center">
                 <img
                   src={`path/to/coupleImage.png`}
