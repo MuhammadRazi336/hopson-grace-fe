@@ -55,7 +55,7 @@ const Dashboard_index = () => {
           headerClassName="bg-gray-100 rounded-md"
         />
       </div>
-      <div className={"p-4"}>
+      <div className={'p-4'}>
         <Outlet />
       </div>
     </div>

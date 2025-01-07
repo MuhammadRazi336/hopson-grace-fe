@@ -1,18 +1,23 @@
-import React, { useState } from "react";
-import { Popover, PopoverHandler, PopoverContent ,Input as Inp} from "@material-tailwind/react";
-import { DayPicker } from "react-day-picker";
-import moment from "moment";
-import "react-day-picker/style.css";
+import React, {useState} from 'react';
+import {
+  Popover,
+  PopoverHandler,
+  PopoverContent,
+  Input as Inp,
+} from '@material-tailwind/react';
+import {DayPicker} from 'react-day-picker';
+import moment from 'moment';
+import 'react-day-picker/style.css';
 
 const DatePicker = ({
-                      selectedDate,
-                      onDateChange,
-                      label = "Date",
-                      dateFormat = "MM/DD/YYYY",
-                      inputProps = {},
-                      className = "",
-                      buttonLabels = { clear: "Clear", apply: "Apply" },
-                    }) => {
+  selectedDate,
+  onDateChange,
+  label = 'Date',
+  dateFormat = 'MM/DD/YYYY',
+  inputProps = {},
+  className = '',
+  buttonLabels = {clear: 'Clear', apply: 'Apply'},
+}) => {
   const [showCalendar, setShowCalendar] = useState(false);
 
   const handleApply = () => {
@@ -25,15 +30,19 @@ const DatePicker = ({
 
   return (
     <div className={`date-picker ${className}`}>
-      <Popover open={showCalendar} placement="top-start" handler={() => setShowCalendar(!showCalendar)}>
+      <Popover
+        open={showCalendar}
+        placement="top-start"
+        handler={() => setShowCalendar(!showCalendar)}
+      >
         {/* Label */}
         <label className="block text-sm font-medium mb-1">{label}</label>
         <PopoverHandler>
           <Inp
-            value={selectedDate ? moment(selectedDate).format(dateFormat) : ""}
+            value={selectedDate ? moment(selectedDate).format(dateFormat) : ''}
             readOnly
             {...inputProps}
-            className={`cursor-pointer ${inputProps.className || ""}`}
+            className={`cursor-pointer ${inputProps.className || ''}`}
             onClick={() => setShowCalendar(true)}
             placeholder="Select a date"
             icon={<i className="fas fa-calendar-alt" />}
@@ -48,25 +57,29 @@ const DatePicker = ({
             onSelect={(date) => onDateChange(date)}
             showOutsideDays
             styles={{
-              caption: { textAlign: "center", marginBottom: "1rem" },
-              nav: { display: "flex", justifyContent: "space-between" },
-              navButton: { background: "none", border: "none", cursor: "pointer" },
-              table: { width: "100%", borderCollapse: "collapse" },
-              headCell: { fontWeight: "bold", textAlign: "center" },
+              caption: {textAlign: 'center', marginBottom: '1rem'},
+              nav: {display: 'flex', justifyContent: 'space-between'},
+              navButton: {
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              },
+              table: {width: '100%', borderCollapse: 'collapse'},
+              headCell: {fontWeight: 'bold', textAlign: 'center'},
               day: {
-                height: "2.5rem",
-                width: "2.5rem",
-                textAlign: "center",
-                lineHeight: "2.5rem",
-                borderRadius: "50%",
-                cursor: "pointer",
+                height: '2.5rem',
+                width: '2.5rem',
+                textAlign: 'center',
+                lineHeight: '2.5rem',
+                borderRadius: '50%',
+                cursor: 'pointer',
               },
               daySelected: {
-                backgroundColor: "#374151",
-                color: "#fff",
+                backgroundColor: '#374151',
+                color: '#fff',
               },
-              dayToday: { backgroundColor: "#E5E7EB" },
-              dayOutside: { color: "#9CA3AF", opacity: 0.5 },
+              dayToday: {backgroundColor: '#E5E7EB'},
+              dayOutside: {color: '#9CA3AF', opacity: 0.5},
             }}
             className="rounded-md"
             captionLayout="dropdown"
@@ -91,7 +104,5 @@ const DatePicker = ({
     </div>
   );
 };
-
-
 
 export default DatePicker;

@@ -1,11 +1,9 @@
-import {
-  redirect
-} from "@shopify/remix-oxygen";
+import {redirect} from '@shopify/remix-oxygen';
 
 export async function requireAuth(context, isLogin = false) {
-  const token = context?.session?.get("@User");
+  const token = context?.session?.get('@User');
   if (token && isLogin) {
-    throw redirect("/");
+    throw redirect('/');
   }
   return token;
 }

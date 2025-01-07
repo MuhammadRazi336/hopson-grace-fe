@@ -1,54 +1,54 @@
-import { useEffect, useState } from "react";
-import { useLoaderData } from "@remix-run/react";
+import {useEffect, useState} from 'react';
+import {useLoaderData} from '@remix-run/react';
 
-import Heading from "~/components/Heading.jsx";
-import Input from "~/components/Input.jsx";
-import Button from "~/components/Button.jsx";
-import Stepper from "~/components/Stepper.jsx";
-import CustomSelect from "~/components/CustomSelect.jsx";
-import DatePicker from "~/components/Datepicker.jsx";
-import moment from "moment";
-import Registry_Services from "~/Services/Registry.js";
+import Heading from '~/components/Heading.jsx';
+import Input from '~/components/Input.jsx';
+import Button from '~/components/Button.jsx';
+import Stepper from '~/components/Stepper.jsx';
+import CustomSelect from '~/components/CustomSelect.jsx';
+import DatePicker from '~/components/Datepicker.jsx';
+import moment from 'moment';
+import Registry_Services from '~/Services/Registry.js';
 
 const OnboardingClient = ({}) => {
-  const { user } = useLoaderData();
+  const {user} = useLoaderData();
   const [step, setStep] = useState(1);
   const [eventTypes, setEventTypes] = useState([]);
   const [addressData, setAddressData] = useState({
-    phoneNumber: "",
-    address: "",
-    postalCode: "",
-    city: "",
-    province: "",
-    country: "",
-    id: null
+    phoneNumber: '',
+    address: '',
+    postalCode: '',
+    city: '',
+    province: '',
+    country: '',
+    id: null,
   });
   const [eventData, setEventData] = useState({
-    noOfGuest: "",
+    noOfGuest: '',
     selectedOption: {},
     selectedDate: new Date(),
-    eventName: "",
+    eventName: '',
     id: null,
-    eventId: null
+    eventId: null,
   });
   const handleGuestNoChange = (e) => {
     setEventData({
       ...eventData,
-      noOfGuest: e.target.value
+      noOfGuest: e.target.value,
     });
   };
   const setSelectedDate = (date) => {
     setEventData({
       ...eventData,
-      selectedDate: date
+      selectedDate: date,
     });
   };
   // General change handler for all fields
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setAddressData({
       ...addressData,
-      [name]: value
+      [name]: value,
     });
   };
   useEffect(() => {
@@ -57,20 +57,33 @@ const OnboardingClient = ({}) => {
   useEffect(() => {
     if (user) {
       const token = user.accessToken;
-      localStorage.setItem("@Token", token);
+      localStorage.setItem('@Token', token);
       if (user.stepNumber !== 0) {
-        setStep(user.stepNumber === 0 ? 1 : user.StepNumber === 1 ? 3 : user.StepNumber === 2 ? 4 : user.stepNumber === 3 ? 5 : 1);
+        setStep(
+          user.stepNumber === 0
+            ? 1
+            : user.StepNumber === 1
+            ? 3
+            : user.StepNumber === 2
+            ? 4
+            : user.stepNumber === 3
+            ? 5
+            : 1,
+        );
       }
-      const event = localStorage.getItem("@EventData");
-      const shipping = localStorage.getItem("@ShippingData");
+      const event = localStorage.getItem('@EventData');
+      const shipping = localStorage.getItem('@ShippingData');
       if (user.registry?.events?.length) {
         setEventData({
           noOfGuest: user.registry?.events[0].noOfGuest,
-          selectedOption: { label: user.registry?.events[0].eventType.name, id: user.registry?.events[0].eventType.id },
+          selectedOption: {
+            label: user.registry?.events[0].eventType.name,
+            id: user.registry?.events[0].eventType.id,
+          },
           selectedDate: user.registry?.events[0].eventDate,
           eventName: user.registry?.events[0].name,
           id: user.registry.id,
-          eventId: user.registry?.events[0].id
+          eventId: user.registry?.events[0].id,
         });
       } else if (event) {
         setEventData(JSON.parse(event));
@@ -83,12 +96,11 @@ const OnboardingClient = ({}) => {
           id: user.shippingAddress.id,
           phoneNumber: user.shippingAddress.phoneNumber,
           postalCode: user.shippingAddress.postalCode,
-          province: user.shippingAddress.province
+          province: user.shippingAddress.province,
         });
       } else if (shipping) {
         setAddressData(JSON.parse(shipping));
       }
-
     }
   }, [user]);
 
@@ -98,38 +110,38 @@ const OnboardingClient = ({}) => {
       const events = data.data.map((e) => {
         return {
           label: e.name,
-          id: e.id
+          id: e.id,
         };
       });
       setEventTypes(events);
     } catch (e) {
-      console.log(e, "Catch");
+      console.log(e, 'Catch');
     }
   };
 
   const handleSelectChange = (value) => {
     setEventData({
       ...eventData,
-      selectedOption: { label: value.label, id: value.id }
+      selectedOption: {label: value.label, id: value.id},
     });
   };
   // Main state for selected date
   const handleEventNameChange = (e) => {
     setEventData({
       ...eventData,
-      eventName: e.target.value
+      eventName: e.target.value,
     });
   };
 
   const handleRegistry = async () => {
     const payload = {
       name: eventData.eventName,
-      eventDate: moment(eventData.selectedDate).format("YYYY-MM-DD"),
+      eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD'),
       eventTypeId: Number(eventData.selectedOption.id),
-      ...(eventData.id && { id: eventData.id })
+      ...(eventData.id && {id: eventData.id}),
     };
 
-    const token = localStorage.getItem("@Token");
+    const token = localStorage.getItem('@Token');
     let data = null;
     try {
       if (payload.id) {
@@ -141,14 +153,14 @@ const OnboardingClient = ({}) => {
         const event = {
           ...eventData,
           id: data.data.id,
-          ...(!payload.id && { eventId: data.data.event.id })
+          ...(!payload.id && {eventId: data.data.event.id}),
         };
-        localStorage.setItem("@EventData", JSON.stringify(event));
+        localStorage.setItem('@EventData', JSON.stringify(event));
         setEventData(event);
         setStep(step + 1);
       }
     } catch (e) {
-      console.log(e, "eee");
+      console.log(e, 'eee');
     }
   };
 
@@ -160,9 +172,9 @@ const OnboardingClient = ({}) => {
       city: addressData.city,
       province: addressData.province,
       country: addressData.country,
-      ...(addressData.id && { id: Number(addressData.id) })
+      ...(addressData.id && {id: Number(addressData.id)}),
     };
-    const token = localStorage.getItem("@Token");
+    const token = localStorage.getItem('@Token');
     try {
       let data;
       if (payload?.id) {
@@ -172,29 +184,26 @@ const OnboardingClient = ({}) => {
       }
       const shippingData = {
         ...addressData,
-        id: data.data.id
+        id: data.data.id,
       };
-      localStorage.setItem("@ShippingData", JSON.stringify(shippingData));
+      localStorage.setItem('@ShippingData', JSON.stringify(shippingData));
       setAddressData(shippingData);
       setStep(step + 1);
     } catch (e) {
-      console.log(e, "Exception");
+      console.log(e, 'Exception');
     }
   };
   const handleNoOfGuest = async () => {
     const payload = {
       noOfGuest: Number(eventData.noOfGuest),
-      id: Number(eventData.eventId)
+      id: Number(eventData.eventId),
     };
-    const token = localStorage.getItem("@Token");
+    const token = localStorage.getItem('@Token');
 
     try {
       const data = await Registry_Services.updateEvent(payload, token);
       setStep(step + 1);
-
-    } catch (e) {
-
-    }
+    } catch (e) {}
   };
 
   // Handlers for navigation
@@ -208,7 +217,6 @@ const OnboardingClient = ({}) => {
     } else if (step === 4) {
       await handleShipping();
     } else if (step === 5) {
-
     }
   }
 
@@ -246,9 +254,13 @@ const OnboardingClient = ({}) => {
           />
         );
       case 3:
-        return <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} />;
+        return (
+          <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} />
+        );
       case 4:
-        return <Step4 formData={addressData} handleInputChange={handleInputChange} />;
+        return (
+          <Step4 formData={addressData} handleInputChange={handleInputChange} />
+        );
       case 5:
         return <Step5 />;
       case 6:
@@ -276,15 +288,14 @@ const OnboardingClient = ({}) => {
         {/* Back and Next buttons */}
         <div className="flex justify-between mt-4">
           <Button text="Back" onClick={goBack} disabled={step === 1} />
-          <Button text={step === 3 ? "Submit" : "Next"} onClick={goNext} />
+          <Button text={step === 3 ? 'Submit' : 'Next'} onClick={goNext} />
         </div>
       </div>
     </div>
   );
 };
 
-
-const Step1 = ({ selectedDate, setSelectedDate }) => {
+const Step1 = ({selectedDate, setSelectedDate}) => {
   return (
     <div>
       <div className="p-4">
@@ -293,9 +304,9 @@ const Step1 = ({ selectedDate, setSelectedDate }) => {
           onDateChange={setSelectedDate}
           label="Choose a Date"
           inputProps={{
-            className: "border-gray-300 focus:border-gray-500"
+            className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{ clear: "Reset", apply: "Confirm" }}
+          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
     </div>
@@ -303,25 +314,25 @@ const Step1 = ({ selectedDate, setSelectedDate }) => {
 };
 
 const Step2 = ({
-                 setSelectedDate,
-                 selectedDate,
-                 handleEventNameChange,
-                 eventName,
-                 selectedOption,
-                 handleSelectChange,
-                 eventData
-               }) => {
+  setSelectedDate,
+  selectedDate,
+  handleEventNameChange,
+  eventName,
+  selectedOption,
+  handleSelectChange,
+  eventData,
+}) => {
   return (
     <div>
       <div className="text-center">
-        <Heading text={"Do You Have Other Events where guest may buy gifts?"} />
+        <Heading text={'Do You Have Other Events where guest may buy gifts?'} />
         <h2 className="text-l font-bold mb-4">
-          {"(ie. bridal shower , engagement party)"}
+          {'(ie. bridal shower , engagement party)'}
         </h2>
       </div>
       <div>
         <CustomSelect
-          title={"Event Type"}
+          title={'Event Type'}
           options={eventData}
           selected={selectedOption}
           setSelected={handleSelectChange}
@@ -341,22 +352,21 @@ const Step2 = ({
           onDateChange={setSelectedDate}
           label="Choose a Date"
           inputProps={{
-            className: "border-gray-300 focus:border-gray-500"
+            className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{ clear: "Reset", apply: "Confirm" }}
+          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
     </div>
   );
 };
-const Step3 = ({ value, onChange }) => {
-
+const Step3 = ({value, onChange}) => {
   return (
     <div>
       <div className="text-center">
-        <Heading text={"How many guests are you inviting?"} />
+        <Heading text={'How many guests are you inviting?'} />
         <h2 className="text-l font-bold mb-4">
-          {"(Lorem ipsum dolor sit amit.)"}
+          {'(Lorem ipsum dolor sit amit.)'}
         </h2>
       </div>
       {/* Event Name Input */}
@@ -370,18 +380,16 @@ const Step3 = ({ value, onChange }) => {
   );
 };
 
-const Step4 = ({ formData, handleInputChange }) => {
-
-
+const Step4 = ({formData, handleInputChange}) => {
   // Submit handler to log the form data
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
       <div className="text-center">
-        <Heading text={"Where would you like your gifts shipped?"} />
+        <Heading text={'Where would you like your gifts shipped?'} />
         <h2 className="text-l font-bold mb-4">
           {
-            "You can update your address at any time or you can skip this step and add this later!"
+            'You can update your address at any time or you can skip this step and add this later!'
           }
         </h2>
       </div>
@@ -449,15 +457,15 @@ const Step5 = () => {
 
   // Options for the grid
   const options = [
-    { id: 1, label: "Cash" },
-    { id: 2, label: "Gifts & Cash" },
-    { id: 3, label: "Gifts" },
-    { id: 4, label: "Not Sure Yet" }
+    {id: 1, label: 'Cash'},
+    {id: 2, label: 'Gifts & Cash'},
+    {id: 3, label: 'Gifts'},
+    {id: 4, label: 'Not Sure Yet'},
   ];
 
   return (
     <div className="flex flex-col items-center p-8">
-      <Heading text={"What is your preferred gift?"} />
+      <Heading text={'What is your preferred gift?'} />
       {/* Grid */}
       <div className="grid grid-cols-2 gap-4">
         {options.map((option) => (
@@ -466,8 +474,8 @@ const Step5 = () => {
             onClick={() => setSelectedOption(option.id)}
             className={`p-6 border rounded-md text-center font-medium text-gray-700 ${
               selectedOption === option.id
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-gray-100 hover:bg-gray-200"
+                ? 'bg-gray-900 text-white border-gray-900'
+                : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
             {option.label}
@@ -483,17 +491,17 @@ const Step6 = () => {
 
   // Options for the grid
   const options = [
-    { id: 1, label: "Kitchen Essentials" },
-    { id: 2, label: "Tableware + Entertaining" },
-    { id: 3, label: "Home Decor + Furniture" },
-    { id: 4, label: "Bed + Bath" },
-    { id: 5, label: "Travel/Outdoors" },
-    { id: 6, label: "Music + Tech" }
+    {id: 1, label: 'Kitchen Essentials'},
+    {id: 2, label: 'Tableware + Entertaining'},
+    {id: 3, label: 'Home Decor + Furniture'},
+    {id: 4, label: 'Bed + Bath'},
+    {id: 5, label: 'Travel/Outdoors'},
+    {id: 6, label: 'Music + Tech'},
   ];
 
   return (
     <div className="flex flex-col items-center p-8">
-      <Heading text={"What is your preferred gift?"} />
+      <Heading text={'What is your preferred gift?'} />
       {/* Grid */}
       <div className="grid grid-cols-2 gap-4">
         {options.map((option) => (
@@ -502,8 +510,8 @@ const Step6 = () => {
             onClick={() => setSelectedOption(option.id)}
             className={`p-6 border rounded-md text-center font-medium text-gray-700 ${
               selectedOption === option.id
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-gray-100 hover:bg-gray-200"
+                ? 'bg-gray-900 text-white border-gray-900'
+                : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
             {option.label}
@@ -519,26 +527,26 @@ const Step7 = () => {
 
   // Options for the grid
   const options = [
-    { id: 1, label: "Minimalist", imgSrc: "https://via.placeholder.com/150" },
-    { id: 2, label: "Maximalist", imgSrc: "https://via.placeholder.com/150" },
-    { id: 3, label: "Transitional", imgSrc: "https://via.placeholder.com/150" },
+    {id: 1, label: 'Minimalist', imgSrc: 'https://via.placeholder.com/150'},
+    {id: 2, label: 'Maximalist', imgSrc: 'https://via.placeholder.com/150'},
+    {id: 3, label: 'Transitional', imgSrc: 'https://via.placeholder.com/150'},
     {
       id: 4,
-      label: "Modern Farmhouse",
-      imgSrc: "https://via.placeholder.com/150"
+      label: 'Modern Farmhouse',
+      imgSrc: 'https://via.placeholder.com/150',
     },
-    { id: 5, label: "Boho Chic", imgSrc: "https://via.placeholder.com/150" },
+    {id: 5, label: 'Boho Chic', imgSrc: 'https://via.placeholder.com/150'},
     {
       id: 6,
-      label: "Mid-Century Modern",
-      imgSrc: "https://via.placeholder.com/150"
-    }
+      label: 'Mid-Century Modern',
+      imgSrc: 'https://via.placeholder.com/150',
+    },
   ];
 
   return (
     <div className="flex flex-col items-center p-8">
       {/* Heading */}
-      <Heading text={"Pick your Style"} />
+      <Heading text={'Pick your Style'} />
 
       {/* Grid */}
       <div className="flex flex-row gap-4">
@@ -548,8 +556,8 @@ const Step7 = () => {
             onClick={() => setSelectedOption(option.id)}
             className={`p-4 border rounded-lg text-center font-medium cursor-pointer ${
               selectedOption === option.id
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-gray-100 hover:bg-gray-200"
+                ? 'bg-gray-900 text-white border-gray-900'
+                : 'bg-gray-100 hover:bg-gray-200'
             }`}
           >
             {/* Image */}

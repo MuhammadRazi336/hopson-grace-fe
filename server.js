@@ -4,7 +4,7 @@ import * as remixBuild from 'virtual:remix/server-build';
 import {storefrontRedirect} from '@shopify/hydrogen';
 import {createRequestHandler} from '@shopify/remix-oxygen';
 import {createAppLoadContext} from '~/lib/context';
-import { setHydrogenContext } from "~/lib/hydrogenManager.js";
+import {setHydrogenContext} from '~/lib/hydrogenManager.js';
 
 /**
  * Export a fetch handler in module format.
