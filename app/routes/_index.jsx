@@ -36,55 +36,7 @@ export async function loader(args) {
 }
 
 const Dashboard_index = () => {
-  const tabData = [
-    {
-      label: 'Registry Detail',
-      value: 'home',
-      desc: <RegistryTab />,
-    },
-    {
-      label: 'Registry Homepage',
-      value: 'profile',
-      desc: <RegistryProfile />,
-    },
-    {
-      label: 'Add or Edit Gifts',
-      value: 'addgifts',
-      desc: <AddEditGift />,
-    },
-    {
-      label: 'Add Cash Funds',
-      value: 'cashfunds',
-      desc: <h1>Add Cash Funds</h1>,
-    },
-    {
-      label: 'Gifts & Thank You Tracker',
-      value: 'giftsthanks',
-      desc: <h1>Gifts & Thank You Tracker</h1>,
-    },
-    {
-      label: 'Ship My Gifts',
-      value: 'shipgifts',
-      desc: <h1>Ship My Gifts</h1>,
-    },
-    {
-      label: 'Contact My Advisor',
-      value: 'contactadvisor',
-      desc: <h1>Contact My Advisor</h1>,
-    },
-  ];
-
-  return (
-    <div>
-      <div>
-        <CustomTabs
-          tabsData={tabData}
-          defaultActive={1}
-          headerClassName="bg-gray-100 rounded-md"
-        />
-      </div>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default Dashboard_index;
