@@ -153,13 +153,12 @@ export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
   const data = useRouteLoaderData('root');
-  const {toast} = data;
   useEffect(() => {
-    if (toast) {
+    if (data?.toast) {
       // notify on a toast message
-      notify(toast.message, {type: toast.type});
+      notify(data?.toast.message, {type: data?.toast.type});
     }
-  }, [toast]);
+  }, [data?.toast]);
   return (
     <html lang="en">
       <head>

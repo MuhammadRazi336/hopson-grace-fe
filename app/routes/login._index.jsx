@@ -1,5 +1,6 @@
 import {redirect} from '@shopify/remix-oxygen';
 import {requireAuth} from '~/utils/auth-guard.js';
+import {useActionData, useFetcher, useSubmit} from '@remix-run/react';
 
 import Input from '~/components/Input.jsx';
 import {useState} from 'react';
@@ -14,29 +15,30 @@ export async function loader(args) {
 }
 
 export async function action({request, context}) {
-  const formData = await request.formData();
-  const payload = {
-    email: "formData.get('email')",
-    password: formData.get('password'),
-  };
-  console.log(formData.get('email') , 'email ');
+  const body = await request.json();
+  const {payload} = body;
   try {
     const response = await context.ClientPost(payload, 'auth/login', context);
-    console.log(response, 'Response');
-    const user = response.data;
-    context.session.set('@User', user);
-    const cookie = await context.session.commit();
-    return redirect('/', {
-      headers: {
-        'Set-Cookie': cookie,
-      },
-    });
+    return {...response};
+
+    // const user = response.data;
+    // context.session.set('@User', user);
+    // const cookie = await context.session.commit();
+    // return redirect('/', {
+    //   headers: {
+    //     'Set-Cookie': cookie,
+    //   },
+    // });
   } catch (e) {
-    return null;
+    return {...e};
   }
 }
 
 const LoginIndex = () => {
+  const fetcher = useFetcher();
+  const submit = useSubmit();
+  const actionData = useActionData();
+  console.log(actionData, 'ActionData');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -49,17 +51,21 @@ const LoginIndex = () => {
       [name]: value,
     }));
   };
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-    const form = e.target;
-    form.submit(); // Let the form submit programmatically to Remix action
+
+  const handleLogin = async (e) => {
+    e?.preventDefault();
+    const payload = {
+      email: formData.email,
+      password: formData.password,
+    };
+    submit({payload}, {method: 'post', encType: 'application/json'});
   };
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
-        <form onSubmit={handleSubmit} method="post" className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-6">
           <div className="mb-4">
             <Input
               type="email"
@@ -79,6 +85,15 @@ const LoginIndex = () => {
               value={formData.password}
               onChange={handleInputChange}
             />
+          </div>
+          <div
+            style={{
+              color: actionData?.statusCode >= 400 ? 'red' : 'inherit',
+            }}
+          >
+            {actionData?.statusCode >= 400 && actionData?.message?.length
+              ? actionData?.message.split(' ').join(' ')
+              : actionData?.message}
           </div>
           <ButtonComponent type="submit" className="w-full" text={'Login'} />
         </form>
