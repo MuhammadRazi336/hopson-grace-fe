@@ -1,10 +1,12 @@
 import {redirect} from '@shopify/remix-oxygen';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {useActionData, useFetcher, useSubmit} from '@remix-run/react';
+import {toast} from 'react-toastify';
 
 import Input from '~/components/Input.jsx';
 import {useState} from 'react';
 import ButtonComponent from '~/components/Button.jsx';
+import {jsonWithError} from 'remix-toast';
 
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
@@ -19,23 +21,24 @@ export async function action({request, context}) {
   const {payload} = body;
   try {
     const response = await context.ClientPost(payload, 'auth/login', context);
-    return {...response};
-
-    // const user = response.data;
-    // context.session.set('@User', user);
-    // const cookie = await context.session.commit();
-    // return redirect('/', {
-    //   headers: {
-    //     'Set-Cookie': cookie,
-    //   },
-    // });
+    if (response?.code == 200) {
+      const user = response.data;
+      context.session.set('@User', user);
+      const cookie = await context.session.commit();
+      return redirect('/', {
+        headers: {
+          'Set-Cookie': cookie,
+        },
+      });
+    } else {
+      return {...response};
+    }
   } catch (e) {
     return {...e};
   }
 }
 
 const LoginIndex = () => {
-  const fetcher = useFetcher();
   const submit = useSubmit();
   const actionData = useActionData();
   console.log(actionData, 'ActionData');
@@ -91,8 +94,8 @@ const LoginIndex = () => {
               color: actionData?.statusCode >= 400 ? 'red' : 'inherit',
             }}
           >
-            {actionData?.statusCode >= 400 && actionData?.message?.length
-              ? actionData?.message.split(' ').join(' ')
+            {actionData?.statusCode >= 400 && Array.isArray(actionData?.message)
+              ? actionData?.message[0]
               : actionData?.message}
           </div>
           <ButtonComponent type="submit" className="w-full" text={'Login'} />

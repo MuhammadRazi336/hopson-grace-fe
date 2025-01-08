@@ -9,10 +9,10 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import DatePicker from '~/components/Datepicker.jsx';
 import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
-
+import {STEPS_CONSTANTS} from '../constants/UiConstants';
 const OnboardingClient = ({}) => {
   const {user} = useLoaderData();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
   const [addressData, setAddressData] = useState({
     phoneNumber: '',
@@ -60,15 +60,13 @@ const OnboardingClient = ({}) => {
       localStorage.setItem('@Token', token);
       if (user.stepNumber !== 0) {
         setStep(
-          user.stepNumber === 0
-            ? 1
-            : user.StepNumber === 1
-            ? 3
+          user.StepNumber === 1
+            ? STEPS_CONSTANTS.GUEST_INFO
             : user.StepNumber === 2
-            ? 4
+            ? STEPS_CONSTANTS.SHIPPING_INFO
             : user.stepNumber === 3
-            ? 5
-            : 1,
+            ? STEPS_CONSTANTS.PREFER_GIFT_INFO
+            : STEPS_CONSTANTS.EVENT_DATE_INFO,
         );
       }
       const event = localStorage.getItem('@EventData');
@@ -234,14 +232,14 @@ const OnboardingClient = ({}) => {
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
     switch (currentStep) {
-      case 1:
+      case STEPS_CONSTANTS.EVENT_DATE_INFO:
         return (
           <Step1
             setSelectedDate={setSelectedDate}
             selectedDate={eventData.selectedDate}
           />
         );
-      case 2:
+      case STEPS_CONSTANTS.EVENT_ADD_INFO:
         return (
           <Step2
             eventData={eventTypes}
@@ -253,19 +251,19 @@ const OnboardingClient = ({}) => {
             handleSelectChange={handleSelectChange}
           />
         );
-      case 3:
+      case STEPS_CONSTANTS.GUEST_INFO:
         return (
           <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} />
         );
-      case 4:
+      case STEPS_CONSTANTS.SHIPPING_INFO:
         return (
           <Step4 formData={addressData} handleInputChange={handleInputChange} />
         );
-      case 5:
+      case STEPS_CONSTANTS.PREFER_GIFT_INFO:
         return <Step5 />;
-      case 6:
+      case STEPS_CONSTANTS.COLLECTION_INFO:
         return <Step6 />;
-      case 7:
+      case STEPS_CONSTANTS.STYLE_INFO:
         return <Step7 />;
       default:
         return null;

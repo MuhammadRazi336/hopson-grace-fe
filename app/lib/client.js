@@ -18,7 +18,6 @@ export function createClient() {
 
     const request = await fetch(endPoint, options);
     const response = await request.json();
-    console.log(response , "Res")
     return response;
   }
 

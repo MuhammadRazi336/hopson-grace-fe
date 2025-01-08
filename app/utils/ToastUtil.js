@@ -8,7 +8,6 @@ const showToast = ({
   promiseHandlers,
   updateId,
 }) => {
-  console.log(type, 'IM her with Type');
   switch (type) {
     case 'success':
       return toast.success(message, options);
@@ -28,7 +27,6 @@ const showToast = ({
       return toast.update(updateId, options);
     case 'promise':
       if (!promise || !promiseHandlers) {
-        console.log('IM Here in Promise');
         console.error(
           "Promise and promiseHandlers are required for 'promise' type.",
         );
