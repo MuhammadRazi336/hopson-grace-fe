@@ -1,5 +1,6 @@
 import {requireAuth} from '~/utils/auth-guard.js';
 import {redirect} from '@shopify/remix-oxygen';
+import {useLoaderData} from '@remix-run/react';
 
 export async function loader(args) {
   const {context, request} = args;
@@ -7,11 +8,12 @@ export async function loader(args) {
   const user = await requireAuth(context);
   if (!user) {
     return redirect('/login');
-  } else if (user?.user?.isOnboard) {
-    const getUser = await context.ClientGet(`users/${user.user.id}`, context);
+  } else if (user?.user?.isOnboard === false) {
+    const getUser = await context.ClientGet(`users/${user?.user?.id}`, context);
+
     const sessionUser = {
       accessToken: user.accessToken,
-      ...getUser,
+      ...getUser.data,
     };
     context.session.set('@User', sessionUser);
     const cookie = await context.session.commit();
@@ -26,6 +28,8 @@ export async function loader(args) {
 }
 
 const Dashboard_index = () => {
+  const data = useLoaderData();
+  console.log(data, 'Dat');
   return <div></div>;
 };
 

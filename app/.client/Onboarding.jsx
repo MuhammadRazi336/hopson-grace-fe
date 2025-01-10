@@ -54,20 +54,21 @@ const OnboardingClient = ({}) => {
   useEffect(() => {
     getEvents();
   }, []);
+
   useEffect(() => {
     if (user) {
       const token = user.accessToken;
       localStorage.setItem('@Token', token);
       if (user.stepNumber !== 0) {
-        setStep(
-          user.StepNumber === 1
-            ? STEPS_CONSTANTS.GUEST_INFO
-            : user.StepNumber === 2
-            ? STEPS_CONSTANTS.SHIPPING_INFO
-            : user.stepNumber === 3
-            ? STEPS_CONSTANTS.PREFER_GIFT_INFO
-            : STEPS_CONSTANTS.EVENT_DATE_INFO,
-        );
+        if (user.stepNumber === 1) {
+          setStep(STEPS_CONSTANTS.GUEST_INFO);
+        } else if (user.stepNumber === 2) {
+          setStep(STEPS_CONSTANTS.SHIPPING_INFO);
+        } else if (user.stepNumber === 3) {
+          setStep(STEPS_CONSTANTS.PREFER_GIFT_INFO);
+        } else {
+          setStep(STEPS_CONSTANTS.EVENT_DATE_INFO);
+        }
       }
       const event = localStorage.getItem('@EventData');
       const shipping = localStorage.getItem('@ShippingData');
@@ -199,11 +200,22 @@ const OnboardingClient = ({}) => {
     const token = localStorage.getItem('@Token');
 
     try {
+      const data = await Registry_Services.updateUserInfo(payload, token);
+      setStep(step + 1);
+    } catch (e) {}
+  };
+  const handleOnboard = async () => {
+    const payload = {
+      noOfGuest: Number(eventData.noOfGuest),
+      id: Number(eventData.eventId),
+    };
+    const token = localStorage.getItem('@Token');
+
+    try {
       const data = await Registry_Services.updateEvent(payload, token);
       setStep(step + 1);
     } catch (e) {}
   };
-
   // Handlers for navigation
   async function goNext() {
     if (step === 1) {
@@ -215,6 +227,11 @@ const OnboardingClient = ({}) => {
     } else if (step === 4) {
       await handleShipping();
     } else if (step === 5) {
+      setStep(step + 1);
+    } else if (step === 6) {
+      setStep(step + 1);
+    } else if (step === 7) {
+      await handleOnboard();
     }
   }
 
@@ -228,7 +245,6 @@ const OnboardingClient = ({}) => {
   function handleSubmit(e) {
     e.preventDefault();
   }
-
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
     switch (currentStep) {

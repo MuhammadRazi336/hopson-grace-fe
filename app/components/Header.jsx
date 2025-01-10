@@ -61,7 +61,7 @@ export function Header() {
 
         {/* CTA Button */}
         <NavLink
-          to="/onboarding"
+          to="/register"
           className="px-4 py-2 border border-black rounded hover:bg-gray-100"
         >
           Start a Registry
