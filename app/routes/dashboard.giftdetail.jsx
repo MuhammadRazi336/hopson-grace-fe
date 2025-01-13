@@ -1,4 +1,3 @@
-
 import {useLoaderData} from '@remix-run/react';
 import {defer, redirect} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';

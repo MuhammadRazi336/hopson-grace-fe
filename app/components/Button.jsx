@@ -13,7 +13,7 @@ export default function ButtonComponent({
       disabled={disabled}
       className={`px-6 py-2 rounded ${
         disabled ? 'bg-gray-300' : 'bg-black text-white'
-        } ${className}`}
+      } ${className}`}
       {...rest}
     >
       <Typography>{text}</Typography>

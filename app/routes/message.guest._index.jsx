@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 import ButtonComponent from '~/components/Button.jsx';
 
 export default function MessageCheckout() {
@@ -15,7 +15,7 @@ export default function MessageCheckout() {
   useEffect(() => {
     // Initialize character count on mount
     document.getElementById(
-      'charCount'
+      'charCount',
     ).innerText = `Characters Remaining: ${maxCharacters}`;
   }, []);
 

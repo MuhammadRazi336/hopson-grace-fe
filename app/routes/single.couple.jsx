@@ -18,7 +18,8 @@ export default function CoupleProfile() {
           </p>
           <h3 className="text-lg font-semibold mt-4">Welcome Message</h3>
           <p className="text-gray-600 text-center">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </p>
         </div>
 
