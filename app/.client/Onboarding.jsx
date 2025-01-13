@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {useLoaderData} from '@remix-run/react';
+import {useLoaderData, useNavigate} from '@remix-run/react';
 
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
@@ -9,10 +9,12 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import DatePicker from '~/components/Datepicker.jsx';
 import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
-
+import {STEPS_CONSTANTS} from '../constants/UiConstants';
 const OnboardingClient = ({}) => {
   const {user} = useLoaderData();
-  const [step, setStep] = useState(1);
+  const navigate = useNavigate();
+
+  const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
   const [addressData, setAddressData] = useState({
     phoneNumber: '',
@@ -54,22 +56,21 @@ const OnboardingClient = ({}) => {
   useEffect(() => {
     getEvents();
   }, []);
+
   useEffect(() => {
     if (user) {
       const token = user.accessToken;
       localStorage.setItem('@Token', token);
       if (user.stepNumber !== 0) {
-        setStep(
-          user.stepNumber === 0
-            ? 1
-            : user.StepNumber === 1
-            ? 3
-            : user.StepNumber === 2
-            ? 4
-            : user.stepNumber === 3
-            ? 5
-            : 1,
-        );
+        if (user.stepNumber === 1) {
+          setStep(STEPS_CONSTANTS.GUEST_INFO);
+        } else if (user.stepNumber === 2) {
+          setStep(STEPS_CONSTANTS.SHIPPING_INFO);
+        } else if (user.stepNumber === 3) {
+          setStep(STEPS_CONSTANTS.PREFER_GIFT_INFO);
+        } else {
+          setStep(STEPS_CONSTANTS.EVENT_DATE_INFO);
+        }
       }
       const event = localStorage.getItem('@EventData');
       const shipping = localStorage.getItem('@ShippingData');
@@ -193,6 +194,7 @@ const OnboardingClient = ({}) => {
       console.log(e, 'Exception');
     }
   };
+
   const handleNoOfGuest = async () => {
     const payload = {
       noOfGuest: Number(eventData.noOfGuest),
@@ -203,9 +205,24 @@ const OnboardingClient = ({}) => {
     try {
       const data = await Registry_Services.updateEvent(payload, token);
       setStep(step + 1);
-    } catch (e) {}
+    } catch (e) {
+      console.log('UPpate', e);
+    }
   };
+  const handleOnboard = async () => {
+    const payload = {
+      isOnBoard: true,
+      id: Number(user.user.id),
+    };
+    const token = localStorage.getItem('@Token');
 
+    try {
+      const data = await Registry_Services.updateOnBoarding(payload, token);
+      navigate('/');
+    } catch (e) {
+      console.log(e, 'DE');
+    }
+  };
   // Handlers for navigation
   async function goNext() {
     if (step === 1) {
@@ -217,6 +234,11 @@ const OnboardingClient = ({}) => {
     } else if (step === 4) {
       await handleShipping();
     } else if (step === 5) {
+      setStep(step + 1);
+    } else if (step === 6) {
+      setStep(step + 1);
+    } else if (step === 7) {
+      await handleOnboard();
     }
   }
 
@@ -225,23 +247,18 @@ const OnboardingClient = ({}) => {
       setStep(step - 1);
     }
   };
-
-  // Form submission logic
-  function handleSubmit(e) {
-    e.preventDefault();
-  }
-
+  console.log(user.user.id);
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
     switch (currentStep) {
-      case 1:
+      case STEPS_CONSTANTS.EVENT_DATE_INFO:
         return (
           <Step1
             setSelectedDate={setSelectedDate}
             selectedDate={eventData.selectedDate}
           />
         );
-      case 2:
+      case STEPS_CONSTANTS.EVENT_ADD_INFO:
         return (
           <Step2
             eventData={eventTypes}
@@ -253,25 +270,25 @@ const OnboardingClient = ({}) => {
             handleSelectChange={handleSelectChange}
           />
         );
-      case 3:
+      case STEPS_CONSTANTS.GUEST_INFO:
         return (
           <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} />
         );
-      case 4:
+      case STEPS_CONSTANTS.SHIPPING_INFO:
         return (
           <Step4 formData={addressData} handleInputChange={handleInputChange} />
         );
-      case 5:
+      case STEPS_CONSTANTS.PREFER_GIFT_INFO:
         return <Step5 />;
-      case 6:
+      case STEPS_CONSTANTS.COLLECTION_INFO:
         return <Step6 />;
-      case 7:
+      case STEPS_CONSTANTS.STYLE_INFO:
         return <Step7 />;
       default:
         return null;
     }
   };
-
+  console.log(step, 'STEP');
   return (
     <div className="flex justify-center items-center min-h-screen bg-white">
       {/* Main content wrapper */}
@@ -288,7 +305,7 @@ const OnboardingClient = ({}) => {
         {/* Back and Next buttons */}
         <div className="flex justify-between mt-4">
           <Button text="Back" onClick={goBack} disabled={step === 1} />
-          <Button text={step === 3 ? 'Submit' : 'Next'} onClick={goNext} />
+          <Button text={step === 7 ? 'Submit' : 'Next'} onClick={goNext} />
         </div>
       </div>
     </div>
@@ -562,7 +579,7 @@ const Step7 = () => {
           >
             {/* Image */}
             <div className="flex justify-center items-center mb-4 h-28 w-28 bg-gray-200 rounded-md">
-              <img src={option.imgSrc} />
+              <img alt="option" src={option.imgSrc} />
             </div>
             {/* Label */}
             <p className="text-sm font-medium">{option.label}</p>

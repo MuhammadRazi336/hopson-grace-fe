@@ -1,9 +1,47 @@
 import Accordiance from '~/components/Accordiance.jsx';
-import {products} from '~/data/index.jsx';
 import ProductCard from '~/components/Product.jsx';
 import FundCard from '~/components/FundCard.jsx';
+import {defer} from '@remix-run/server-runtime';
+import {requireAuth} from '~/utils/auth-guard';
+import {useLoaderData} from '@remix-run/react';
+import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
+
+export async function loader({request, context}) {
+  const user = await requireAuth(context);
+  const res = await context.ClientGet(
+    `registryProducts/${user.registry.id}?type=gift`,
+    context,
+  );
+  const cashRes = await context.ClientGet(
+    `registryProducts/${user.registry.id}?type=cash`,
+    context,
+  );
+  const ids = res.data.map(
+    (product) => `gid://shopify/Product/${product.productId}`,
+  );
+  const products = await fetchProducts(context.storefront, ids);
+  const mergedArray = res.data.map((item1) => {
+    // Find the corresponding product from array2
+    const product = products.nodes.find(
+      (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
+    );
+
+    // If a matching product is found, merge its details into the current item
+    if (product) {
+      return {
+        ...item1,
+        ...product,
+      };
+    }
+    return item1; // If no matching product, return the original item
+  });
+
+  return defer({user, data: mergedArray, cashfundData: cashRes.data});
+}
 
 const index = () => {
+  const {data, cashfundData} = useLoaderData();
+
   return (
     <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
@@ -36,14 +74,14 @@ const index = () => {
       <div className="mt-8 border-t border-gray-300 pt-4 border-b">
         <Accordiance
           title="Selected Wedding Registry Gifts"
-          ContentComponent={() => <ProductPage />}
+          ContentComponent={() => <ProductPage data={data} />}
         />
       </div>
 
       <div className="mt-4 border-t border-gray-300 pt-4 border-b">
         <Accordiance
           title="Selected Wedding Cash Funds"
-          ContentComponent={() => <FundPage />}
+          ContentComponent={() => <FundPage data={cashfundData} />}
         />
       </div>
     </div>
@@ -51,17 +89,17 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = () => {
+const ProductPage = ({data}) => {
   return (
     <div className="container p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {products.map((product) => (
+        {data.map((product) => (
           <ProductCard
             key={product.id}
-            productName={product.productName}
-            productImage={product.productImage}
-            price={product.price}
-            collected={product.collected}
+            productName={product.title}
+            productImage={product.images.edges[0].node.src}
+            price={product.variants.edges[0].node.price}
+            collected={product.collectedAmount}
             isGroupGift={product.isGroupGift}
             onContributorsClick={() =>
               console.log(`Contributors for ${product.productName}`)
@@ -72,40 +110,8 @@ const ProductPage = () => {
     </div>
   );
 };
-const FundPage = () => {
+const FundPage = ({data}) => {
   // Dummy data for the funds
-  const fundData = [
-    {
-      id: 1,
-      title: 'Honeymoon Fund',
-      totalAmount: 4000,
-      collectedAmount: 100,
-    },
-    {
-      id: 2,
-      title: 'Home Down Payment',
-      totalAmount: 15000,
-      collectedAmount: 100,
-    },
-    {
-      id: 3,
-      title: 'Date Night Fund',
-      totalAmount: 100,
-      collectedAmount: 100,
-    },
-    {
-      id: 4,
-      title: 'Travel Fund',
-      totalAmount: 5000,
-      collectedAmount: 2500,
-    },
-    {
-      id: 5,
-      title: 'Education Fund',
-      totalAmount: 20000,
-      collectedAmount: 12000,
-    },
-  ];
 
   // Function to handle view contributors button click
   const handleViewContributors = (fundName) => {
@@ -114,13 +120,13 @@ const FundPage = () => {
 
   return (
     <div className="flex justify-center items-start flex-wrap p-4 bg-gray-100">
-      {fundData.map((fund) => (
+      {data.map((fund) => (
         <FundCard
-          key={fund.id} // Use a unique key for each card
-          title={fund.title}
-          totalAmount={fund.totalAmount}
+          key={fund.productId} // Use a unique key for each card
+          title={'fund.title'}
+          totalAmount={fund.amount}
           collectedAmount={fund.collectedAmount}
-          onViewContributors={() => handleViewContributors(fund.title)}
+          onViewContributors={() => handleViewContributors('fund.title')}
         />
       ))}
     </div>

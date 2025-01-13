@@ -37,12 +37,12 @@ const Dashboard_index = () => {
     {
       label: 'Ship My Gifts',
       value: 7,
-      route: 'shipgifts',
+      route: 'giftdetail',
     },
     {
       label: 'Contact My Advisor',
       value: 8,
-      route: 'contactadvisor',
+      route: 'giftdetail',
     },
   ];
 

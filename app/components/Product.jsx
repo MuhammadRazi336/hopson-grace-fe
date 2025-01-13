@@ -1,3 +1,4 @@
+import {Money} from '@shopify/hydrogen';
 import React from 'react';
 
 const ProductCard = ({
@@ -21,7 +22,9 @@ const ProductCard = ({
       {/* Product Info */}
       <div className="mt-4">
         <h2 className="text-lg font-bold">{productName}</h2>
-        <p className="text-gray-600">${price}</p>
+        {/* <p className="text-gray-600">${price}</p> */}
+        <Money className="text-gray-600" data={price} />
+
         <p className="text-gray-600">${collected} Collected</p>
         {isGroupGift && (
           <p className="text-gray-800 font-semibold mt-2">Group Gift</p>

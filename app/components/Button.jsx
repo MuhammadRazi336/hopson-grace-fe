@@ -5,6 +5,7 @@ export default function ButtonComponent({
   onClick,
   disabled = false,
   className,
+  ...rest
 }) {
   return (
     <Button
@@ -13,6 +14,7 @@ export default function ButtonComponent({
       className={`px-6 py-2 rounded ${
         disabled ? 'bg-gray-300' : 'bg-black text-white'
       } ${className}`}
+      {...rest}
     >
       <Typography>{text}</Typography>
     </Button>
