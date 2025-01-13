@@ -3,17 +3,14 @@ import Card from '~/components/Card.jsx';
 import Accordiance from '~/components/Accordiance.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import {useState} from 'react';
-import {requireAuth} from '~/utils/auth-guard.js';
-import {useLoaderData} from '@remix-run/react';
 export async function loader(args) {
-  const {context, request} = args;
+  const {context} = args;
   // Await the critical data required to render initial state of the page
   const registry = context?.session?.get('@Registry');
   return {...registry};
 }
 
 const index = () => {
-  const data = useLoaderData();
   const [selected, setSelected] = useState({
     label: 'Wedding Registry',
     value: 'wedding',

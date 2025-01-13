@@ -1,24 +1,19 @@
+import {useLoaderData, Link} from '@remix-run/react';
 import React from 'react';
+export async function loader(args) {
+  const {context} = args;
+  const registry = context?.session?.get('@Registry');
 
+  // Await the critical data required to render initial state of the page
+  const data = await context.ClientGet(
+    `registryProducts/cash-fund/${registry[0].id}`,
+    context,
+  );
+
+  return {cashFundData: data?.data || []};
+}
 const CashFunds = () => {
-  const cardsData = [
-    {
-      title: 'Honeymoon Fund',
-      amount: '$4000.00',
-      buttonLabel: 'Personalize Fund',
-    },
-    {
-      title: 'Home Down Payment',
-      amount: '$15,000',
-      buttonLabel: 'Personalize Fund',
-    },
-    {title: 'Date Night Fund', amount: '$100', buttonLabel: 'Personalize Fund'},
-    {
-      title: 'Create Your Own Fund',
-      amount: '$100.00',
-      buttonLabel: 'Personalize Fund',
-    },
-  ];
+  const {cashFundData} = useLoaderData();
 
   const handleButtonClick = (title) => {
     alert(`Button clicked for ${title}`);
@@ -49,12 +44,13 @@ const CashFunds = () => {
         </div>
         {/* Cards Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {cardsData.map((card, index) => (
+          {cashFundData.map((card, index) => (
             <Card
+              id={card.id}
               key={index}
-              title={card.title}
+              title={card.name}
               amount={card.amount}
-              buttonLabel={card.buttonLabel}
+              buttonLabel={'Personalize Fund'}
               onButtonClick={() => handleButtonClick(card.title)}
             />
           ))}
@@ -66,7 +62,7 @@ const CashFunds = () => {
 
 export default CashFunds;
 
-const Card = ({title, amount, buttonLabel, onButtonClick}) => {
+const Card = ({title, amount, buttonLabel, onButtonClick, id}) => {
   return (
     <div className="w-full bg-white shadow-md rounded-md overflow-hidden">
       <div className="bg-black h-60 flex items-center justify-center">
@@ -75,13 +71,13 @@ const Card = ({title, amount, buttonLabel, onButtonClick}) => {
       </div>
       <div className="p-4">
         <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-gray-600">{amount}</p>
-        <button
-          className="mt-4 w-full bg-black text-white py-2 rounded-md"
-          onClick={onButtonClick}
-        >
-          {buttonLabel}
-        </button>
+        <p className="text-gray-600">$ {amount}</p>
+        <Link to={`/dashboard/cashfunds/${id}`}>
+          <div className="mt-4 w-full bg-black text-white py-2 rounded-md text-center">
+            {' '}
+            {buttonLabel}
+          </div>
+        </Link>
       </div>
     </div>
   );
