@@ -38,6 +38,12 @@ const Registry_Services = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  updateOnBoarding: (payload, token) =>
+    axiosInstance.put(`users/onboard/${payload.id}`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 export default Registry_Services;

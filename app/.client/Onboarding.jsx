@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {useLoaderData} from '@remix-run/react';
+import {useLoaderData, useNavigate} from '@remix-run/react';
 
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
@@ -12,6 +12,8 @@ import Registry_Services from '~/Services/Registry.js';
 import {STEPS_CONSTANTS} from '../constants/UiConstants';
 const OnboardingClient = ({}) => {
   const {user} = useLoaderData();
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
   const [addressData, setAddressData] = useState({
@@ -192,19 +194,8 @@ const OnboardingClient = ({}) => {
       console.log(e, 'Exception');
     }
   };
-  const handleNoOfGuest = async () => {
-    const payload = {
-      noOfGuest: Number(eventData.noOfGuest),
-      id: Number(eventData.eventId),
-    };
-    const token = localStorage.getItem('@Token');
 
-    try {
-      const data = await Registry_Services.updateUserInfo(payload, token);
-      setStep(step + 1);
-    } catch (e) {}
-  };
-  const handleOnboard = async () => {
+  const handleNoOfGuest = async () => {
     const payload = {
       noOfGuest: Number(eventData.noOfGuest),
       id: Number(eventData.eventId),
@@ -214,7 +205,23 @@ const OnboardingClient = ({}) => {
     try {
       const data = await Registry_Services.updateEvent(payload, token);
       setStep(step + 1);
-    } catch (e) {}
+    } catch (e) {
+      console.log('UPpate', e);
+    }
+  };
+  const handleOnboard = async () => {
+    const payload = {
+      isOnBoard: true,
+      id: Number(user.user.id),
+    };
+    const token = localStorage.getItem('@Token');
+
+    try {
+      const data = await Registry_Services.updateOnBoarding(payload, token);
+      navigate('/');
+    } catch (e) {
+      console.log(e, 'DE');
+    }
   };
   // Handlers for navigation
   async function goNext() {
@@ -240,11 +247,7 @@ const OnboardingClient = ({}) => {
       setStep(step - 1);
     }
   };
-
-  // Form submission logic
-  function handleSubmit(e) {
-    e.preventDefault();
-  }
+  console.log(user.user.id);
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
     switch (currentStep) {
@@ -285,7 +288,7 @@ const OnboardingClient = ({}) => {
         return null;
     }
   };
-
+  console.log(step, 'STEP');
   return (
     <div className="flex justify-center items-center min-h-screen bg-white">
       {/* Main content wrapper */}
@@ -302,7 +305,7 @@ const OnboardingClient = ({}) => {
         {/* Back and Next buttons */}
         <div className="flex justify-between mt-4">
           <Button text="Back" onClick={goBack} disabled={step === 1} />
-          <Button text={step === 3 ? 'Submit' : 'Next'} onClick={goNext} />
+          <Button text={step === 7 ? 'Submit' : 'Next'} onClick={goNext} />
         </div>
       </div>
     </div>

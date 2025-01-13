@@ -8,22 +8,24 @@ export async function loader(args) {
   const user = await requireAuth(context);
   if (!user) {
     return redirect('/login');
-  } else if (user?.user?.isOnboard === false) {
+  } else {
     const getUser = await context.ClientGet(`users/${user?.user?.id}`, context);
-
     const sessionUser = {
       accessToken: user.accessToken,
       ...getUser.data,
     };
     context.session.set('@User', sessionUser);
     const cookie = await context.session.commit();
-    return redirect('/onboarding', {
-      headers: {
-        'Set-Cookie': cookie,
-      },
-    });
-  } else {
-    return redirect('/dashboard');
+
+    if (sessionUser?.user?.isOnboard === false) {
+      return redirect('/onboarding', {
+        headers: {
+          'Set-Cookie': cookie,
+        },
+      });
+    } else {
+      return redirect('/dashboard');
+    }
   }
 }
 
