@@ -14,8 +14,7 @@ export async function loader(args) {
   const {product} = await loadProductData(args);
   const user = await requireAuth(context);
   const registry = context?.session?.get('@Registry');
-
-  return defer({collections, product, user, ...registry});
+  return defer({collections, product, user, registry});
 }
 
 export async function action({request, context}) {
@@ -62,7 +61,6 @@ async function loadProductData({context, params, request}) {
 const GiftDetailHandle = () => {
   const fetcher = useFetcher();
   const {collections, product, registry} = useLoaderData();
-
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };

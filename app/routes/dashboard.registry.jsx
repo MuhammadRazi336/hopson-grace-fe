@@ -16,10 +16,12 @@ export async function loader({request, context}) {
     context,
   );
   let mergedArray = [];
-  let ids = [];
+  const ids = res?.data?.map(
+    (product) => `gid://shopify/Product/${product.productId}`,
+  );
   const products = await fetchProducts(context.storefront, ids);
+
   if (res?.data?.length) {
-    res.data.map((product) => `gid://shopify/Product/${product.productId}`);
     mergedArray = res?.data?.map((item1) => {
       // Find the corresponding product from array2
       const product = products.nodes.find(
@@ -36,17 +38,16 @@ export async function loader({request, context}) {
       return item1; // If no matching product, return the original item
     });
   }
-
   return defer({
     data: mergedArray,
     cashfundData: cashRes?.data || [],
-    ...registry,
+    registry,
   });
 }
 
 const index = () => {
-  const {data, cashfundData} = useLoaderData();
-
+  const { data, cashfundData } = useLoaderData();
+  console.log(data[0].variants.edges)
   return (
     <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
@@ -94,7 +95,7 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = ({data}) => {
+const ProductPage = ({ data }) => {
   return (
     <div className="container p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
