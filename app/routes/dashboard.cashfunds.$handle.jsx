@@ -1,27 +1,23 @@
 import React, {useState} from 'react';
 import {useFetcher, useLoaderData} from '@remix-run/react';
-import {requireAuth} from '~/utils/auth-guard';
-import {defer, redirect} from '@shopify/remix-oxygen';
+import {defer} from '@shopify/remix-oxygen';
 
 export async function loader({request, context}) {
-  const user = await requireAuth(context);
-  return defer({user});
+  const registry = context?.session?.get('@Registry');
+  return defer({...registry});
 }
 
 export async function action({request, context}) {
   const body = await request.json();
   const {payload} = body;
-  console.log(payload, 'payload');
   try {
     const response = await context.ClientPost(
       payload,
       'registryProducts/cash-fund',
       context,
     );
-    console.log(response, 'Response of cashfund');
     return defer({response});
   } catch (e) {
-    console.log(e, 'ERROR');
     return defer({e});
   }
 }
@@ -35,7 +31,7 @@ function NewCashFund() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [noteToFamily, setNoteToFamily] = useState('');
   const fetcher = useFetcher();
-  const {user} = useLoaderData();
+  const {registry} = useLoaderData();
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -57,7 +53,7 @@ function NewCashFund() {
       amount: Number(totalGoal),
       isAmountHide: hideFromGuests,
       note: noteToFamily,
-      registryId: Number(user.registry.id),
+      registryId: Number(registry[0].id),
     };
     fetcher.submit(
       {payload}, // Send data as key-value pairs

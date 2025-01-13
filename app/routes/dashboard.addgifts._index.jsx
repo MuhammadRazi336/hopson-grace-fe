@@ -13,7 +13,9 @@ export async function loader({request, context}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const user = await requireAuth(context);
-  return defer({products, collections, user});
+  const registry = context?.session?.get('@Registry');
+
+  return defer({products, collections, user, ...registry});
 }
 
 export async function action({request, context}) {
@@ -66,13 +68,13 @@ export default function AddGifts() {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const {products, collections, user} = useLoaderData();
+  const {products, collections, registry} = useLoaderData();
   const fetcher = useFetcher();
   const handleAddtoRegistry = ({id, price, quantity}) => {
     const payload = {
       productId: id,
       amount: price,
-      registryId: Number(user.registry.id),
+      registryId: Number(registry[0].id),
       productTypeId: 1,
       quantity,
     };

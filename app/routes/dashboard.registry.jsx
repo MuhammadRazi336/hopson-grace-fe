@@ -2,41 +2,46 @@ import Accordiance from '~/components/Accordiance.jsx';
 import ProductCard from '~/components/Product.jsx';
 import FundCard from '~/components/FundCard.jsx';
 import {defer} from '@remix-run/server-runtime';
-import {requireAuth} from '~/utils/auth-guard';
 import {useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 
 export async function loader({request, context}) {
-  const user = await requireAuth(context);
+  const registry = context?.session?.get('@Registry');
   const res = await context.ClientGet(
-    `registryProducts/${user.registry.id}?type=gift`,
+    `registryProducts/${registry[0].id}?type=gift`,
     context,
   );
   const cashRes = await context.ClientGet(
-    `registryProducts/${user.registry.id}?type=cash`,
+    `registryProducts/${registry[0].id}?type=cash`,
     context,
   );
-  const ids = res.data.map(
-    (product) => `gid://shopify/Product/${product.productId}`,
-  );
+  let mergedArray = [];
+  let ids = [];
   const products = await fetchProducts(context.storefront, ids);
-  const mergedArray = res.data.map((item1) => {
-    // Find the corresponding product from array2
-    const product = products.nodes.find(
-      (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
-    );
+  if (res?.data?.length) {
+    res.data.map((product) => `gid://shopify/Product/${product.productId}`);
+    mergedArray = res?.data?.map((item1) => {
+      // Find the corresponding product from array2
+      const product = products.nodes.find(
+        (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
+      );
 
-    // If a matching product is found, merge its details into the current item
-    if (product) {
-      return {
-        ...item1,
-        ...product,
-      };
-    }
-    return item1; // If no matching product, return the original item
+      // If a matching product is found, merge its details into the current item
+      if (product) {
+        return {
+          ...item1,
+          ...product,
+        };
+      }
+      return item1; // If no matching product, return the original item
+    });
+  }
+
+  return defer({
+    data: mergedArray,
+    cashfundData: cashRes?.data || [],
+    ...registry,
   });
-
-  return defer({user, data: mergedArray, cashfundData: cashRes.data});
 }
 
 const index = () => {

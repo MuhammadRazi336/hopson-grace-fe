@@ -24,14 +24,23 @@ export async function loader(args) {
         },
       });
     } else {
-      return redirect('/dashboard');
+      const getRegistries = await context.ClientGet(
+        `registries/by-userId/${sessionUser?.user?.id}`,
+        context,
+      );
+      context.session.set('@Registry', getRegistries.data);
+      const cookie = await context.session.commit();
+      return redirect('/dashboard', {
+        headers: {
+          'Set-Cookie': cookie,
+        },
+      });
     }
   }
 }
 
 const Dashboard_index = () => {
   const data = useLoaderData();
-  console.log(data, 'Dat');
   return <div></div>;
 };
 
