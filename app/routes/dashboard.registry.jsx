@@ -2,46 +2,52 @@ import Accordiance from '~/components/Accordiance.jsx';
 import ProductCard from '~/components/Product.jsx';
 import FundCard from '~/components/FundCard.jsx';
 import {defer} from '@remix-run/server-runtime';
-import {requireAuth} from '~/utils/auth-guard';
 import {useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 
 export async function loader({request, context}) {
-  const user = await requireAuth(context);
+  const registry = context?.session?.get('@Registry');
   const res = await context.ClientGet(
-    `registryProducts/${user.registry.id}?type=gift`,
+    `registryProducts/${registry[0].id}?type=gift`,
     context,
   );
   const cashRes = await context.ClientGet(
-    `registryProducts/${user.registry.id}?type=cash`,
+    `registryProducts/${registry[0].id}?type=cash`,
     context,
   );
-  const ids = res.data.map(
+  let mergedArray = [];
+  const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
   );
   const products = await fetchProducts(context.storefront, ids);
-  const mergedArray = res.data.map((item1) => {
-    // Find the corresponding product from array2
-    const product = products.nodes.find(
-      (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
-    );
 
-    // If a matching product is found, merge its details into the current item
-    if (product) {
-      return {
-        ...item1,
-        ...product,
-      };
-    }
-    return item1; // If no matching product, return the original item
+  if (res?.data?.length) {
+    mergedArray = res?.data?.map((item1) => {
+      // Find the corresponding product from array2
+      const product = products.nodes.find(
+        (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
+      );
+
+      // If a matching product is found, merge its details into the current item
+      if (product) {
+        return {
+          ...item1,
+          ...product,
+        };
+      }
+      return item1; // If no matching product, return the original item
+    });
+  }
+  return defer({
+    data: mergedArray,
+    cashfundData: cashRes?.data || [],
+    registry,
   });
-
-  return defer({user, data: mergedArray, cashfundData: cashRes.data});
 }
 
 const index = () => {
-  const {data, cashfundData} = useLoaderData();
-
+  const { data, cashfundData } = useLoaderData();
+  console.log(data[0].variants.edges)
   return (
     <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
@@ -89,7 +95,7 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = ({data}) => {
+const ProductPage = ({ data }) => {
   return (
     <div className="container p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

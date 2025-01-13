@@ -18,7 +18,6 @@ export async function action({request, context}) {
     );
     return defer({response});
   } catch (e) {
-    console.log(e, 'ERROR');
     return defer({e});
   }
 }
