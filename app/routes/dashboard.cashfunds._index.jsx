@@ -74,7 +74,6 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id}) => {
         <p className="text-gray-600">$ {amount}</p>
         <Link to={`/dashboard/cashfunds/${id}`}>
           <div className="mt-4 w-full bg-black text-white py-2 rounded-md text-center">
-            {' '}
             {buttonLabel}
           </div>
         </Link>
