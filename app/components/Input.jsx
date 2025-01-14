@@ -5,6 +5,7 @@ export default function Input({
   onChange,
   type = 'text',
   required,
+  placeholder,
   ...rest
 }) {
   return (
@@ -19,7 +20,8 @@ export default function Input({
         type={type}
         value={value}
         onChange={onChange}
-        className="mt-2 p-2 border border-gray-300 rounded"
+        placeholder={placeholder}
+        className="mt-2 p-2 border border-gray-300 rounded w-80"
         {...rest}
       />
     </div>
