@@ -1,5 +1,6 @@
-import {useLoaderData} from '@remix-run/react';
+import {useActionData, useLoaderData, useSubmit} from '@remix-run/react';
 import {useEffect, useState} from 'react';
+import ButtonComponent from '~/components/Button';
 import ImageUpload from '~/components/ImageUpload';
 
 export async function loader({request, context}) {
@@ -7,9 +8,27 @@ export async function loader({request, context}) {
   const res = await context.ClientGet(`registries/${registry[0].id}`, context);
   return {data: res?.data || {}};
 }
+export async function action({request, context}) {
+  const body = await request.json();
+  const {payload} = body;
+  try {
+    const response = await context.ClienPut(
+      payload,
+      `events/${payload.id}`,
+      context,
+    );
+    return {...response};
+  } catch (e) {
+    return {...e};
+  }
+}
 
 const index = () => {
+  const actionData = useActionData();
   const {data} = useLoaderData();
+  console.log(data.events[0].id, 'Actions');
+
+  const submit = useSubmit();
   const [eventState, setEventState] = useState({
     coupleName: '',
     hashtag: '',
@@ -21,6 +40,8 @@ const index = () => {
     noOfGuest: '',
     welcomeMessage: '',
     image: '',
+    eventTypeId: '',
+    id: '',
   });
   useEffect(() => {
     if (data?.events?.length) {
@@ -36,6 +57,8 @@ const index = () => {
         noOfGuest: data.events[0].noOfGuest,
         welcomeMessage: data.events[0].welcomeMessage,
         province: data.events[0].province,
+        eventTypeId: Number(data.events[0].eventTypeId),
+        id: Number(data.events[0].id),
       });
     }
   }, [data]);
@@ -47,6 +70,25 @@ const index = () => {
       [name]: value,
     });
   };
+  const onSubmit = () => {
+    const payload = {
+      name: 'name',
+      eventDate: eventState.weddingDate,
+      noOfGuest: eventState.noOfGuest,
+      eventTypeId: eventState.eventTypeId,
+      registryId: Number(data.id),
+      image: {},
+      coupleName: eventState.coupleName,
+      hashtag: [eventState.hashtag],
+      weddingTime: eventState.weddingTime,
+      location: eventState.location,
+      city: eventState.city,
+      province: eventState.province,
+      welcomeMessage: eventState.welcomeMessage,
+      id: eventState.id,
+    };
+    submit({payload}, {method: 'post', encType: 'application/json'});
+  };
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="shadow-lg rounded-lg p-8 w-full max-w-4xl border bg-gray-100">
@@ -56,10 +98,11 @@ const index = () => {
             <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
               <ImageUpload
                 onImageChange={(img) => {
-                  setEventState({
-                    ...eventState,
-                    image: img,
-                  });
+                  console.log(img, 'Img');
+                  // setEventState({
+                  //   ...eventState,
+                  //   image: img,
+                  // });
                 }}
                 initialImage={eventState.image}
               />
@@ -192,9 +235,11 @@ const index = () => {
           <button className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg">
             Change Page Style
           </button>
-          <button className="bg-black text-white px-6 py-2 rounded-lg">
-            Save
-          </button>
+          <ButtonComponent
+            text="save"
+            onClick={onSubmit}
+            className="bg-black text-white px-6 py-2 rounded-lg"
+          />
         </div>
       </div>
     </div>

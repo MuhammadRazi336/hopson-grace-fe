@@ -65,7 +65,7 @@ export default async function handleRequest(
 
   // Ensure `img-src` allows `blob:` URLs and other domains
   const imgSrcPolicy = `img-src 'self' blob: ${additionalDomainsString};`;
-  const baseUriPolicy = 'base-uri ' + "'self'";
+  const baseUriPolicy = 'base-uri; ' + "'self'";
 
   // Update the Content-Security-Policy header with both `img-src` and `connect-src` directives
   responseHeaders.set(
