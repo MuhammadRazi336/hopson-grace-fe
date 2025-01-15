@@ -72,13 +72,21 @@ const Profile = () => {
     setFormData({...formData, [e.target.name]: e.target.value});
   };
   const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+
     const payload = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       fianceFirstName: formData.fianceFirstName,
       fianceLastName: formData.fianceLastName,
+      password: formData.password,
     };
-    e.preventDefault();
+
     submit({payload}, {method: 'post', encType: 'application/json'});
   };
 
@@ -159,8 +167,36 @@ const Profile = () => {
                     Password
                   </label>
                 </div>
+                <div className="ml-1">
+                  <Input
+                    name="password"
+                    type="password"
+                    onChange={handleChange}
+                    placeholder={'Password'}
+                  />
+                  {actionData?.error?.fianceFirstName && (
+                    <p className="text-red-600">
+                      {actionData.error.fianceFirstName}
+                    </p>
+                  )}
+                  <Input
+                    name="confirmPassword"
+                    type="password"
+                    onChange={handleChange}
+                    placeholder={'Confirm Password'}
+                  />
+                  {actionData?.error?.fianceLastName && (
+                    <p className="text-red-600">
+                      {actionData.error.fianceLastName}
+                    </p>
+                  )}
+                  <ButtonComponent
+                    type="submit"
+                    text={'Submit'}
+                    className="mt-4"
+                  />
+                </div>
               </div>
-              <ButtonComponent type="submit" text={'Submit'} />
             </form>
           </div>
 

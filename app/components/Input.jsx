@@ -4,7 +4,6 @@ export default function Input({
   value,
   onChange,
   type = 'text',
-  required,
   placeholder,
   ...rest
 }) {
@@ -14,7 +13,6 @@ export default function Input({
         {label}
       </label>
       <input
-        required
         id={name}
         name={name}
         type={type}
