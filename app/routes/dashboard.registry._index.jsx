@@ -47,6 +47,8 @@ export async function loader({request, context}) {
 
 const index = () => {
   const {data, cashfundData, registry} = useLoaderData();
+  console.log(data[0], 'Data');
+  console.log(cashfundData[0], 'Cashfund data ');
   return (
     <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>

@@ -4,12 +4,14 @@ import {defer} from '@shopify/remix-oxygen';
 
 export async function loader(args) {
   const {context, params} = args;
+  const registry = context?.session?.get('@Registry');
+
   // Await the critical data required to render initial state of the page
   const data = await context.ClientGet(
     `registryProducts/cash-fund/view/${params.handle}`,
     context,
   );
-  return {cashFundData: data?.data || {}};
+  return {cashFundData: data?.data || {}, registry};
 }
 export async function action({request, context}) {
   const body = await request.json();
@@ -26,7 +28,7 @@ export async function action({request, context}) {
   }
 }
 function NewCashFund() {
-  const {cashFundData} = useLoaderData();
+  const {cashFundData, registry} = useLoaderData();
   const [photo, setPhoto] = useState(null);
   const [cashFundName, setCashFundName] = useState(cashFundData?.name);
   const [allowAnyAmount, setAllowAnyAmount] = useState(
@@ -42,7 +44,6 @@ function NewCashFund() {
   const [agreeToTerms, setAgreeToTerms] = useState(true);
   const [noteToFamily, setNoteToFamily] = useState(cashFundData?.note);
   const fetcher = useFetcher();
-  const {registry} = useLoaderData();
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {

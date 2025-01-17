@@ -1,5 +1,17 @@
-import ButtonComponent from '~/components/Button.jsx';
+import {Link} from '@remix-run/react';
 
+export async function loader(args) {
+  const {context} = args;
+  const registry = context?.session?.get('@Registry');
+
+  // Await the critical data required to render initial state of the page
+  const data = await context.ClientGet(
+    `transactions/${registry[0].id}`,
+    context,
+  );
+
+  return {giftTrackingData: data?.data || []};
+}
 const GiftTracker = () => {
   const gifts = [
     {
@@ -89,13 +101,11 @@ const GiftTracker = () => {
                 <td className="border px-4 py-2">{gift.amount}</td>
                 <td className="border px-4 py-2">{gift.giftFor}</td>
                 <td className="border px-4 py-2">
-                  <ButtonComponent
-                    text={gift.viewGifts}
-                    onClick={() =>
-                      alert(`Viewing gifts for ${gift.purchasedBy}`)
-                    }
-                    className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600"
-                  />
+                  <Link>
+                    <div className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 text-center">
+                      {gift.viewGifts}
+                    </div>
+                  </Link>
                 </td>
                 <td className="border px-4 py-2">{gift.thankYou}</td>
               </tr>
