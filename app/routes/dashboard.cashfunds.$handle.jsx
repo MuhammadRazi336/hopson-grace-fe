@@ -1,12 +1,18 @@
 import React, {useState} from 'react';
-import {useFetcher, useLoaderData} from '@remix-run/react';
+import {useActionData, useFetcher, useLoaderData} from '@remix-run/react';
 import {defer} from '@shopify/remix-oxygen';
 
-export async function loader({request, context}) {
+export async function loader(args) {
+  const {context, params} = args;
   const registry = context?.session?.get('@Registry');
-  return defer({...registry});
-}
 
+  // Await the critical data required to render initial state of the page
+  const data = await context.ClientGet(
+    `registryProducts/cash-fund/view/${params.handle}`,
+    context,
+  );
+  return {cashFundData: data?.data || {}, registry};
+}
 export async function action({request, context}) {
   const body = await request.json();
   const {payload} = body;
@@ -22,16 +28,22 @@ export async function action({request, context}) {
   }
 }
 function NewCashFund() {
+  const {cashFundData, registry} = useLoaderData();
   const [photo, setPhoto] = useState(null);
-  const [cashFundName, setCashFundName] = useState('');
-  const [allowAnyAmount, setAllowAnyAmount] = useState(false);
-  const [allowFixedAmount, setAllowFixedAmount] = useState(false);
-  const [totalGoal, setTotalGoal] = useState('');
-  const [hideFromGuests, setHideFromGuests] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [noteToFamily, setNoteToFamily] = useState('');
+  const [cashFundName, setCashFundName] = useState(cashFundData?.name);
+  const [allowAnyAmount, setAllowAnyAmount] = useState(
+    cashFundData?.isAnyAmount,
+  );
+  const [allowFixedAmount, setAllowFixedAmount] = useState(
+    cashFundData?.isFixedAmount,
+  );
+  const [totalGoal, setTotalGoal] = useState(cashFundData?.amount);
+  const [hideFromGuests, setHideFromGuests] = useState(
+    cashFundData?.isAmountHide,
+  );
+  const [agreeToTerms, setAgreeToTerms] = useState(true);
+  const [noteToFamily, setNoteToFamily] = useState(cashFundData?.note);
   const fetcher = useFetcher();
-  const {registry} = useLoaderData();
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
