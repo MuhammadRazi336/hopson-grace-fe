@@ -1,11 +1,15 @@
-import {useActionData, useLoaderData, useSubmit} from '@remix-run/react';
+import {
+  useActionData,
+  useLoaderData,
+  useSubmit,
+  useFetcher,
+} from '@remix-run/react';
 import {useEffect, useState} from 'react';
 import ButtonComponent from '~/components/Button';
 import ImageUpload from '~/components/ImageUpload';
 
-export async function loader({request, context}) {
-  const registry = context?.session?.get('@Registry');
-  const res = await context.ClientGet(`registries/${registry[0].id}`, context);
+export async function loader({request, context, params}) {
+  const res = await context.ClientGet(`events/${params.handle}`, context);
   return {data: res?.data || {}};
 }
 export async function action({request, context}) {
@@ -24,11 +28,7 @@ export async function action({request, context}) {
 }
 
 const index = () => {
-  const actionData = useActionData();
   const {data} = useLoaderData();
-  console.log(data.events[0].id, 'Actions');
-
-  const submit = useSubmit();
   const [eventState, setEventState] = useState({
     coupleName: '',
     hashtag: '',
@@ -44,23 +44,21 @@ const index = () => {
     id: '',
   });
   useEffect(() => {
-    if (data?.events?.length) {
-      setEventState({
-        ...eventState,
-        image: data.events[0].image,
-        weddingDate: data.events[0].eventDate,
-        weddingTime: data.events[0].weddingTime,
-        hashtag: data.events[0].hashtag,
-        coupleName: data.events[0].coupleName,
-        location: data.events[0].location,
-        city: data.events[0].city,
-        noOfGuest: data.events[0].noOfGuest,
-        welcomeMessage: data.events[0].welcomeMessage,
-        province: data.events[0].province,
-        eventTypeId: Number(data.events[0].eventTypeId),
-        id: Number(data.events[0].id),
-      });
-    }
+    setEventState({
+      ...eventState,
+      image: data.image,
+      weddingDate: data.eventDate,
+      weddingTime: data.weddingTime,
+      hashtag: data.hashtag,
+      coupleName: data.coupleName,
+      location: data.location,
+      city: data.city,
+      noOfGuest: data.noOfGuest,
+      welcomeMessage: data.welcomeMessage,
+      province: data.province,
+      eventTypeId: Number(data.eventType.id),
+      id: Number(data.id),
+    });
   }, [data]);
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -70,14 +68,20 @@ const index = () => {
       [name]: value,
     });
   };
+  const fetcher = useFetcher();
   const onSubmit = () => {
     const payload = {
-      name: 'name',
       eventDate: eventState.weddingDate,
       noOfGuest: eventState.noOfGuest,
       eventTypeId: eventState.eventTypeId,
-      registryId: Number(data.id),
-      image: {},
+      registryId: Number(data.registryId),
+      image: {
+        originalName: 'wedding-photo.jpg',
+        fileName: 'event123.jpg',
+        fileUrl: 'https://example.com/images/event123.jpg',
+        mimeType: 'image/jpeg',
+        size: 1024,
+      },
       coupleName: eventState.coupleName,
       hashtag: [eventState.hashtag],
       weddingTime: eventState.weddingTime,
@@ -87,7 +91,7 @@ const index = () => {
       welcomeMessage: eventState.welcomeMessage,
       id: eventState.id,
     };
-    submit({payload}, {method: 'post', encType: 'application/json'});
+    fetcher.submit({payload}, {method: 'post', encType: 'application/json'});
   };
   return (
     <div className="min-h-screen flex items-center justify-center">

@@ -69,7 +69,7 @@ const index = () => {
             <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
               Share Registry
             </button>
-            <Link to={`/dashboard/registry/${registry[0].id}`}>
+            <Link to={`/dashboard/registry/${registry[0].events[0].id}`}>
               <div className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
                 Edit Registry Page
               </div>
