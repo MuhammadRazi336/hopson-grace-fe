@@ -1,4 +1,4 @@
-import {Link} from '@remix-run/react';
+import {Link, useLoaderData} from '@remix-run/react';
 
 export async function loader(args) {
   const {context} = args;
@@ -13,64 +13,16 @@ export async function loader(args) {
   return {giftTrackingData: data?.data || []};
 }
 const GiftTracker = () => {
-  const gifts = [
-    {
-      purchasedBy: 'Robert & Elisabeth Fox',
-      date: 'Feb 11, 2024',
-      amount: '$351.02',
-      giftFor: 'Shower',
-      viewGifts: 'View Gifts/Message',
-      thankYou: 'Send Thanks',
-    },
-    {
-      purchasedBy: 'Ronald Richards',
-      date: 'Feb 03, 2024',
-      amount: '$739.65',
-      giftFor: 'Shower',
-      viewGifts: 'View Gifts/Message',
-      thankYou: 'Send Thanks',
-    },
-    {
-      purchasedBy: 'Cody Fisher & Candice Farr',
-      date: 'Feb 03, 2024',
-      amount: '$328.85',
-      giftFor: 'Wedding',
-      viewGifts: 'View Gifts/Message',
-      thankYou: '✓',
-    },
-    {
-      purchasedBy: 'Marvin McKinney',
-      date: 'Feb 03, 2024',
-      amount: '$948.55',
-      giftFor: 'Wedding',
-      viewGifts: 'View Gifts/Message',
-      thankYou: '✓',
-    },
-    {
-      purchasedBy: 'Arlene & Mansel McCoy',
-      date: 'Jan 30, 2024',
-      amount: '$293.01',
-      giftFor: 'Shower',
-      viewGifts: 'View Gifts/Message',
-      thankYou: 'Send Thanks',
-    },
-    {
-      purchasedBy: 'Leslie & Marie Alexander',
-      date: 'Jan 29, 2024',
-      amount: '$767.50',
-      giftFor: 'Wedding',
-      viewGifts: 'View Gifts/Message',
-      thankYou: '✓',
-    },
-    {
-      purchasedBy: 'Darrell Steward',
-      date: 'Jan 01, 2024',
-      amount: '$169.43',
-      giftFor: 'Wedding',
-      viewGifts: 'View Gifts/Message',
-      thankYou: '✓',
-    },
-  ];
+  const {giftTrackingData} = useLoaderData();
+
+  // {
+  //       purchasedBy: 'Robert & Elisabeth Fox',
+  //       date: 'Feb 11, 2024',
+  //       amount: '$351.02',
+  //       giftFor: 'Shower',
+  //       viewGifts: 'View Gifts/Message',
+  //       thankYou: 'Send Thanks',
+  //     },
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
@@ -94,20 +46,22 @@ const GiftTracker = () => {
             </tr>
           </thead>
           <tbody>
-            {gifts.map((gift, index) => (
+            {giftTrackingData.map((gift, index) => (
               <tr key={index} className="hover:bg-gray-50">
-                <td className="border px-4 py-2">{gift.purchasedBy}</td>
-                <td className="border px-4 py-2">{gift.date}</td>
-                <td className="border px-4 py-2">{gift.amount}</td>
+                <td className="border px-4 py-2">{gift.name}</td>
+                <td className="border px-4 py-2">{gift.purchaseDate}</td>
+                <td className="border px-4 py-2">{gift.totalAmount}</td>
                 <td className="border px-4 py-2">{gift.giftFor}</td>
                 <td className="border px-4 py-2">
                   <Link>
                     <div className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 text-center">
-                      {gift.viewGifts}
+                      View Gifts
                     </div>
                   </Link>
                 </td>
-                <td className="border px-4 py-2">{gift.thankYou}</td>
+                <td className="border px-4 py-2">
+                  {gift.messageSent ? 'Sent' : 'Send Thanks'}
+                </td>
               </tr>
             ))}
           </tbody>
