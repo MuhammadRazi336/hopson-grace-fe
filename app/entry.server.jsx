@@ -45,11 +45,7 @@ export default async function handleRequest(
 
   responseHeaders.set('Content-Type', 'text/html');
   responseHeaders.set('Content-Security-Policy', header);
-  const additionalDomains = [
-    'https://dev-hopsongrace.codup.io',
-    'blob:', // Allow blob URLs
-    "'self'",
-  ];
+  const additionalDomains = ['https://dev-hopsongrace.codup.io'];
   const existingCSP = responseHeaders.get('Content-Security-Policy') || ''; // Get the current CSP header
 
   // Join additional domains into a space-separated string
@@ -68,10 +64,7 @@ export default async function handleRequest(
   const baseUriPolicy = 'base-uri; ' + "'self'";
 
   // Update the Content-Security-Policy header with both `img-src` and `connect-src` directives
-  responseHeaders.set(
-    'Content-Security-Policy',
-    `${imgSrcPolicy} ${updatedCSP} ${baseUriPolicy}`,
-  );
+  responseHeaders.set('Content-Security-Policy', `${updatedCSP} `);
 
   return new Response(body, {
     headers: responseHeaders,
