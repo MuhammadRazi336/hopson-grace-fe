@@ -40,7 +40,6 @@ export async function action({request, context}) {
   const user = await requireAuth(context);
   const body = await request.json();
   const {payload} = body;
-  console.log('🚀 ~ action ~ payload:', payload.id);
 
   try {
     const response = await context.ClientPut(
@@ -94,112 +93,109 @@ const ShippingAddress = () => {
   };
 
   return (
-    <>
-      <div>
-        <div className="px-7">
-          <h1 className="uppercase">Change Shipping Address</h1>
-        </div>
-
-        <div className="mx-8">
-          <form onSubmit={handleSubmit}>
-            <div className="flex">
-              <div className="p-4">
-                <label htmlFor="" className="text-xl font-semibold">
-                  Phone
-                </label>
-              </div>
-              <div className="ml-5">
-                <Input
-                  name="phoneNumber"
-                  value={formData?.phoneNumber}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="flex">
-              <div className="p-4">
-                <label htmlFor="" className="text-xl font-semibold">
-                  Address
-                </label>
-              </div>
-              <div className="ml-1">
-                <Input
-                  name="address"
-                  value={formData?.address}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="flex">
-              <div className="p-4">
-                <label htmlFor="" className="text-xl font-semibold">
-                  Postal Code
-                </label>
-              </div>
-              <div className="ml-6">
-                <Input
-                  name="postalCode"
-                  value={formData?.postalCode}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="flex">
-              <div className="p-4">
-                <label htmlFor="" className="text-xl font-semibold">
-                  City
-                </label>
-              </div>
-              <div className="ml-11">
-                <Input
-                  name="city"
-                  value={formData?.city}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="flex">
-              <div className="p-4">
-                <label htmlFor="" className="text-xl font-semibold">
-                  Province
-                </label>
-              </div>
-              <div>
-                <Input
-                  name="province"
-                  value={formData?.province}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="flex">
-              <div className="p-4">
-                <label htmlFor="" className="text-xl font-semibold">
-                  Country
-                </label>
-              </div>
-              <div className="ml-1">
-                <Input
-                  name="country"
-                  value={formData?.country}
-                  onChange={handleChange}
-                />
-                <ButtonComponent
-                  text={'Submit'}
-                  type="submit"
-                  className="mt-4"
-                />
-              </div>
-            </div>
-          </form>
-        </div>
+    <div>
+      <div className="px-7">
+        <h1 className="uppercase">Change Shipping Address</h1>
       </div>
-    </>
+
+      <div className="mx-8">
+        <form onSubmit={handleSubmit}>
+          <div className="flex">
+            <div className="p-4">
+              <label htmlFor="phone" className="text-xl font-semibold">
+                Phone
+              </label>
+            </div>
+            <div className="ml-5">
+              <Input
+                id="phone"
+                name="phoneNumber"
+                value={formData?.phoneNumber}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className="p-4">
+              <label htmlFor="address" className="text-xl font-semibold">
+                Address
+              </label>
+            </div>
+            <div className="ml-1">
+              <Input
+                id="address"
+                name="address"
+                value={formData?.address}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className="p-4">
+              <label htmlFor="postalCode" className="text-xl font-semibold">
+                Postal Code
+              </label>
+            </div>
+            <div className="ml-6">
+              <Input
+                id="postalCode"
+                name="postalCode"
+                value={formData?.postalCode}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className="p-4">
+              <label htmlFor="" className="text-xl font-semibold">
+                City
+              </label>
+            </div>
+            <div className="ml-11">
+              <Input
+                name="city"
+                value={formData?.city}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className="p-4">
+              <label htmlFor="" className="text-xl font-semibold">
+                Province
+              </label>
+            </div>
+            <div>
+              <Input
+                name="province"
+                value={formData?.province}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex">
+            <div className="p-4">
+              <label htmlFor="" className="text-xl font-semibold">
+                Country
+              </label>
+            </div>
+            <div className="ml-1">
+              <Input
+                name="country"
+                value={formData?.country}
+                onChange={handleChange}
+              />
+              <ButtonComponent text={'Submit'} type="submit" className="mt-4" />
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
