@@ -10,7 +10,7 @@ const PostCard = ({post, src}) => {
             <img
               className="object-contain h-full w-full rounded"
               alt={post.title}
-              src=""
+              src={src}
             />
           )}
         </div>
