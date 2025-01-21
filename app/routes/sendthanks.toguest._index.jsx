@@ -60,6 +60,7 @@ const ThankYou = () => {
               To
             </label>
             <Input
+              id="to"
               className="bg-white"
               name="to"
               value={formData.to}
@@ -75,6 +76,7 @@ const ThankYou = () => {
               Subject
             </label>
             <Input
+              id="subject"
               className="bg-white"
               name="subject"
               value={formData.subject}

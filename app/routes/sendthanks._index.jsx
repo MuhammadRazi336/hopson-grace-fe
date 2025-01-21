@@ -7,10 +7,8 @@ export default function SendThanks() {
     <div className="text-center p-5 font-sans">
       <h2 className="text-xl font-bold">Say Thanks</h2>
 
-      {/* Placeholder for content */}
       <div className="my-5 mx-auto w-11/12 max-w-lg h-52 bg-gray-300 rounded-lg"></div>
 
-      {/* Buttons */}
       <div className="flex flex-col mx-auto w-11/12 max-w-lg h-52 items-center gap-3">
         <div className="flex justify-between w-11/12">
           <button className="w-56 py-6 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300">
