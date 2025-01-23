@@ -98,7 +98,7 @@ const ThankYou = () => {
               value={formData.message}
               onChange={handleChange}
               className="mt-1 block w-full bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            ></textarea>
+            />
           </div>
 
           <div className="flex justify-end">

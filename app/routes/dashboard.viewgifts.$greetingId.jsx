@@ -1,4 +1,4 @@
-import {useLoaderData, useParams, useSearchParams} from '@remix-run/react';
+import {useLoaderData} from '@remix-run/react';
 import React from 'react';
 
 export async function loader({params, context}) {
@@ -24,8 +24,8 @@ const ViewGifts = () => {
         <p className="mt-2">{viewGifts[0]?.message || 'No message'}</p>
       </div>
 
-      {viewGifts.map((gift, index) => (
-        <div key={index} className="bg-white rounded-lg shadow-md p-4">
+      {viewGifts.map((gift) => (
+        <div key={gift.id} className="bg-white rounded-lg shadow-md p-4">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-lg font-semibold">Group Gift Item</h3>
