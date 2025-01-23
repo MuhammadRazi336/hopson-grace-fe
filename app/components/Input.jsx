@@ -5,7 +5,6 @@ export default function Input({
   onChange,
   placeholder,
   type = 'text',
-  required,
   ...rest
 }) {
   return (
@@ -14,7 +13,6 @@ export default function Input({
         {label}
       </label>
       <input
-        required
         id={name}
         name={name}
         type={type}
