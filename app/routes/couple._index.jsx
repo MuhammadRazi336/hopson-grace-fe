@@ -16,7 +16,6 @@ export default function FindCoupleForm() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const {data, name} = useLoaderData();
-  console.log(data, 'Data ');
   return (
     <div>
       {name?.firstName ? (

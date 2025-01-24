@@ -3,6 +3,7 @@ import {Button, Typography} from '@material-tailwind/react';
 export default function ButtonComponent({
   text,
   onClick,
+  type,
   disabled = false,
   className,
   ...rest
@@ -10,6 +11,7 @@ export default function ButtonComponent({
   return (
     <Button
       onClick={onClick}
+      type={type}
       disabled={disabled}
       className={`px-6 py-2 rounded ${
         disabled ? 'bg-gray-300' : 'bg-black text-white'
