@@ -1,4 +1,4 @@
-import React , {useState} from 'react';
+import React, {useState} from 'react';
 import {defer} from '@remix-run/server-runtime';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import {useLoaderData} from '@remix-run/react';
@@ -18,78 +18,70 @@ export async function loader({request, context}) {
   const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
   );
+  console.log(ids, 'Ids');
   const products = await fetchProducts(context.storefront, ids);
-
   if (res?.data?.length) {
     mergedArray = res?.data?.map((item1) => {
       // Find the corresponding product from array2
-      const product = products.nodes.find(
-        (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
+      const product = products?.nodes?.find(
+        (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
       );
+      console.log('🚀 ~ mergedArray=res?.data?.map ~ product:', product);
 
       // If a matching product is found, merge its details into the current item
       if (product) {
         return {
           ...item1,
           ...product,
+          status: item1.isPurchased
+            ? 'purchased'
+            : item1.isGroupPayment
+            ? 'groupGift'
+            : 'addToCart',
         };
       }
       return item1; // If no matching product, return the original item
     });
   }
+
   return defer({
-    data: mergedArray,
+    data: [...mergedArray, ...cashRes?.data],
     cashfundData: cashRes?.data || [],
     registry,
   });
 }
 export default function CoupleProfile() {
-  const data = useLoaderData();
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: 'Product One',
-      price: '$499.99',
-      description: 'A premium product with excellent features.',
-      isGroupGift: true,
-      isCashFund: false,
-      status: 'groupGift',
-      maxContribution: 500,
-      contributedAmount: 100,
-    },
-    {
-      id: 2,
-      name: 'Product Two',
-      price: '$49.99',
-      description: 'An affordable and reliable product.',
-      isGroupGift: false,
-      isCashFund: false,
-      status: 'addToCart',
-    },
-    {
-      id: 3,
-      name: 'Product Three',
-      price: '$199.99',
-      description: 'Help contribute to this amazing product.',
-      isGroupGift: false,
-      isCashFund: true,
-      status: 'cashFund',
-      maxContribution: 200,
-      contributedAmount: 50,
-    },
-    {
-      id: 4,
-      name: 'Product Four',
-      price: '$29.99',
-      description: 'This product has already been purchased.',
-      isGroupGift: false,
-      isCashFund: false,
-      status: 'purchased',
-    },
-  ]);
+  const {data, cashfundData, registry} = useLoaderData() || [];
 
-  const handleAddToCart = (productId) => {
-    alert(`Product ${productId} added to cart!`);
+  const handleAddToCart = async (productId) => {
+    const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    console.log('🚀 ~ handleAddToCart ~ existingCart:', existingCart);
+
+    const isProductInCart = existingCart.some((item) => item.id === productId);
+
+    if (!isProductInCart) {
+      const product = data.find((item) => item.id === productId);
+
+      if (product) {
+        const updatedCart = [
+          ...existingCart,
+          {
+            id: product.id,
+            title: product.title,
+            price: product.amount,
+            image: product.images?.[0]?.src || '',
+          },
+        ];
+
+        sessionStorage.setItem('cart', JSON.stringify(updatedCart));
+
+        alert(`${product.id} has been added to your cart.`);
+      } else {
+        alert('Product not found.');
+      }
+    } else {
+      alert('This product is already in your cart.');
+    }
   };
 
   const handleContribute = (productId, amount) => {
@@ -154,17 +146,17 @@ export default function CoupleProfile() {
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Registry Items</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {products.map((product) => (
+            {data.map((product) => (
               <CoupleProductCard
                 key={product.id}
                 name={product.name}
-                price={product.price}
+                price={product.amount}
                 description={product.description}
-                isGroupGift={product.isGroupGift}
+                isGroupGift={product.isGroupPayment}
                 isCashFund={product.isCashFund}
                 status={product.status}
-                contributedAmount={product.contributedAmount || 0}
-                maxContribution={product.maxContribution || 0}
+                contributedAmount={product.collectedAmount || 0}
+                maxContribution={product.amount || 0}
                 onAddToCart={() => handleAddToCart(product.id)}
                 onContribute={(amount) => handleContribute(product.id, amount)}
               />
