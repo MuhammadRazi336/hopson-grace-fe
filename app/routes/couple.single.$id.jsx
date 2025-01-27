@@ -1,6 +1,35 @@
 import React from 'react';
+import { useLoaderData } from '@remix-run/react';
+
+export async function loader({ params, context }) {
+  const coupleId = params.id; // Access the dynamic ID
+  const token = context?.session?.get('@User')?.accessToken;
+
+  // if (!token) {
+  //   throw new Response('Unauthorized', { status: 401 });
+  // }
+
+  const res = await context.ClientGet(`registries/by-userId/4`, context);
+
+  // Check if the response contains data
+  if (!res.data) {
+    throw new Response('Not Found', { status: 404 }); // Handle not found
+  }
+
+  return res; // Return the couple data
+}
 
 export default function CoupleProfile() {
+  const couple = useLoaderData();
+  // Convert the couple object to a string for rendering
+  const coupleString = JSON.stringify(couple, null, 2);
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <pre>{coupleString}</pre> {/* Display the entire response as a string */}
+      {/* ... existing code ... */}
+    </div>
+  );
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl">
@@ -9,18 +38,15 @@ export default function CoupleProfile() {
             {/* Placeholder for couple's image */}
             <span className="text-gray-500">Image Placeholder</span>
           </div>
-          <h2 className="text-2xl font-bold">Couple Name</h2>
-          <p className="text-gray-500">#CoupleHashtag</p>
+          <h2 className="text-2xl font-bold">{couple.name}</h2>
+          <p className="text-gray-500">#{couple.hashtag}</p>
           <p className="text-gray-600 mt-2">
-            January 1, 2025 2pm | Whispering Pines Event Centre
+            {couple.date} | {couple.venue}
             <br />
-            Calgary, Alberta, Canada
+            {couple.location}
           </p>
           <h3 className="text-lg font-semibold mt-4">Welcome Message</h3>
-          <p className="text-gray-600 text-center">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
+          <p className="text-gray-600 text-center">{couple.welcomeMessage}</p>
         </div>
 
         {/* Filter Section */}
@@ -50,29 +76,18 @@ export default function CoupleProfile() {
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Registry Items</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {/* Example Product Card */}
-            <div className="bg-gray-200 p-4 rounded-lg">
-              <div className="h-32 bg-gray-300 mb-2 flex items-center justify-center">
-                <span className="text-gray-500">Product Image</span>
+            {couple.registryItems.map((item) => (
+              <div key={item.id} className="bg-gray-200 p-4 rounded-lg">
+                <div className="h-32 bg-gray-300 mb-2 flex items-center justify-center">
+                  <span className="text-gray-500">Product Image</span>
+                </div>
+                <h4 className="font-bold">{item.name}</h4>
+                <p className="text-gray-600">${item.price}</p>
+                <button className="bg-black text-white px-4 py-2 rounded mt-2">
+                  Add to Registry
+                </button>
               </div>
-              <h4 className="font-bold">Product One</h4>
-              <p className="text-gray-600">$499.99</p>
-              <button className="bg-black text-white px-4 py-2 rounded mt-2">
-                Add to Registry
-              </button>
-            </div>
-            {/* Repeat for more products */}
-            <div className="bg-gray-200 p-4 rounded-lg">
-              <div className="h-32 bg-gray-300 mb-2 flex items-center justify-center">
-                <span className="text-gray-500">Product Image</span>
-              </div>
-              <h4 className="font-bold">Product Two</h4>
-              <p className="text-gray-600">$49.99</p>
-              <button className="bg-black text-white px-4 py-2 rounded mt-2">
-                Add to Registry
-              </button>
-            </div>
-            {/* Add more product cards as needed */}
+            ))}
           </div>
         </div>
       </div>

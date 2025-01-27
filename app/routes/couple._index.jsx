@@ -1,21 +1,25 @@
-import {useCallback, useState} from 'react';
-import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
+import { useCallback, useState } from 'react';
+import { defer, Form, redirect, useLoaderData } from '@remix-run/react';
+import { Link } from '@remix-run/react';
 
-export async function loader({request, context}) {
+export async function loader({ request, context }) {
   const url = new URL(request.url);
   const firstName = url.searchParams.get('firstName');
   const lastName = url.searchParams.get('lastName');
   const res = await context.ClientGet(
     `users/find-couple?firstName=${firstName}&lastName=${lastName}`,
-    context,
+    context
   );
-  return defer({data: res.data, name: {firstName, lastName}});
+  if (!res.data) {
+    throw new Response('Not Found', { status: 404 });
+  }
+  return defer({ data: res.data, name: { firstName, lastName } });
 }
 
 export default function FindCoupleForm() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const {data, name} = useLoaderData();
+  const { data, name } = useLoaderData();
   console.log(data, 'Data ');
   return (
     <div>
@@ -70,7 +74,7 @@ export default function FindCoupleForm() {
     </div>
   );
 }
-function CoupleListing({data}) {
+function CoupleListing({ data }) {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Couples Listing</h1>
@@ -96,11 +100,11 @@ function CoupleListing({data}) {
                 />
               </td>
               <td className="py-2 px-4 border-b text-center">
-                <a href={`/single/couple`}>
+                <Link to={`/couple/single/${couple.id}`}>
                   <button className="bg-blue-500 text-white px-4 py-2 rounded">
                     View Profile
                   </button>
-                </a>
+                </Link>
               </td>
             </tr>
           ))}
