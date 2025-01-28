@@ -25,7 +25,7 @@ export async function action({request, context}) {
       const user = response.data;
       context.session.set('@User', user);
       const cookie = await context.session.commit();
-      return redirect('/', {
+      return redirect('/dashboard', {
         headers: {
           'Set-Cookie': cookie,
         },
