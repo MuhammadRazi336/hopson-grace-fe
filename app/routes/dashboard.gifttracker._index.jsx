@@ -4,7 +4,6 @@ export async function loader(args) {
   const {context} = args;
   const registry = context?.session?.get('@Registry');
 
-  // Await the critical data required to render initial state of the page
   const data = await context.ClientGet(
     `transactions/${registry[0].id}`,
     context,
@@ -14,15 +13,6 @@ export async function loader(args) {
 }
 const GiftTracker = () => {
   const {giftTrackingData} = useLoaderData();
-
-  // {
-  //       purchasedBy: 'Robert & Elisabeth Fox',
-  //       date: 'Feb 11, 2024',
-  //       amount: '$351.02',
-  //       giftFor: 'Shower',
-  //       viewGifts: 'View Gifts/Message',
-  //       thankYou: 'Send Thanks',
-  //     },
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
@@ -53,7 +43,7 @@ const GiftTracker = () => {
                 <td className="border px-4 py-2">{gift.totalAmount}</td>
                 <td className="border px-4 py-2">{gift.giftFor}</td>
                 <td className="border px-4 py-2">
-                  <Link>
+                  <Link to={`/dashboard/viewgifts/${gift.greetingId}`}>
                     <div className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 text-center">
                       View Gifts
                     </div>

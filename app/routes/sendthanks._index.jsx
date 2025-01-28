@@ -11,21 +11,22 @@ export default function SendThanks() {
 
       <div className="flex flex-col mx-auto w-11/12 max-w-lg h-52 items-center gap-3">
         <div className="flex justify-between w-11/12">
-          <button className="w-56 px-2 py-6 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300">
+          <div className="w-56 px-2 py-6 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300">
             <p>Sent By Mail (Mark Complete)</p>
-          </button>
+          </div>
 
-          <button
-            className="w-56 py-6 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300"
-            onClick={() => navigate('/sendthanks/toguest')}
-          >
-            <p>Send a Thank You by Email</p>
-          </button>
+          <Link to={`/sendthanks/toguest`}>
+            <div className="w-56 px-2 py-9 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300">
+              <p>Send Thank you by Email</p>
+            </div>
+          </Link>
         </div>
 
-        <button className="w-56 py-5 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300">
-          <p>Have Cardly Send a Handwritten Note</p>
-        </button>
+        <Link>
+          <div className="w-56 py-5 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300">
+            <p>Have Cardly Send a Handwritten Note</p>
+          </div>
+        </Link>
       </div>
     </div>
   );
