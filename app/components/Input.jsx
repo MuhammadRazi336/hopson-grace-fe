@@ -3,6 +3,7 @@ export default function Input({
   name,
   value,
   onChange,
+  placeholder,
   type = 'text',
   required,
   ...rest
@@ -19,6 +20,7 @@ export default function Input({
         type={type}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
         className="mt-2 p-2 border border-gray-300 rounded"
         {...rest}
       />

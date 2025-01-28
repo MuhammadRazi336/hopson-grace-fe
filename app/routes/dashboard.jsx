@@ -32,7 +32,7 @@ const Dashboard_index = () => {
     {
       label: 'Gifts & Thank You Tracker',
       value: 6,
-      route: 'giftsthanks',
+      route: 'gifttracker',
     },
     {
       label: 'Ship My Gifts',

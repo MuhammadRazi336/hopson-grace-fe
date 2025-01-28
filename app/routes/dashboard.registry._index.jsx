@@ -2,7 +2,7 @@ import Accordiance from '~/components/Accordiance.jsx';
 import ProductCard from '~/components/Product.jsx';
 import FundCard from '~/components/FundCard.jsx';
 import {defer} from '@remix-run/server-runtime';
-import {useLoaderData} from '@remix-run/react';
+import {Link, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 
 export async function loader({request, context}) {
@@ -46,7 +46,7 @@ export async function loader({request, context}) {
 }
 
 const index = () => {
-  const {data, cashfundData} = useLoaderData();
+  const {data, cashfundData, registry} = useLoaderData();
   return (
     <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
@@ -69,9 +69,11 @@ const index = () => {
             <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
               Share Registry
             </button>
-            <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-              Edit Registry Page
-            </button>
+            <Link to={`/dashboard/registry/${registry[0].events[0].id}`}>
+              <div className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
+                Edit Registry Page
+              </div>
+            </Link>
           </div>
         </div>
       </div>
