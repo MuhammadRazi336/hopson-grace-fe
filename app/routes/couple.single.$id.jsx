@@ -1,52 +1,187 @@
 import React from 'react';
-import { useLoaderData } from '@remix-run/react';
+import {defer, useFetcher, useLoaderData} from '@remix-run/react';
+import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
+import CoupleProductCard from '~/components/CoupleProductCard';
 
-export async function loader({ params, context }) {
-  const coupleId = params.id; // Access the dynamic ID
+export async function loader({params, context}) {
+  const coupleId = params.id;
   const token = context?.session?.get('@User')?.accessToken;
 
-  // if (!token) {
-  //   throw new Response('Unauthorized', { status: 401 });
-  // }
-
-  const res = await context.ClientGet(`registries/by-userId/4`, context);
-
-  // Check if the response contains data
-  if (!res.data) {
-    throw new Response('Not Found', { status: 404 }); // Handle not found
+  if (!token) {
+    throw new Response('Unauthorized', {status: 401});
   }
 
-  return res; // Return the couple data
+  const response = await context.ClientGet(
+    `registries/by-userId/${coupleId}`,
+    context,
+  );
+
+  if (!response.data) {
+    throw new Response('Not Found', {status: 404});
+  }
+
+  const registry = context?.session?.get('@Registry');
+
+  const res = await context.ClientGet(
+    `registryProducts/${response?.data[0]?.id}?type=gift`,
+    context,
+  );
+  const cashRes = await context.ClientGet(
+    `registryProducts/${response?.data[0]?.id}?type=cash`,
+    context,
+  );
+
+  let mergedArray = [];
+  const ids = res?.data?.map(
+    (product) => `gid://shopify/Product/${product.productId}`,
+  );
+
+  const products = await fetchProducts(context.storefront, ids);
+
+  if (res?.data?.length) {
+    mergedArray = res?.data?.map((item1) => {
+      const product = products?.nodes?.find(
+        (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
+      );
+
+      if (product) {
+        return {
+          ...item1,
+          ...product,
+          status: item1.isPurchased
+            ? 'purchased'
+            : item1.isGroupPayment
+            ? 'groupGift'
+            : 'addToCart',
+        };
+      }
+      return item1;
+    });
+  }
+
+  return defer({
+    data: [...mergedArray, ...cashRes?.data],
+    cashfundData: cashRes?.data || [],
+    response,
+    session: context.session,
+  });
+}
+
+export async function action({request, context}) {
+  try {
+    const formData = await request.formData();
+    const productId = formData.get('productId');
+    const existingCart = JSON.parse(context.session.get('cart') || '[]');
+
+    const isProductInCart = existingCart.some((item) => item.id === productId);
+
+    if (!isProductInCart) {
+      const product = JSON.parse(formData.get('productData'));
+
+      if (product) {
+        const cartId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+        const hashedCartId = await hashCartId(cartId);
+
+        const productId = product.id.split('/').pop();
+
+        const updatedCart = [
+          ...existingCart,
+          {
+            cartId: hashedCartId,
+            id: Number(productId),
+            title: product.title,
+            price: Number(product.amount),
+            image: product.images?.[0]?.src || '',
+          },
+        ];
+        context.session.set('cart', JSON.stringify(updatedCart));
+        return new Response(
+          JSON.stringify({message: `${product.title} added to cart.`}),
+          {status: 200},
+        );
+      }
+
+      return new Response('Product not found.', {status: 404});
+    }
+
+    return new Response('This product is already in your cart.', {status: 409});
+  } catch (error) {
+    return new Response('Internal Server Error', {status: 500});
+  }
+}
+
+async function hashCartId(cartId) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(cartId);
+
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+  return hashHex;
 }
 
 export default function CoupleProfile() {
-  const couple = useLoaderData();
-  // Convert the couple object to a string for rendering
-  const coupleString = JSON.stringify(couple, null, 2);
+  const {data, cashfundData, response, session} = useLoaderData() || [];
+  const fetcher = useFetcher();
+  const handleAddToCart = (productId) => {
+    const product = data.find((item) => item.id === productId);
 
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <pre>{coupleString}</pre> {/* Display the entire response as a string */}
-      {/* ... existing code ... */}
-    </div>
-  );
+    if (product) {
+      fetcher.submit(
+        {
+          productId: product.id,
+          productData: JSON.stringify(product), // Pass the product details
+        },
+        {method: 'post'}, // Send the data to the `action` function
+      );
+    } else {
+      alert('Product not found.');
+    }
+  };
+
+  const handleContribute = (productId, amount) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId
+          ? {
+              ...product,
+              contributedAmount: product.contributedAmount + parseFloat(amount),
+            }
+          : product,
+      ),
+    );
+    alert(`You contributed $${amount} to Product ${productId}!`);
+  };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl">
         <div className="flex flex-col items-center">
           <div className="w-52 h-52 rounded-full bg-gray-300 mb-4 flex items-center justify-center">
             {/* Placeholder for couple's image */}
-            <span className="text-gray-500">Image Placeholder</span>
+            <span className="text-gray-500">
+              {response?.data[0]?.events[0]?.image}
+            </span>
           </div>
-          <h2 className="text-2xl font-bold">{couple.name}</h2>
-          <p className="text-gray-500">#{couple.hashtag}</p>
+          <h2 className="text-2xl font-bold">
+            {response?.data[0]?.events[0]?.coupleName}
+          </h2>
+          <p className="text-gray-500">
+            {response?.data[0]?.events[0]?.hashtags}
+          </p>
           <p className="text-gray-600 mt-2">
-            {couple.date} | {couple.venue}
+            {response?.data[0]?.events[0]?.eventDate}{' '}
+            {response?.data[0]?.events[0]?.weddingTime}| Whispering Pines Event
+            Centre
             <br />
-            {couple.location}
+            Calgary, Alberta, Canada
           </p>
           <h3 className="text-lg font-semibold mt-4">Welcome Message</h3>
-          <p className="text-gray-600 text-center">{couple.welcomeMessage}</p>
+          <p className="text-gray-600 text-center">
+            {response?.data[0]?.events[0]?.welcomeMessage}
+          </p>
         </div>
 
         {/* Filter Section */}
@@ -76,17 +211,20 @@ export default function CoupleProfile() {
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Registry Items</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {couple.registryItems.map((item) => (
-              <div key={item.id} className="bg-gray-200 p-4 rounded-lg">
-                <div className="h-32 bg-gray-300 mb-2 flex items-center justify-center">
-                  <span className="text-gray-500">Product Image</span>
-                </div>
-                <h4 className="font-bold">{item.name}</h4>
-                <p className="text-gray-600">${item.price}</p>
-                <button className="bg-black text-white px-4 py-2 rounded mt-2">
-                  Add to Registry
-                </button>
-              </div>
+            {data.map((product) => (
+              <CoupleProductCard
+                key={product.id}
+                name={product.name}
+                price={product.amount}
+                description={product.description}
+                isGroupGift={product.isGroupPayment}
+                isCashFund={product.isCashFund}
+                status={product.status}
+                contributedAmount={product.collectedAmount || 0}
+                maxContribution={product.amount || 0}
+                onAddToCart={() => handleAddToCart(product.id)}
+                onContribute={(amount) => handleContribute(product.id, amount)}
+              />
             ))}
           </div>
         </div>
