@@ -1,39 +1,58 @@
-import {useLoaderData, useNavigate, useParams} from '@remix-run/react';
-import {json, redirect} from '@remix-run/server-runtime';
+import {Link, useFetcher, useLoaderData} from '@remix-run/react';
+import {json} from '@remix-run/server-runtime';
 import React, {useEffect, useState} from 'react';
 import ButtonComponent from '~/components/Button';
 
 export async function loader({context, params}) {
-  const cartItems = context?.session?.get('cart');
-  // const cartIdFromParams = params.cartId;
-
-  // if (!cartItems) {
-  //   throw new Response('Cart is empty', {status: 404});
-  // }
-
+  const cartItems = context?.session?.get('cart') || '[]';
   const cart = JSON.parse(cartItems);
-
-  // const matchingCart = cart.find((item) => item.cartId === cartIdFromParams);
-
-  // if (!matchingCart) {
-  //   throw new Response('Cart not found', {status: 404});
-  // }
   const tax = 10;
   const total = cart.reduce((sum, item) => sum + Number(item.price), 0) + tax;
-  return {cartItems, tax, total};
+
+  return json(
+    {cartItems, tax, total},
+    {headers: {'Set-Cookie': await context.session.commit()}},
+  );
 }
 
 export async function action({request, context}) {
-  return redirect('/cart/message');
+  const formData = await request.formData();
+  const itemId = formData.get('itemId');
+
+  let cart = JSON.parse(context?.session?.get('cart') || '[]');
+
+  cart = cart.filter((item) => item.id !== Number(itemId));
+
+  context.session.set('cart', JSON.stringify(cart));
+
+  return json(
+    {success: true},
+    {headers: {'Set-Cookie': await context.session.commit()}},
+  );
 }
 
 const Cart = () => {
-  const {cartId} = useParams();
   const {cartItems, tax, total} = useLoaderData();
+  const [items, setItems] = useState(JSON.parse(cartItems));
+  const fetcher = useFetcher();
 
-  const items = Array.isArray(JSON.parse(cartItems))
-    ? JSON.parse(cartItems)
-    : [];
+  useEffect(() => {
+    if (fetcher.data?.success) {
+      setItems((prevItems) =>
+        prevItems.filter(
+          (item) => item.id !== fetcher.submission?.formData.get('itemId'),
+        ),
+      );
+      window.location.reload();
+    }
+  }, [fetcher.data]);
+
+  const handleDelete = (itemId) => {
+    const formData = new FormData();
+    formData.append('itemId', itemId);
+
+    fetcher.submit({itemId}, {method: 'post', action: '/cart'});
+  };
 
   return (
     <div className="flex flex-col md:flex-row gap-6 max-w-6xl mx-auto p-6 bg-gray-100">
@@ -64,7 +83,11 @@ const Cart = () => {
                       <div className="w-20 h-20 bg-gray-300 rounded-md"></div>
                       <div>
                         <h4 className="font-semibold text-sm">{item.title}</h4>
-                        <button className="text-xs text-gray-500 underline hover:text-gray-700">
+                        <button
+                          type="button"
+                          className="text-xs delete-cart-item text-gray-500 underline hover:text-gray-700"
+                          onClick={() => handleDelete(item.id)}
+                        >
                           Delete Item
                         </button>
                       </div>
@@ -94,7 +117,9 @@ const Cart = () => {
                 <p className="text-sm text-gray-600 flex items-center gap-2">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
-                <ButtonComponent text="Finalize Gifts" type="submit" />
+                <Link to="/cart/message">
+                  <ButtonComponent text="Finalize Gifts" />
+                </Link>
               </div>
             </form>
           </div>

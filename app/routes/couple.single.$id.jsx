@@ -70,41 +70,39 @@ export async function loader({params, context}) {
 export async function action({request, context}) {
   try {
     const formData = await request.formData();
-    const productId = formData.get('productId');
-    const existingCart = JSON.parse(context.session.get('cart') || '[]');
+    const product = JSON.parse(formData.get('productData'));
+    const productId = product.id.split('/').pop();
 
-    const isProductInCart = existingCart.some((item) => item.id === productId);
+    let existingCart = JSON.parse(context.session.get('cart') || '[]');
 
-    if (!isProductInCart) {
-      const product = JSON.parse(formData.get('productData'));
+    const isProductInCart = existingCart.some(
+      (item) => item.id === Number(productId),
+    );
 
-      if (product) {
-        const cartId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
-        const hashedCartId = await hashCartId(cartId);
-
-        const productId = product.id.split('/').pop();
-
-        const updatedCart = [
-          ...existingCart,
-          {
-            cartId: hashedCartId,
-            id: Number(productId),
-            title: product.title,
-            price: Number(product.amount),
-            image: product.images?.[0]?.src || '',
-          },
-        ];
-        context.session.set('cart', JSON.stringify(updatedCart));
-        return new Response(
-          JSON.stringify({message: `${product.title} added to cart.`}),
-          {status: 200},
-        );
-      }
-
-      return new Response('Product not found.', {status: 404});
+    if (isProductInCart) {
+      return new Response('This product is already in your cart.', {
+        status: 409,
+      });
     }
 
-    return new Response('This product is already in your cart.', {status: 409});
+    const cartId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+    const hashedCartId = await hashCartId(cartId);
+
+    const updatedCart = [
+      ...existingCart,
+      {
+        cartId: hashedCartId,
+        id: Number(productId),
+        title: product.title,
+        price: Number(product.amount),
+        image: product.images?.[0]?.src || '',
+      },
+    ];
+    context.session.set('cart', JSON.stringify(updatedCart));
+    return new Response(
+      JSON.stringify({message: `${product.title} added to cart.`}),
+      {status: 200},
+    );
   } catch (error) {
     return new Response('Internal Server Error', {status: 500});
   }
@@ -133,9 +131,9 @@ export default function CoupleProfile() {
       fetcher.submit(
         {
           productId: product.id,
-          productData: JSON.stringify(product), // Pass the product details
+          productData: JSON.stringify(product),
         },
-        {method: 'post'}, // Send the data to the `action` function
+        {method: 'post'},
       );
     } else {
       alert('Product not found.');
