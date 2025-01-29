@@ -6,7 +6,11 @@ export async function action({request, context}) {
   const formData = new URLSearchParams(await request.formData());
   const message = formData.get('message');
 
-  context?.session?.set('message', message);
+  try {
+    context?.session?.set('message', message);
+  } catch (error) {
+    console.error('Error setting session message:', error);
+  }
 
   return redirect('/cart/checkout');
 }
