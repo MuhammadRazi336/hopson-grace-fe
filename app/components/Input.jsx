@@ -19,7 +19,7 @@ export default function Input({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="mt-2 p-2 border border-gray-300 rounded"
+        className="mt-2 p-2 border border-gray-300 rounded w-80"
         {...rest}
       />
     </div>
