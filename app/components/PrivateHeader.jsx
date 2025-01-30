@@ -35,7 +35,7 @@ export function PrivateHeader() {
             🔔
           </span>
         </NavLink>
-        <NavLink to="/help" className="text-xl hover:text-blue-500">
+        <NavLink to={'/cart'} className="text-xl hover:text-blue-500">
           <span role="img" aria-label="Help Icon">
             ❓
           </span>

@@ -1,34 +1,49 @@
-import React, {useState} from 'react';
-import {defer} from '@remix-run/server-runtime';
+import React from 'react';
+import {defer, useFetcher, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
-import {useLoaderData} from '@remix-run/react';
 import CoupleProductCard from '~/components/CoupleProductCard';
 
-export async function loader({request, context}) {
+export async function loader({params, context}) {
+  const coupleId = params.id;
+  const token = context?.session?.get('@User')?.accessToken;
+
+  if (!token) {
+    throw new Response('Unauthorized', {status: 401});
+  }
+
+  const response = await context.ClientGet(
+    `registries/by-userId/${coupleId}`,
+    context,
+  );
+
+  if (!response.data) {
+    throw new Response('Not Found', {status: 404});
+  }
+
   const registry = context?.session?.get('@Registry');
+
   const res = await context.ClientGet(
-    `registryProducts/${registry[0].id}?type=gift`,
+    `registryProducts/${response?.data[0]?.id}?type=gift`,
     context,
   );
   const cashRes = await context.ClientGet(
-    `registryProducts/${registry[0].id}?type=cash`,
+    `registryProducts/${response?.data[0]?.id}?type=cash`,
     context,
   );
+
   let mergedArray = [];
   const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
   );
-  console.log(ids, 'Ids');
+
   const products = await fetchProducts(context.storefront, ids);
+
   if (res?.data?.length) {
     mergedArray = res?.data?.map((item1) => {
-      // Find the corresponding product from array2
       const product = products?.nodes?.find(
         (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
       );
-      console.log('🚀 ~ mergedArray=res?.data?.map ~ product:', product);
 
-      // If a matching product is found, merge its details into the current item
       if (product) {
         return {
           ...item1,
@@ -40,47 +55,88 @@ export async function loader({request, context}) {
             : 'addToCart',
         };
       }
-      return item1; // If no matching product, return the original item
+      return item1;
     });
   }
 
   return defer({
     data: [...mergedArray, ...cashRes?.data],
     cashfundData: cashRes?.data || [],
-    registry,
+    response,
+    session: context.session,
   });
 }
+
+export async function action({request, context}) {
+  try {
+    const formData = await request.formData();
+    const product = JSON.parse(formData.get('productData'));
+    const productId = product.id.split('/').pop();
+
+    let existingCart = JSON.parse(context.session.get('cart') || '[]');
+
+    const isProductInCart = existingCart.some(
+      (item) => item.id === Number(productId),
+    );
+
+    if (isProductInCart) {
+      return new Response('This product is already in your cart.', {
+        status: 409,
+      });
+    }
+
+    const cartId = `${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+    const hashedCartId = await hashCartId(cartId);
+
+    const updatedCart = [
+      ...existingCart,
+      {
+        cartId: hashedCartId,
+        id: Number(productId),
+        title: product.title,
+        price: Number(product.amount),
+        image: product.images?.[0]?.src || '',
+      },
+    ];
+    context.session.set('cart', JSON.stringify(updatedCart));
+    return new Response(
+      JSON.stringify({message: `${product.title} added to cart.`}),
+      {status: 200},
+    );
+  } catch (error) {
+    return new Response('Internal Server Error', {status: 500});
+  }
+}
+
+async function hashCartId(cartId) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(cartId);
+
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+  return hashHex;
+}
+
 export default function CoupleProfile() {
-  const {data, cashfundData, registry} = useLoaderData() || [];
+  const {data, cashfundData, response, session} = useLoaderData() || [];
+  const fetcher = useFetcher();
+  const handleAddToCart = (productId) => {
+    const product = data.find((item) => item.id === productId);
 
-  const handleAddToCart = async (productId) => {
-    const existingCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-    console.log('🚀 ~ handleAddToCart ~ existingCart:', existingCart);
-
-    const isProductInCart = existingCart.some((item) => item.id === productId);
-
-    if (!isProductInCart) {
-      const product = data.find((item) => item.id === productId);
-
-      if (product) {
-        const updatedCart = [
-          ...existingCart,
-          {
-            id: product.id,
-            title: product.title,
-            price: product.amount,
-            image: product.images?.[0]?.src || '',
-          },
-        ];
-
-        sessionStorage.setItem('cart', JSON.stringify(updatedCart));
-
-        alert(`${product.id} has been added to your cart.`);
-      } else {
-        alert('Product not found.');
-      }
+    if (product) {
+      fetcher.submit(
+        {
+          productId: product.id,
+          productData: JSON.stringify(product),
+        },
+        {method: 'post'},
+      );
     } else {
-      alert('This product is already in your cart.');
+      alert('Product not found.');
     }
   };
 
@@ -103,19 +159,26 @@ export default function CoupleProfile() {
         <div className="flex flex-col items-center">
           <div className="w-52 h-52 rounded-full bg-gray-300 mb-4 flex items-center justify-center">
             {/* Placeholder for couple's image */}
-            <span className="text-gray-500">Image Placeholder</span>
+            <span className="text-gray-500">
+              {response?.data[0]?.events[0]?.image}
+            </span>
           </div>
-          <h2 className="text-2xl font-bold">Couple Name</h2>
-          <p className="text-gray-500">#CoupleHashtag</p>
+          <h2 className="text-2xl font-bold">
+            {response?.data[0]?.events[0]?.coupleName}
+          </h2>
+          <p className="text-gray-500">
+            {response?.data[0]?.events[0]?.hashtags}
+          </p>
           <p className="text-gray-600 mt-2">
-            January 1, 2025 2pm | Whispering Pines Event Centre
+            {response?.data[0]?.events[0]?.eventDate}{' '}
+            {response?.data[0]?.events[0]?.weddingTime}| Whispering Pines Event
+            Centre
             <br />
             Calgary, Alberta, Canada
           </p>
           <h3 className="text-lg font-semibold mt-4">Welcome Message</h3>
           <p className="text-gray-600 text-center">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {response?.data[0]?.events[0]?.welcomeMessage}
           </p>
         </div>
 

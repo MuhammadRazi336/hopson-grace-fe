@@ -1,6 +1,6 @@
-import {Link} from '@remix-run/react';
+import { Link } from '@remix-run/react';
 
-export function CartMain({layout}) {
+export function CartMain({ layout }) {
   // Static data for cart items
   const cartItems = [
     {

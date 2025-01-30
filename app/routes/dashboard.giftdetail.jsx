@@ -1,29 +1,29 @@
-import {useLoaderData} from '@remix-run/react';
-import {defer, redirect} from '@shopify/remix-oxygen';
+import { useLoaderData } from '@remix-run/react';
+import { defer, redirect } from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import GiftDetail from '~/components/GiftDetail';
-export async function loader({request, context, params}) {
-  const {collections} = await loadCollectionData({context});
-  return defer({collections});
+export async function loader({ request, context, params }) {
+  const { collections } = await loadCollectionData({ context });
+  return defer({ collections });
 }
 
-export async function action({request, context}) {
+export async function action({ request, context }) {
   const body = await request.json();
-  const {payload} = body;
+  const { payload } = body;
   try {
     const response = await context.ClientPost(
       payload,
       'registryProducts',
-      context,
+      context
     );
-    return defer({response});
+    return defer({ response });
   } catch (e) {
-    return defer({e});
+    return defer({ e });
   }
 }
 
-async function loadCollectionData({context}) {
-  const [{collections}] = await Promise.all([
+async function loadCollectionData({ context }) {
+  const [{ collections }] = await Promise.all([
     context.storefront.query(COLLECTION_QUERY),
     // Add other queries here, so that they are loaded in parallel
   ]);
@@ -36,7 +36,7 @@ const GiftDetailHandle = () => {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const {collections} = useLoaderData();
+  const { collections } = useLoaderData();
 
   return (
     <div>
