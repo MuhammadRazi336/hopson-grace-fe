@@ -1,39 +1,99 @@
 import CustomSelect from '~/components/CustomSelect.jsx';
 import Card from '~/components/Card.jsx';
-import Accordiance from '~/components/Accordiance.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import {useState} from 'react';
+import {useFetcher, useLoaderData} from '@remix-run/react';
+import RegistryChecklist from '~/components/RegistryChecklist';
+import {redirect} from '@shopify/remix-oxygen';
+
 export async function loader(args) {
-  const {context} = args;
-  // Await the critical data required to render initial state of the page
-  const registry = context?.session?.get('@Registry');
-  return {...registry};
+  const {context, request} = args;
+
+  const user = await context?.session?.get('@User');
+
+  try {
+    const {data} = await context.ClientGet(
+      `registries/by-userId/${user.user.id}`,
+      context,
+    );
+    const registries = data.map((registry) => {
+      return {...registry, value: registry.name, label: registry.name};
+    });
+
+    const registry = registries.find((registry) => registry.isSelected);
+
+    const response = await context.ClientGet(
+      `registries/detail/${registry.id}`,
+      context,
+    );
+
+    context.session.set('@Registry', {
+      ...registry,
+      ...response.data,
+    });
+    await context.session.commit();
+
+    return {registries, registry: {...registry, ...response.data}};
+  } catch (e) {
+    return {...e};
+  }
+}
+
+export async function action({request, context}) {
+  const body = await request.json();
+  const {payload} = body;
+
+  try {
+    await context.ClientPut(
+      payload,
+      `registries/selected/${payload.id}`,
+      context,
+    );
+
+    return redirect('/dashboard');
+  } catch (e) {
+    return {...e};
+  }
 }
 
 const index = () => {
-  const [selected, setSelected] = useState({
-    label: 'Wedding Registry',
-    value: 'wedding',
-  });
+  const {registries, registry} = useLoaderData();
+  // const action = useActionData();
 
-  const options = [
-    {label: 'Wedding Registry', value: 'wedding'},
-    {label: 'Baby Registry', value: 'baby'},
-    {label: 'Birthday Registry', value: 'birthday'},
-  ];
+  const fetcher = useFetcher();
+
+  const [selected, setSelected] = useState(registry);
+
   const cardData = [
-    {value: '$100', label: 'Gifts Available', selectable: true},
-    {value: '$52', label: 'Gifts Purchased', selectable: false},
-    {value: '$22,102', label: 'Registry Fund Balance', selectable: false},
+    {
+      value: ` ${registry?.giftAvailable || 0}`,
+      label: 'Gifts Available',
+      selectable: true,
+    },
+    {
+      value: `${registry?.giftsPurchased || 0}`,
+      label: 'Gifts Purchased',
+      selectable: false,
+    },
+    {
+      value: `$ ${registry?.registryFundBalance || 0}`,
+      label: 'Registry Fund Balance',
+      selectable: false,
+    },
   ];
 
-  const [selectedCards, setSelectedCards] = useState([]);
-
-  const handleCardSelect = (isSelected, index) => {
-    const updatedSelection = isSelected
-      ? [...selectedCards, index]
-      : selectedCards.filter((cardIndex) => cardIndex !== index);
-    setSelectedCards(updatedSelection);
+  const handleToggleChange = (id) => {
+    const payload = {
+      id,
+      previousId: selected.id,
+    };
+    fetcher.submit(
+      {payload},
+      {
+        method: 'put',
+        encType: 'application/json',
+      },
+    );
   };
   return (
     <div>
@@ -42,9 +102,12 @@ const index = () => {
           <div>
             <CustomSelect
               label="Registry Collection:"
-              options={options}
               selected={selected}
-              setSelected={setSelected}
+              setSelected={(e) => {
+                setSelected(e);
+                handleToggleChange(e.id);
+              }}
+              options={registries}
             />
           </div>
           <div>
@@ -72,37 +135,7 @@ const index = () => {
               ))}
             </div>
           </div>
-          <div>
-            <h1 className="my-2">Registry Checklist</h1>
-            <h4 className="font-semibold">Completed</h4>
-            <div className="my-2">
-              <Accordiance
-                title="How many Guests are invited?"
-                ContentComponent={() => <div>My Content</div>}
-              />
-            </div>
-            <div className="my-2">
-              <Accordiance
-                title="Where should we ship your gifts?"
-                ContentComponent={() => <div>My Content</div>}
-              />
-            </div>
-            <div>
-              <h4 className="font-semibold">To-Do</h4>
-              <div className="my-2">
-                <Accordiance
-                  title="Add gifts to your registry"
-                  ContentComponent={() => <div>My Content</div>}
-                />
-              </div>
-              <div className="my-2">
-                <Accordiance
-                  title="Add a cash funds to your registry"
-                  ContentComponent={() => <div>My Content</div>}
-                />
-              </div>
-            </div>
-          </div>
+          <RegistryChecklist registry={registry} />
         </div>
         <div className="flex flex-col gap-4 flex-2">
           <div>
