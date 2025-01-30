@@ -1,5 +1,5 @@
-import {useEffect, useState} from 'react';
-import {useLoaderData, useNavigate} from '@remix-run/react';
+import { useEffect, useState } from 'react';
+import { useLoaderData, useNavigate } from '@remix-run/react';
 
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
@@ -9,11 +9,10 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import DatePicker from '~/components/Datepicker.jsx';
 import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
-import {STEPS_CONSTANTS} from '../constants/UiConstants';
+import { STEPS_CONSTANTS } from '../constants/UiConstants';
 const OnboardingClient = ({}) => {
-  const {user} = useLoaderData();
+  const { user, collections } = useLoaderData();
   const navigate = useNavigate();
-
   const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
   const [addressData, setAddressData] = useState({
@@ -47,7 +46,7 @@ const OnboardingClient = ({}) => {
   };
   // General change handler for all fields
   const handleInputChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setAddressData({
       ...addressData,
       [name]: value,
@@ -123,7 +122,7 @@ const OnboardingClient = ({}) => {
   const handleSelectChange = (value) => {
     setEventData({
       ...eventData,
-      selectedOption: {label: value.label, id: value.id},
+      selectedOption: { label: value.label, id: value.id },
     });
   };
   // Main state for selected date
@@ -139,7 +138,7 @@ const OnboardingClient = ({}) => {
       name: eventData.eventName,
       eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD'),
       eventTypeId: Number(eventData.selectedOption.id),
-      ...(eventData.id && {id: eventData.id}),
+      ...(eventData.id && { id: eventData.id }),
     };
 
     const token = localStorage.getItem('@Token');
@@ -154,7 +153,7 @@ const OnboardingClient = ({}) => {
         const event = {
           ...eventData,
           id: data.data.id,
-          ...(!payload.id && {eventId: data.data.event.id}),
+          ...(!payload.id && { eventId: data.data.event.id }),
         };
         localStorage.setItem('@EventData', JSON.stringify(event));
         setEventData(event);
@@ -173,7 +172,7 @@ const OnboardingClient = ({}) => {
       city: addressData.city,
       province: addressData.province,
       country: addressData.country,
-      ...(addressData.id && {id: Number(addressData.id)}),
+      ...(addressData.id && { id: Number(addressData.id) }),
     };
     const token = localStorage.getItem('@Token');
     try {
@@ -281,7 +280,7 @@ const OnboardingClient = ({}) => {
       case STEPS_CONSTANTS.PREFER_GIFT_INFO:
         return <Step5 />;
       case STEPS_CONSTANTS.COLLECTION_INFO:
-        return <Step6 />;
+        return <Step6 collections={collections} />;
       case STEPS_CONSTANTS.STYLE_INFO:
         return <Step7 />;
       default:
@@ -312,7 +311,7 @@ const OnboardingClient = ({}) => {
   );
 };
 
-const Step1 = ({selectedDate, setSelectedDate}) => {
+const Step1 = ({ selectedDate, setSelectedDate }) => {
   return (
     <div>
       <div className="p-4">
@@ -323,7 +322,7 @@ const Step1 = ({selectedDate, setSelectedDate}) => {
           inputProps={{
             className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
+          buttonLabels={{ clear: 'Reset', apply: 'Confirm' }}
         />
       </div>
     </div>
@@ -371,13 +370,13 @@ const Step2 = ({
           inputProps={{
             className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
+          buttonLabels={{ clear: 'Reset', apply: 'Confirm' }}
         />
       </div>
     </div>
   );
 };
-const Step3 = ({value, onChange}) => {
+const Step3 = ({ value, onChange }) => {
   return (
     <div>
       <div className="text-center">
@@ -397,7 +396,7 @@ const Step3 = ({value, onChange}) => {
   );
 };
 
-const Step4 = ({formData, handleInputChange}) => {
+const Step4 = ({ formData, handleInputChange }) => {
   // Submit handler to log the form data
 
   return (
@@ -474,10 +473,10 @@ const Step5 = () => {
 
   // Options for the grid
   const options = [
-    {id: 1, label: 'Cash'},
-    {id: 2, label: 'Gifts & Cash'},
-    {id: 3, label: 'Gifts'},
-    {id: 4, label: 'Not Sure Yet'},
+    { id: 1, label: 'Cash' },
+    { id: 2, label: 'Gifts & Cash' },
+    { id: 3, label: 'Gifts' },
+    { id: 4, label: 'Not Sure Yet' },
   ];
 
   return (
@@ -503,37 +502,33 @@ const Step5 = () => {
   );
 };
 
-const Step6 = () => {
+const Step6 = ({ collections }) => {
   const [selectedOption, setSelectedOption] = useState(null);
 
-  // Options for the grid
-  const options = [
-    {id: 1, label: 'Kitchen Essentials'},
-    {id: 2, label: 'Tableware + Entertaining'},
-    {id: 3, label: 'Home Decor + Furniture'},
-    {id: 4, label: 'Bed + Bath'},
-    {id: 5, label: 'Travel/Outdoors'},
-    {id: 6, label: 'Music + Tech'},
-  ];
+  // Access the nodes array from collections
+  const collectionItems = collections?.nodes || []; // Default to an empty array if undefined
 
   return (
     <div className="flex flex-col items-center p-8">
       <Heading text={'What is your preferred gift?'} />
-      {/* Grid */}
       <div className="grid grid-cols-2 gap-4">
-        {options.map((option) => (
-          <button
-            key={option.id}
-            onClick={() => setSelectedOption(option.id)}
-            className={`p-6 border rounded-md text-center font-medium text-gray-700 ${
-              selectedOption === option.id
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-gray-100 hover:bg-gray-200'
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
+        {collectionItems.length > 0 ? ( // Check if collectionItems is not empty
+          collectionItems.map((option, index) => (
+            <button
+              key={index} // Use index as key if no unique id is available
+              onClick={() => setSelectedOption(option.title)} // Use title or any other property
+              className={`p-6 border rounded-md text-center font-medium text-gray-700 ${
+                selectedOption === option.title
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'bg-gray-100 hover:bg-gray-200'
+              }`}
+            >
+              {option.title} {/* Display the title */}
+            </button>
+          ))
+        ) : (
+          <p>No collections available.</p> // Fallback message
+        )}
       </div>
     </div>
   );
@@ -544,15 +539,15 @@ const Step7 = () => {
 
   // Options for the grid
   const options = [
-    {id: 1, label: 'Minimalist', imgSrc: 'https://via.placeholder.com/150'},
-    {id: 2, label: 'Maximalist', imgSrc: 'https://via.placeholder.com/150'},
-    {id: 3, label: 'Transitional', imgSrc: 'https://via.placeholder.com/150'},
+    { id: 1, label: 'Minimalist', imgSrc: 'https://via.placeholder.com/150' },
+    { id: 2, label: 'Maximalist', imgSrc: 'https://via.placeholder.com/150' },
+    { id: 3, label: 'Transitional', imgSrc: 'https://via.placeholder.com/150' },
     {
       id: 4,
       label: 'Modern Farmhouse',
       imgSrc: 'https://via.placeholder.com/150',
     },
-    {id: 5, label: 'Boho Chic', imgSrc: 'https://via.placeholder.com/150'},
+    { id: 5, label: 'Boho Chic', imgSrc: 'https://via.placeholder.com/150' },
     {
       id: 6,
       label: 'Mid-Century Modern',

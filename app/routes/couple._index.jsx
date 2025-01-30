@@ -1,5 +1,6 @@
 import {useCallback, useState} from 'react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
+import {Link} from '@remix-run/react';
 
 export async function loader({request, context}) {
   const url = new URL(request.url);
@@ -9,6 +10,9 @@ export async function loader({request, context}) {
     `users/find-couple?firstName=${firstName}&lastName=${lastName}`,
     context,
   );
+  if (!res.data) {
+    throw new Response('Not Found', {status: 404});
+  }
   return defer({data: res.data, name: {firstName, lastName}});
 }
 
@@ -95,11 +99,11 @@ function CoupleListing({data}) {
                 />
               </td>
               <td className="py-2 px-4 border-b text-center">
-                <a href={`/single/couple`}>
+                <Link to={`/couple/single/${couple.id}`}>
                   <button className="bg-blue-500 text-white px-4 py-2 rounded">
                     View Profile
                   </button>
-                </a>
+                </Link>
               </td>
             </tr>
           ))}
