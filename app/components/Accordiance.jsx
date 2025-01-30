@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {ChevronDownIcon, ChevronRightIcon} from '@heroicons/react/24/outline'; // Ensure this import is correct
+import {ChevronRightIcon} from '@heroicons/react/24/outline'; // Ensure this import is correct
+import {Link} from '@remix-run/react';
 
 const Accordiance = ({
   onChange,
@@ -7,6 +8,7 @@ const Accordiance = ({
   title,
   icon = true,
   componentClass,
+  link,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,10 +25,10 @@ const Accordiance = ({
           className="flex items-center justify-between cursor-pointer"
         >
           <span className="font-semibold">{title}</span>
-          {icon && isOpen ? (
-            <ChevronDownIcon className="w-5 h-5" />
-          ) : (
-            <ChevronRightIcon className="w-5 h-5" />
+          {icon && (
+            <Link to={link || '#'}>
+              <ChevronRightIcon className="w-5 h-5 hover:text-blue-500" />
+            </Link>
           )}
         </div>
       </div>
