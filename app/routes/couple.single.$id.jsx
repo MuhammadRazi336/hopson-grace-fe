@@ -7,10 +7,6 @@ export async function loader({params, context}) {
   const coupleId = params.id;
   const token = context?.session?.get('@User')?.accessToken;
 
-  if (!token) {
-    throw new Response('Unauthorized', {status: 401});
-  }
-
   const response = await context.ClientGet(
     `registries/by-userId/${coupleId}`,
     context,
