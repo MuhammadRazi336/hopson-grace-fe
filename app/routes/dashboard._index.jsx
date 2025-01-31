@@ -20,8 +20,9 @@ export async function loader(args) {
       return {...registry, value: registry.name, label: registry.name};
     });
 
-    const registry = registries.find((registry) => registry.isSelected);
-
+    const registry = registries.find((registry) => {
+      return registry.isSelected;
+    });
     const response = await context.ClientGet(
       `registries/detail/${registry.id}`,
       context,
@@ -168,7 +169,7 @@ const index = () => {
                   <h3 className="font-normal">
                     jocelyn@registry.com | 403-123-4567
                   </h3>
-                  <p className="mt-2 mt-5 mb-3">
+                  <p className="mt-5 mb-3">
                     Hi! I'm your registry advisor. I'm here to help you through
                     the process.
                   </p>
