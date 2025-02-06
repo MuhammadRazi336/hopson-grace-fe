@@ -1,16 +1,15 @@
-import React from 'react';
 import {defer, useFetcher, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import CoupleProductCard from '~/components/CoupleProductCard';
 
 export async function loader({params, context}) {
   const coupleId = params.id;
-  const token = context?.session?.get('@User')?.accessToken;
-
   const response = await context.ClientGet(
     `registries/by-userId/${coupleId}`,
     context,
   );
+
+  const registryId = response.data[0]?.id;
 
   if (!response.data) {
     throw new Response('Not Found', {status: 404});
@@ -56,9 +55,13 @@ export async function loader({params, context}) {
   }
 
   return defer({
-    data: [...mergedArray, ...cashRes?.data],
-    cashfundData: cashRes?.data || [],
+    data: [
+      ...mergedArray,
+      ...(Array.isArray(cashRes?.data) ? cashRes.data : []),
+    ],
+    cashfundData: Array.isArray(cashRes?.data) ? cashRes.data : [],
     response,
+    registryId,
     session: context.session,
   });
 }
@@ -92,6 +95,8 @@ export async function action({request, context}) {
         title: product.title,
         price: Number(product.amount),
         image: product.images?.[0]?.src || '',
+        productTypeId: product.productTypeId,
+        registryId: product.registryId,
       },
     ];
     context.session.set('cart', JSON.stringify(updatedCart));
@@ -118,7 +123,8 @@ async function hashCartId(cartId) {
 }
 
 export default function CoupleProfile() {
-  const {data, cashfundData, response, session} = useLoaderData() || [];
+  const {data, cashfundData, response, session, registryId} =
+    useLoaderData() || [];
   const fetcher = useFetcher();
   const handleAddToCart = (productId) => {
     const product = data.find((item) => item.id === productId);
@@ -127,7 +133,7 @@ export default function CoupleProfile() {
       fetcher.submit(
         {
           productId: product.id,
-          productData: JSON.stringify(product),
+          productData: JSON.stringify({...product, registryId}),
         },
         {method: 'post'},
       );
@@ -156,7 +162,15 @@ export default function CoupleProfile() {
           <div className="w-52 h-52 rounded-full bg-gray-300 mb-4 flex items-center justify-center">
             {/* Placeholder for couple's image */}
             <span className="text-gray-500">
-              {response?.data[0]?.events[0]?.image}
+              {response?.data[0]?.events[0]?.image?.fileUrl ? (
+                <img
+                  src={response.data[0].events[0].image.fileUrl}
+                  alt="Couple's Image"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <span className="text-gray-500">No Image Available</span>
+              )}
             </span>
           </div>
           <h2 className="text-2xl font-bold">
@@ -167,10 +181,11 @@ export default function CoupleProfile() {
           </p>
           <p className="text-gray-600 mt-2">
             {response?.data[0]?.events[0]?.eventDate}{' '}
-            {response?.data[0]?.events[0]?.weddingTime}| Whispering Pines Event
-            Centre
+            {response?.data[0]?.events[0]?.weddingTime}|{' '}
+            {response?.data[0]?.events[0]?.location}
             <br />
-            Calgary, Alberta, Canada
+            {response?.data[0]?.events[0]?.province},{' '}
+            {response?.data[0]?.events[0]?.city}
           </p>
           <h3 className="text-lg font-semibold mt-4">Welcome Message</h3>
           <p className="text-gray-600 text-center">

@@ -10,38 +10,33 @@ const Dashboard_index = () => {
       route: '',
     },
     {
-      label: 'Profile',
-      value: 2,
-      route: 'profile',
-    },
-    {
       label: 'Registry',
-      value: 3,
+      value: 2,
       route: 'registry',
     },
     {
       label: 'Add or Edit Gifts',
-      value: 4,
+      value: 3,
       route: 'addgifts',
     },
     {
       label: 'Add Cash Funds',
-      value: 5,
+      value: 4,
       route: 'cashfunds',
     },
     {
       label: 'Gifts & Thank You Tracker',
-      value: 6,
+      value: 5,
       route: 'gifttracker',
     },
     {
       label: 'Ship My Gifts',
-      value: 7,
+      value: 6,
       route: 'giftdetail',
     },
     {
       label: 'Contact My Advisor',
-      value: 8,
+      value: 7,
       route: 'giftdetail',
     },
   ];

@@ -7,12 +7,18 @@ import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 
 export async function loader({request, context}) {
   const registry = context?.session?.get('@Registry');
+
+  const eventGet = await context.ClientGet(
+    `events/${registry[0].events[0].id}`,
+    context,
+  );
+
   const res = await context.ClientGet(
-    `registryProducts/${registry.id}?type=gift`,
+    `registryProducts/${registry[0].id}?type=gift`,
     context,
   );
   const cashRes = await context.ClientGet(
-    `registryProducts/${registry.id}?type=cash`,
+    `registryProducts/${registry[0].id}?type=cash`,
     context,
   );
   let mergedArray = [];
@@ -41,12 +47,14 @@ export async function loader({request, context}) {
   return defer({
     data: mergedArray,
     cashfundData: cashRes?.data || [],
+    eventGet,
     registry,
   });
 }
 
 const index = () => {
-  const {data, cashfundData, registry} = useLoaderData();
+  const {data, cashfundData, eventGet, registry} = useLoaderData();
+
   return (
     <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
@@ -55,16 +63,17 @@ const index = () => {
           <div className="h-64"></div>
         </div>
         <div className="flex-1 mt-4 lg:mt-0">
-          <h2 className="text-xl font-semibold">Couple Name</h2>
-          <p className="text-gray-600">#CoupleHashtag</p>
+          <h2 className="text-xl font-semibold">
+            {eventGet?.data?.coupleName}
+          </h2>
+          <p className="text-gray-600">{eventGet?.data?.hashtags}</p>
           <p className="text-gray-600 mt-2">
-            January 1 2025 2pm | Whispering Pines Event Centre <br />
-            Calgary, Alberta, Canada
+            {eventGet?.data?.eventDate} {eventGet?.data?.weddingTime} |{' '}
+            {eventGet?.data?.location} <br />
+            {eventGet?.data?.province}, {eventGet?.data?.city}
           </p>
           <h3 className="text-lg font-semibold mt-4">Welcome Message</h3>
-          <p className="text-gray-600">
-            Please enter any message you want to share with your guests.
-          </p>
+          <p className="text-gray-600">{eventGet?.data?.welcomeMessage}</p>
           <div className="mt-4 flex space-x-2">
             <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
               Share Registry

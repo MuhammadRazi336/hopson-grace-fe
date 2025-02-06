@@ -15,7 +15,7 @@ export async function loader({request, context}) {
   const user = await requireAuth(context);
   const registry = context?.session?.get('@Registry');
 
-  return defer({products, collections, user, ...registry});
+  return defer({products, collections, user, registry});
 }
 
 export async function action({request, context}) {
