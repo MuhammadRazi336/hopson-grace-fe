@@ -40,7 +40,8 @@ const Cart = () => {
     if (fetcher.data?.success) {
       setItems((prevItems) =>
         prevItems.filter(
-          (item) => item.id !== fetcher.submission?.formData.get('itemId'),
+          (item) =>
+            item.id !== Number(fetcher.submission?.formData.get('itemId')),
         ),
       );
       window.location.reload();
@@ -48,9 +49,6 @@ const Cart = () => {
   }, [fetcher.data]);
 
   const handleDelete = (itemId) => {
-    const formData = new FormData();
-    formData.append('itemId', itemId);
-
     fetcher.submit({itemId}, {method: 'post', action: '/cart'});
   };
 

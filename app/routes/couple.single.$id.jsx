@@ -40,26 +40,42 @@ export async function loader({params, context}) {
       );
 
       if (product) {
+        let status;
+        if (item1.isPurchased) {
+          status = 'purchased';
+        } else if (item1.productTypeId === 2) {
+          status = 'cashFund';
+        } else {
+          status = 'addToCart';
+        }
+
         return {
+          status,
+          isCashFund:
+            item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
           ...item1,
           ...product,
-          status: item1.isPurchased
-            ? 'purchased'
-            : item1.isGroupPayment
-            ? 'groupGift'
-            : 'addToCart',
         };
       }
-      return item1;
+      return {
+        ...item1,
+        isCashFund:
+          item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
+      };
     });
   }
 
+  const cashFundProducts = Array.isArray(cashRes?.data)
+    ? cashRes.data.map((item) => ({
+        ...item,
+        status: 'cashFund',
+        isCashFund: true,
+      }))
+    : [];
+
   return defer({
-    data: [
-      ...mergedArray,
-      ...(Array.isArray(cashRes?.data) ? cashRes.data : []),
-    ],
-    cashfundData: Array.isArray(cashRes?.data) ? cashRes.data : [],
+    data: [...mergedArray, ...cashFundProducts],
+    cashfundData: cashFundProducts,
     response,
     registryId,
     session: context.session,
@@ -70,12 +86,16 @@ export async function action({request, context}) {
   try {
     const formData = await request.formData();
     const product = JSON.parse(formData.get('productData'));
-    const productId = product.id.split('/').pop();
+    const amount = parseFloat(formData.get('amount'));
+    const productTypeId = product.productTypeId;
 
     let existingCart = JSON.parse(context.session.get('cart') || '[]');
 
+    const itemId =
+      productTypeId === 2 ? product.cashFund.id : product.productId;
+
     const isProductInCart = existingCart.some(
-      (item) => item.id === Number(productId),
+      (item) => item.id === Number(itemId),
     );
 
     if (isProductInCart) {
@@ -91,17 +111,22 @@ export async function action({request, context}) {
       ...existingCart,
       {
         cartId: hashedCartId,
-        id: Number(productId),
+        id: Number(itemId),
         title: product.title,
-        price: Number(product.amount),
+        price: productTypeId === 2 ? amount : Number(product.amount),
         image: product.images?.[0]?.src || '',
-        productTypeId: product.productTypeId,
+        productTypeId: productTypeId,
         registryId: product.registryId,
       },
     ];
     context.session.set('cart', JSON.stringify(updatedCart));
     return new Response(
-      JSON.stringify({message: `${product.title} added to cart.`}),
+      JSON.stringify({
+        message:
+          productTypeId === 2
+            ? `Contribution of $${amount} added to ${product.title}.`
+            : `${product.title} added to cart.`,
+      }),
       {status: 200},
     );
   } catch (error) {
@@ -143,17 +168,24 @@ export default function CoupleProfile() {
   };
 
   const handleContribute = (productId, amount) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === productId
-          ? {
-              ...product,
-              contributedAmount: product.contributedAmount + parseFloat(amount),
-            }
-          : product,
-      ),
-    );
-    alert(`You contributed $${amount} to Product ${productId}!`);
+    const product = data.find((item) => item.id === productId);
+
+    if (product) {
+      fetcher.submit(
+        {
+          productId: product.id,
+          amount: amount,
+          productData: JSON.stringify({
+            ...product,
+            registryId,
+            productTypeId: 2,
+          }),
+        },
+        {method: 'post'},
+      );
+    } else {
+      alert('Product not found.');
+    }
   };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -229,8 +261,8 @@ export default function CoupleProfile() {
                 isGroupGift={product.isGroupPayment}
                 isCashFund={product.isCashFund}
                 status={product.status}
-                contributedAmount={product.collectedAmount || 0}
-                maxContribution={product.amount || 0}
+                contributedAmount={Number(product.collectedAmount) || 0}
+                maxContribution={Number(product.amount) || 0}
                 onAddToCart={() => handleAddToCart(product.id)}
                 onContribute={(amount) => handleContribute(product.id, amount)}
               />
