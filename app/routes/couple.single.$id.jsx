@@ -150,6 +150,8 @@ async function hashCartId(cartId) {
 export default function CoupleProfile() {
   const {data, cashfundData, response, session, registryId} =
     useLoaderData() || [];
+  console.log('🚀 ~ CoupleProfile ~ cashfundData:', cashfundData);
+  console.log('🚀 ~ CoupleProfile ~ data:', data);
   const fetcher = useFetcher();
   const handleAddToCart = (productId) => {
     const product = data.find((item) => item.id === productId);
@@ -255,9 +257,9 @@ export default function CoupleProfile() {
             {data.map((product) => (
               <CoupleProductCard
                 key={product.id}
-                name={product.name}
+                name={product.title || product.cashFund.name}
                 price={product.amount}
-                description={product.description}
+                description={product.description || product.cashFund.note}
                 isGroupGift={product.isGroupPayment}
                 isCashFund={product.isCashFund}
                 status={product.status}

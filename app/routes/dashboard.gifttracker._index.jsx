@@ -50,7 +50,9 @@ const GiftTracker = () => {
                   </Link>
                 </td>
                 <td className="border px-4 py-2">
-                  {gift.messageSent ? 'Sent' : 'Send Thanks'}
+                  <a href="/sendthanks">
+                    {gift.messageSent ? <span>&#10003;</span> : 'Send Thanks'}
+                  </a>
                 </td>
               </tr>
             ))}

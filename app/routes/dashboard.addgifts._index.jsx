@@ -121,12 +121,12 @@ export default function AddGifts() {
             <RegistryProduct
               image={product.node.images.edges[0].node.src}
               productName={product.node.title}
-              price={11}
+              price={product.node.variants.edges[0].node.priceV2.amount}
               description={product.node.description}
               onAddToRegistry={(quantity, isGroupGift) =>
                 handleAddtoRegistry({
                   id: Number(extractShopifyId(product.node.id)),
-                  price: 11,
+                  price: product.node.variants.edges[0].node.priceV2.amount,
                   quantity,
                 })
               }
@@ -194,27 +194,38 @@ export default function AddGifts() {
 }
 
 const PRODUCT_QUERY = `#graphql
-      query {
-      products(first: 10) {
-        edges {
-          node {
-            handle
-            description
-            id
-            title
-            images(first:10) {
+  query {
+    products(first: 10) {
+      edges {
+        node {
+          handle
+          description
+          id
+          title
+          images(first: 10) {
             edges {
-            node {
-            id
-            src
+              node {
+                id
+                src
+              }
             }
-            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                priceV2 {
+                  amount
+                  currencyCode
+                }
+              }
             }
           }
         }
       }
-    }`;
-
+    }
+  }
+`;
 const COLLECTION_QUERY = `#graphql
 query {
 collections(first: 10) {

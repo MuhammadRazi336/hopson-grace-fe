@@ -139,10 +139,10 @@ const FundPage = ({data}) => {
       {data.map((fund) => (
         <FundCard
           key={fund.productId} // Use a unique key for each card
-          title={'fund.title'}
+          title={fund.cashFund.name}
           totalAmount={fund.amount}
           collectedAmount={fund.collectedAmount}
-          onViewContributors={() => handleViewContributors('fund.title')}
+          onViewContributors={() => handleViewContributors(fund.cashFund.name)}
         />
       ))}
     </div>
