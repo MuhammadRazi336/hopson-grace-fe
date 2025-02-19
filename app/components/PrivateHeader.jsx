@@ -1,4 +1,5 @@
 import {NavLink} from '@remix-run/react';
+import {requireAuth} from '~/utils/auth-guard';
 
 export function PrivateHeader() {
   return (
@@ -40,6 +41,19 @@ export function PrivateHeader() {
             ❓
           </span>
         </NavLink>
+        <form method="post" action="/logout">
+          <button
+            type="submit"
+            className="px-4 py-2 border border-black rounded hover:bg-gray-100"
+            onClick={() => {
+              localStorage.removeItem('@ShippingData');
+              localStorage.removeItem('@EventData');
+              localStorage.removeItem('@Token');
+            }}
+          >
+            Logout
+          </button>
+        </form>
       </div>
     </header>
   );
