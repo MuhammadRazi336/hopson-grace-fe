@@ -510,8 +510,9 @@ const Step6 = ({ collections }) => {
 
   return (
     <div className="flex flex-col items-center p-8">
-      <Heading text={'What is your preferred gift?'} />
-      <div className="grid grid-cols-2 gap-4">
+      <Heading text={'Help us get to know you.'} />
+      <p>What do you enjoy doing together? <br />Select as many as you would like!</p>
+      <div className="grid grid-cols-2 gap-4 pt-3">
         {collectionItems.length > 0 ? ( // Check if collectionItems is not empty
           collectionItems.map((option, index) => (
             <button

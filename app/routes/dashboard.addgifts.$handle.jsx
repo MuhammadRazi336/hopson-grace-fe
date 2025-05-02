@@ -68,7 +68,7 @@ const GiftDetailHandle = () => {
     const payload = {
       productId: id,
       amount: Number(price),
-      registryId: Number(registry[0].id),
+      registryId: Number(registry.id),
       productTypeId: 1,
       quantity,
     };

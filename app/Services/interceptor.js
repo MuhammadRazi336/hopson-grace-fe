@@ -3,6 +3,8 @@ import axios from 'axios';
 const axiosInstance = axios.create({
   baseURL: 'https://dev-hopsongrace.codup.io/api/', // Set your API URL here
   // baseURL: 'http://localhost:3001/api/', // Set your API URL here
+
+  // https://dev-hopsongrace.codup.io/api/
   timeout: 20000,
 });
 

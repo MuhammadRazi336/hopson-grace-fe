@@ -65,7 +65,7 @@ function NewCashFund() {
       amount: Number(totalGoal),
       isAmountHide: hideFromGuests,
       note: noteToFamily,
-      registryId: Number(registry[0].id),
+      registryId: Number(registry.id),
     };
     fetcher.submit(
       {payload}, // Send data as key-value pairs

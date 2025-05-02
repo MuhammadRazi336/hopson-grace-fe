@@ -5,22 +5,32 @@ import {defer} from '@remix-run/server-runtime';
 import {Link, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 
-export async function loader({request, context}) {
+export async function loader({ request, context }) {
   const registry = context?.session?.get('@Registry');
 
+  if (!registry || !registry.events || registry.events.length === 0) {
+    throw new Response('Registry or Events not found', { status: 404 });
+  }
+
+  const eventId = registry.events.id;
+  if (!eventId) {
+    throw new Response('Event ID not found', { status: 404 });
+  }
+
   const eventGet = await context.ClientGet(
-    `events/${registry[0].events[0].id}`,
+    `events/${eventId}`,
     context,
   );
 
   const res = await context.ClientGet(
-    `registryProducts/${registry[0].id}?type=gift`,
+    `registryProducts/${registry.id}?type=gift`,
     context,
   );
   const cashRes = await context.ClientGet(
-    `registryProducts/${registry[0].id}?type=cash`,
+    `registryProducts/${registry.id}?type=cash`,
     context,
   );
+
   let mergedArray = [];
   const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
@@ -29,21 +39,19 @@ export async function loader({request, context}) {
 
   if (res?.data?.length) {
     mergedArray = res?.data?.map((item1) => {
-      // Find the corresponding product from array2
       const product = products.nodes.find(
         (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
       );
-
-      // If a matching product is found, merge its details into the current item
       if (product) {
         return {
           ...item1,
           ...product,
         };
       }
-      return item1; // If no matching product, return the original item
+      return item1;
     });
   }
+
   return defer({
     data: mergedArray,
     cashfundData: cashRes?.data || [],
@@ -78,11 +86,12 @@ const index = () => {
             <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
               Share Registry
             </button>
-            <Link to={`/dashboard/registry/${registry[0].events[0].id}`}>
-              <div className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-                Edit Registry Page
-              </div>
-            </Link>
+            
+  <Link to={`/dashboard/registry/${registry.events.id}`}>
+    <div className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
+      Edit Registry Page
+    </div>
+  </Link>
           </div>
         </div>
       </div>
@@ -131,7 +140,6 @@ const FundPage = ({data}) => {
 
   // Function to handle view contributors button click
   const handleViewContributors = (fundName) => {
-    console.log(`Viewing contributors for ${fundName}`);
   };
 
   return (

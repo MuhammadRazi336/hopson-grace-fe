@@ -6,6 +6,9 @@ export function createClient() {
       throw new Error(`Provide a body for the ${method} request`);
     }
 
+    // http://localhost:3040/api/
+    // https://dev-hopsongrace.codup.io/api/
+  
     const endPoint = `https://dev-hopsongrace.codup.io/api/${route}`;
     const options = {
       method,
@@ -13,12 +16,28 @@ export function createClient() {
         'Content-Type': 'application/json',
         ...(token && {Authorization: `Bearer ${token}`}),
       },
-      ...(body && {body: JSON.stringify(body)}), // Add body if applicable
+      ...(body && {body: JSON.stringify(body)}),
     };
-
-    const request = await fetch(endPoint, options);
-    const response = await request.json();
-    return response;
+  
+    try {
+      const request = await fetch(endPoint, options);
+      const contentType = request.headers.get('content-type');
+    
+      if (!request.ok) {
+        const errorData = contentType?.includes('application/json')
+          ? await request.json()
+          : await request.text();
+    
+        throw new Error(
+          errorData?.message || errorData || `API request failed with status ${request.status}`
+        );
+      }
+    
+      const response = await request.json();
+      return response;
+    } catch (err) {
+      throw err;
+    }
   }
 
   // Separate functions for each HTTP method

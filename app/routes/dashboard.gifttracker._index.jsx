@@ -5,7 +5,7 @@ export async function loader(args) {
   const registry = context?.session?.get('@Registry');
 
   const data = await context.ClientGet(
-    `transactions/${registry[0].id}`,
+    `transactions/${registry.id}`,
     context,
   );
 

@@ -116,26 +116,35 @@ export default function AddGifts() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-        {products.map((product, index) => (
-          <Link key={index} to={`/dashboard/addgifts/${product.node.handle}`}>
-            <RegistryProduct
-              image={product.node.images.edges[0].node.src}
-              productName={product.node.title}
-              price={product.node.variants.edges[0].node.priceV2.amount}
-              description={product.node.description}
-              onAddToRegistry={(quantity, isGroupGift) =>
-                handleAddtoRegistry({
-                  id: Number(extractShopifyId(product.node.id)),
-                  price: product.node.variants.edges[0].node.priceV2.amount,
-                  quantity,
-                })
-              }
-              onGroupGiftTagChange={(isGroupGift) =>
-                console.log(`Group Gift tag changed: ${isGroupGift}`)
-              }
-            />
-          </Link>
-        ))}
+      {products.map((productWrapper, index) => {
+  const product = productWrapper.node;
+
+  const firstImage = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg'; // provide fallback image
+  const firstVariant = product?.variants?.edges?.[0]?.node;
+
+  if (!firstVariant) return null; // skip products without variants
+
+  return (
+    <Link key={index} to={`/dashboard/addgifts/${product.handle}`}>
+      <RegistryProduct
+        image={firstImage}
+        productName={product.title}
+        price={firstVariant.priceV2.amount}
+        description={product.description}
+        onAddToRegistry={(quantity, isGroupGift) =>
+          handleAddtoRegistry({
+            id: Number(extractShopifyId(product.id)),
+            price: firstVariant.priceV2.amount,
+            quantity,
+          })
+        }
+        onGroupGiftTagChange={(isGroupGift) =>
+          console.log(`Group Gift tag changed: ${isGroupGift}`)
+        }
+      />
+    </Link>
+  );
+})}
       </div>
       <div className="pt-6 font-sans">
         {/* Heading */}

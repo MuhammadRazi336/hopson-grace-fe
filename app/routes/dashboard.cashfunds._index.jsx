@@ -1,16 +1,19 @@
 import {useLoaderData, Link} from '@remix-run/react';
 import React from 'react';
-export async function loader(args) {
-  const {context} = args;
+export async function loader({ context }) {
   const registry = context?.session?.get('@Registry');
 
-  // Await the critical data required to render initial state of the page
+  if (!registry || !registry.id) {
+    throw new Response('Registry not found in session', { status: 404 });
+  }
+
   const data = await context.ClientGet(
-    `registryProducts/cash-fund/${registry[0].id}`,
-    context,
+    `registryProducts/cash-fund/${registry.id}`,
+    context
   );
 
-  return {cashFundData: data?.data || []};
+
+  return { cashFundData: data?.data || [] };
 }
 const CashFunds = () => {
   const {cashFundData} = useLoaderData();

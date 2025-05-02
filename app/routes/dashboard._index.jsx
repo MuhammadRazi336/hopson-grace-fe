@@ -4,39 +4,69 @@ import ButtonComponent from '~/components/Button.jsx';
 import {useState} from 'react';
 import {useFetcher, useLoaderData} from '@remix-run/react';
 import RegistryChecklist from '~/components/RegistryChecklist';
-import {redirect} from '@shopify/remix-oxygen';
+import {json, redirect} from '@shopify/remix-oxygen';
 
 export async function loader(args) {
   const {context, request} = args;
 
-  const user = await context?.session?.get('@User');
-
   try {
-    const {data} = await context.ClientGet(
+    const user = await context?.session?.get('@User');
+
+    if (!user?.user?.id) {
+      throw new Error('User ID not found in session');
+    }
+
+    const registriesResponse = await context.ClientGet(
       `registries/by-userId/${user.user.id}`,
       context,
     );
-    const registries = data.map((registry) => {
-      return {...registry, value: registry.name, label: registry.name};
-    });
 
-    const registry = registries.find((registry) => {
-      return registry.isSelected;
-    });
-    const response = await context.ClientGet(
+    if (!registriesResponse?.data) {
+      throw new Error('Invalid API response structure');
+    }
+
+    const registries = registriesResponse.data.map((registry) => ({
+      ...registry,
+      value: registry.name,
+      label: registry.name
+    }));
+
+    const registry = registries.find((registry) => registry.isSelected);
+    
+    if (!registry) {
+      throw new Error('No selected registry found');
+    }
+
+    const detailResponse = await context.ClientGet(
       `registries/detail/${registry.id}`,
       context,
     );
 
     context.session.set('@Registry', {
       ...registry,
-      ...response.data,
+      ...detailResponse.data,
     });
     await context.session.commit();
 
-    return {registries, registry: {...registry, ...response.data}};
+    return json(
+      {
+        registries,
+        registry: {...registry, ...detailResponse.data},
+      },
+      {
+        headers: {
+          'Set-Cookie': await context.session.commit(),
+        },
+      }
+    );
+    
   } catch (e) {
-    return {...e};
+    return {
+      error: true,
+      message: e.message,
+      registries: [],
+      registry: null
+    };
   }
 }
 
