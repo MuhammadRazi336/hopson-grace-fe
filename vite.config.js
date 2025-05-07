@@ -37,7 +37,7 @@ export default defineConfig({
        * Include 'example-dep' in the array below.
        * @see https://vitejs.dev/config/dep-optimization-options
        */
-      include: ['@material-tailwind/react'],
+      include: ['prop-types', '@stripe/react-stripe-js','@material-tailwind/react'],
     },
   },
 });
