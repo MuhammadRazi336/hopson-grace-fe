@@ -27,11 +27,29 @@ const Marquee = () => {
                }}
                modules={[Autoplay]}
                allowTouchMove={false} // optional: disables dragging to maintain marquee effect
-               className="my-16 px-12"
+               className="my-6 lg:my-16 px-12"
                style={{
                  paddingLeft: '60px',
                  paddingRight: '60px',
                }}
+               breakpoints={{
+                340: {
+                    slidesPerView: 1.75,
+                    spaceBetween: 40
+                },
+                475: {
+                    slidesPerView: 2.75,
+                    spaceBetween: 40
+                },
+                768: {
+                    slidesPerView: 3.75,
+                    spaceBetween: 40
+                },
+                1024: {
+                    slidesPerView: 5.75,
+                    spaceBetween: 40
+                },
+            }}
             >
                 <SwiperSlide>
                     <div className='flex items-center justify-center'>

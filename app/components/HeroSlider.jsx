@@ -36,11 +36,11 @@ const HeroSlider = () => {
         <SwiperSlide key={slide.id}>
           {slide.type === 'content' ? (
             <div>
-              <img src={slide.image} alt="Slide" style={{ width: '100%', height: '1000px', objectFit: 'cover' }}  />
-              <div className='absolute flex flex-col items-center top-0 max-w-[50%] h-full justify-center text-white px-12 gap-8'>
-                <h3 className='text-[112px] text-center prata leading-[124px]'>{slide.content}</h3>
+              <img src={slide.image} alt="Slide" className="w-full h-[510px] lg:h-[1000px] object-cover" />
+              <div className='absolute flex flex-col items-center top-0 max-w-[50%] max-[1024px]:max-w-[70%] h-full justify-center text-white px-12 gap-8'>
+                <h3 className='text-5xl leading-[60px] lg:text-[112px] text-center prata lg:leading-[124px] text-shadow' >{slide.content}</h3>
                 <img src={vectorImg} alt="line" className='w-72'  />
-                <p className='text-2xl text-center font-semibold uppercase w-2xl leading-10'>{slide.description}</p>
+                <p className='text-sm w-full leading-6 lg:text-2xl text-center font-semibold uppercase lg:w-2xl lg;leading-10'>{slide.description}</p>
               </div>
             </div>
           ) : (
@@ -51,7 +51,7 @@ const HeroSlider = () => {
               objectFit="cover" 
               muted 
               loop 
-              className='w-full h-[1000px] object-cover'
+              className='w-full h-[510px] lg:h-[1000px] object-cover'
             >
               <source src={slide.videoSrc} type="video/mp4" style={{ height: '1000px' }} />
               Your browser does not support the video tag.

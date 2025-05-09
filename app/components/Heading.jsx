@@ -1,8 +1,8 @@
-export default function Heading({text, classes, image}) {
+export default function Heading({text, classes, image, imageClasses}) {
   return (
-    <div className="flex items-center flex-col gap-4">
+    <div className="flex items-center flex-col gap-2 lg:gap-4">
       <h2 className={`mb-4 ${classes}`}>{text}</h2>
-      {image && <img src={image} alt="" />}
+      {image && <img src={image} className={imageClasses} alt="" />}
     </div>
   )
 }

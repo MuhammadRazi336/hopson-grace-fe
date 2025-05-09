@@ -10,7 +10,7 @@ import teaImg from "../assets/Images/tea.png"
 import lineImg from "../assets/Images/line.png"
 import lineImg2 from "../assets/Images/Vector 24.png"
 import lineImg3 from "../assets/Images/Vector 23.png"
-import lineImg4 from "../assets/Images/Vector 24.png"
+import lineImg4 from "../assets/Images/Vector 14.png"
 import Faqs from "~/components/Faqs";
 import CollectionItems from "~/components/CollectionItems";
 import CustomTab from "~/components/CustomTab";
@@ -46,59 +46,66 @@ const Home = () => {
             <section className="hero-slider">
                 <HeroSlider />
             </section>
-            <section className="text-and-button-section py-36">
+            <section className="text-and-button-section py-14 lg:py-36">
                 <Textandbutton />
             </section>
-            <section>
+            <section className="lg:mb-[240px]">
                 <CollectionItems />
             </section>
 
             <section className="mb-[90px]">
-                <ImageAndText direction={"right"} imgBanner={cupImg} lineimg={lineImg} stepsCheck={true} title="How It Works" description="There’s no question too small or request too big for our Registry advisors. We’re always at your service." buttontext={"CREATE YOUR REGISTRY"} buttontype={"Color"}  />
+                <ImageAndText direction={"right"} imgBanner={cupImg} lineimg={lineImg} stepsCheck={true} title="How It Works" description="There's no question too small or request too big for our Registry advisors. We're always at your service." buttontext={"CREATE YOUR REGISTRY"} buttontype={"Color"}  />
             </section>
 
             <section>
-                <Heading text="Ready-Made Registries" classes={"prata text-5xl font-normal text-center"} image={lineImghead} />
+                <Heading text="Ready-Made Registries" classes={"prata text-3xl lg:text-5xl font-normal text-center max-[1024px]:m-0"} image={lineImghead} imageClasses={"max-[1024px]:max-w-[330px]"} />
                 <CustomTab tabsData={tabsData} />
                 <div className="text-center">
-                    <ButtonComponent text="EXPLORE SAMPLE REGISTRIES" className="button-cs text-[#446184] border-3 border-[#446184] py-[30px] bg-transparent rounded-none mt-11" />
+                    <ButtonComponent text="EXPLORE SAMPLE REGISTRIES" className="button-cs text-[#446184] border-3 border-[#446184] py-4 lg:py-[30px] bg-transparent rounded-none mt-11" />
                 </div>
             </section>
 
-            <section className="py-[70px] bg-[#F5F2ED80] my-[240px]">
-                <Heading text="A Few of Our Brands" classes={"prata text-5xl font-normal text-center"} image={lineImg4} />
+            <section className="py-[70px] bg-[#F5F2ED80] my-12 lg:my-[240px]">
+                <Heading text="A Few of Our Brands" classes={"prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0"} image={lineImg4} imageClasses={"max-[1024px]:max-w-[330px]"} />
                 <Marquee/>
                 <div className="text-center">
-                    <ButtonComponent text="BROWSE BESTSELLERS" className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] bg-transparent rounded-none mt-11" />
+                    <ButtonComponent text="BROWSE BESTSELLERS" className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-4 lg:py-[30px] bg-transparent rounded-none mt-2 lg:mt-11" />
                 </div>
             </section>
 
-            <section className="py-[70px] mb-[240px]">
-                <Heading text="The Registry Bestsellers" classes={"prata text-5xl font-normal text-center"} image={brandline} />
+            <section className="py-[70px]  my-12 lg:my-[240px]">
+                <Heading text="The Registry Bestsellers" classes={"prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0"} image={brandline} imageClasses={"max-[1024px]:max-w-[330px]"} />
                 <ProductSlider />
                 <div className="text-center">
-                    <ButtonComponent text="EXPLORE ALL BRANDS" className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] bg-transparent rounded-none mt-11" />
+                    <ButtonComponent text="EXPLORE ALL BRANDS" className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11" />
                 </div>
             </section>
 
             <section className="mb-[70px]">
-                <Heading text="Feel The Love" classes={"prata text-5xl font-normal text-center"} image={lineImghead} />
+                <Heading text="Feel The Love" classes={"prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0"} image={lineImghead} imageClasses={"max-[1024px]:max-w-[230px]"} />
                 <Testimonialslider />
             </section>
 
-            <section className="mb-[240px]">
-                <ImageAndText direction={"left"} imgBanner={dogImg} lineimg={lineImg} title="At Your Service" description="There’s no question too small or request too big for our Registry advisors. We’re always at your service." buttontext={"CONTACT US"} buttontype={"link"}  />
+            <section className=" my-12 lg:my-[240px]">
+                <ImageAndText direction={"left"} imgBanner={dogImg} lineimg={lineImg} title="At Your Service" description={
+                    <>
+                        There's no question too small or request too big for our Registry advisors.
+                        <br />
+                        <br />
+                        We're always at your service.
+                    </>
+                } buttontext={"CONTACT US"} buttontype={"link"}  />
             </section>
 
-            <section>
+            <section className="max-[1024px]:py-10">
                 <Faqs />
             </section>
 
-            <section className="mb-[240px]">
+            <section className=" my-12 lg:my-[240px]">
                 <ImageAndText direction={"left"} imgBanner={showroomImg} lineimg={lineImg2} title="Visit Our Toronto Showroom" description="Not in Toronto? We offer the same level of exceptional service in one of our virtual gift registry appointments." buttontext={"BOOK NOW"} buttontype={"link"}  />
             </section>
 
-            <section className="mb-[240px]">
+            <section className=" my-12 lg:my-[240px]">
                 <ImageAndText direction={"right"} imgBanner={teaImg} lineimg={lineImg3} title="Your Ultimate Registry" description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE." buttontext={"GET STARTED"} buttontype={"Color"}  />
             </section>
             <Footer />
