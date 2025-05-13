@@ -67,7 +67,7 @@ export default {
           "font-src 'self' https://cdn.shopify.com",
           "frame-src 'self' https://www.youtube.com https://cdn.shopify.com https://*.shopify.com https://js.stripe.com",
           "connect-src 'self' https://cdn.shopify.com https://monorail-edge.shopifysvc.com https://dev-hopsongrace.codup.io/api/forms/upload https://dev-hopsongrace.codup.io",
-          "img-src 'self' https://www.dummyimage.co.uk",
+          "img-src 'self' blob: https://www.dummyimage.co.uk",
         ].join('; '),
       );
 
