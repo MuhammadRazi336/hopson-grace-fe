@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import {useEffect, useState} from 'react';
+import {useLoaderData, useNavigate} from '@remix-run/react';
 
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
 import Button from '~/components/Button.jsx';
 import Stepper from '~/components/Stepper.jsx';
 import CustomSelect from '~/components/CustomSelect.jsx';
-import DatePicker from '../components/Datepicker.jsx'; 
-import moment from 'moment'; 
+import DatePicker from '~/components/Datepicker';
+import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
-import { STEPS_CONSTANTS } from '../constants/UiConstants';
+import {STEPS_CONSTANTS} from '../constants/UiConstants';
 const OnboardingClient = ({}) => {
-  const { user, collections } = useLoaderData();
+  const {user, collections} = useLoaderData();
   const navigate = useNavigate();
   const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
@@ -46,7 +46,7 @@ const OnboardingClient = ({}) => {
   };
   // General change handler for all fields
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setAddressData({
       ...addressData,
       [name]: value,
@@ -122,7 +122,7 @@ const OnboardingClient = ({}) => {
   const handleSelectChange = (value) => {
     setEventData({
       ...eventData,
-      selectedOption: { label: value.label, id: value.id },
+      selectedOption: {label: value.label, id: value.id},
     });
   };
   // Main state for selected date
@@ -138,7 +138,7 @@ const OnboardingClient = ({}) => {
       name: eventData.eventName,
       eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD'),
       eventTypeId: Number(eventData.selectedOption.id),
-      ...(eventData.id && { id: eventData.id }),
+      ...(eventData.id && {id: eventData.id}),
     };
 
     const token = localStorage.getItem('@Token');
@@ -153,7 +153,7 @@ const OnboardingClient = ({}) => {
         const event = {
           ...eventData,
           id: data.data.id,
-          ...(!payload.id && { eventId: data.data.event.id }),
+          ...(!payload.id && {eventId: data.data.event.id}),
         };
         localStorage.setItem('@EventData', JSON.stringify(event));
         setEventData(event);
@@ -172,7 +172,7 @@ const OnboardingClient = ({}) => {
       city: addressData.city,
       province: addressData.province,
       country: addressData.country,
-      ...(addressData.id && { id: Number(addressData.id) }),
+      ...(addressData.id && {id: Number(addressData.id)}),
     };
     const token = localStorage.getItem('@Token');
     try {
@@ -311,7 +311,7 @@ const OnboardingClient = ({}) => {
   );
 };
 
-const Step1 = ({ selectedDate, setSelectedDate }) => {
+const Step1 = ({selectedDate, setSelectedDate}) => {
   return (
     <div>
       <div className="p-4">
@@ -322,7 +322,7 @@ const Step1 = ({ selectedDate, setSelectedDate }) => {
           inputProps={{
             className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{ clear: 'Reset', apply: 'Confirm' }}
+          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
     </div>
@@ -370,13 +370,13 @@ const Step2 = ({
           inputProps={{
             className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{ clear: 'Reset', apply: 'Confirm' }}
+          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
     </div>
   );
 };
-const Step3 = ({ value, onChange }) => {
+const Step3 = ({value, onChange}) => {
   return (
     <div>
       <div className="text-center">
@@ -396,7 +396,7 @@ const Step3 = ({ value, onChange }) => {
   );
 };
 
-const Step4 = ({ formData, handleInputChange }) => {
+const Step4 = ({formData, handleInputChange}) => {
   // Submit handler to log the form data
 
   return (
@@ -473,10 +473,10 @@ const Step5 = () => {
 
   // Options for the grid
   const options = [
-    { id: 1, label: 'Cash' },
-    { id: 2, label: 'Gifts & Cash' },
-    { id: 3, label: 'Gifts' },
-    { id: 4, label: 'Not Sure Yet' },
+    {id: 1, label: 'Cash'},
+    {id: 2, label: 'Gifts & Cash'},
+    {id: 3, label: 'Gifts'},
+    {id: 4, label: 'Not Sure Yet'},
   ];
 
   return (
@@ -502,7 +502,7 @@ const Step5 = () => {
   );
 };
 
-const Step6 = ({ collections }) => {
+const Step6 = ({collections}) => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   // Access the nodes array from collections
@@ -511,7 +511,10 @@ const Step6 = ({ collections }) => {
   return (
     <div className="flex flex-col items-center p-8">
       <Heading text={'Help us get to know you.'} />
-      <p>What do you enjoy doing together? <br />Select as many as you would like!</p>
+      <p>
+        What do you enjoy doing together? <br />
+        Select as many as you would like!
+      </p>
       <div className="grid grid-cols-2 gap-4 pt-3">
         {collectionItems.length > 0 ? ( // Check if collectionItems is not empty
           collectionItems.map((option, index) => (
@@ -540,15 +543,15 @@ const Step7 = () => {
 
   // Options for the grid
   const options = [
-    { id: 1, label: 'Minimalist', imgSrc: 'https://via.placeholder.com/150' },
-    { id: 2, label: 'Maximalist', imgSrc: 'https://via.placeholder.com/150' },
-    { id: 3, label: 'Transitional', imgSrc: 'https://via.placeholder.com/150' },
+    {id: 1, label: 'Minimalist', imgSrc: 'https://via.placeholder.com/150'},
+    {id: 2, label: 'Maximalist', imgSrc: 'https://via.placeholder.com/150'},
+    {id: 3, label: 'Transitional', imgSrc: 'https://via.placeholder.com/150'},
     {
       id: 4,
       label: 'Modern Farmhouse',
       imgSrc: 'https://via.placeholder.com/150',
     },
-    { id: 5, label: 'Boho Chic', imgSrc: 'https://via.placeholder.com/150' },
+    {id: 5, label: 'Boho Chic', imgSrc: 'https://via.placeholder.com/150'},
     {
       id: 6,
       label: 'Mid-Century Modern',
