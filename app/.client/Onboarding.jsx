@@ -6,8 +6,8 @@ import Input from '~/components/Input.jsx';
 import Button from '~/components/Button.jsx';
 import Stepper from '~/components/Stepper.jsx';
 import CustomSelect from '~/components/CustomSelect.jsx';
-import DatePicker from '../components/Datepicker.jsx';
-import moment from 'moment';
+import DatePicker from '../components/Datepicker.jsx'; 
+import moment from 'moment'; 
 import Registry_Services from '~/Services/Registry.js';
 import { STEPS_CONSTANTS } from '../constants/UiConstants';
 const OnboardingClient = ({}) => {
