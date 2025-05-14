@@ -4,15 +4,46 @@ import { requireAuth } from '~/utils/auth-guard.js';
 import { redirect } from '@shopify/remix-oxygen';
 
 export async function loader({ request, context }) {
-  const user = await requireAuth(context);
-  const [{ collections }] = await Promise.all([
-    context.storefront.query(COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-  if (user) {
-    return { user, collections, context };
+  try {
+    const user = await requireAuth(context);
+    
+    // Add proper headers for the Storefront API
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': context.env.PUBLIC_STOREFRONT_API_TOKEN,
+    };
+
+    // Query collections with proper error handling
+    let collections;
+    try {
+      const result = await context.storefront.query(COLLECTION_QUERY, {
+        headers,
+        cache: context.storefront.CacheLong(),
+      });
+      collections = result.collections;
+    } catch (error) {
+      console.error('Error fetching collections:', error);
+      collections = { nodes: [] };
+    }
+
+    if (user) {
+      return { 
+        user, 
+        collections, 
+        context,
+        error: null 
+      };
+    }
+    return redirect('/');
+  } catch (error) {
+    console.error('Onboarding loader error:', error);
+    return {
+      user: null,
+      collections: { nodes: [] },
+      context: null,
+      error: 'Failed to load onboarding data'
+    };
   }
-  return redirect('/');
 }
 
 const OnboardingIndex = () => {
