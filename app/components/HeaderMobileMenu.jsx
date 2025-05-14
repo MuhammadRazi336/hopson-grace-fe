@@ -1,5 +1,5 @@
 import NavBarLinks from "./NavBarLinks";
-import registryLogo from "../assets/Images/THE REGISTRY-HG-LOGO-FINAL-BLACK-BY HG 2.png"
+import registryLogo from "../assets/Images/registry-logo.png"
 import line from "../assets/Images/Vector 23.png"
 import cancel from "../assets/Images/Group 125.png"
 import Button from '~/components/Button.jsx';
