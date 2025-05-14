@@ -56,6 +56,21 @@ export default {
           storefront: appLoadContext.storefront,
         });
       }
+
+      // ... existing code ...
+      response.headers.set(
+        'Content-Security-Policy',
+        [
+          "default-src 'self' https://cdn.shopify.com https://shopify.com http://localhost:*",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.shopify.com",
+          "style-src 'self' 'unsafe-inline' https://cdn.shopify.com",
+          "font-src 'self' data: https://cdn.shopify.com",
+          "frame-src 'self' https://www.youtube.com https://cdn.shopify.com https://*.shopify.com https://js.stripe.com",
+          "connect-src 'self' https://cdn.shopify.com https://monorail-edge.shopifysvc.com https://dev-hopsongrace.codup.io/api/forms/upload https://dev-hopsongrace.codup.io",
+          "img-src 'self' blob: https://www.dummyimage.co.uk https://cdn.shopify.com",
+        ].join('; '),
+      );
+
       setHydrogenContext(response);
       return response;
     } catch (error) {

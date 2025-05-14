@@ -22,6 +22,12 @@ import {requireAuth} from '~/utils/auth-guard.js';
 import {getToast} from 'remix-toast';
 import {ToastContainer, toast as notify} from 'react-toastify';
 import {useEffect} from 'react';
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(
+  'pk_test_51RHKe6ELfhE2pt9mxrrxK7hhAclxCvksadMtIQCvxowOQADlw5jCFRSoj1tq7JNEVqqIE3uThE9P6K0DTQ6X3Pam006Cn180x4',
+);
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -62,88 +68,176 @@ export function links() {
 }
 
 /**
- * @param {LoaderFunctionArgs} args
- */
-export async function loader(args) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-  const {context, request} = args;
-  const token = await requireAuth(context);
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
-
-  const {storefront, env} = args.context;
-  const {toast, headers} = await getToast(request);
-  return defer({
-    ...deferredData,
-    ...criticalData,
-    publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
-    shop: getShopAnalytics({
-      storefront,
-      publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
-    }),
-    consent: {
-      checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
-      storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
-      withPrivacyBanner: false,
-      // localize the privacy banner
-      country: args.context.storefront.i18n.country,
-      language: args.context.storefront.i18n.language,
-    },
-    token,
-    toast,
-    headers,
-  });
-}
-
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
+ * Load critical data with error handling
  * @param {LoaderFunctionArgs}
  */
 async function loadCriticalData({context}) {
   const {storefront} = context;
 
-  const [header] = await Promise.all([
-    storefront.query(HEADER_QUERY, {
-      cache: storefront.CacheLong(),
-      variables: {
-        headerMenuHandle: 'main-menu', // Adjust to your header menu handle
-      },
-    }),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
+  try {
+    // Verify storefront API access
+    if (!storefront?.getStorefrontApiUrl()) {
+      console.error('Storefront API URL not configured');
+      return {header: null};
+    }
 
-  return {header};
+    const [header] = await Promise.all([
+      storefront.query(HEADER_QUERY, {
+        cache: storefront.CacheLong(),
+        variables: {
+          headerMenuHandle: 'main-menu',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': context.env.PUBLIC_STOREFRONT_API_TOKEN,
+        },
+      }).catch(error => {
+        console.error('Header query error:', error);
+        return null;
+      }),
+    ]);
+
+    return {header};
+  } catch (error) {
+    console.error('Critical data error:', error);
+    return {header: null};
+  }
 }
 
 /**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
+ * Load deferred data
  * @param {LoaderFunctionArgs}
  */
 function loadDeferredData({context}) {
   const {storefront, customerAccount, cart} = context;
+
+  // Verify API access before making the query
+  if (!storefront?.getStorefrontApiUrl()) {
+    console.error('Storefront API URL not configured');
+    return {
+      cart: null,
+      isLoggedIn: false,
+      footer: Promise.resolve(null),
+    };
+  }
 
   // defer the footer query (below the fold)
   const footer = storefront
     .query(FOOTER_QUERY, {
       cache: storefront.CacheLong(),
       variables: {
-        footerMenuHandle: 'footer', // Adjust to your footer menu handle
+        footerMenuHandle: 'footer',
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': context.env.PUBLIC_STOREFRONT_API_TOKEN,
       },
     })
     .catch((error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
+      console.error('Footer query error:', error);
       return null;
     });
+
   return {
-    cart: cart.get(),
-    isLoggedIn: customerAccount.isLoggedIn(),
+    cart: cart?.get() || null,
+    isLoggedIn: customerAccount?.isLoggedIn() || false,
     footer,
   };
+}
+
+// Add this helper function to verify environment variables
+function verifyEnvironmentVariables(env) {
+  const required = [
+    'PUBLIC_STOREFRONT_API_TOKEN',
+    'PUBLIC_STORE_DOMAIN',
+    'PUBLIC_STOREFRONT_ID',
+  ];
+
+  const missing = required.filter(key => !env[key]);
+  if (missing.length > 0) {
+    console.error(`Missing required environment variables: ${missing.join(', ')}`);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * @param {LoaderFunctionArgs} args
+ */
+export async function loader(args) {
+  try {
+    const {context, request} = args;
+    
+    // Verify environment variables
+    if (!verifyEnvironmentVariables(context.env)) {
+      throw new Error('Missing required environment variables');
+    }
+
+    // Get authentication token
+    let token;
+    try {
+      token = await requireAuth(context);
+    } catch (authError) {
+      console.warn('Authentication error:', authError);
+      // Continue without token - allow public access
+      token = null;
+    }
+
+    // Start fetching non-critical data
+    const deferredData = loadDeferredData(args);
+
+    // Fetch critical data with error handling
+    let criticalData;
+    try {
+      criticalData = await loadCriticalData(args);
+    } catch (error) {
+      console.error('Error loading critical data:', error);
+      // Provide fallback data
+      criticalData = {
+        header: {
+          shop: null,
+          menu: null,
+        },
+      };
+    }
+
+    const {storefront, env} = context;
+    const {toast, headers} = await getToast(request);
+
+    return defer(
+      {
+        ...deferredData,
+        ...criticalData,
+        publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
+        shop: getShopAnalytics({
+          storefront,
+          publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
+        }),
+        consent: {
+          checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
+          storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
+          withPrivacyBanner: false,
+          country: context.storefront.i18n.country,
+          language: context.storefront.i18n.language,
+        },
+        token,
+        toast,
+        headers,
+      },
+      headers,
+    );
+  } catch (error) {
+    console.error('Root loader error:', error);
+    // Return minimal data to prevent complete app failure
+    return defer({
+      header: null,
+      footer: null,
+      cart: null,
+      isLoggedIn: false,
+      toast: null,
+      headers: null,
+    });
+  }
 }
 
 /**
@@ -153,13 +247,14 @@ export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
   const data = useRouteLoaderData('root');
-  const {toast} = data;
+
+  // Add null check before destructuring
   useEffect(() => {
-    if (toast) {
-      // notify on a toast message
-      notify(toast.message, {type: toast.type});
+    if (data?.toast) {
+      notify(data.toast.message, {type: data.toast.type});
     }
-  }, [toast]);
+  }, [data?.toast]);
+
   return (
     <html lang="en">
       <head>
@@ -175,10 +270,15 @@ export function Layout({children}) {
             shop={data.shop}
             consent={data.consent}
           >
-            <PageLayout {...data}>{children}</PageLayout>
+            <Elements stripe={stripePromise}>
+              <PageLayout {...data}>{children}</PageLayout>
+            </Elements>
           </Analytics.Provider>
         ) : (
-          children
+          <div>
+            {children}
+            {/* You might want to add a loading state or error message here */}
+          </div>
         )}
         <ToastContainer position="bottom-center" />
         <ScrollRestoration nonce={nonce} />

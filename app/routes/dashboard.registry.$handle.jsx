@@ -70,9 +70,9 @@ const index = () => {
       eventTypeId: eventState.eventTypeId,
       registryId: Number(data.registryId),
       image: {
-        originalName: 'wedding-photo.jpg',
-        fileName: 'event123.jpg',
-        fileUrl: 'https://example.com/images/event123.jpg',
+        originalName: eventState.image.name,
+        fileName: eventState.image.name,
+        fileUrl: 'https://www.dummyimage.co.uk/1024x1024/000000',
         mimeType: 'image/jpeg',
         size: 1024,
       },

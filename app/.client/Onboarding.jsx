@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import {useEffect, useState} from 'react';
+import {useLoaderData, useNavigate} from '@remix-run/react';
 
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
 import Button from '~/components/Button.jsx';
 import Stepper from '~/components/Stepper.jsx';
 import CustomSelect from '~/components/CustomSelect.jsx';
-import DatePicker from '~/components/Datepicker.jsx';
+import DatePicker from '~/components/DatePicker.jsx';
 import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
 import { STEPS_CONSTANTS } from '../constants/UiConstants';
@@ -49,7 +49,7 @@ const OnboardingClient = ({}) => {
   };
   // General change handler for all fields
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     setAddressData({
       ...addressData,
       [name]: value,
@@ -125,7 +125,7 @@ const OnboardingClient = ({}) => {
   const handleSelectChange = (value) => {
     setEventData({
       ...eventData,
-      selectedOption: { label: value.label, id: value.id },
+      selectedOption: {label: value.label, id: value.id},
     });
   };
   // Main state for selected date
@@ -141,7 +141,7 @@ const OnboardingClient = ({}) => {
       name: eventData.eventName,
       eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD'),
       eventTypeId: Number(eventData.selectedOption.id),
-      ...(eventData.id && { id: eventData.id }),
+      ...(eventData.id && {id: eventData.id}),
     };
 
     const token = localStorage.getItem('@Token');
@@ -156,7 +156,7 @@ const OnboardingClient = ({}) => {
         const event = {
           ...eventData,
           id: data.data.id,
-          ...(!payload.id && { eventId: data.data.event.id }),
+          ...(!payload.id && {eventId: data.data.event.id}),
         };
         localStorage.setItem('@EventData', JSON.stringify(event));
         setEventData(event);
@@ -175,7 +175,7 @@ const OnboardingClient = ({}) => {
       city: addressData.city,
       province: addressData.province,
       country: addressData.country,
-      ...(addressData.id && { id: Number(addressData.id) }),
+      ...(addressData.id && {id: Number(addressData.id)}),
     };
     const token = localStorage.getItem('@Token');
     try {
@@ -420,7 +420,7 @@ const OnboardingClient = ({}) => {
   );
 };
 
-const Step1 = ({ selectedDate, setSelectedDate }) => {
+const Step1 = ({selectedDate, setSelectedDate}) => {
   return (
     <div>
       <div className="p-4">
@@ -431,7 +431,7 @@ const Step1 = ({ selectedDate, setSelectedDate }) => {
           inputProps={{
             className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{ clear: 'Reset', apply: 'Confirm' }}
+          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
     </div>
@@ -479,13 +479,13 @@ const Step2 = ({
           inputProps={{
             className: 'border-gray-300 focus:border-gray-500',
           }}
-          buttonLabels={{ clear: 'Reset', apply: 'Confirm' }}
+          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
     </div>
   );
 };
-const Step3 = ({ value, onChange }) => {
+const Step3 = ({value, onChange}) => {
   return (
     <div>
       <div className="text-center">
@@ -505,7 +505,7 @@ const Step3 = ({ value, onChange }) => {
   );
 };
 
-const Step4 = ({ formData, handleInputChange }) => {
+const Step4 = ({formData, handleInputChange}) => {
   // Submit handler to log the form data
 
   return (
@@ -582,10 +582,10 @@ const Step5 = () => {
 
   // Options for the grid
   const options = [
-    { id: 1, label: 'Cash' },
-    { id: 2, label: 'Gifts & Cash' },
-    { id: 3, label: 'Gifts' },
-    { id: 4, label: 'Not Sure Yet' },
+    {id: 1, label: 'Cash'},
+    {id: 2, label: 'Gifts & Cash'},
+    {id: 3, label: 'Gifts'},
+    {id: 4, label: 'Not Sure Yet'},
   ];
 
   return (
