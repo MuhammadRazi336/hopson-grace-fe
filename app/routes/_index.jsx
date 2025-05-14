@@ -3,6 +3,7 @@ import {redirect} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 
 export async function loader(args) {
+  
   const {context, request} = args;
   // Await the critical data required to render initial state of the page
   const user = await requireAuth(context);
