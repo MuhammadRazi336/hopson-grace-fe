@@ -1,9 +1,9 @@
 import {Await, Link, NavLink} from '@remix-run/react';
-import footerImg from '../assets/images/footerLogoNew.png';
-import instagramIcon  from '../assets/images/insta.png';
-import pinterestIcon from '../assets/images/pin.png';
-import facebookIcon from '../assets/images/facebook.png';
-import dropdown from '../assets/images/dropdown.png';
+import footerImg from '../assets/Images/footerLogoNew.png';
+import instagramIcon  from '../assets/Images/insta.png';
+import pinterestIcon from '../assets/Images/pin.png';
+import facebookIcon from '../assets/Images/facebook.png';
+import dropdown from '../assets/Images/dropdown.png';
 import FooterBottom from './FooterBottom';
 import Copyright from './Copyright';
 import { useState } from 'react';
