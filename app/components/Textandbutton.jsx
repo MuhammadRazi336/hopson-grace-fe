@@ -1,5 +1,5 @@
 import Button from '~/components/Button.jsx';
-import lonelingImg from '../assets/Images/longline.png';
+import lonelingImg from '/assets/Images/longline.png';
 
 
 const Textandbutton = () => {

@@ -9,62 +9,62 @@
 }
 
 @font-face {
-  font-family: "bastardogrotesk";
+  font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-light.ttf') format('truetype');
   font-weight: 200;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "bastardogrotesk";
+  font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-thin.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "bastardogrotesk";
+  font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "bastardogrotesk";
+  font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-semibold.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "bastardogrotesk";
+  font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-bold.ttf') format('truetype');
   font-weight: bold;
 }
 
 @font-face {
-  font-family: "bastardogrotesk";
+  font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-black.ttf') format('truetype');
   font-weight: 800;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "prata";
+  font-family: 'prata';
   src: url('../assets/fonts/Prata-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "ivyora";
+  font-family: 'ivyora';
   src: url('../assets/fonts/ivyora-text.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 body {
-  font-family: "bastardogrotesk";
+  font-family: 'bastardogrotesk';
   font-size: 18px;
 }
 
@@ -189,7 +189,7 @@ button.reset {
   font-size: inherit;
 }
 
-button.reset>* {
+button.reset > * {
   margin: 0;
 }
 
@@ -616,31 +616,27 @@ button.reset:hover:not(:has(> *)) {
   display: inline-block;
 }
 
-
-
-
 /*
 * --------------------------------------------------
 * Custom Css
 * --------------------------------------------------
 */
 
-
 .prata {
-  font-family: "Prata";
+  font-family: 'Prata';
 }
 
 .ivyora {
-  font-family: "ivyora";
+  font-family: 'ivyora';
 }
 
-button>p {
+button > p {
   font-size: 18px !important;
   letter-spacing: 0.08em;
 }
 
-.bastardogrotesk>* {
-  font-family: "bastardogrotesk" !important;
+.bastardogrotesk > * {
+  font-family: 'bastardogrotesk' !important;
 }
 
 .slide-left {
@@ -699,19 +695,18 @@ button>p {
   opacity: 0 !important;
 }
 
-.button-cs>* {
+.button-cs > * {
   font-weight: 800;
-  letter-spacing: 0.08em
+  letter-spacing: 0.08em;
 }
-
 
 .tabactive {
   color: #446184;
   position: relative;
 }
 
-.tabactive::After {
-  content: "";
+.tabactive::after {
+  content: '';
   width: 100%;
   background: #446184;
   height: 4px;
@@ -721,8 +716,12 @@ button>p {
 }
 
 .insetshadow::before {
-  background: linear-gradient(179.11deg, rgba(0, 0, 0, 0.6) 0.76%, rgba(7, 7, 7, 0) 80.09%);
-  content: "";
+  background: linear-gradient(
+    179.11deg,
+    rgba(0, 0, 0, 0.6) 0.76%,
+    rgba(7, 7, 7, 0) 80.09%
+  );
+  content: '';
   position: absolute;
   top: 0;
   bottom: 0;
@@ -732,8 +731,8 @@ button>p {
 }
 
 .registrytag::after {
-  content: "";
-  background: url("../assets/Images/registry-monogram.png") no-repeat;
+  content: '';
+  background: url('/assets/Images/registry-monogram.png') no-repeat;
   position: absolute;
   bottom: 15px;
   right: 25px;
@@ -779,10 +778,9 @@ button>p {
   bottom: 0;
 }
 
-
 .registrytagwhite::after {
-  content: "";
-  background: url("../assets/Images/registry-monogram.png") no-repeat;
+  content: '';
+  background: url('/assets/Images/registry-monogram.png') no-repeat;
   position: absolute;
   bottom: 43px;
   left: 46px;
@@ -798,7 +796,7 @@ button>p {
 }
 
 .menu-item-hover::after {
-  content: "";
+  content: '';
   width: 100%;
   height: 4px;
   background: #446184;
@@ -806,7 +804,7 @@ button>p {
   top: 20px;
   left: 0;
   opacity: 0;
-  transition: 300ms ease-in-out
+  transition: 300ms ease-in-out;
 }
 
 .menu-item-hover:hover::after {
@@ -816,14 +814,14 @@ button>p {
 
 /* mobile view */
 
-.button-cs-sm>* {
+.button-cs-sm > * {
   font-weight: 800;
   letter-spacing: 0.08em;
   font-size: 14px !important;
 }
 
 .search-img {
-  background: #F5F2ED url("../assets/Images/search.png") no-repeat;
+  background: #f5f2ed url('/assets/Images/search.png') no-repeat;
   background-position: 15px 50%;
   background-size: 28px;
 }
@@ -834,13 +832,13 @@ button>p {
 }
 
 .line-vertical {
-  background: url("../assets/Images/faqline.png") no-repeat;
+  background: url('/assets/Images/faqline.png') no-repeat;
   background-position: center;
   background-size: 1.1vh;
 }
 
 .line-vertical-extend {
-  background: url("../assets/Images/faqlineextend.png") no-repeat;
+  background: url('/assets/Images/faqlineextend.png') no-repeat;
   background-position: center;
   background-size: 1.8vh;
 }
@@ -849,8 +847,7 @@ button>p {
   padding-right: 100px !important;
 }
 
-
-@media screen and (max-width:1024px) {
+@media screen and (max-width: 1024px) {
   .insetshadow::before {
     display: none;
   }
@@ -876,12 +873,12 @@ button>p {
     bottom: 0;
     display: none;
   }
-  .testimonialSlider .swiper-pagination{
+  .testimonialSlider .swiper-pagination {
     bottom: 70px !important;
   }
 }
 
-@media screen and (max-width:767px) {
+@media screen and (max-width: 767px) {
   .hero-slider .swiper-pagination {
     bottom: 20px !important;
     gap: 6px;
@@ -892,7 +889,7 @@ button>p {
     height: 12px;
   }
 
-  .button-cs>p {
+  .button-cs > p {
     font-size: 12px !important;
   }
 
@@ -915,7 +912,7 @@ button>p {
 } */
   .tabandslider .swiper-pagination,
   .testimonialSlider .swiper-pagination {
-    gap: 8px
+    gap: 8px;
   }
 
   .tabandslider .swiper-pagination-bullet,
@@ -938,4 +935,5 @@ button>p {
 } */
 }
 
-@media screen and (max-width:439px) {}
+@media screen and (max-width: 439px) {
+}

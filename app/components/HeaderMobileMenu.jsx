@@ -1,15 +1,15 @@
 import NavBarLinks from "./NavBarLinks";
-import registryLogo from "../assets/Images/registry-logo.png"
-import line from "../assets/Images/Vector 23.png"
-import cancel from "../assets/Images/Group 125.png"
+import registryLogo from "/assets/Images/registry-logo.png"
+import line from "/assets/Images/Vector 23.png"
+import cancel from "/assets/Images/Group 125.png"
 import Button from '~/components/Button.jsx';
 import { Link, NavLink } from "@remix-run/react";
-import brandImg from "../assets/Images/menu-our-brand2.png"
-import instagram from "../assets/Images/instagram.png"
-import facebook from "../assets/Images/facebook2.png"
-import more from "../assets/Images/more.png"
-import pin from "../assets/Images/pin2.png"
-import registryIcon from "../assets/Images/registry-logo.png"
+import brandImg from "/assets/Images/menu-our-brand2.png"
+import instagram from "/assets/Images/instagram.png"
+import facebook from "/assets/Images/facebook2.png"
+import more from "/assets/Images/more.png"
+import pin from "/assets/Images/pin2.png"
+import registryIcon from "/assets/Images/registry-logo.png"
 import { useState } from 'react';
 
 

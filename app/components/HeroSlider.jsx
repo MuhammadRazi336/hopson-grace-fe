@@ -2,9 +2,9 @@ import React, {useState, useRef, useEffect} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Pagination, Autoplay} from 'swiper/modules';
 import 'swiper/swiper-bundle.css'; // Import Swiper styles
-import heroImg from '../assets/Images/heroImg.png';
-import vectorImg from '../assets/Images/Vector 22.png';
-import sampleVideo from '../assets/Images/sample.webm';
+import heroImg from '/assets/Images/heroImg.png';
+import vectorImg from '/assets/Images/Vector 22.png';
+import sampleVideo from '/assets/Images/sample.webm';
 import 'swiper/css/pagination';
 
 const HeroSlider = () => {
