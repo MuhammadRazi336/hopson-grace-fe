@@ -2,11 +2,10 @@ import React, {useState, useRef, useEffect} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Pagination, Autoplay} from 'swiper/modules';
 import 'swiper/swiper-bundle.css'; // Import Swiper styles
-import heroImg from '../assets/images/heroImg.png';
-import vectorImg from '../assets/images/Vector 22.png';
-import sampleVideo from '../assets/images/sample.mp4';
+import heroImg from '../assets/Images/heroImg.png';
+import vectorImg from '../assets/Images/Vector 22.png';
+import sampleVideo from '../assets/Images/sample.mp4';
 import 'swiper/css/pagination';
-
 
 const HeroSlider = () => {
   const slides = [
@@ -19,7 +18,6 @@ const HeroSlider = () => {
       image: heroImg,
     },
     {id: 2, type: 'video', videoSrc: sampleVideo},
-
   ];
 
   const videoRef = useRef(null);
