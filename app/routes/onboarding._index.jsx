@@ -10,7 +10,7 @@ export async function loader({ request, context }) {
     // Add other queries here, so that they are loaded in parallel
   ]);
   if (user) {
-    return { user, context, collections };
+    return { user, collections, context };
   }
   return redirect('/');
 }
@@ -23,11 +23,21 @@ const OnboardingIndex = () => {
 export default OnboardingIndex;
 const COLLECTION_QUERY = `#graphql
 query {
-collections(first: 10) {
-nodes {
-        description
-        title
+  collections(first: 20) {
+    nodes {
+      id
+      description
+      title
+      metafield(namespace: "parent", key: "collection") {
+        key
+        value
+        namespace
+        type
+      }
+      subCollections: metafield(namespace: "sub", key: "collection") {
+        value
       }
     }
   }
+}
 `;

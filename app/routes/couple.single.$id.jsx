@@ -1,66 +1,56 @@
 import {defer, useFetcher, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import CoupleProductCard from '~/components/CoupleProductCard';
+import { useState } from 'react';
 
-export async function loader({params, context}) {
-  const coupleId = params.id;
-  const response = await context.ClientGet(
-    `registries/by-userId/${coupleId}`,
-    context,
-  );
-
-  const registryId = response.data[0]?.id;
-
-  if (!response.data) {
-    throw new Response('Not Found', {status: 404});
-  }
-
-  const registry = context?.session?.get('@Registry');
-
-  const res = await context.ClientGet(
-    `registryProducts/${response?.data[0]?.id}?type=gift`,
-    context,
-  );
-  const cashRes = await context.ClientGet(
-    `registryProducts/${response?.data[0]?.id}?type=cash`,
-    context,
-  );
-
-  let mergedArray = [];
-  const ids = res?.data?.map(
-    (product) => `gid://shopify/Product/${product.productId}`,
-  );
-
-  const products = await fetchProducts(context.storefront, ids);
-
-  if (res?.data?.length) {
-    mergedArray = res?.data?.map((item1) => {
-      const product = products?.nodes?.find(
-        (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
-      );
-
-      if (product) {
-        let status;
-        if (item1.isPurchased) {
-          status = 'purchased';
-        } else if (item1.productTypeId === 2) {
-          status = 'cashFund';
-        } else {
-          status = 'addToCart';
-        }
-
-        return {
-          status,
-          isCashFund:
-            item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
-          ...item1,
-          ...product,
-        };
+const COLLECTION_QUERY = `#graphql
+query {
+  collections(first: 20) {
+    nodes {
+      id
+      title
+      description
+      metafield(namespace: "parent", key: "collection") {
+        key
+        value
+        namespace
+        type
       }
+    }
+  }
+}`;
+
+export async function loader({ params, context }) {
+  const coupleId = params.id;
+
+  const response = await context.ClientGet(`registries/by-userId/${coupleId}`, context);
+  const registryId = response.data[0]?.id;
+  if (!response.data) throw new Response('Not Found', { status: 404 });
+
+  const [res, cashRes, shopifyCollections] = await Promise.all([
+    context.ClientGet(`registryProducts/${registryId}?type=gift`, context),
+    context.ClientGet(`registryProducts/${registryId}?type=cash`, context),
+    context.storefront.query(COLLECTION_QUERY),
+  ]);
+
+  const ids = res?.data?.map(
+    (product) => `gid://shopify/Product/${product.productId}`
+  );
+  const products = await fetchProducts(context.storefront, ids);
+  
+  let mergedArray = [];
+  if (res?.data?.length) {
+    mergedArray = res.data.map((item1) => {
+      const product = products?.nodes?.find(
+        (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`
+      );
+      let status = item1.isPurchased ? 'purchased' : item1.productTypeId === 2 ? 'cashFund' : 'addToCart';
       return {
+        status,
+        isCashFund: item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
+        availableForSale: product?.availableForSale ?? true,
         ...item1,
-        isCashFund:
-          item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
+        ...(product || {}),
       };
     });
   }
@@ -70,6 +60,7 @@ export async function loader({params, context}) {
         ...item,
         status: 'cashFund',
         isCashFund: true,
+        availableForSale: true,
       }))
     : [];
 
@@ -79,6 +70,7 @@ export async function loader({params, context}) {
     response,
     registryId,
     session: context.session,
+    collections: shopifyCollections.collections.nodes,
   });
 }
 
@@ -148,10 +140,54 @@ async function hashCartId(cartId) {
 }
 
 export default function CoupleProfile() {
-  const {data, cashfundData, response, session, registryId} =
-    useLoaderData() || [];
-  console.log('🚀 ~ CoupleProfile ~ cashfundData:', cashfundData);
-  console.log('🚀 ~ CoupleProfile ~ data:', data);
+  const { data, cashfundData, response, session, registryId, collections } =
+  useLoaderData() || [];
+
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [availability, setAvailability] = useState('');
+  const [priceSort, setPriceSort] = useState('');
+
+
+  //filter
+  const filteredData = data
+  .filter((product) => {
+    if (selectedCategory) {
+      const collectionTitles = product.collections?.nodes?.map((c) => c.title) || [];
+      if (!collectionTitles.includes(selectedCategory)) return false;
+    }
+
+    if (availability) {
+      // For cash fund items, they should always be considered "in stock"
+      if (product.isCashFund) {
+        return availability === 'in-stock';
+      }
+
+      // For regular products
+      const isAvailable = product.availableForSale ?? true;
+      const isPurchased = product.status === 'purchased';
+
+      if (availability === 'in-stock') {
+        return isAvailable && !isPurchased;
+      }
+      if (availability === 'out-of-stock') {
+        return !isAvailable || isPurchased;
+      }
+    }
+
+    return true; 
+  })
+  .sort((a, b) => {
+    if (priceSort === 'low-to-high') {
+      return (a.amount ?? 0) - (b.amount ?? 0);
+    }
+    if (priceSort === 'high-to-low') {
+      return (b.amount ?? 0) - (a.amount ?? 0);
+    }
+    return 0;
+  });
+
+  // console.log('🚀 ~ CoupleProfile ~ cashfundData:', cashfundData);
+  // console.log('🚀 ~ CoupleProfile ~ data:', data);
   const fetcher = useFetcher();
   const handleAddToCart = (productId) => {
     const product = data.find((item) => item.id === productId);
@@ -189,6 +225,9 @@ export default function CoupleProfile() {
       alert('Product not found.');
     }
   };
+  const childCollections = collections.filter(
+    (collection) => collection.metafield?.value === "true"
+  );
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl">
@@ -231,18 +270,24 @@ export default function CoupleProfile() {
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Filter Registry Items</h3>
           <div className="flex gap-4 mt-4">
-            <select className="border border-gray-300 rounded-lg px-4 py-2">
+          <select
+              className="border border-gray-300 rounded-lg px-4 py-2"
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              value={selectedCategory}
+            >
               <option value="">Category</option>
-              <option value="kitchen">Kitchen</option>
-              <option value="decor">Decor</option>
-              <option value="electronics">Electronics</option>
-            </select>
-            <select className="border border-gray-300 rounded-lg px-4 py-2">
+              {childCollections.map((collection) => (
+                <option key={collection.id} value={collection.title}>
+                  {collection.title}
+                </option>
+              ))}
+          </select>
+            <select className="border border-gray-300 rounded-lg px-4 py-2" onChange={(e) => setAvailability(e.target.value)} value={availability}>
               <option value="">Availability</option>
               <option value="in-stock">In Stock</option>
               <option value="out-of-stock">Out of Stock</option>
             </select>
-            <select className="border border-gray-300 rounded-lg px-4 py-2">
+            <select className="border border-gray-300 rounded-lg px-4 py-2" onChange={(e) => setPriceSort(e.target.value)} value={priceSort}>
               <option value="">Price</option>
               <option value="low-to-high">Low to High</option>
               <option value="high-to-low">High to Low</option>
@@ -254,7 +299,7 @@ export default function CoupleProfile() {
         <div className="mt-6">
           <h3 className="text-lg font-semibold">Registry Items</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {data.map((product) => (
+            {filteredData.map((product) => (
               <CoupleProductCard
                 key={product.id}
                 name={product.title || product.cashFund.name}

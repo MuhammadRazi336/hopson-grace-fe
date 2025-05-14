@@ -10,11 +10,14 @@ import DatePicker from '~/components/Datepicker.jsx';
 import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
 import { STEPS_CONSTANTS } from '../constants/UiConstants';
+
 const OnboardingClient = ({}) => {
-  const { user, collections } = useLoaderData();
+  const { user, collections, context } = useLoaderData();
   const navigate = useNavigate();
   const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
+  const [selectedCollections, setSelectedCollections] = useState([]);
+  const [selectedSubCollections, setSelectedSubCollections] = useState([]);
   const [addressData, setAddressData] = useState({
     phoneNumber: '',
     address: '',
@@ -217,9 +220,111 @@ const OnboardingClient = ({}) => {
 
     try {
       const data = await Registry_Services.updateOnBoarding(payload, token);
-      navigate('/');
+
+      // First, store the selected sub-collections
+      try {
+        const collectionsString = JSON.stringify(selectedSubCollections);
+        localStorage.setItem('@SelectedSubCollections', collectionsString);
+        
+        // Verify storage immediately
+        const storedCollections = localStorage.getItem('@SelectedSubCollections');
+
+        if (!storedCollections) {
+          throw new Error('Failed to store collections in localStorage');
+        }
+      } catch (storageError) {
+        alert('There was an error saving your selections. Please try again.');
+        return; // Don't proceed if storage failed
+      }
+
+      // Then fetch and store products
+      try {
+        const productsQuery = `#graphql
+          query GetProductsByCollection($collectionId: ID!) {
+            collection(id: $collectionId) {
+              id
+              title
+              products(first: 50) {
+                edges {
+                  node {
+                    id
+                    title
+                    handle
+                    description
+                    collections(first: 50) {
+                      edges {
+                        node {
+                          id
+                          title
+                          handle
+                        }
+                      }
+                    }
+                    images(first: 1) {
+                      edges {
+                        node {
+                          id
+                          src
+                        }
+                      }
+                    }
+                    variants(first: 1) {
+                      edges {
+                        node {
+                          id
+                          priceV2 {
+                            amount
+                            currencyCode
+                          }
+                          inventoryQuantity
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `;
+
+        // Process each sub-collection one at a time
+        for (const subCollection of selectedSubCollections) {
+
+          try {
+            // Fetch products for this collection
+            const result = await context.storefront.query(productsQuery, {
+              variables: {
+                collectionId: subCollection.id
+              }
+            });
+
+            if (result?.collection?.products?.edges) {
+              // Store products for this collection
+              const productsKey = `@Products_${subCollection.id}`;
+              const productsString = JSON.stringify(result.collection.products.edges);
+              
+              localStorage.setItem(productsKey, productsString);
+              
+              // Verify storage
+              const storedProducts = localStorage.getItem(productsKey);
+            }
+          } catch (error) {
+          }
+        }
+
+        // Navigate after all operations are complete
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      } catch (error) {
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+      }
     } catch (e) {
-      console.log(e, 'DE');
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     }
   };
   // Handlers for navigation
@@ -280,9 +385,13 @@ const OnboardingClient = ({}) => {
       case STEPS_CONSTANTS.PREFER_GIFT_INFO:
         return <Step5 />;
       case STEPS_CONSTANTS.COLLECTION_INFO:
-        return <Step6 collections={collections} />;
+        return <Step6 collections={collections} onCollectionsSelect={setSelectedCollections} />;
       case STEPS_CONSTANTS.STYLE_INFO:
-        return <Step7 />;
+        return <Step7 
+          selectedCollections={selectedCollections} 
+          storefront={context.storefront}
+          onSubCollectionsSelect={setSelectedSubCollections}
+        />;
       default:
         return null;
     }
@@ -502,85 +611,160 @@ const Step5 = () => {
   );
 };
 
-const Step6 = ({ collections }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const Step6 = ({ collections, onCollectionsSelect }) => {
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
-  // Access the nodes array from collections
-  const collectionItems = collections?.nodes || []; // Default to an empty array if undefined
+
+  // Filter collections to only show parent collections
+  const parentCollections = collections?.nodes?.filter(
+    (collection) => {
+      return collection?.metafield?.value === "true";
+    }
+  ) || [];
+
+
+  const handleOptionClick = (collection) => {
+    setSelectedOptions((prev) => {
+      const isSelected = prev.some((item) => item.id === collection.id);
+      const newSelection = isSelected
+        ? prev.filter((item) => item.id !== collection.id)
+        : [...prev, collection];
+      
+      // Call the parent's callback with the updated selection
+      onCollectionsSelect(newSelection);
+      return newSelection;
+    });
+  };
 
   return (
     <div className="flex flex-col items-center p-8">
       <Heading text={'Help us get to know you.'} />
-      <p>What do you enjoy doing together? <br />Select as many as you would like!</p>
-      <div className="grid grid-cols-2 gap-4 pt-3">
-        {collectionItems.length > 0 ? ( // Check if collectionItems is not empty
-          collectionItems.map((option, index) => (
+      <p className="text-center mb-6">
+        What do you enjoy doing together? <br />
+        Select as many as you would like!
+      </p>
+      <div className="grid grid-cols-2 gap-4 w-full max-w-2xl">
+        {parentCollections.length > 0 ? (
+          parentCollections.map((collection) => (
             <button
-              key={index} // Use index as key if no unique id is available
-              onClick={() => setSelectedOption(option.title)} // Use title or any other property
-              className={`p-6 border rounded-md text-center font-medium text-gray-700 ${
-                selectedOption === option.title
+              key={collection.id}
+              onClick={() => handleOptionClick(collection)}
+              className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
+                selectedOptions.some((item) => item.id === collection.id)
                   ? 'bg-gray-900 text-white border-gray-900'
                   : 'bg-gray-100 hover:bg-gray-200'
               }`}
             >
-              {option.title} {/* Display the title */}
+              {collection.title}
             </button>
           ))
         ) : (
-          <p>No collections available.</p> // Fallback message
+          <p className="col-span-2 text-center text-gray-500">No collections available.</p>
         )}
       </div>
     </div>
   );
 };
 
-const Step7 = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [subCollectionsData, setSubCollectionsData] = useState([]);
+  const [error, setError] = useState(null);
 
-  // Options for the grid
-  const options = [
-    { id: 1, label: 'Minimalist', imgSrc: 'https://via.placeholder.com/150' },
-    { id: 2, label: 'Maximalist', imgSrc: 'https://via.placeholder.com/150' },
-    { id: 3, label: 'Transitional', imgSrc: 'https://via.placeholder.com/150' },
-    {
-      id: 4,
-      label: 'Modern Farmhouse',
-      imgSrc: 'https://via.placeholder.com/150',
-    },
-    { id: 5, label: 'Boho Chic', imgSrc: 'https://via.placeholder.com/150' },
-    {
-      id: 6,
-      label: 'Mid-Century Modern',
-      imgSrc: 'https://via.placeholder.com/150',
-    },
-  ];
+  useEffect(() => {
+    const fetchSubCollections = async () => {
+      setError(null);
+      
+      const subCollectionIds = selectedCollections.flatMap(collection => {
+        const subCollectionsValue = collection.subCollections?.value;
+        if (subCollectionsValue) {
+          try {
+            return JSON.parse(subCollectionsValue);
+          } catch (e) {
+            return [];
+          }
+        }
+        return [];
+      });
+
+
+      if (subCollectionIds.length > 0) {
+        try {
+          const response = await fetch('/api/collections', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ids: subCollectionIds }),
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to fetch collections');
+          }
+          
+          setSubCollectionsData(data.collections || []);
+        } catch (error) {
+          setError(error.message);
+        }
+      } else {
+        setSubCollectionsData([]);
+      }
+    };
+
+    fetchSubCollections();
+  }, [selectedCollections]);
+
+  const handleOptionClick = (subCollection) => {
+    setSelectedOptions((prev) => {
+      const isSelected = prev.some((item) => item.id === subCollection.id);
+      const newSelection = isSelected
+        ? prev.filter((item) => item.id !== subCollection.id)
+        : [...prev, {
+            id: subCollection.id,
+            title: subCollection.title,
+            handle: subCollection.handle,
+            description: subCollection.description
+          }];
+      
+      // Call the parent's callback with the updated selection
+      onSubCollectionsSelect(newSelection);
+      return newSelection;
+    });
+  };
 
   return (
     <div className="flex flex-col items-center p-8">
-      {/* Heading */}
       <Heading text={'Pick your Style'} />
-
-      {/* Grid */}
-      <div className="flex flex-row gap-4">
-        {options.map((option) => (
-          <div
-            key={option.id}
-            onClick={() => setSelectedOption(option.id)}
-            className={`p-4 border rounded-lg text-center font-medium cursor-pointer ${
-              selectedOption === option.id
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-gray-100 hover:bg-gray-200'
-            }`}
-          >
-            {/* Image */}
-            <div className="flex justify-center items-center mb-4 h-28 w-28 bg-gray-200 rounded-md">
-              <img alt="option" src={option.imgSrc} />
-            </div>
-            {/* Label */}
-            <p className="text-sm font-medium">{option.label}</p>
-          </div>
-        ))}
+      <p className="text-center mb-6">
+        Select your preferred styles from the sub-categories
+      </p>
+      {error && (
+        <p className="text-red-500 mb-4">
+          Error: {error}
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-4 w-full max-w-2xl">
+        {subCollectionsData.length > 0 ? (
+          subCollectionsData.map((subCollection) => (
+            <button
+              key={subCollection.id}
+              onClick={() => handleOptionClick(subCollection)}
+              className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
+                selectedOptions.some((item) => item.id === subCollection.id)
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'bg-gray-100 hover:bg-gray-200'
+              }`}
+            >
+              {subCollection.title}
+            </button>
+          ))
+        ) : (
+          <p className="col-span-2 text-center text-gray-500">
+            {error ? 'Error loading sub-categories' : 'No sub-categories available. Please select parent categories in the previous step.'}
+          </p>
+        )}
       </div>
     </div>
   );

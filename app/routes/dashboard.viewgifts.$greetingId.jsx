@@ -3,9 +3,10 @@ import React from 'react';
 
 export async function loader({params, context}) {
   const {greetingId} = params;
+  const registry = context?.session?.get('@Registry');
 
   const response = await context.ClientGet(
-    `transactions/detail/${greetingId}`,
+    `transactions/detail/${greetingId}/${registry.id}`,
     context,
   );
   return {viewGifts: response.data || []};
