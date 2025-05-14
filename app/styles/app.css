@@ -733,7 +733,7 @@ button>p {
 
 .registrytag::after {
   content: "";
-  background: url("../assets/Images/THE\ REGISTRY-HG-MONOGRAM-Secondary-black\ 2.png") no-repeat;
+  background: url("../assets/Images/registry-monogram.png") no-repeat;
   position: absolute;
   bottom: 15px;
   right: 25px;
@@ -782,7 +782,7 @@ button>p {
 
 .registrytagwhite::after {
   content: "";
-  background: url("../assets/Images/THE\ REGISTRY-HG-MONOGRAM-Secondary-black\ 2.png") no-repeat;
+  background: url("../assets/Images/registry-monogram.png") no-repeat;
   position: absolute;
   bottom: 43px;
   left: 46px;

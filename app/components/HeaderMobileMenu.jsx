@@ -9,7 +9,7 @@ import instagram from "../assets/Images/instagram.png"
 import facebook from "../assets/Images/facebook2.png"
 import more from "../assets/Images/more.png"
 import pin from "../assets/Images/pin2.png"
-import registryIcon from "../assets/Images/THE REGISTRY-HG-MONOGRAM-Secondary-black 2.png"
+import registryIcon from "../assets/Images/registry-logo.png"
 import { useState } from 'react';
 
 
