@@ -10,10 +10,11 @@ import facebook from "/assets/Images/facebook2.png"
 import more from "/assets/Images/more.png"
 import pin from "/assets/Images/pin2.png"
 import registryIcon from "/assets/Images/registry-logo.png"
+import registryMonogram from "/assets/Images/registry-monogram.png"
 import { useState } from 'react';
 
 
-const HeaderMobileMenu = ({ onClose }) => {
+const HeaderMobileMenu = ({ onClose, onPopup }) => {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
   const [activeBrand, setActiveBrand] = useState(null);
 
@@ -47,7 +48,7 @@ const HeaderMobileMenu = ({ onClose }) => {
       <div className="flex gap-2 mt-8 px-8">
         <Button text="Find a Couple"
           className="button-cs-sm text-[#1F1D1B] border-2 text-sm border-[#1F1D1B] bg-transparent rounded-none py-5 px-1 w-full" />
-        <Button text="GET STARTED"
+        <Button text="GET STARTED" onClick={() => { onClose(); onPopup(); }}
           className="text-white bg-[#446184] rounded-none text-sm button-cs-sm py-5 w-full px-1" />
       </div>
       <div className="px-8">
@@ -163,7 +164,7 @@ const HeaderMobileMenu = ({ onClose }) => {
         <Link to="#" className="text-sm font-semibold">GET STARTED</Link>
       </div>
       <div className="flex justify-end w-full px-8">
-        <img src={registryIcon} alt="" className="" />
+        <img src={registryMonogram} alt="" className="" />
       </div>
     </div>
   );

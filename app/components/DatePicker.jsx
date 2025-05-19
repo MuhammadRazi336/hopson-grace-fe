@@ -13,6 +13,7 @@ const DatePicker = ({
   selectedDate,
   onDateChange,
   label = 'Date',
+  labelHidden = true,
   dateFormat = 'MM/DD/YYYY',
   inputProps = {},
   className = '',
@@ -36,7 +37,7 @@ const DatePicker = ({
         handler={() => setShowCalendar(!showCalendar)}
       >
         {/* Label */}
-        <label className="block text-sm font-medium mb-1">{label}</label>
+        <label  className={`block text-sm font-medium mb-1 ${labelHidden ? 'hidden' : ''}`}>{label}</label>
         <PopoverHandler>
           <Inp
             value={selectedDate ? moment(selectedDate).format(dateFormat) : ''}
@@ -50,7 +51,7 @@ const DatePicker = ({
         </PopoverHandler>
 
         {/* Calendar Popover Content */}
-        <PopoverContent className="p-4 w-80 border rounded-lg shadow-md">
+        <PopoverContent className="p-4 w-80 border rounded-lg shadow-md datepick">
           <DayPicker
             mode="single"
             selected={selectedDate}
@@ -75,13 +76,14 @@ const DatePicker = ({
                 cursor: 'pointer',
               },
               daySelected: {
-                backgroundColor: '#374151',
+                backgroundColor: '#446184',
                 color: '#fff',
+                borderRadius: "100%"
               },
-              dayToday: {backgroundColor: '#E5E7EB'},
+              dayToday: {backgroundColor: '#446184'},
               dayOutside: {color: '#9CA3AF', opacity: 0.5},
             }}
-            className="rounded-md"
+            className="rounded-md "
             captionLayout="dropdown"
             fixedWeeks
           />

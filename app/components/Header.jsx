@@ -12,11 +12,13 @@ import {Navbar} from '@material-tailwind/react';
 import NavBarLinks from './NavBarLinks';
 import HeaderMobileMenu from './HeaderMobileMenu';
 import {useState, useEffect} from 'react';
+import Popup from './Popup';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [isMenuOpenBottom, setIsMenuOpenBottom] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -26,11 +28,19 @@ export function Header() {
   };
 
   const handleScroll = () => {
-    if (window.scrollY > 500) {
+    if (window.scrollY > 2500) {
       setIsFixed(true);
     } else {
       setIsFixed(false);
     }
+  };
+
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
   };
 
   useEffect(() => {
@@ -101,7 +111,7 @@ export function Header() {
 
         {/* Logo */}
         <div className="font-bold text-xl">
-          <NavLink to="/" className="text-black">
+          <NavLink to="/Home" className="text-black">
             <img
               src={isFixed ? registryLogoScroll : registryLogo}
               alt="Registry Logo"
@@ -133,14 +143,17 @@ export function Header() {
               FIND A COUPLE
             </NavLink>
             {/* CTA Button */}
-            <NavLink
-              to="/register"
+            <button
+              onClick={handleOpenPopup}
               className="py-5 px-2 text-[17px] bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] text-center"
             >
               CREATE A REGISTRY
-            </NavLink>
+            </button>
           </div>
         </div>
+        {showPopup && (
+          <Popup onClose={handleClosePopup} />
+        )}
       </header>
 
       <div
@@ -160,7 +173,7 @@ export function Header() {
           isMenuOpen ? 'left-0' : 'left-[-800px]'
         }`}
       >
-        <HeaderMobileMenu onClose={toggleMenu} />
+        <HeaderMobileMenu onClose={toggleMenu} onPopup={handleOpenPopup} />
       </div>
     </div>
   );

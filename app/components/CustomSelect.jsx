@@ -20,7 +20,7 @@ const CustomSelect = ({label, options, selected, setSelected}) => {
             );
             setSelected(selectedOption);
           }}
-          className="appearance-none px-4 py-5 border border-gray-300 rounded-md w-full text-left flex items-center bg-gray-300"
+          className="appearance-none rounded-none border-[#B9B4AE] border-2 bg-white text-black h-[inital] p-5"
           menuProps={{
             className: 'bg-gray-300 py-5',
           }}

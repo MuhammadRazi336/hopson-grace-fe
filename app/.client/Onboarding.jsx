@@ -10,8 +10,19 @@ import DatePicker from '~/components/DatePicker.jsx';
 import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
 import { STEPS_CONSTANTS } from '../constants/UiConstants';
+import arrow from "/assets/Images/arrow.png"
+import collectionitems from "/assets/Images/collectionitems.png"
+import selected from "/assets/Images/selected.png"
+import {Image} from '@shopify/hydrogen';
 
-const OnboardingClient = ({}) => {
+import React from 'react';
+import {Swiper, SwiperSlide} from 'swiper/react';
+import {Navigation, Autoplay} from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+
+const OnboardingClient = ({ onStepChange }) => {
   const { user, collections, context } = useLoaderData();
   const navigate = useNavigate();
   const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
@@ -181,10 +192,11 @@ const OnboardingClient = ({}) => {
     try {
       let data;
       if (payload?.id) {
-        data = await Registry_Services.updateShippingAddress(payload, token);
-      } else {
         data = await Registry_Services.addShippingAddress(payload, token);
       }
+      //  else {
+      //   data = await Registry_Services.addShippingAddress(payload, token);
+      // }
       const shippingData = {
         ...addressData,
         id: data.data.id,
@@ -397,12 +409,18 @@ const OnboardingClient = ({}) => {
     }
   };
   console.log(step, 'STEP');
+
+  // Add this effect to notify parent of step changes
+  useEffect(() => {
+    onStepChange?.(step);
+  }, [step, onStepChange]);
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-white">
+    <div className="flex justify-center items-center">
       {/* Main content wrapper */}
       <Stepper step={step} totalSteps={8} />
 
-      <div className="container p-6 bg-white rounded-md w-full max-w-4xl mx-4">
+      <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
 
         <div className="mb-6">
@@ -412,8 +430,13 @@ const OnboardingClient = ({}) => {
 
         {/* Back and Next buttons */}
         <div className="flex justify-between mt-4">
-          <Button text="Back" onClick={goBack} disabled={step === 1} />
-          <Button text={step === 7 ? 'Submit' : 'Next'} onClick={goNext} />
+          {/* <Button text="Back" onClick={goBack} disabled={step === 1} /> */}
+           <button onClick={goBack} disabled={step === 1}  type="submit" text="Next" className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]" >
+           <img src={arrow} alt="" className='rotate-180 max-[768px]:w-4' /> Back
+          </button>
+           <button onClick={goNext}  type="submit" text="Next" className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]" >
+            {step === 7 ? 'Submit' : 'Next'} <img src={arrow} alt="" className='max-[768px]:w-4' />
+          </button>
         </div>
       </div>
     </div>
@@ -422,18 +445,19 @@ const OnboardingClient = ({}) => {
 
 const Step1 = ({selectedDate, setSelectedDate}) => {
   return (
-    <div>
-      <div className="p-4">
+    <div className='text-center'>
+      <div className="p-4 w-[300px] mx-auto customdatepicker">
         <DatePicker
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
-          label="Choose a Date"
+          placeholder="Choose a Date"
           inputProps={{
-            className: 'border-gray-300 focus:border-gray-500',
+            className:"rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker",
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
+        <button className='border-b-2 border-b-white text-center mt-10'>I'LL ADD THIS LATER</button>
     </div>
   );
 };
@@ -455,13 +479,14 @@ const Step2 = ({
           {'(ie. bridal shower , engagement party)'}
         </h2>
       </div>
-      <div>
+      <div className='customselect mb-6'>
         <CustomSelect
           title={'Event Type'}
           options={eventData}
           selected={selectedOption}
           setSelected={handleSelectChange}
           placeholder="Choose an option"
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black"
         />
       </div>
       {/* Event Name Input */}
@@ -470,14 +495,15 @@ const Step2 = ({
         value={eventName}
         onChange={handleEventNameChange}
         placeholder="Enter event name"
+        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
       />
-      <div>
+      <div className='mt-6 customdatepicker'>
         <DatePicker
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
           label="Choose a Date"
           inputProps={{
-            className: 'border-gray-300 focus:border-gray-500',
+            className: 'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black h-[68px] customDatePicker',
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
@@ -489,9 +515,9 @@ const Step3 = ({value, onChange}) => {
   return (
     <div>
       <div className="text-center">
-        <Heading text={'How many guests are you inviting?'} />
-        <h2 className="text-l font-bold mb-4">
-          {'(Lorem ipsum dolor sit amit.)'}
+        {/* <Heading text={'How many guests are you inviting?'} /> */}
+        <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto">
+          This will help us calculate the magic number to ensure all guests have a good amount of gifts to choose from.
         </h2>
       </div>
       {/* Event Name Input */}
@@ -500,7 +526,14 @@ const Step3 = ({value, onChange}) => {
         value={value}
         onChange={onChange}
         placeholder="Enter No Of Guest"
+        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black mx-auto mt-4 text-center text-3xl font-bold placeholder:text-lg placeholder:font-normal"
+        classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
+      <div className='text-center'>
+        <button type='button' className='mt-10 border-b-2 border-b-white'>
+        I'LL ADD THIS LATER
+        </button>
+      </div>
     </div>
   );
 };
@@ -509,69 +542,72 @@ const Step4 = ({formData, handleInputChange}) => {
   // Submit handler to log the form data
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md">
+    <div className="">
       <div className="text-center">
-        <Heading text={'Where would you like your gifts shipped?'} />
-        <h2 className="text-l font-bold mb-4">
-          {
-            'You can update your address at any time or you can skip this step and add this later!'
-          }
+        {/* <Heading text={'Where would you like your gifts shipped?'} /> */}
+        <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto">
+          You can update your address at any time.
         </h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
         {/* Phone Number */}
         <Input
-          label="Phone Number"
+          placeholder="Phone Number *"
           name="phoneNumber"
           value={formData.phoneNumber}
           onChange={handleInputChange}
-          placeholder="Enter phone number"
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
         />
 
         {/* Address */}
         <Input
-          label="Address"
+          placeholder="Address *"
           name="address"
           value={formData.address}
           onChange={handleInputChange}
-          placeholder="Enter address"
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
         />
 
         {/* Postal Code */}
         <Input
-          label="Postal Code"
+          placeholder="Postal Code *"
           name="postalCode"
           value={formData.postalCode}
           onChange={handleInputChange}
-          placeholder="Enter postal code"
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
         />
 
         {/* City */}
         <Input
-          label="City"
+          placeholder="City *"
           name="city"
           value={formData.city}
           onChange={handleInputChange}
-          placeholder="Enter city"
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
         />
 
         {/* Province */}
         <Input
-          label="Province"
+          placeholder="Province *"
           name="province"
           value={formData.province}
           onChange={handleInputChange}
-          placeholder="Enter province"
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
         />
 
         {/* Country */}
         <Input
-          label="Country"
+          placeholder="Country *"
           name="country"
           value={formData.country}
           onChange={handleInputChange}
-          placeholder="Enter country"
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
         />
+      </div>
+      <div className='text-center'>
+        <button className='mt-10 border-b-2 border-b-white'>
+          I'LL ADD THIS LATER
+        </button>
       </div>
     </div>
   );
@@ -582,28 +618,51 @@ const Step5 = () => {
 
   // Options for the grid
   const options = [
-    {id: 1, label: 'Cash'},
-    {id: 2, label: 'Gifts & Cash'},
-    {id: 3, label: 'Gifts'},
-    {id: 4, label: 'Not Sure Yet'},
+    {
+      id: 1,
+      label: 'Cash',
+      image: collectionitems,
+      selectedImage: selected
+    },
+    {id: 2, label: 'Gifts & Cash', image: collectionitems,  selectedImage: selected},
+    {id: 3, label: 'Gifts', image: collectionitems,  selectedImage: selected},
+    {id: 4, label: 'Not Sure Yet', image: collectionitems,  selectedImage: selected},
   ];
 
   return (
-    <div className="flex flex-col items-center p-8">
-      <Heading text={'What is your preferred gift?'} />
+    <div className="flex flex-col items-center">
+      {/* <Heading text={'What is your preferred gift?'} /> */}
+      <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto text-center">
+      Most guests prefer to give a gift that you can keep forever.
+        </h2>
+      <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto text-center">
+      CHOOSE AS MANY AS YOU'D LIKE:
+        </h2>
       {/* Grid */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4 max-[768px]:grid-cols-2">
         {options.map((option) => (
           <button
             key={option.id}
             onClick={() => setSelectedOption(option.id)}
-            className={`p-6 border rounded-md text-center font-medium text-gray-700 ${
+            className={`p-6 max-[768px]:p-2 rounded-full text-center text-white font-normal text-[20px] ${
               selectedOption === option.id
-                ? 'bg-gray-900 text-white border-gray-900'
-                : 'bg-gray-100 hover:bg-gray-200'
+                ? ''
+                : ''
             }`}
           >
+            <div className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-40 aspect-[1/1] flex items-center justify-center ${
+              selectedOption === option.id
+                ? 'bg-[#223247]'
+                : 'bg-[#F5F2ED]'
+            }`}>
+              {selectedOption === option.id 
+                ? <img src={option.selectedImage} className='max-[768px]:w-16' alt="" />
+                : <img src={option.image} className='max-[768px]:w-16' alt="" />
+              }
+            </div>
+            <span className='text-[20px] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center'>
             {option.label}
+            </span>
           </button>
         ))}
       </div>
@@ -614,7 +673,6 @@ const Step5 = () => {
 const Step6 = ({ collections, onCollectionsSelect }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
 
-
   // Filter collections to only show parent collections
   const parentCollections = collections?.nodes?.filter(
     (collection) => {
@@ -622,6 +680,8 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
     }
   ) || [];
 
+  // Add this console.log to check the data
+  console.log('Parent Collections:', parentCollections);
 
   const handleOptionClick = (collection) => {
     setSelectedOptions((prev) => {
@@ -630,37 +690,62 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
         ? prev.filter((item) => item.id !== collection.id)
         : [...prev, collection];
       
-      // Call the parent's callback with the updated selection
       onCollectionsSelect(newSelection);
       return newSelection;
     });
   };
 
   return (
-    <div className="flex flex-col items-center p-8">
-      <Heading text={'Help us get to know you.'} />
-      <p className="text-center mb-6">
-        What do you enjoy doing together? <br />
-        Select as many as you would like!
+    <div className="p-8">
+      <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
+        CHOOSE AS MANY AS YOU'D LIKE:
       </p>
-      <div className="grid grid-cols-2 gap-4 w-full max-w-2xl">
+      <div className="">
+      <Swiper
+            spaceBetween={0}
+            slidesPerView={4}
+            loop={true}
+            className=""
+           
+          >
         {parentCollections.length > 0 ? (
-          parentCollections.map((collection) => (
-            <button
-              key={collection.id}
-              onClick={() => handleOptionClick(collection)}
-              className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
-                selectedOptions.some((item) => item.id === collection.id)
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-gray-100 hover:bg-gray-200'
-              }`}
-            >
-              {collection.title}
-            </button>
-          ))
+          parentCollections.map((collection) => {
+            // Add this console.log to check each collection
+            console.log('Collection:', collection);
+            console.log('Collection Image:', collection.image);
+            
+            return (
+             
+        <SwiperSlide>
+        <button
+                key={collection.id}
+                onClick={() => handleOptionClick(collection)}
+                className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
+                  selectedOptions.some((item) => item.id === collection.id)
+                    ? 'bg-gray-900 text-white border-gray-900'
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                {collection.image && (
+                  <Image
+                    alt={collection.image.altText || collection.title}
+                    aspectRatio="1/1"
+                    data={collection.image}
+                    loading="lazy"
+                    sizes="(min-width: 45em) 400px, 100vw"
+                  />
+                )}
+                {collection.title}
+              </button>
+        </SwiperSlide>
+              
+            );
+          })
         ) : (
           <p className="col-span-2 text-center text-gray-500">No collections available.</p>
         )}
+                </Swiper>
+
       </div>
     </div>
   );
@@ -736,9 +821,12 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
 
   return (
     <div className="flex flex-col items-center p-8">
-      <Heading text={'Pick your Style'} />
-      <p className="text-center mb-6">
-        Select your preferred styles from the sub-categories
+      {/* <Heading text={'Pick your Style'} /> */}
+      <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
+      Pick a style, and we'll make gift recommendations tailored to your taste.
+      </p>
+      <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
+        CHOOSE AS MANY AS YOU'D LIKE:
       </p>
       {error && (
         <p className="text-red-500 mb-4">
