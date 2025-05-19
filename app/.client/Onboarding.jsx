@@ -193,10 +193,7 @@ const OnboardingClient = ({ onStepChange }) => {
       let data;
       if (payload?.id) {
         data = await Registry_Services.addShippingAddress(payload, token);
-      }
-      //  else {
-      //   data = await Registry_Services.addShippingAddress(payload, token);
-      // }
+      } 
       const shippingData = {
         ...addressData,
         id: data.data.id,
