@@ -100,7 +100,8 @@ const OnboardingClient = ({ onStepChange }) => {
           eventId: user.registry?.events[0].id,
         });
       } else if (event) {
-        setEventData(JSON.parse(event));
+        const parsedEvent = JSON.parse(event);
+        setEventData(parsedEvent);
       }
       if (user.shippingAddress) {
         setAddressData({
@@ -174,6 +175,7 @@ const OnboardingClient = ({ onStepChange }) => {
         setStep(step + 1);
       }
     } catch (e) {
+      // Show a user-friendly error message
       console.log(e, 'eee');
     }
   };
@@ -192,8 +194,13 @@ const OnboardingClient = ({ onStepChange }) => {
     try {
       let data;
       if (payload?.id) {
+        data = await Registry_Services.updateShippingAddress(payload, token);
+      } else {
         data = await Registry_Services.addShippingAddress(payload, token);
-      } 
+      }
+      if (!data || !data.data) {
+        throw new Error('No data returned from shipping address API');
+      }
       const shippingData = {
         ...addressData,
         id: data.data.id,
@@ -357,7 +364,16 @@ const OnboardingClient = ({ onStepChange }) => {
 
   const goBack = () => {
     if (step > 1) {
-      setStep(step - 1);
+      const newStep = step - 1;
+      setStep(newStep);
+      // If going back to step 2 (event data), remove event data from localStorage
+      if (newStep === STEPS_CONSTANTS.EVENT_ADD_INFO) {
+        localStorage.removeItem('@EventData');
+      }
+      // If going back to step 4 (shipping address), remove shipping data from localStorage
+      if (newStep === STEPS_CONSTANTS.SHIPPING_INFO) {
+        localStorage.removeItem('@ShippingData');
+      }
     }
   };
   console.log(user.user.id);
