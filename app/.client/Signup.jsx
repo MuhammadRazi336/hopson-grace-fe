@@ -12,7 +12,10 @@ const Signup = () => {
     password: '',
     confirmPassword: '',
     confirmEmail: '',
+    fianceFirstName: '',
+    fianceLastName: '',
   });
+
   const handleSignup = async () => {
     const signupPayload = {
       firstName: formDataRef.current.firstName,
@@ -21,10 +24,32 @@ const Signup = () => {
       password: formDataRef.current.password,
       confirmPassword: formDataRef.current.confirmPassword,
       confirmEmail: formDataRef.current.confirmEmail,
+      fianceFirstName: formDataRef.current.fianceFirstName,
+      fianceLastName: formDataRef.current.fianceLastName,
     };
     try {
-    } catch (e) {}
+      const response = await fetch('https://dev-hopsongrace.codup.io/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(signupPayload),
+      });
+      const data = await response.json();
+      if (response.ok && data.data && data.data.accessToken) {
+        // Store the token and user data
+        localStorage.setItem('@Token', data.data.accessToken);
+        localStorage.setItem('@User', JSON.stringify(data.data.User));
+        // Optionally, redirect to onboarding
+        window.location.href = '/onboarding';
+      } else {
+        alert(data.message || 'Signup failed');
+      }
+    } catch (e) {
+      alert('Signup error: ' + e.message);
+    }
   };
+
   const handleInputChange = (e) => {
     const {name, value} = e.target;
     // Directly modifying the ref object to store new value
@@ -114,7 +139,7 @@ const Signup = () => {
         {/* Back and Next buttons */}
         <div className="flex justify-end mt-4">
           {/*<Button text="Back" onClick={goBack} disabled={step === 1} />*/}
-          <Button text={'Next'} />
+          <Button text={'Next'} onClick={handleSignup} />
         </div>
       </div>
     </div>
