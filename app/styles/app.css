@@ -8,6 +8,8 @@
   --color-light: #fff;
 }
 
+
+
 @font-face {
   font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-light.ttf') format('truetype');
@@ -133,6 +135,36 @@ aside p:last-child {
 
 aside li {
   margin-bottom: 0.125rem;
+}
+
+.container{
+  max-width: 1772px;
+  padding-left:15px;
+  padding-right:15px;
+  margin: 0 auto;
+}
+.container-menu{
+  max-width: 1630px;
+  padding-left:15px;
+  padding-right:15px;
+  margin: 0 auto;
+}
+
+@media screen and (max-width:1600px) {
+  .container{
+    max-width: 1400px;
+  }
+  .container-menu{
+    max-width: 1450px;
+  }
+}
+@media screen and (max-width:1440px) {
+  .container{
+    max-width: 1200px;
+  }
+  .container-menu{
+    max-width: 1370px;
+  }
 }
 
 .overlay {
@@ -941,7 +973,31 @@ td.rdp-day.rdp-outside {
   margin-top: 15px;
 }
 
+.tickafter {
+  position: relative;
+}
 
+.tickafter::after {
+  content: "";
+  background: url("/assets/Images/check.png") no-repeat;
+  background-size: 60px;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-position: center;
+}
+
+
+@media screen and (max-width: 1600px) {
+  body{
+    font-size: 16px;
+  }
+}
 @media screen and (max-width: 1024px) {
   .insetshadow::before {
     display: none;

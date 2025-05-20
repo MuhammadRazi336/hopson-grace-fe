@@ -34,14 +34,14 @@ const Steps = () => {
             </div>
             <div>
               <div className="flex ">
-                <div className="text-3xl lg:text-[56px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
+                <div className="text-3xl 2xl:text-[56px] lg:text-[42px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
                   1.
                 </div>
-                <h2 className="uppercase text-lg lg:text-[24px] font-80 mb-6 leading-[28px] tracking-[10%]">
+                <h2 className="uppercase text-lg 2xl:text-[20px] font-80 mb-6 leading-[28px] tracking-[10%]">
                   Let's Connect
                 </h2>
               </div>
-              <p className="text-sm leading-normal lg:text-[24px] lg:leading-[38px] text-gray-700">
+              <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
                 Enter your names and wedding details and start adding gifts and
                 funds. It's that easy! If you'd prefer to talk to us first or
                 set up your registry in our Toronto showroom, we can do that as
@@ -64,7 +64,7 @@ const Steps = () => {
                   Let's Connect
                 </h2>
               </div>
-              <p className="text-sm leading-normal lg:text-[24px] lg:leading-[38px] text-gray-700">
+              <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
                 Enter your names and wedding details and start adding gifts and
                 funds. It's that easy! If you'd prefer to talk to us first or
                 set up your registry in our Toronto showroom, we can do that as
@@ -87,7 +87,7 @@ const Steps = () => {
                   Let's Connect
                 </h2>
               </div>
-              <p className="text-sm leading-normal lg:text-[24px] lg:leading-[38px] text-gray-700">
+              <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
                 Enter your names and wedding details and start adding gifts and
                 funds. It's that easy! If you'd prefer to talk to us first or
                 set up your registry in our Toronto showroom, we can do that as
@@ -99,7 +99,7 @@ const Steps = () => {
       </Swiper>
 
       {/* Custom Navigation */}
-      <div className="absolute lg:right-[-50px] lg:top-[80px] max-[1024px]:bottom-[26px] max-[1024px]:-right-[17px] flex flex-col items-center text-lg">
+      <div className="absolute z-10 lg:right-0 lg:top-[80px] max-[1024px]:bottom-[26px] max-[1024px]:-right-[17px] flex flex-col items-center text-lg">
         <button
           ref={prevRef}
           className="text-black swiper-button-prev-steps hover:text-gray-500 absolute"
