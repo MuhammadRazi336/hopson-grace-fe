@@ -35,11 +35,11 @@ const Sliderwithcontent = () => {
             <Items />
           </SwiperSlide>
         </Swiper>
-        <div className="max-[1024px]:hidden swiper-button-prev-tab absolute left-[-8%] top-1/2.5 transform -translate-y-full z-10 cursor-pointer text-black uppercase flex">
+        <div className="max-[1024px]:hidden swiper-button-prev-tab absolute left-[-80px] top-1/2.5 transform -translate-y-full z-10 cursor-pointer text-black uppercase flex">
           <img src={nextitem} alt="" className="rotate-180" />
           <span className="rotate-90 text-black block">PREV</span>
         </div>
-        <div className="max-[1024px]:hidden swiper-button-next-tab absolute right-[-8%] top-1/2.5 transform -translate-y-full z-10 cursor-pointer text-black uppercase flex">
+        <div className="max-[1024px]:hidden swiper-button-next-tab absolute right-[-80px] top-1/2.5 transform -translate-y-full z-10 cursor-pointer text-black uppercase flex">
           <span className="rotate-90 text-black block">NEXT</span>
           <img src={nextitem} alt="" />
         </div>

@@ -13,20 +13,22 @@ const CustomTab = () => {
     const [activeTab, setActiveTab] = useState(tabs[0].id);
 
     return ( 
-        <div className='max-w-[1600px] px-6 lg:px-3 mx-auto mt-10 lg:mt-[100px]'>
-            <div className="tabs flex gap-4 lg:gap-10 justify-center">
-                {tabs.map(tab => (
-                    <button 
-                        className={`font-bold text-sm lg:text-lg lg:leading-[18px] tracking-[0.08em] text-center ${activeTab === tab.id ? 'tabactive' : ''}`} 
-                        key={tab.id} 
-                        onClick={() => setActiveTab(tab.id)}
-                    >
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
-            <div className="tab-content mt-[84px]">
-                {tabs.find(tab => tab.id === activeTab)?.content}
+        <div className='container'>
+            <div className='px-6 lg:px-3 mx-auto mt-10 lg:mt-[100px]'>
+                <div className="tabs flex gap-4 lg:gap-10 justify-center">
+                    {tabs.map(tab => (
+                        <button 
+                            className={`font-bold text-sm lg:text-lg lg:leading-[18px] tracking-[0.08em] text-center ${activeTab === tab.id ? 'tabactive' : ''}`} 
+                            key={tab.id} 
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+                <div className="tab-content mt-[84px]">
+                    {tabs.find(tab => tab.id === activeTab)?.content}
+                </div>
             </div>
         </div>
      );

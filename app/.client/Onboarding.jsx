@@ -17,9 +17,12 @@ import {Image} from '@shopify/hydrogen';
 
 import React from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
-import {Navigation, Autoplay} from 'swiper/modules';
+import {Navigation, Pagination} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import nextitem from '/assets/Images/next.png';
+import placeholder from '/assets/Images/placeholder.jpg';
+
 
 
 const OnboardingClient = ({ onStepChange }) => {
@@ -748,12 +751,12 @@ const Step5 = () => {
       CHOOSE AS MANY AS YOU'D LIKE:
         </h2>
       {/* Grid */}
-      <div className="grid grid-cols-3 gap-4 max-[768px]:grid-cols-2">
+      <div className="grid grid-cols-3 max-[768px]:grid-cols-2">
         {options.map((option) => (
           <button
             key={option.id}
             onClick={() => setSelectedOption(option.id)}
-            className={`p-6 max-[768px]:p-2 rounded-full text-center text-white font-normal text-[20px] ${
+            className={`p-6 flex items-center justify-center flex-col max-[768px]:p-2 rounded-full text-center text-white font-normal text-[20px] ${
               selectedOption === option.id
                 ? ''
                 : ''
@@ -789,69 +792,112 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
     }
   ) || [];
 
-  // Add this console.log to check the data
-
   const handleOptionClick = (collection) => {
     setSelectedOptions((prev) => {
       const isSelected = prev.some((item) => item.id === collection.id);
       const newSelection = isSelected
         ? prev.filter((item) => item.id !== collection.id)
         : [...prev, collection];
-      
       onCollectionsSelect(newSelection);
       return newSelection;
     });
   };
 
   return (
-    <div className="p-8">
+    <div className="">
+      <p className="font-normal mb-10 mt-4 w-[80%] text-2xl mx-auto text-center">
+        Pick a style, and we'll make gift recommendations tailored to your taste.
+      </p>
       <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
       <div className="">
-      <Swiper
-            spaceBetween={0}
-            slidesPerView={4}
-            loop={true}
-            className=""
-           
-          >
-        {parentCollections.length > 0 ? (
-          parentCollections.map((collection) => {
-            // Add this console.log to check each collection
-            
-            return (
-             
-        <SwiperSlide>
-        <button
-                key={collection.id}
-                onClick={() => handleOptionClick(collection)}
-                className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
-                  selectedOptions.some((item) => item.id === collection.id)
-                    ? 'bg-gray-900 text-white border-gray-900'
-                    : 'bg-gray-100 hover:bg-gray-200'
-                }`}
-              >
-                {collection.image && (
-                  <Image
-                    alt={collection.image.altText || collection.title}
-                    aspectRatio="1/1"
-                    data={collection.image}
-                    loading="lazy"
-                    sizes="(min-width: 45em) 400px, 100vw"
-                  />
-                )}
-                {collection.title}
-              </button>
-        </SwiperSlide>
-              
-            );
-          })
-        ) : (
-          <p className="col-span-2 text-center text-gray-500">No collections available.</p>
-        )}
-                </Swiper>
+        <Swiper
+          spaceBetween={0}
+          slidesPerView={4}
+          loop={true}
+          className=""
+        >
+          {parentCollections.length > 0 ? (
+            parentCollections.map((collection) => (
+              <SwiperSlide key={collection.id}>
+                <button
+                  key={collection.id}
+                  onClick={() => handleOptionClick(collection)}
+                  className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
+                    selectedOptions.some((item) => item.id === collection.id)
+                      ? 'bg-gray-900 text-white border-gray-900'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }`}
+                >
+                  {collection.image && (
+                    <Image
+                      alt={collection.image.altText || collection.title}
+                      aspectRatio="1/1"
+                      data={collection.image}
+                      loading="lazy"
+                      sizes="(min-width: 45em) 400px, 100vw"
+                    />
+                  )}
+                  {collection.title}
+                </button>
+              </SwiperSlide>
+            ))
+          ) : (
+            <p className="col-span-2 text-center text-gray-500">No collections available.</p>
+          )}
+        </Swiper>
+        <div className="relative">
+          <div className="swiper-button-prev-collection absolute top-[90px] -left-16  cursor-pointer text-white uppercase flex ">
+            <img src={nextitem} alt="" className="rotate-180 invert-100" />
+            <span className="-rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+              more
+            </span>
+          </div>
+          <Swiper spaceBetween={20} slidesPerView={4} loop={true} className=""  modules={[Navigation]}
+            navigation={{
+              nextEl: '.swiper-button-next-collection',
+              prevEl: '.swiper-button-prev-collection',
+            }}>
+            {parentCollections.length > 0 ? (
+              parentCollections.map((collection) => {
+                // Add this console.log to check each collection
+                console.log('Collection:', collection);
+                console.log('Collection Image:', collection.image);
 
+                return (
+                  <SwiperSlide key={collection.id}>
+                    <button key={collection.id} onClick={()=> handleOptionClick(collection)}
+                      className={` ${
+                      selectedOptions.some((item) => item.id === collection.id)
+                      ? ''
+                      : ''
+                      }`}
+                      >
+                      {collection.image && (
+                        <div className={selectedOptions.some((item) => item.id === collection.id) ? 'tickafter' : ''} >
+                          <Image alt={collection.image.altText || collection.title} aspectRatio="1/1" data={collection.image}
+                            loading="lazy" sizes="(min-width: 45em) 400px, 100vw" />
+                        </div>
+                      )}
+                      <span className='mt-4 block tracking-wider text-[15px] font-medium'>
+                        {collection.title}
+                      </span>
+                    </button>
+                  </SwiperSlide>
+                );
+              })
+            ) : (
+              <p className="col-span-2 text-center text-gray-500">No collections available.</p>
+            )}
+          </Swiper>
+          <div className="swiper-button-next-collection absolute top-[90px] -right-16 cursor-pointer text-white uppercase flex">
+            <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+              more
+            </span>
+            <img src={nextitem} className="invert-100" alt="" />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -865,7 +911,6 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
   useEffect(() => {
     const fetchSubCollections = async () => {
       setError(null);
-      
       const subCollectionIds = selectedCollections.flatMap(collection => {
         const subCollectionsValue = collection.subCollections?.value;
         if (subCollectionsValue) {
@@ -877,8 +922,6 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
         }
         return [];
       });
-
-
       if (subCollectionIds.length > 0) {
         try {
           const response = await fetch('/api/collections', {
@@ -888,13 +931,10 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
             },
             body: JSON.stringify({ ids: subCollectionIds }),
           });
-          
           const data = await response.json();
-          
           if (!response.ok) {
             throw new Error(data.error || 'Failed to fetch collections');
           }
-          
           setSubCollectionsData(data.collections || []);
         } catch (error) {
           setError(error.message);
@@ -903,7 +943,6 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
         setSubCollectionsData([]);
       }
     };
-
     fetchSubCollections();
   }, [selectedCollections]);
 
@@ -915,21 +954,19 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
         : [...prev, {
             id: subCollection.id,
             title: subCollection.title,
+            image: subCollection.image,
             handle: subCollection.handle,
             description: subCollection.description
           }];
-      
-      // Call the parent's callback with the updated selection
       onSubCollectionsSelect(newSelection);
       return newSelection;
     });
   };
 
   return (
-    <div className="flex flex-col items-center p-8">
-      {/* <Heading text={'Pick your Style'} /> */}
-      <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
-      Pick a style, and we'll make gift recommendations tailored to your taste.
+    <div className="">
+      <p className="font-normal mb-10 mt-4 w-[80%] text-2xl mx-auto text-center">
+        Pick a style, and we'll make gift recommendations tailored to your taste.
       </p>
       <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
@@ -939,26 +976,79 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
           Error: {error}
         </p>
       )}
-      <div className="grid grid-cols-2 gap-4 w-full max-w-2xl">
-        {subCollectionsData.length > 0 ? (
-          subCollectionsData.map((subCollection) => (
-            <button
-              key={subCollection.id}
-              onClick={() => handleOptionClick(subCollection)}
-              className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
-                selectedOptions.some((item) => item.id === subCollection.id)
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-gray-100 hover:bg-gray-200'
-              }`}
-            >
-              {subCollection.title}
-            </button>
-          ))
-        ) : (
-          <p className="col-span-2 text-center text-gray-500">
-            {error ? 'Error loading sub-categories' : 'No sub-categories available. Please select parent categories in the previous step.'}
-          </p>
-        )}
+      <div className="relative">
+        <div className="swiper-button-prev-subcollection absolute top-[90px] -left-16  cursor-pointer text-white uppercase flex ">
+          <img src={nextitem} alt="" className="rotate-180 invert-100" />
+          <span className="-rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+            more
+          </span>
+        </div>
+        <Swiper spaceBetween={20} slidesPerView={4} loop={true} className=""  modules={[Navigation]}
+          navigation={{
+            nextEl: '.swiper-button-next-subcollection',
+            prevEl: '.swiper-button-prev-subcollection',
+          }}>
+          {subCollectionsData.length > 0 ? (
+            subCollectionsData.map((subCollection) => (
+              <SwiperSlide key={subCollection.id}>
+                <button
+                  key={subCollection.id}
+                  onClick={() => handleOptionClick(subCollection)}
+                  className={`$${
+                    selectedOptions.some((item) => item.id === subCollection.id)
+                      ? ''
+                      : ''
+                  }`}
+                >
+                  {subCollection.image ? (
+                    <div className={selectedOptions.some((item) => item.id === subCollection.id) ? 'tickafter' : ''} >
+                      <Image 
+                        alt={subCollection.image.altText || subCollection.title} 
+                        aspectRatio="1/1" 
+                        data={{
+                          url: subCollection.image.url,
+                          altText: subCollection.image.altText,
+                          width: subCollection.image.width,
+                          height: subCollection.image.height
+                        }}
+                        loading="lazy" 
+                        sizes="(min-width: 45em) 400px, 100vw" 
+                      />
+                    </div>
+                  ) : (
+                    <div className={selectedOptions.some((item) => item.id === subCollection.id) ? 'tickafter' : ''} >
+                      <Image 
+                        alt={subCollection.title} 
+                        aspectRatio="1/1" 
+                        data={{
+                          url: placeholder,
+                          altText: subCollection.title,
+                          width: 400,
+                          height: 400
+                        }}
+                        loading="lazy" 
+                        sizes="(min-width: 45em) 400px, 100vw" 
+                      />
+                    </div>
+                  )}
+                  <span className='mt-4 block tracking-wider text-[15px] font-medium'>
+                    {subCollection.title}
+                  </span>
+                </button>
+              </SwiperSlide>
+            ))
+          ) : (
+            <p className="col-span-2 text-center text-gray-500">
+              {error ? 'Error loading sub-categories' : 'No sub-categories available. Please select parent categories in the previous step.'}
+            </p>
+          )}
+        </Swiper>
+        <div className="swiper-button-next-subcollection absolute top-[90px] -right-16 cursor-pointer text-white uppercase flex">
+          <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+            more
+          </span>
+          <img src={nextitem} className="invert-100" alt="" />
+        </div>
       </div>
     </div>
   );

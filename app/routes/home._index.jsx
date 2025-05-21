@@ -101,7 +101,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-[70px]  my-12 lg:my-[240px]">
+      <section className="py-[70px]  my-12 lg:my-[240px] container">
         <Heading
           text="The Registry Bestsellers"
           classes={

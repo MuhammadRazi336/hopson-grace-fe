@@ -20,6 +20,13 @@ export async function action({ request, context }) {
             title
             handle
             description
+            image {
+              id
+              url
+              altText
+              width
+              height
+            }
           }
         }
       }`,
