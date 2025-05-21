@@ -1032,3 +1032,11 @@ td.rdp-day.rdp-outside {
 
 @media screen and (max-width: 439px) {
 }
+
+.input-error-message {
+  color: #ef4444;      /* Tailwind's red-500 */
+  font-size: 12px;     /* Similar to text-xs */
+  margin-top: 4px;     /* Similar to mt-1 */
+  font-weight: 400;
+  position: relative;
+}

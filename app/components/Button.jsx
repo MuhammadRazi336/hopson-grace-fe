@@ -3,7 +3,7 @@ import {Button, Typography} from '@material-tailwind/react';
 export default function ButtonComponent({
   text,
   onClick,
-  type,
+  type = 'button',
   disabled = false,
   className,
   ...rest

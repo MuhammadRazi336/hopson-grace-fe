@@ -46,17 +46,21 @@ const OnboardingClient = ({ onStepChange }) => {
     id: null,
     eventId: null,
   });
+  const [eventDateError, setEventDateError] = useState('');
+  const [step2Errors, setStep2Errors] = useState({});
+  const [step3Error, setStep3Error] = useState('');
+  const [step4Errors, setStep4Errors] = useState({});
   const handleGuestNoChange = (e) => {
-    setEventData({
-      ...eventData,
+    setEventData(prev => ({
+      ...prev,
       noOfGuest: e.target.value,
-    });
+    }));
   };
   const setSelectedDate = (date) => {
-    setEventData({
-      ...eventData,
+    setEventData(prev => ({
+      ...prev,
       selectedDate: date,
-    });
+    }));
   };
   // General change handler for all fields
   const handleInputChange = (e) => {
@@ -101,7 +105,11 @@ const OnboardingClient = ({ onStepChange }) => {
         });
       } else if (event) {
         const parsedEvent = JSON.parse(event);
-        setEventData(parsedEvent);
+        setEventData({
+          ...parsedEvent,
+          id: parsedEvent.id,
+          eventId: parsedEvent.eventId,
+        });
       }
       if (user.shippingAddress) {
         setAddressData({
@@ -115,6 +123,17 @@ const OnboardingClient = ({ onStepChange }) => {
         });
       } else if (shipping) {
         setAddressData(JSON.parse(shipping));
+      }
+    } else {
+      // If no user, try to restore eventData from localStorage
+      const event = localStorage.getItem('@EventData');
+      if (event) {
+        const parsedEvent = JSON.parse(event);
+        setEventData({
+          ...parsedEvent,
+          id: parsedEvent.id,
+          eventId: parsedEvent.eventId,
+        });
       }
     }
   }, [user]);
@@ -130,22 +149,21 @@ const OnboardingClient = ({ onStepChange }) => {
       });
       setEventTypes(events);
     } catch (e) {
-      console.log(e, 'Catch');
     }
   };
 
   const handleSelectChange = (value) => {
-    setEventData({
-      ...eventData,
+    setEventData(prev => ({
+      ...prev,
       selectedOption: {label: value.label, id: value.id},
-    });
+    }));
   };
   // Main state for selected date
   const handleEventNameChange = (e) => {
-    setEventData({
-      ...eventData,
+    setEventData(prev => ({
+      ...prev,
       eventName: e.target.value,
-    });
+    }));
   };
 
   const handleRegistry = async () => {
@@ -165,18 +183,31 @@ const OnboardingClient = ({ onStepChange }) => {
         data = await Registry_Services.createRegistry(payload, token);
       }
       if (data) {
+        // Log the backend response to inspect the keys
+        // Use the correct key for registry id and event id (POST or PUT)
+        const registryId = data.data.registry?.id || data.data.id || eventData.id;
+        const eventId = data.data.event?.id || eventData.eventId;
         const event = {
           ...eventData,
-          id: data.data.id,
-          ...(!payload.id && {eventId: data.data.event.id}),
+          id: registryId, // registry id
+          eventId: eventId, // event id
         };
         localStorage.setItem('@EventData', JSON.stringify(event));
         setEventData(event);
+        setEventDateError('');
         setStep(step + 1);
       }
     } catch (e) {
-      // Show a user-friendly error message
-      console.log(e, 'eee');
+      let backendMsg = e?.response?.data?.message || e?.message;
+      if (Array.isArray(backendMsg)) backendMsg = backendMsg[0];
+      if (
+        backendMsg &&
+        backendMsg.toLowerCase().includes('event date must be a future date')
+      ) {
+        setEventDateError('Event date must be a future date');
+      } else {
+        setEventDateError(backendMsg || 'An error occurred');
+      }
     }
   };
 
@@ -209,7 +240,6 @@ const OnboardingClient = ({ onStepChange }) => {
       setAddressData(shippingData);
       setStep(step + 1);
     } catch (e) {
-      console.log(e, 'Exception');
     }
   };
 
@@ -224,7 +254,6 @@ const OnboardingClient = ({ onStepChange }) => {
       const data = await Registry_Services.updateEvent(payload, token);
       setStep(step + 1);
     } catch (e) {
-      console.log('UPpate', e);
     }
   };
   const handleOnboard = async () => {
@@ -343,15 +372,60 @@ const OnboardingClient = ({ onStepChange }) => {
       }, 1000);
     }
   };
-  // Handlers for navigation
+  // Add frontend validation for Step 2
+  const validateStep2 = () => {
+    const errors = {};
+    if (!eventData.eventName || eventData.eventName.trim() === '') {
+      errors.eventName = 'Event name is required';
+    }
+    if (!eventData.selectedDate) {
+      errors.selectedDate = 'Event date is required';
+    }
+    if (!eventData.selectedOption || !eventData.selectedOption.id) {
+      errors.selectedOption = 'Event type is required';
+    }
+    setStep2Errors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Update goNext to validate before calling handleRegistry
   async function goNext() {
     if (step === 1) {
       setStep(step + 1);
     } else if (step === 2) {
+      if (!validateStep2()) return;
       await handleRegistry();
     } else if (step === 3) {
+      if (!eventData.noOfGuest || eventData.noOfGuest.trim() === '') {
+        setStep3Error('Number of guests is required');
+        return;
+      } else {
+        setStep3Error('');
+      }
       await handleNoOfGuest();
     } else if (step === 4) {
+      // Step 4 validation
+      const errors = {};
+      if (!addressData.phoneNumber || addressData.phoneNumber.trim() === '') {
+        errors.phoneNumber = 'Phone number is required';
+      }
+      if (!addressData.address || addressData.address.trim() === '') {
+        errors.address = 'Address is required';
+      }
+      if (!addressData.postalCode || addressData.postalCode.trim() === '') {
+        errors.postalCode = 'Postal code is required';
+      }
+      if (!addressData.city || addressData.city.trim() === '') {
+        errors.city = 'City is required';
+      }
+      if (!addressData.province || addressData.province.trim() === '') {
+        errors.province = 'Province is required';
+      }
+      if (!addressData.country || addressData.country.trim() === '') {
+        errors.country = 'Country is required';
+      }
+      setStep4Errors(errors);
+      if (Object.keys(errors).length > 0) return;
       await handleShipping();
     } else if (step === 5) {
       setStep(step + 1);
@@ -366,17 +440,12 @@ const OnboardingClient = ({ onStepChange }) => {
     if (step > 1) {
       const newStep = step - 1;
       setStep(newStep);
-      // If going back to step 2 (event data), remove event data from localStorage
-      if (newStep === STEPS_CONSTANTS.EVENT_ADD_INFO) {
-        localStorage.removeItem('@EventData');
-      }
       // If going back to step 4 (shipping address), remove shipping data from localStorage
-      if (newStep === STEPS_CONSTANTS.SHIPPING_INFO) {
-        localStorage.removeItem('@ShippingData');
-      }
+      // if (newStep === STEPS_CONSTANTS.SHIPPING_INFO) {
+      //   localStorage.removeItem('@ShippingData');
+      // }
     }
   };
-  console.log(user.user.id);
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
     switch (currentStep) {
@@ -397,15 +466,17 @@ const OnboardingClient = ({ onStepChange }) => {
             eventName={eventData.eventName}
             selectedOption={eventData.selectedOption}
             handleSelectChange={handleSelectChange}
+            eventDateError={eventDateError}
+            step2Errors={step2Errors}
           />
         );
       case STEPS_CONSTANTS.GUEST_INFO:
         return (
-          <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} />
+          <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} step3Error={step3Error} />
         );
       case STEPS_CONSTANTS.SHIPPING_INFO:
         return (
-          <Step4 formData={addressData} handleInputChange={handleInputChange} />
+          <Step4 formData={addressData} handleInputChange={handleInputChange} step4Errors={step4Errors} />
         );
       case STEPS_CONSTANTS.PREFER_GIFT_INFO:
         return <Step5 />;
@@ -421,7 +492,6 @@ const OnboardingClient = ({ onStepChange }) => {
         return null;
     }
   };
-  console.log(step, 'STEP');
 
   // Add this effect to notify parent of step changes
   useEffect(() => {
@@ -483,6 +553,8 @@ const Step2 = ({
   selectedOption,
   handleSelectChange,
   eventData,
+  eventDateError,
+  step2Errors,
 }) => {
   return (
     <div>
@@ -501,6 +573,9 @@ const Step2 = ({
           placeholder="Choose an option"
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black"
         />
+        {step2Errors?.selectedOption && (
+          <div className="input-error-message">{step2Errors.selectedOption}</div>
+        )}
       </div>
       {/* Event Name Input */}
       <Input
@@ -509,6 +584,7 @@ const Step2 = ({
         onChange={handleEventNameChange}
         placeholder="Enter event name"
         className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+        error={step2Errors?.eventName}
       />
       <div className='mt-6 customdatepicker'>
         <DatePicker
@@ -520,11 +596,17 @@ const Step2 = ({
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
+        {step2Errors?.selectedDate && (
+          <div className="input-error-message">{step2Errors.selectedDate}</div>
+        )}
+        {eventDateError && (
+          <div className="input-error-message">{eventDateError}</div>
+        )}
       </div>
     </div>
   );
 };
-const Step3 = ({value, onChange}) => {
+const Step3 = ({value, onChange, step3Error}) => {
   return (
     <div>
       <div className="text-center">
@@ -537,11 +619,19 @@ const Step3 = ({value, onChange}) => {
       <Input
         label="Number of Guests"
         value={value}
-        onChange={onChange}
+        onChange={e => {
+          const val = e.target.value;
+          if (/^\d*$/.test(val)) {
+            onChange(e);
+          }
+        }}
+        type="number"
+        min="1"
         placeholder="Enter No Of Guest"
         className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black mx-auto mt-4 text-center text-3xl font-bold placeholder:text-lg placeholder:font-normal"
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
+      {step3Error && <div className="input-error-message">{step3Error}</div>}
       <div className='text-center'>
         <button type='button' className='mt-10 border-b-2 border-b-white'>
         I'LL ADD THIS LATER
@@ -551,7 +641,7 @@ const Step3 = ({value, onChange}) => {
   );
 };
 
-const Step4 = ({formData, handleInputChange}) => {
+const Step4 = ({formData, handleInputChange, step4Errors}) => {
   // Submit handler to log the form data
 
   return (
@@ -570,6 +660,7 @@ const Step4 = ({formData, handleInputChange}) => {
           value={formData.phoneNumber}
           onChange={handleInputChange}
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.phoneNumber}
         />
 
         {/* Address */}
@@ -579,6 +670,7 @@ const Step4 = ({formData, handleInputChange}) => {
           value={formData.address}
           onChange={handleInputChange}
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.address}
         />
 
         {/* Postal Code */}
@@ -588,6 +680,7 @@ const Step4 = ({formData, handleInputChange}) => {
           value={formData.postalCode}
           onChange={handleInputChange}
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.postalCode}
         />
 
         {/* City */}
@@ -597,6 +690,7 @@ const Step4 = ({formData, handleInputChange}) => {
           value={formData.city}
           onChange={handleInputChange}
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.city}
         />
 
         {/* Province */}
@@ -606,6 +700,7 @@ const Step4 = ({formData, handleInputChange}) => {
           value={formData.province}
           onChange={handleInputChange}
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.province}
         />
 
         {/* Country */}
@@ -615,6 +710,7 @@ const Step4 = ({formData, handleInputChange}) => {
           value={formData.country}
           onChange={handleInputChange}
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.country}
         />
       </div>
       <div className='text-center'>
@@ -694,7 +790,6 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
   ) || [];
 
   // Add this console.log to check the data
-  console.log('Parent Collections:', parentCollections);
 
   const handleOptionClick = (collection) => {
     setSelectedOptions((prev) => {
@@ -724,8 +819,6 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
         {parentCollections.length > 0 ? (
           parentCollections.map((collection) => {
             // Add this console.log to check each collection
-            console.log('Collection:', collection);
-            console.log('Collection Image:', collection.image);
             
             return (
              
