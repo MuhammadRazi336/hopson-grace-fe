@@ -1,6 +1,6 @@
 import {redirect} from '@shopify/remix-oxygen';
 import {requireAuth} from '~/utils/auth-guard.js';
-import {useActionData, useFetcher, useSubmit} from '@remix-run/react';
+import {Link, useActionData, useFetcher, useSubmit} from '@remix-run/react';
 import {toast} from 'react-toastify';
 
 import Input from '~/components/Input.jsx';
@@ -88,6 +88,9 @@ const LoginIndex = () => {
               value={formData.password}
               onChange={handleInputChange}
             />
+          </div>
+          <div>
+            <Link to="/forgotpassword">Forgot Password?</Link>
           </div>
           <div
             style={{
