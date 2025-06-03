@@ -302,9 +302,9 @@ export default function CoupleProfile() {
             {filteredData.map((product) => (
               <CoupleProductCard
                 key={product.id}
-                name={product.title || product.cashFund.name}
+                name={product.title || product.cashFund?.name || ''}
                 price={product.amount}
-                description={product.description || product.cashFund.note}
+                description={product.description || product.cashFund?.note || ''}
                 isGroupGift={product.isGroupPayment}
                 isCashFund={product.isCashFund}
                 status={product.status}

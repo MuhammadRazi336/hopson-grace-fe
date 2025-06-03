@@ -24,7 +24,7 @@ export async function loader({ request, context }) {
     // Add proper headers for the Storefront API
     const headers = {
       'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': context.env.PUBLIC_STOREFRONT_API_TOKEN,
+      'X-Shopify-Storefront-Access-Token': process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN,
     };
 
     // Query collections with proper error handling

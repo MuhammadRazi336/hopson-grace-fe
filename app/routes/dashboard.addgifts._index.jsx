@@ -15,6 +15,7 @@ export async function loader({request, context}) {
   const user = await requireAuth(context);
   const registry = context?.session?.get('@Registry');
 
+
   return defer({products, collections, user, registry});
 }
 
@@ -35,23 +36,30 @@ export async function action({request, context}) {
 }
 
 async function loadCriticalData({context}) {
-  const [{products}] = await Promise.all([
-    context.storefront.query(PRODUCT_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-  return {
-    products: products.edges,
-  };
+  const token = process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN;
+  try {
+    const [{products}] = await Promise.all([
+      context.storefront.query(PRODUCT_QUERY),
+    ]);
+    return {
+      products: products?.edges || [],
+    };
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function loadCollectionData({context}) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-  return {
-    collections: collections.nodes,
-  };
+  try {
+    const [{collections}] = await Promise.all([
+      context.storefront.query(COLLECTION_QUERY),
+    ]);
+    return {
+      collections: collections?.nodes || [],
+    };
+  } catch (error) {
+    throw error;
+  }
 }
 
 export default function AddGifts() {
@@ -238,7 +246,7 @@ const PRODUCT_QUERY = `#graphql
 const COLLECTION_QUERY = `#graphql
 query {
 collections(first: 10) {
-nodes {
+node {
         description
         title
       }

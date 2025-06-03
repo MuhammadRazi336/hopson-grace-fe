@@ -64,7 +64,15 @@ const GiftDetailHandle = () => {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
+  // Defensive checks for variants and images
+  const firstVariant = product?.variants?.edges?.[0]?.node;
+  const productImages = product?.images?.edges?.length > 0 ? product.images.edges : [];
+
   const handleAddtoRegistry = ({id, price, quantity}) => {
+    if (!firstVariant) {
+      alert('No variant available for this product');
+      return;
+    }
     const payload = {
       productId: id,
       amount: Number(price),
@@ -84,13 +92,17 @@ const GiftDetailHandle = () => {
     <div>
       <GiftDetail
         productTitle={product.title}
-        productPrice={product.variants.edges[0].node.price}
+        productPrice={firstVariant?.price}
         productDescription={product.description}
-        productImages={product.images.edges}
+        productImages={productImages}
         onRegistryPress={({quantity}) => {
+          if (!firstVariant) {
+            alert('No variant available for this product');
+            return;
+          }
           handleAddtoRegistry({
             id: Number(extractShopifyId(product.id)),
-            price: product.variants.edges[0].node.price.amount,
+            price: firstVariant.price.amount,
             quantity,
           });
         }}
