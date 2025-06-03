@@ -8,8 +8,6 @@
   --color-light: #fff;
 }
 
-
-
 @font-face {
   font-family: 'bastardogrotesk';
   src: url('../assets/fonts/bastardogrotesk-light.ttf') format('truetype');
@@ -137,32 +135,32 @@ aside li {
   margin-bottom: 0.125rem;
 }
 
-.container{
+.container {
   max-width: 1772px;
-  padding-left:15px;
-  padding-right:15px;
+  padding-left: 15px;
+  padding-right: 15px;
   margin: 0 auto;
 }
-.container-menu{
+.container-menu {
   max-width: 1630px;
-  padding-left:15px;
-  padding-right:15px;
+  padding-left: 15px;
+  padding-right: 15px;
   margin: 0 auto;
 }
 
-@media screen and (max-width:1600px) {
-  .container{
+@media screen and (max-width: 1600px) {
+  .container {
     max-width: 1400px;
   }
-  .container-menu{
+  .container-menu {
     max-width: 1450px;
   }
 }
-@media screen and (max-width:1440px) {
-  .container{
+@media screen and (max-width: 1440px) {
+  .container {
     max-width: 1200px;
   }
-  .container-menu{
+  .container-menu {
     max-width: 1370px;
   }
 }
@@ -879,7 +877,7 @@ button > p {
   padding-right: 100px !important;
 }
 
-.bg-steel-blue{
+.bg-steel-blue {
   background-color: #446184;
 }
 
@@ -919,7 +917,7 @@ td.rdp-day {
 }
 
 .datepick {
-  background: #F5F2ED;
+  background: #f5f2ed;
   margin-top: 30px;
   border: 0;
 }
@@ -954,18 +952,17 @@ td.rdp-day {
   border: 0;
 }
 
-
 td.rdp-day.rdp-outside {
-  opacity: .2;
+  opacity: 0.2;
 }
 
-.afterimg{
+.afterimg {
   display: inline-block;
 }
 
 .afterimg::after {
-  content: "";
-  background: url("/assets/Images/StepLine.png") no-repeat;
+  content: '';
+  background: url('/assets/Images/StepLine.png') no-repeat;
   background-size: 100%;
   height: 12px;
   /* width: 100%; */
@@ -978,8 +975,8 @@ td.rdp-day.rdp-outside {
 }
 
 .tickafter::after {
-  content: "";
-  background: url("/assets/Images/check.png") no-repeat;
+  content: '';
+  background: url('/assets/Images/check.png') no-repeat;
   background-size: 60px;
   display: flex;
   width: 100%;
@@ -992,9 +989,8 @@ td.rdp-day.rdp-outside {
   background-position: center;
 }
 
-
 @media screen and (max-width: 1600px) {
-  body{
+  body {
     font-size: 16px;
   }
 }
@@ -1090,9 +1086,39 @@ td.rdp-day.rdp-outside {
 }
 
 .input-error-message {
-  color: #ef4444;      /* Tailwind's red-500 */
-  font-size: 12px;     /* Similar to text-xs */
-  margin-top: 4px;     /* Similar to mt-1 */
+  color: #ef4444; /* Tailwind's red-500 */
+  font-size: 12px; /* Similar to text-xs */
+  margin-top: 4px; /* Similar to mt-1 */
   font-weight: 400;
   position: relative;
+}
+
+.overlay-gifted {
+  position: relative;
+}
+.overlay-gifted:hover {
+  cursor: not-allowed;
+}
+
+.overlay-gifted::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #FAF9F6;
+  opacity: 0.8;
+}
+
+.overlay-gifted::after {
+  content: 'gifted!';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'prata';
+  font-size: 30px;
+  top: -40px;
 }

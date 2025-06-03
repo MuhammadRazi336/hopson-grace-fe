@@ -1,54 +1,94 @@
-import {
-  useActionData,
-  useLoaderData,
-  useSubmit,
-  useFetcher,
-  redirect,
-} from '@remix-run/react';
-import {useEffect, useState} from 'react';
+import {useLoaderData, useSubmit, redirect} from '@remix-run/react';
+import {useState} from 'react';
 import ButtonComponent from '~/components/Button';
 import ImageUpload from '~/components/ImageUpload';
 
 export async function loader({request, context, params}) {
+  if (!params.handle || params.handle === '[object Object]') {
+    return {data: {}};
+  }
   const res = await context.ClientGet(`events/${params.handle}`, context);
   return {data: res?.data || {}};
 }
 export async function action({request, context}) {
-  const body = await request.json();
-  const {payload} = body;
+  console.log('Action function called');
+  const formData = await request.formData();
+  const file = formData.get('file');
+  const payload = JSON.parse(formData.get('payload'));
+  console.log('Payload received:', payload);
   try {
+    // Create FormData for the request
+    const formDataToSend = new FormData();
+
+    // If we have a file, append it
+    if (file) {
+      console.log('Image file found, appending to FormData');
+      formDataToSend.append('file', file);
+    }
+    
+    // Append the payload
+    formDataToSend.append('payload', JSON.stringify(payload));
+
+    // Log what we're sending
+    for (let [key, value] of formDataToSend.entries()) {
+      console.log(
+        'Request FormData entry:',
+        key,
+        value instanceof File ? value.name : value,
+      );
+    }
+
+    // Send the update request with both file and payload
+    console.log('Sending update request...');
     const response = await context.ClientPut(
-      payload,
+      formDataToSend,
       `events/${payload.id}`,
       context,
     );
+    
+    console.log('Update response:', response);
     if (response?.code === 200) {
       return redirect(`/dashboard/registry`);
     } else {
       return {error: response?.message || 'Failed to update profile'};
     }
   } catch (error) {
+    console.error('Error in action:', error);
     return {error: error.message};
   }
 }
 
-const index = () => {
+export default function Index() {
   const {data} = useLoaderData();
-  const actionData = useActionData();
   const submit = useSubmit();
-  const [eventState, setEventState] = useState({
-    coupleName: data.coupleName,
-    hashtag: data.hashtags || [],
-    weddingDate: data.eventDate,
-    weddingTime: data.weddingTime,
-    location: data.location,
-    city: data.city,
-    province: data.province,
-    noOfGuest: Number(data.noOfGuest),
-    welcomeMessage: data.welcomeMessage,
-    image: data.image,
-    eventTypeId: Number(data.eventType.id),
-    id: Number(data.id),
+  const [eventState, setEventState] = useState(() => {
+    // Initialize state with data from the loader
+    const initialState = {
+      coupleName: data.coupleName || '',
+      hashtag: data.hashtags || [],
+      weddingDate: data.eventDate || '',
+      weddingTime: data.weddingTime || '',
+      location: data.location || '',
+      city: data.city || '',
+      province: data.province || '',
+      noOfGuest: Number(data.noOfGuest) || 0,
+      welcomeMessage: data.welcomeMessage || '',
+      id: Number(data.id) || 0,
+      eventTypeId: Number(data.eventTypeId) || 0,
+    };
+
+    // Add image data if it exists
+    if (data.image) {
+      initialState.image = {
+        originalName: data.image.originalName || '',
+        fileName: data.image.fileName || '',
+        fileUrl: data.image.fileUrl || '',
+        mimeType: data.image.mimeType || '',
+        size: data.image.size || 0,
+      };
+    }
+
+    return initialState;
   });
 
   const handleChange = (e) => {
@@ -61,21 +101,25 @@ const index = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted');
 
+    // Create FormData for file upload
+    const formData = new FormData();
+    
+    // If we have an image file, append it first
+    if (eventState.image?.file) {
+      console.log('Appending file to FormData');
+      formData.append('file', eventState.image.file);
+    }
+
+    // Prepare the payload with all event data
     const payload = {
       eventDate: eventState.weddingDate,
       noOfGuest: Number(eventState.noOfGuest),
       eventTypeId: eventState.eventTypeId,
       registryId: Number(data.registryId),
-      image: {
-        originalName: eventState.image.name,
-        fileName: eventState.image.name,
-        fileUrl: 'https://www.dummyimage.co.uk/1024x1024/000000',
-        mimeType: 'image/jpeg',
-        size: 1024,
-      },
       coupleName: eventState.coupleName,
       hashtags: eventState.hashtag,
       weddingTime: eventState.weddingTime,
@@ -83,9 +127,36 @@ const index = () => {
       city: eventState.city,
       province: eventState.province,
       welcomeMessage: eventState.welcomeMessage,
-      id: eventState.id,
+      id: Number(eventState.id),
     };
-    submit({payload}, {method: 'post', encType: 'application/json'});
+    
+    // Add image data if available (without the file)
+    if (eventState.image) {
+      payload.image = {
+        originalName: eventState.image.originalName,
+        fileName: eventState.image.fileName,
+        mimeType: eventState.image.mimeType,
+        size: eventState.image.size,
+      };
+    }
+
+    console.log('Appending payload to FormData');
+    formData.append('payload', JSON.stringify(payload));
+
+    // Log FormData contents
+    for (let [key, value] of formData.entries()) {
+      console.log(
+        'FormData entry:',
+        key,
+        value instanceof File ? value.name : value,
+      );
+    }
+    
+    // Submit the form data
+    submit(formData, {
+      method: 'post',
+      encType: 'multipart/form-data',
+    });
   };
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -96,14 +167,22 @@ const index = () => {
             <div className="flex-1">
               <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
                 <ImageUpload
-                  onImageChange={(img) => {
-                    console.log(img, 'Img');
-                    // setEventState({
-                    //   ...eventState,
-                    //   image: img,
-                    // });
+                  initialImage={
+                    eventState.image?.fileUrl || data.image?.fileUrl
+                  }
+                  onImageChange={(imgData) => {
+                    setEventState((prev) => ({
+                      ...prev,
+                      image: {
+                        originalName: imgData.originalName,
+                        fileName: imgData.fileName,
+                        fileUrl: URL.createObjectURL(imgData.file),
+                        mimeType: imgData.mimeType,
+                        size: imgData.size,
+                        file: imgData.file,
+                      },
+                    }));
                   }}
-                  initialImage={eventState.image}
                 />
               </div>
             </div>
@@ -253,6 +332,4 @@ const index = () => {
       </div>
     </div>
   );
-};
-
-export default index;
+}
