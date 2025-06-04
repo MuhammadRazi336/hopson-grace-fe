@@ -10,6 +10,9 @@ import ButtonComponent from '~/components/Button';
 import ImageUpload from '~/components/ImageUpload';
 
 export async function loader({request, context, params}) {
+  if (!params.handle || params.handle === '[object Object]') {
+    return {data: {}};
+  }
   const res = await context.ClientGet(`events/${params.handle}`, context);
   return {data: res?.data || {}};
 }
@@ -73,23 +76,37 @@ export async function action({request, context}) {
   }
 }
 
-const index = () => {
+export default function Index() {
   const {data} = useLoaderData();
-  const actionData = useActionData();
   const submit = useSubmit();
-  const [eventState, setEventState] = useState({
-    coupleName: data.coupleName,
-    hashtag: data.hashtags || [],
-    weddingDate: data.eventDate,
-    weddingTime: data.weddingTime,
-    location: data.location,
-    city: data.city,
-    province: data.province,
-    noOfGuest: Number(data.noOfGuest),
-    welcomeMessage: data.welcomeMessage,
-    image: data.image,
-    eventTypeId: Number(data.eventType.id),
-    id: Number(data.id),
+  const [eventState, setEventState] = useState(() => {
+    // Initialize state with data from the loader
+    const initialState = {
+      coupleName: data.coupleName || '',
+      hashtag: data.hashtags || [],
+      weddingDate: data.eventDate || '',
+      weddingTime: data.weddingTime || '',
+      location: data.location || '',
+      city: data.city || '',
+      province: data.province || '',
+      noOfGuest: Number(data.noOfGuest) || 0,
+      welcomeMessage: data.welcomeMessage || '',
+      id: Number(data.id) || 0,
+      eventTypeId: Number(data.eventTypeId) || 0,
+    };
+
+    // Add image data if it exists
+    if (data.image) {
+      initialState.image = {
+        originalName: data.image.originalName || '',
+        fileName: data.image.fileName || '',
+        fileUrl: data.image.fileUrl || '',
+        mimeType: data.image.mimeType || '',
+        size: data.image.size || 0,
+      };
+    }
+
+    return initialState;
   });
   // Track if a new image file is selected
   const [newImageFile, setNewImageFile] = useState(null);
@@ -113,6 +130,7 @@ const index = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted');
 
     // Ensure hashtags is a JSON string for backend
     let hashtagsValue = eventState.hashtag;
@@ -340,6 +358,4 @@ const index = () => {
       </div>
     </div>
   );
-};
-
-export default index;
+}

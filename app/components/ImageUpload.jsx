@@ -10,7 +10,9 @@ const ImageUpload = ({onImageChange, initialImage}) => {
     setPreviewUrl(null); // Reset preview when initialImage changes (e.g., after upload)
   }, [initialImage]);
 
+const ImageUpload = ({initialImage, onImageChange}) => {
   const handleImageChange = (event) => {
+    console.log('Image selected');
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
@@ -56,11 +58,28 @@ const ImageUpload = ({onImageChange, initialImage}) => {
       )}
       <input
         type="file"
-        id="image-upload"
-        style={{display: 'none'}}
         accept="image/*"
         onChange={handleImageChange}
+        className="hidden"
+        id="image-upload"
       />
+      <label
+        htmlFor="image-upload"
+        className="cursor-pointer flex flex-col items-center justify-center w-full h-full"
+      >
+        {initialImage ? (
+          <img
+            src={initialImage}
+            alt="Preview"
+            className="max-w-full max-h-full object-contain"
+          />
+        ) : (
+          <div className="text-gray-500 text-center">
+            <span className="block">Click to upload an image</span>
+            <span className="text-sm block">or drag and drop</span>
+          </div>
+        )}
+      </label>
     </div>
   );
 };
