@@ -1,5 +1,11 @@
-import {useLoaderData, useSubmit, redirect} from '@remix-run/react';
-import {useState} from 'react';
+import {
+  useActionData,
+  useLoaderData,
+  useSubmit,
+  useFetcher,
+  redirect,
+} from '@remix-run/react';
+import {useEffect, useState, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
 import ImageUpload from '~/components/ImageUpload';
 
@@ -11,50 +17,62 @@ export async function loader({request, context, params}) {
   return {data: res?.data || {}};
 }
 export async function action({request, context}) {
-  console.log('Action function called');
-  const formData = await request.formData();
-  const file = formData.get('file');
-  const payload = JSON.parse(formData.get('payload'));
-  console.log('Payload received:', payload);
-  try {
-    // Create FormData for the request
-    const formDataToSend = new FormData();
+  const contentType = request.headers.get('content-type') || '';
+  let body, file;
 
-    // If we have a file, append it
+  if (contentType.includes('multipart/form-data')) {
+    const formData = await request.formData();
+    body = {};
+    for (let [key, value] of formData.entries()) {
+      if (key === 'file') {
+        file = value;
+      } else if (key === 'hashtags') {
+        try {
+          body.hashtags = JSON.parse(value);
+        } catch {
+          body.hashtags = String(value).split(',').map((tag) => tag.trim());
+        }
+      } else if (!isNaN(Number(value)) && value !== '') {
+        body[key] = Number(value);
+      } else {
+        body[key] = value;
+      }
+    }
+    // Add file to body for backend compatibility
     if (file) {
-      console.log('Image file found, appending to FormData');
-      formDataToSend.append('file', file);
+      body.file = file;
     }
-    
-    // Append the payload
-    formDataToSend.append('payload', JSON.stringify(payload));
-
-    // Log what we're sending
-    for (let [key, value] of formDataToSend.entries()) {
-      console.log(
-        'Request FormData entry:',
-        key,
-        value instanceof File ? value.name : value,
+    try {
+      const response = await context.ClientPut(
+        body,
+        `events/${body.id}`,
+        context,
       );
+      if (response?.code === 200) {
+        return redirect(`/dashboard/registry`);
+      } else {
+        return {error: response?.message || 'Failed to update profile'};
+      }
+    } catch (error) {
+      return {error: error.message};
     }
-
-    // Send the update request with both file and payload
-    console.log('Sending update request...');
-    const response = await context.ClientPut(
-      formDataToSend,
-      `events/${payload.id}`,
-      context,
-    );
-    
-    console.log('Update response:', response);
-    if (response?.code === 200) {
-      return redirect(`/dashboard/registry`);
-    } else {
-      return {error: response?.message || 'Failed to update profile'};
+  } else {
+    // Handle JSON as before
+    const {payload} = await request.json();
+    try {
+      const response = await context.ClientPut(
+        payload,
+        `events/${payload.id}`,
+        context,
+      );
+      if (response?.code === 200) {
+        return redirect(`/dashboard/registry`);
+      } else {
+        return {error: response?.message || 'Failed to update profile'};
+      }
+    } catch (error) {
+      return {error: error.message};
     }
-  } catch (error) {
-    console.error('Error in action:', error);
-    return {error: error.message};
   }
 }
 
@@ -90,6 +108,15 @@ export default function Index() {
 
     return initialState;
   });
+  // Track if a new image file is selected
+  const [newImageFile, setNewImageFile] = useState(null);
+
+  // Handle image change
+  const handleImageChange = (imgFile) => {
+    if (!imgFile) return;
+    setNewImageFile(imgFile);
+    // Do NOT update eventState.image here!
+  };
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -105,58 +132,71 @@ export default function Index() {
     e.preventDefault();
     console.log('Form submitted');
 
-    // Create FormData for file upload
-    const formData = new FormData();
-    
-    // If we have an image file, append it first
-    if (eventState.image?.file) {
-      console.log('Appending file to FormData');
-      formData.append('file', eventState.image.file);
+    // Ensure hashtags is a JSON string for backend
+    let hashtagsValue = eventState.hashtag;
+    if (!Array.isArray(hashtagsValue)) {
+      try {
+        hashtagsValue = JSON.parse(hashtagsValue);
+      } catch {
+        hashtagsValue = String(hashtagsValue).split(',').map((tag) => tag.trim());
+      }
     }
-
-    // Prepare the payload with all event data
     const payload = {
       eventDate: eventState.weddingDate,
       noOfGuest: Number(eventState.noOfGuest),
-      eventTypeId: eventState.eventTypeId,
+      eventTypeId: Number(eventState.eventTypeId),
       registryId: Number(data.registryId),
       coupleName: eventState.coupleName,
-      hashtags: eventState.hashtag,
+      hashtags: hashtagsValue,
       weddingTime: eventState.weddingTime,
       location: eventState.location,
       city: eventState.city,
       province: eventState.province,
       welcomeMessage: eventState.welcomeMessage,
       id: Number(eventState.id),
+      name: eventState.coupleName,
     };
-    
-    // Add image data if available (without the file)
-    if (eventState.image) {
-      payload.image = {
-        originalName: eventState.image.originalName,
-        fileName: eventState.image.fileName,
-        mimeType: eventState.image.mimeType,
-        size: eventState.image.size,
-      };
-    }
 
-    console.log('Appending payload to FormData');
-    formData.append('payload', JSON.stringify(payload));
+    if (newImageFile) {
+      // Use FormData for file upload
+      const formData = new FormData();
+      formData.append('file', newImageFile);
+      Object.entries(payload).forEach(([key, value]) => {
+        if (key === 'image') return; // Do NOT append image
+        if (key === 'hashtags') {
+          formData.append('hashtags', JSON.stringify(value));
+        } else if (typeof value === 'number' || typeof value === 'string') {
+          formData.append(key, String(value));
+        }
+      });
 
-    // Log FormData contents
-    for (let [key, value] of formData.entries()) {
-      console.log(
-        'FormData entry:',
-        key,
-        value instanceof File ? value.name : value,
-      );
+      // Use fetch to your backend API endpoint
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${eventState.id}`, {
+        method: 'PUT',
+        body: formData,
+      });
+
+      if (response.ok) {
+        window.location.href = '/dashboard/registry';
+      } else {
+        const error = await response.json().catch(() => ({}));
+        alert(error.message || 'Failed to update event');
+      }
+    } else {
+      // No new image, send as JSON
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${eventState.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        window.location.href = '/dashboard/registry';
+      } else {
+        const error = await response.json().catch(() => ({}));
+        alert(error.message || 'Failed to update event');
+      }
     }
-    
-    // Submit the form data
-    submit(formData, {
-      method: 'post',
-      encType: 'multipart/form-data',
-    });
   };
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -167,22 +207,8 @@ export default function Index() {
             <div className="flex-1">
               <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
                 <ImageUpload
-                  initialImage={
-                    eventState.image?.fileUrl || data.image?.fileUrl
-                  }
-                  onImageChange={(imgData) => {
-                    setEventState((prev) => ({
-                      ...prev,
-                      image: {
-                        originalName: imgData.originalName,
-                        fileName: imgData.fileName,
-                        fileUrl: URL.createObjectURL(imgData.file),
-                        mimeType: imgData.mimeType,
-                        size: imgData.size,
-                        file: imgData.file,
-                      },
-                    }));
-                  }}
+                  onImageChange={handleImageChange}
+                  initialImage={eventState.image}
                 />
               </div>
             </div>

@@ -23,7 +23,11 @@ const ProductCard = ({
       <div className="mt-4">
         <h2 className="text-lg font-bold">{productName}</h2>
         {/* <p className="text-gray-600">${price}</p> */}
-        <Money className="text-gray-600" data={price} />
+        {price && price.amount && price.currencyCode ? (
+          <Money className="text-gray-600" data={price} />
+        ) : (
+          <span className="text-gray-600">N/A</span>
+        )}
 
         <p className="text-gray-600">${collected} Collected</p>
         {isGroupGift && (

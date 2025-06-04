@@ -8,7 +8,9 @@ const GiftDetail = ({
   productImages,
   onRegistryPress,
 }) => {
-  const [selectedImage, setSelectedImage] = useState(productImages[0]); // Default to the first image
+  // Defensive: ensure productImages is an array and has at least one image
+  const safeProductImages = Array.isArray(productImages) && productImages.length > 0 ? productImages : [{node: {src: '/fallback-image.jpg'}}];
+  const [selectedImage, setSelectedImage] = useState(safeProductImages[0]); // Default to the first image
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
 
@@ -25,25 +27,25 @@ const GiftDetail = ({
       <div className="flex-1 flex flex-col items-center">
         <div className="w-full flex items-center justify-center rounded-md h-96">
           <img
-            src={selectedImage.node.src}
+            src={selectedImage?.node?.src || '/fallback-image.jpg'}
             alt="Selected product"
             className="w-full h-96 object-contain rounded-md"
           />
         </div>
         <div className="flex gap-2 mt-4">
           {/* Thumbnails */}
-          {productImages.map((image, index) => (
+          {safeProductImages.map((image, index) => (
             <div
               key={index}
               className={`cursor-pointer w-28 h-28 rounded-md flex items-center justify-center ${
-                selectedImage.node.src === image.node.src
+                selectedImage?.node?.src === image?.node?.src
                   ? 'border-2 border-black'
                   : ''
               }`}
               onClick={() => setSelectedImage(image)}
             >
               <img
-                src={image.node.src}
+                src={image?.node?.src || '/fallback-image.jpg'}
                 alt={`Thumbnail ${index + 1}`}
                 className="w-12 h-12 object-cover rounded-md"
               />

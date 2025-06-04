@@ -8,6 +8,7 @@ import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 export async function loader({ request, context }) {
   const registry = context?.session?.get('@Registry');
 
+
   if (!registry || !registry.events || registry.events.length === 0) {
     throw new Response('Registry or Events not found', { status: 404 });
   }
@@ -22,33 +23,62 @@ export async function loader({ request, context }) {
     context,
   );
 
-  const res = await context.ClientGet(
-    `registryProducts/${registry.id}?type=gift`,
-    context,
-  );
-  const cashRes = await context.ClientGet(
-    `registryProducts/${registry.id}?type=cash`,
-    context,
-  );
+  // Defensive: parse image if it's a string
+  if (eventGet?.data?.image && typeof eventGet.data.image === 'string') {
+    try {
+      eventGet.data.image = JSON.parse(eventGet.data.image);
+    } catch {
+      eventGet.data.image = null;
+    }
+  }
+
+  let res, cashRes;
+  try {
+    res = await context.ClientGet(
+      `registryProducts/${registry.id}?type=gift`,
+      context,
+    );
+  } catch (e) {
+    res = { data: [] };
+  }
+  try {
+    cashRes = await context.ClientGet(
+      `registryProducts/${registry.id}?type=cash`,
+      context,
+    );
+  } catch (e) {
+    cashRes = { data: [] };
+  }
 
   let mergedArray = [];
   const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
   );
-  const products = await fetchProducts(context.storefront, ids);
+  const productsResult = await fetchProducts(context.storefront, ids);
+  const products = productsResult || { nodes: [] };
+  const productNodes = Array.isArray(products.nodes) ? products.nodes : [];
 
-  if (res?.data?.length) {
-    mergedArray = res?.data?.map((item1) => {
-      const product = products.nodes.find(
-        (item2) => item2.id === `gid://shopify/Product/${item1.productId}`,
+  if (res?.data?.length && productNodes.length > 0) {
+    mergedArray = res.data.map((item1) => {
+      const product = productNodes.find(
+        (item2) => item2 && item2.id === `gid://shopify/Product/${item1.productId}`,
       );
+      // Ensure numeric fields are numbers
+      const amount = item1.amount !== undefined ? Number(item1.amount) : undefined;
+      const collectedAmount = item1.collectedAmount !== undefined ? Number(item1.collectedAmount) : undefined;
       if (product) {
         return {
           ...item1,
           ...product,
+          amount,
+          collectedAmount,
         };
       }
-      return item1;
+      return {
+        ...item1,
+        amount,
+        collectedAmount,
+      };
     });
   }
 
@@ -67,8 +97,20 @@ const index = () => {
     <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
       <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
       <div className="flex flex-col space-x-4 md:flex-row">
-        <div className="flex-1 h-64 bg-gray-300 rounded-lg">
-          <div className="h-64"></div>
+        <div className="flex-1 h-64 bg-gray-300 rounded-lg flex items-center justify-center">
+          {/* Event image preview */}
+          {(() => {
+            const imageObj = eventGet?.data?.image;
+            const imageUrl = imageObj?.fileUrl || 'https://www.dummyimage.co.uk';
+            return (
+              <img
+                src={imageUrl}
+                alt={eventGet?.data?.coupleName || 'Event'}
+                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px' }}
+                onError={e => { e.target.onerror = null; e.target.src = 'https://www.dummyimage.co.uk'; }}
+              />
+            );
+          })()}
         </div>
         <div className="flex-1 mt-4 lg:mt-0">
           <h2 className="text-xl font-semibold">
@@ -118,39 +160,50 @@ const ProductPage = ({data}) => {
   return (
     <div className="container p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {data.map((product) => (
-          <ProductCard
-            key={product.id}
-            productName={product.title}
-            productImage={product.images.edges[0].node.src}
-            price={product.variants.edges[0].node.price}
-            collected={product.collectedAmount}
-            isGroupGift={product.isGroupGift}
-            onContributorsClick={() =>
-              console.log(`Contributors for ${product.productName}`)
-            }
-          />
-        ))}
+        {data.map((product) => {
+          // Use priceV2 from Shopify, fallback to backend amount
+          const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
+          const price =
+            priceObj && priceObj.amount && priceObj.currencyCode
+              ? { amount: priceObj.amount, currencyCode: priceObj.currencyCode }
+              : (product.amount ? { amount: product.amount, currencyCode: 'USD' } : null);
+          return (
+            <ProductCard
+              key={product.id || product.productId || Math.random()}
+              productName={product.title || 'No Name'}
+              productImage={
+                product.images?.edges?.[0]?.node?.src || 'https://www.dummyimage.co.uk'
+              }
+              price={price && price.amount && price.currencyCode ? price : { amount: 0, currencyCode: 'USD' }}
+              collected={typeof product.collectedAmount === 'number' ? product.collectedAmount : 0}
+              isGroupGift={!!product.isGroupGift}
+              onContributorsClick={() =>
+                console.log(`Contributors for ${product.productName || 'Unknown'}`)
+              }
+            />
+          );
+        })}
       </div>
     </div>
   );
 };
 const FundPage = ({data}) => {
-  // Dummy data for the funds
+  // Defensive: handle missing or malformed data
+  if (!Array.isArray(data)) return <div>No funds available.</div>;
 
-  // Function to handle view contributors button click
   const handleViewContributors = (fundName) => {
+    // ...
   };
 
   return (
     <div className="flex justify-center items-start flex-wrap p-4 bg-gray-100">
       {data.map((fund) => (
         <FundCard
-          key={fund.productId} // Use a unique key for each card
-          title={fund.cashFund.name}
-          totalAmount={fund.amount}
-          collectedAmount={fund.collectedAmount}
-          onViewContributors={() => handleViewContributors(fund.cashFund.name)}
+          key={fund.productId || Math.random()}
+          title={fund.cashFund?.name || 'No Fund Name'}
+          totalAmount={typeof fund.amount === 'number' ? fund.amount : 0}
+          collectedAmount={typeof fund.collectedAmount === 'number' ? fund.collectedAmount : 0}
+          onViewContributors={() => handleViewContributors(fund.cashFund?.name || 'Unknown')}
         />
       ))}
     </div>

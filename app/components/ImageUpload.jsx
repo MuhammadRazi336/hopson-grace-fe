@@ -1,26 +1,61 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+
+const ImageUpload = ({onImageChange, initialImage}) => {
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  
+  // Update state if initialImage prop changes
+  useEffect(() => {
+    setImage(initialImage);
+    setPreviewUrl(null); // Reset preview when initialImage changes (e.g., after upload)
+  }, [initialImage]);
 
 const ImageUpload = ({initialImage, onImageChange}) => {
   const handleImageChange = (event) => {
     console.log('Image selected');
     const file = event.target.files[0];
     if (file) {
-      console.log('File details:', {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-      });
-      onImageChange({
-        file,
-        originalName: file.name,
-        fileName: file.name,
-        mimeType: file.type,
-        size: file.size,
-      });
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewUrl(imageUrl); // Show preview
+      onImageChange(file); // Notify the parent component with the file
     }
   };
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div
+      style={{
+        backgroundColor: '#e0e0e0',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+      }}
+    >
+      {!image && !previewUrl ? (
+        <label
+          htmlFor="image-upload"
+          style={{
+            cursor: 'pointer',
+            padding: '10px 20px',
+            backgroundColor: 'white',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+          }}
+        >
+          Upload New Photo
+        </label>
+      ) : (
+        <img
+          src={previewUrl || (typeof image === 'string' ? image : image?.fileUrl)}
+          alt="Uploaded"
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+            cursor: 'pointer',
+          }}
+          onClick={() => document.getElementById('image-upload').click()}
+        />
+      )}
       <input
         type="file"
         accept="image/*"

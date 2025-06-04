@@ -144,12 +144,14 @@ const OnboardingClient = ({ onStepChange }) => {
   const getEvents = async () => {
     try {
       const data = await Registry_Services.getEvents();
-      const events = data.data.map((e) => {
-        return {
-          label: e.name,
-          id: e.id,
-        };
-      });
+      if (!Array.isArray(data.data)) {
+        setEventTypes([]);
+        return;
+      }
+      const events = data.data.map((e) => ({
+        label: e.name,
+        id: e.id,
+      }));
       setEventTypes(events);
     } catch (e) {
     }
@@ -862,8 +864,6 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
             {parentCollections.length > 0 ? (
               parentCollections.map((collection) => {
                 // Add this console.log to check each collection
-                console.log('Collection:', collection);
-                console.log('Collection Image:', collection.image);
 
                 return (
                   <SwiperSlide key={collection.id}>
