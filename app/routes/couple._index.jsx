@@ -1,6 +1,11 @@
 import {useCallback, useState} from 'react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link} from '@remix-run/react';
+import Faqs from '~/components/Faqs';
+import ImageAndText from '~/components/ImageAndText';
+import teaImg from '/assets/Images/reading-image.png';
+import lineImg3 from '/assets/Images/line.png';
+import {useNavigate} from 'react-router-dom';
 
 export async function loader({request, context}) {
   const url = new URL(request.url);
@@ -20,59 +25,232 @@ export default function FindCoupleForm() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const {data, name} = useLoaderData();
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(`/couple/listing?firstName=${firstName}&lastName=${lastName}`);
+  };
+
   return (
     <div>
       {name?.firstName ? (
         <CoupleListing data={data} />
       ) : (
-        <div className="flex justify-center items-center h-screen">
-          <form method="GET" className="flex flex-col gap-4 w-1/3">
-            <h2 className="text-2xl font-bold">Find a Couple</h2>
-            <p className="text-gray-600">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Search
-              by couple name and/or city.
-            </p>
-            <div>
-              <label htmlFor="firstName" className="block font-medium mb-1">
-                First Name *
-              </label>
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={firstName}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                required
-                onChange={(e) => setFirstName(e.target.value)}
-              />
+        <>
+          <div
+            className="flex justify-start items-center h-[80vh] mb-16"
+            style={{
+              backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
+              <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184]">
+                <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
+                  find a couple
+                </h1>
+                <img
+                  src="/assets/Images/white-bdr.png"
+                  alt="couple"
+                  className="max-w-[315px] mb-4"
+                />
+                <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
+                  enter either person's kjkjkjfirst and last name
+                </p>
+
+                <form method="GET" className="w-full" onSubmit={handleSearch}>
+                  <div className="flex gap-8 mb-4">
+                    <div className="w-full">
+                      <input
+                        id="firstName"
+                        name="firstName"
+                        type="text"
+                        placeholder="First Name*"
+                        value={firstName}
+                        className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                        required
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <input
+                        id="lastName"
+                        name="lastName"
+                        type="text"
+                        placeholder="Last Name*"
+                        value={lastName}
+                        className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                        required
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-center items-center">
+                    <button
+                      type="submit"
+                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4"
+                    >
+                      Search
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-            <div>
-              <label htmlFor="lastName" className="block font-medium mb-1">
-                Last Name *
-              </label>
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                value={lastName}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                required
-                onChange={(e) => setLastName(e.target.value)}
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-black text-white px-4 py-2 rounded-lg"
-            >
-              Search
-            </button>
-          </form>
-        </div>
+          </div>
+
+          <div className="mt-20"></div>
+          <Faqs />
+          <div className="mb-16"></div>
+          <section className=" my-12 lg:my-[240px]">
+            <ImageAndText
+              direction={'right'}
+              imgBanner={teaImg}
+              lineimg={lineImg3}
+              title="need any advice?"
+              description="Our registry experts are awaiting your call to advise on anything you need."
+              buttontext={'LIVE CHAT'}
+              buttontype={'Color'}
+            />
+          </section>
+        </>
       )}
     </div>
   );
 }
+
+export function FindCoupleFormBanner() {
+  return (
+    <div
+      className="flex justify-start items-center h-[80vh] mb-16"
+      style={{
+        backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
+        <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
+          <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
+            find a couple
+          </h1>
+          <img
+            src="/assets/Images/white-bdr.png"
+            alt="couple"
+            className="max-w-[315px] mb-4"
+          />
+          <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
+            enter either person's first and last name
+          </p>
+
+          <form method="GET" className="w-full">
+            <div className="flex gap-8 mb-4">
+              <div className="w-full">
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="First Name*"
+                  value={firstName}
+                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                  required
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div className="w-full">
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Last Name*"
+                  value={lastName}
+                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                  required
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center items-center">
+              <button
+                type="submit"
+                className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FindCoupleBanner({firstName, setFirstName, lastName, setLastName}) {
+  return (
+    <div
+      className="flex justify-start items-center h-[80vh] mb-16"
+      style={{
+        backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
+        <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
+          <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
+            find a couple
+          </h1>
+          <img
+            src="/assets/Images/white-bdr.png"
+            alt="couple"
+            className="max-w-[315px] mb-4"
+          />
+          <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
+            enter either person's first and last name
+          </p>
+          <form method="GET" className="w-full">
+            <div className="flex gap-8 mb-4">
+              <div className="w-full">
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="First Name*"
+                  value={firstName}
+                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                  required
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+              </div>
+              <div className="w-full">
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Last Name*"
+                  value={lastName}
+                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                  required
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center items-center">
+              <button
+                type="submit"
+                className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CoupleListing({data}) {
   return (
     <div className="container mx-auto p-4">

@@ -20,9 +20,9 @@ const CustomTabs = ({
   return (
     <Tabs value={activeTab} className={className}>
       <TabsHeader className={headerClassName}>
-        {tabsData.map(({label, route}) => (
+        {tabsData.map(({label, route, value}) => (
           <Link
-            key={route}
+            key={`${route}-${value}`}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-all ease-in-out
               hover:bg-gray-200 hover:text-gray-900
               ${
