@@ -3,14 +3,13 @@ import React, {useState, useEffect} from 'react';
 const ImageUpload = ({onImageChange, initialImage}) => {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  
+
   // Update state if initialImage prop changes
   useEffect(() => {
     setImage(initialImage);
     setPreviewUrl(null); // Reset preview when initialImage changes (e.g., after upload)
   }, [initialImage]);
 
-const ImageUpload = ({initialImage, onImageChange}) => {
   const handleImageChange = (event) => {
     console.log('Image selected');
     const file = event.target.files[0];
@@ -45,7 +44,9 @@ const ImageUpload = ({initialImage, onImageChange}) => {
         </label>
       ) : (
         <img
-          src={previewUrl || (typeof image === 'string' ? image : image?.fileUrl)}
+          src={
+            previewUrl || (typeof image === 'string' ? image : image?.fileUrl)
+          }
           alt="Uploaded"
           style={{
             maxWidth: '100%',
