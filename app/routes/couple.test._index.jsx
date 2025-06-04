@@ -1,6 +1,7 @@
 import {useCallback, useState} from 'react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link} from '@remix-run/react';
+// import {Header} from '~/components/Header';
 
 export default function CoupleProfileView() {
   const giftRegistry = [
@@ -78,7 +79,8 @@ export default function CoupleProfileView() {
   ];
   return (
     <>
-      <div className="text-center container mx-auto font-sans">
+        <CoupleProfileViewHeader />
+      <div className="text-center pt-[80px] container mx-auto font-sans">
         <img
           src="/assets/Images/couple-profile-bg.png"
           alt="Couple"
@@ -257,5 +259,16 @@ export default function CoupleProfileView() {
         </div>
       </div>
     </>
+  );
+}
+
+export function CoupleProfileViewHeader() {
+  return (
+    <div className="container mx-auto flex justify-between items-start pt-6 absolute top-0 left-0 right-0">
+        
+            <img src="/assets/Images/couple-header-logo.png" alt="Hamburger" className="w-[150px] -mb-6 h-auto -ml-10" />
+        
+        <h1 className="my-0">Cart</h1>
+    </div>
   );
 }
