@@ -13,10 +13,17 @@ export function createClient() {
     const options = {
       method,
       headers: {
-        'Content-Type': 'application/json',
+        ...(!(body instanceof FormData) &&
+          method !== 'GET' &&
+          method !== 'HEAD' && {
+            'Content-Type': 'application/json',
+          }),
         ...(token && {Authorization: `Bearer ${token}`}),
       },
-      ...(body && {body: JSON.stringify(body)}),
+      ...(method !== 'GET' &&
+        method !== 'HEAD' && {
+          body: body instanceof FormData ? body : JSON.stringify(body),
+        }),
     };
   
     try {
