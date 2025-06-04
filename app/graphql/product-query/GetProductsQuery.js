@@ -1,34 +1,35 @@
 export function getProductsByIds(ids) {
   return `
-      #graphql query getProductByIds {
-        nodes(ids: [${ids.map((id) => `"${id}"`).join(', ')}]) {
-          ... on Product {
+      #graphql query getProductByIds($ids: [ID!]!) {
+  nodes(ids: $ids) {
+    ... on Product {
+      id
+      title
+      descriptionHtml
+      description
+      images(first: 10) {
+        edges {
+          node {
             id
-            title
-            descriptionHtml
-            description
-            images(first: 10) {
-              edges {
-                node {
-                  id
-                  src
-                }
-              }
-            }
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  title
-                  price {
-                  amount,currencyCode}
-                }
-                }
-              }
-            }
+            url
           }
         }
       }
+      variants(first: 10) {
+        edges {
+          node {
+            id
+            title
+            priceV2 {
+                    amount
+                    currencyCode
+                  }
+          }
+        }
+      }
+    }
+  }
+}
     `;
 }
 
@@ -45,7 +46,7 @@ export async function fetchProducts(storefront, ids) {
               edges {
                 node {
                   id
-                  src
+                  url
                 }
               }
             }
@@ -54,14 +55,16 @@ export async function fetchProducts(storefront, ids) {
                 node {
                   id
                   title
-                  price {
-                  amount,currencyCode}
-                }
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
               }
             }
           }
         }
       }
+}
     `;
 
   return await storefront.query(query, {

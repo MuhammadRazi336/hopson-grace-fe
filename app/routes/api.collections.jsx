@@ -36,7 +36,7 @@ export async function action({ request, context }) {
         },
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': context.env.PUBLIC_STOREFRONT_API_TOKEN,
+          'X-Shopify-Storefront-Access-Token': process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN,
         },
       }
     );

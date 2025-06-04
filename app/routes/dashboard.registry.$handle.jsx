@@ -5,7 +5,7 @@ import {
   useFetcher,
   redirect,
 } from '@remix-run/react';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
 import ImageUpload from '~/components/ImageUpload';
 
@@ -14,21 +14,62 @@ export async function loader({request, context, params}) {
   return {data: res?.data || {}};
 }
 export async function action({request, context}) {
-  const body = await request.json();
-  const {payload} = body;
-  try {
-    const response = await context.ClientPut(
-      payload,
-      `events/${payload.id}`,
-      context,
-    );
-    if (response?.code === 200) {
-      return redirect(`/dashboard/registry`);
-    } else {
-      return {error: response?.message || 'Failed to update profile'};
+  const contentType = request.headers.get('content-type') || '';
+  let body, file;
+
+  if (contentType.includes('multipart/form-data')) {
+    const formData = await request.formData();
+    body = {};
+    for (let [key, value] of formData.entries()) {
+      if (key === 'file') {
+        file = value;
+      } else if (key === 'hashtags') {
+        try {
+          body.hashtags = JSON.parse(value);
+        } catch {
+          body.hashtags = String(value).split(',').map((tag) => tag.trim());
+        }
+      } else if (!isNaN(Number(value)) && value !== '') {
+        body[key] = Number(value);
+      } else {
+        body[key] = value;
+      }
     }
-  } catch (error) {
-    return {error: error.message};
+    // Add file to body for backend compatibility
+    if (file) {
+      body.file = file;
+    }
+    try {
+      const response = await context.ClientPut(
+        body,
+        `events/${body.id}`,
+        context,
+      );
+      if (response?.code === 200) {
+        return redirect(`/dashboard/registry`);
+      } else {
+        return {error: response?.message || 'Failed to update profile'};
+      }
+    } catch (error) {
+      return {error: error.message};
+    }
+  } else {
+    // Handle JSON as before
+    const {payload} = await request.json();
+    try {
+      const response = await context.ClientPut(
+        payload,
+        `events/${payload.id}`,
+        context,
+      );
+      if (response?.code === 200) {
+        return redirect(`/dashboard/registry`);
+      } else {
+        return {error: response?.message || 'Failed to update profile'};
+      }
+    } catch (error) {
+      return {error: error.message};
+    }
   }
 }
 
@@ -50,6 +91,15 @@ const index = () => {
     eventTypeId: Number(data.eventType.id),
     id: Number(data.id),
   });
+  // Track if a new image file is selected
+  const [newImageFile, setNewImageFile] = useState(null);
+
+  // Handle image change
+  const handleImageChange = (imgFile) => {
+    if (!imgFile) return;
+    setNewImageFile(imgFile);
+    // Do NOT update eventState.image here!
+  };
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -61,31 +111,74 @@ const index = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Ensure hashtags is a JSON string for backend
+    let hashtagsValue = eventState.hashtag;
+    if (!Array.isArray(hashtagsValue)) {
+      try {
+        hashtagsValue = JSON.parse(hashtagsValue);
+      } catch {
+        hashtagsValue = String(hashtagsValue).split(',').map((tag) => tag.trim());
+      }
+    }
     const payload = {
       eventDate: eventState.weddingDate,
       noOfGuest: Number(eventState.noOfGuest),
-      eventTypeId: eventState.eventTypeId,
+      eventTypeId: Number(eventState.eventTypeId),
       registryId: Number(data.registryId),
-      image: {
-        originalName: eventState.image.name,
-        fileName: eventState.image.name,
-        fileUrl: 'https://www.dummyimage.co.uk/1024x1024/000000',
-        mimeType: 'image/jpeg',
-        size: 1024,
-      },
       coupleName: eventState.coupleName,
-      hashtags: eventState.hashtag,
+      hashtags: hashtagsValue,
       weddingTime: eventState.weddingTime,
       location: eventState.location,
       city: eventState.city,
       province: eventState.province,
       welcomeMessage: eventState.welcomeMessage,
-      id: eventState.id,
+      id: Number(eventState.id),
+      name: eventState.coupleName,
     };
-    submit({payload}, {method: 'post', encType: 'application/json'});
+
+    if (newImageFile) {
+      // Use FormData for file upload
+      const formData = new FormData();
+      formData.append('file', newImageFile);
+      Object.entries(payload).forEach(([key, value]) => {
+        if (key === 'image') return; // Do NOT append image
+        if (key === 'hashtags') {
+          formData.append('hashtags', JSON.stringify(value));
+        } else if (typeof value === 'number' || typeof value === 'string') {
+          formData.append(key, String(value));
+        }
+      });
+
+      // Use fetch to your backend API endpoint
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${eventState.id}`, {
+        method: 'PUT',
+        body: formData,
+      });
+
+      if (response.ok) {
+        window.location.href = '/dashboard/registry';
+      } else {
+        const error = await response.json().catch(() => ({}));
+        alert(error.message || 'Failed to update event');
+      }
+    } else {
+      // No new image, send as JSON
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${eventState.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        window.location.href = '/dashboard/registry';
+      } else {
+        const error = await response.json().catch(() => ({}));
+        alert(error.message || 'Failed to update event');
+      }
+    }
   };
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -96,13 +189,7 @@ const index = () => {
             <div className="flex-1">
               <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
                 <ImageUpload
-                  onImageChange={(img) => {
-                    console.log(img, 'Img');
-                    // setEventState({
-                    //   ...eventState,
-                    //   image: img,
-                    // });
-                  }}
+                  onImageChange={handleImageChange}
                   initialImage={eventState.image}
                 />
               </div>

@@ -2,22 +2,22 @@ import React, {useState, useEffect} from 'react';
 
 const ImageUpload = ({onImageChange, initialImage}) => {
   const [image, setImage] = useState(null);
-
+  const [previewUrl, setPreviewUrl] = useState(null);
+  
   // Update state if initialImage prop changes
   useEffect(() => {
     setImage(initialImage);
+    setPreviewUrl(null); // Reset preview when initialImage changes (e.g., after upload)
   }, [initialImage]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    console.log(file, 'File');
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl); // Update the displayed image
+      setPreviewUrl(imageUrl); // Show preview
       onImageChange(file); // Notify the parent component with the file
     }
   };
-
   return (
     <div
       style={{
@@ -28,7 +28,7 @@ const ImageUpload = ({onImageChange, initialImage}) => {
         position: 'relative',
       }}
     >
-      {!image ? (
+      {!image && !previewUrl ? (
         <label
           htmlFor="image-upload"
           style={{
@@ -43,7 +43,7 @@ const ImageUpload = ({onImageChange, initialImage}) => {
         </label>
       ) : (
         <img
-          src={image}
+          src={previewUrl || (typeof image === 'string' ? image : image?.fileUrl)}
           alt="Uploaded"
           style={{
             maxWidth: '100%',

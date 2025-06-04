@@ -11,7 +11,6 @@ export async function loader(args) {
 
   try {
     const user = await context?.session?.get('@User');
-
     if (!user?.user?.id) {
       throw new Error('User ID not found in session');
     }
@@ -52,6 +51,7 @@ export async function loader(args) {
       {
         registries,
         registry: {...registry, ...detailResponse.data},
+        user,
       },
       {
         headers: {
@@ -88,7 +88,7 @@ export async function action({request, context}) {
 }
 
 const index = () => {
-  const {registries, registry} = useLoaderData();
+  const {registries, registry, user} = useLoaderData();
   // const action = useActionData();
 
   const fetcher = useFetcher();
