@@ -14,7 +14,7 @@ export function PageLayout({
 }) {
   return (
     <Aside.Provider>
-      {token ? <PrivateHeader /> : <Header />}
+      {token ? <PrivateHeader /> : ""}
       <main>{children}</main>
     </Aside.Provider>
   );

@@ -139,7 +139,7 @@ export function Header() {
           <div className="flex items-center gap-4">
             {/* link Button */}
             <NavLink
-              to="#"
+              to="/couple"
               className={`px-4 py-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 font-[800] uppercase text-center tracking-[2px] max-[1601px]:w-[200px] ${
                 isFixed ? 'text-white' : 'text-[#1F1D1B]'
               }`}

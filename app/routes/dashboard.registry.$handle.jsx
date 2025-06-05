@@ -205,7 +205,7 @@ export default function Index() {
         <form onSubmit={handleSubmit}>
           <div className="flex gap-8">
             <div className="flex-1">
-              <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
+              <div className="bg-gray-200 min-h-64 h-auto flex items-center justify-center rounded-lg">
                 <ImageUpload
                   onImageChange={handleImageChange}
                   initialImage={eventState.image}

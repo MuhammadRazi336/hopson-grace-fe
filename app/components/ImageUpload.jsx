@@ -63,6 +63,23 @@ const ImageUpload = ({onImageChange, initialImage}) => {
         className="hidden"
         id="image-upload"
       />
+      <label
+        htmlFor="image-upload"
+        className="cursor-pointer flex flex-col items-center justify-center w-full h-full"
+      >
+        {initialImage ? (
+          <img
+            src={initialImage}
+            alt="Preview"
+            className="max-w-full max-h-full object-cover"
+          />
+        ) : (
+          <div className="text-gray-500 text-center">
+            <span className="block">Click to upload an image</span>
+            <span className="text-sm block">or drag and drop</span>
+          </div>
+        )}
+      </label>
     </div>
   );
 };
