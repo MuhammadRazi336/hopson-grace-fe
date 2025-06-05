@@ -7,6 +7,7 @@ import {
   TabPanel,
 } from '@material-tailwind/react';
 import {Link} from '@remix-run/react';
+import {Header} from '~/components/Header';
 
 const CustomTabs = ({
   tabsData,
@@ -18,9 +19,11 @@ const CustomTabs = ({
   const [activeTab, setActiveTab] = useState(defaultActive);
 
   return (
-    <Tabs value={activeTab} className={className}>
-      <TabsHeader className={headerClassName}>
-        {tabsData.map(({label, route, value}) => (
+    <>
+      <Header />
+      <Tabs value={activeTab} className={className}>
+        <TabsHeader className={headerClassName}>
+          {tabsData.map(({label, route, value}) => (
           <Link
             key={`${route}-${value}`}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-all ease-in-out
@@ -48,6 +51,7 @@ const CustomTabs = ({
       {/*  ))}*/}
       {/*</TabsBody>*/}
     </Tabs>
+    </>
   );
 };
 

@@ -2,6 +2,8 @@ import Input from '~/components/Input.jsx';
 import {useState} from 'react';
 import ButtonComponent from '~/components/Button.jsx';
 import Auth from '~/Services/Auth.js';
+import {Header} from '~/components/Header';
+
 
 const Login = ({session}) => {
   const formData = useState({
@@ -29,6 +31,8 @@ const Login = ({session}) => {
     }
   };
   return (
+    <>
+    <Header />
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
@@ -51,6 +55,7 @@ const Login = ({session}) => {
         <ButtonComponent onClick={onLogin} className="w-full" text={'Login'} />
       </div>
     </div>
+    </>
   );
 };
 export default Login;

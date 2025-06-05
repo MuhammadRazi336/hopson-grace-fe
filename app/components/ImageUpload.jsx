@@ -36,7 +36,7 @@ const ImageUpload = ({initialImage, onImageChange}) => {
           <img
             src={initialImage}
             alt="Preview"
-            className="max-w-full max-h-full object-contain"
+            className="max-w-full max-h-full object-cover"
           />
         ) : (
           <div className="text-gray-500 text-center">

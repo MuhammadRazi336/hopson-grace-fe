@@ -1,9 +1,24 @@
 import {useCallback, useState} from 'react';
+// import { X, ChevronUp, ChevronDown } from 'lucide-react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link} from '@remix-run/react';
 // import {Header} from '~/components/Header';
 
 export default function CoupleProfileView() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedGiftData, setSelectedGiftData] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const handleTitleClick = (item) => {
+    setSelectedGiftData(item);
+    setSelectedImageIndex(0); // Reset selected image for the new item
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    setSelectedGiftData(null);
+  };
+
   const giftRegistry = [
     {
       name: 'Marble Butter Keeper',
@@ -170,7 +185,7 @@ export default function CoupleProfileView() {
                 className="w-full h-[340px] object-cover mb-4"
               />
 
-              <h3 className="text-lg font-semibold ">
+              <h3 className="text-lg font-semibold cursor-pointer" onClick={() => handleTitleClick(item)}>
                 {item.name}
                 {item.size ? ` (${item.size})` : ''}
               </h3>
@@ -258,6 +273,96 @@ export default function CoupleProfileView() {
           />
         </div>
       </div>
+      {isPopupOpen && selectedGiftData && (
+        <div className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto" onClick={closePopup}>
+          <div className="relative bg-white rounded-lg shadow-lg max-w-4xl w-full mx-auto my-8 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <button onClick={closePopup} className="absolute top-4 right-4 z-10 text-gray-600 hover:text-gray-800">
+              X
+            </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
+              {/* Product Image Section */}
+              <div className="relative py-8 pl-8">
+                <img
+                  src={selectedGiftData.image || "/placeholder.svg"} 
+                  alt={selectedGiftData.name}
+                  className="w-full h-auto object-cover md:rounded-l-lg"
+                />
+                {/* Simplified Thumbnail Display - shows current image as a non-interactive thumbnail */}
+                <div className="flex gap-2 mt-4 px-4 md:px-0">
+                  <div className={`border p-1 w-20 h-20 border-[#3d5a80] border-2`}>
+                    <img
+                      src={selectedGiftData.image || "/placeholder.svg"}
+                      alt={`Thumbnail 1`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className={`border p-1 w-20 h-20 border-[#3d5a80] border-2`}>
+                    <img
+                      src={selectedGiftData.image || "/placeholder.svg"}
+                      alt={`Thumbnail 1`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className={`border p-1 w-20 h-20 border-[#3d5a80] border-2`}>
+                    <img
+                      src={selectedGiftData.image || "/placeholder.svg"}
+                      alt={`Thumbnail 1`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Product Details Section */}
+              <div className="p-6 md:p-8 flex flex-col">
+                <div className="uppercase text-sm tracking-wider text-gray-700 font-medium">HOPSON GRACE</div>
+                <h1 className="text-3xl md:text-4xl font-serif mt-2 mb-4">{selectedGiftData.name}</h1>
+                <div className="text-xl font-medium mb-6">${selectedGiftData.price}</div>
+
+                <div className="flex items-center gap-4 mb-6">
+                  {/* Display Requested/Still Needs */}
+                  <div className="flex flex-col items-start border border-gray-300 p-2 rounded text-sm">
+                    <div>Requested: <span className="font-medium">{selectedGiftData.requested !== undefined ? selectedGiftData.requested : 'N/A'}</span></div>
+                    <div>Still Needs: <span className="font-medium">{selectedGiftData.stillNeeds !== undefined ? selectedGiftData.stillNeeds : 'N/A'}</span></div>
+                  </div>
+                  
+                  {/* Add to Cart Button */}
+                  <button 
+                    className={`bg-[#3d5a80] text-white py-3 px-6 uppercase text-sm tracking-wider flex-grow rounded transition-colors
+                      ${(selectedGiftData.stillNeeds === 0 || selectedGiftData.status === 'gifted') 
+                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
+                        : 'hover:bg-[#2c425e]'}
+                    `}
+                    disabled={selectedGiftData.stillNeeds === 0 || selectedGiftData.status === 'gifted'}
+                  >
+                    {selectedGiftData.stillNeeds === 0 || selectedGiftData.status === 'gifted' 
+                      ? (selectedGiftData.status === 'gifted' ? 'GIFTED' : 'NOT AVAILABLE') 
+                      : selectedGiftData.buttonLabel || 'ADD TO CART'}
+                  </button>
+                </div>
+
+                {/* Product Description */}
+                <p className="text-gray-700 mb-6 leading-relaxed text-sm">
+                  {selectedGiftData.description || "Keep your butter spreadable and fresh in this butter keeper, a French invention when refrigeration didn't exist. Marble naturally keeps butter cool, and the French naturally know their way around the kitchen. Need we say more?"}
+                </p>
+
+                <div className="mb-6">
+                  <h2 className="font-medium uppercase text-xs tracking-wider mb-1 text-gray-500">HOW IT WORKS:</h2>
+                  <p className="text-gray-700 text-sm">
+                    Fill your butter keeper with 1/4" cold water to keep butter soft. Change water every 3-5 days to keep butter fresh.
+                  </p>
+                </div>
+
+                <div>
+                  <h2 className="font-medium uppercase text-xs tracking-wider mb-1 text-gray-500">DETAILS:</h2>
+                  <p className="text-gray-700 text-sm">H 4.25" | 4" DIA</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

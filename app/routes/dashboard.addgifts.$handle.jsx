@@ -8,6 +8,7 @@ import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
 import GiftDetail from '~/components/GiftDetail';
+
 export async function loader(args) {
   const {request, context} = args;
   const {collections} = await loadCollectionData({context});
@@ -67,6 +68,8 @@ const GiftDetailHandle = () => {
   // Defensive checks for variants and images
   const firstVariant = product?.variants?.edges?.[0]?.node;
   const productImages = product?.images?.edges?.length > 0 ? product.images.edges : [];
+
+  console.log(productImages);
 
   const handleAddtoRegistry = ({id, price, quantity}) => {
     if (!firstVariant) {
