@@ -5,7 +5,7 @@ const index = () => {
         <h1 className="text-2xl font-bold mb-6">Edit Page</h1>
         <div className="flex gap-8">
           <div className="flex-1">
-            <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
+            <div className="bg-gray-200 min-h-64 h-auto flex items-center justify-center rounded-lg">
               <button className="bg-white text-gray-700 border border-gray-400 px-4 py-2 rounded-lg">
                 Upload New Photo
               </button>
