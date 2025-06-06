@@ -8,7 +8,7 @@ import {useState} from 'react';
 import ButtonComponent from '~/components/Button.jsx';
 import {jsonWithError} from 'remix-toast';
 import {Header} from '~/components/Header';
-import Footer from '~/components/Footer';
+import {Footer} from '~/components/Footer';
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
   const {context} = args;
