@@ -7,6 +7,7 @@ import {useSubmit, useActionData} from '@remix-run/react';
 import {redirect} from '@shopify/remix-oxygen';
 import StepsAndImage from '~/components/StepsAndImage';
 import arrow from "/assets/Images/arrow.png"
+import {Header} from '~/components/Header';
 
 
 export async function action({request, context}) {
@@ -115,6 +116,7 @@ submit({payload}, {method: 'post', encType: 'application/json'});
 };
 return (
 <div className="flex justify-center items-center min-h-screen bg-white">
+  <Header />
   <StepsAndImage title="let's get to know each other." stepNo="1" totalSteps="9" content={ <div className="flex h-full items-center">
     {/* Stepper for progress */}
 

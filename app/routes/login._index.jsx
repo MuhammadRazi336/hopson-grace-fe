@@ -7,6 +7,7 @@ import Input from '~/components/Input.jsx';
 import {useState} from 'react';
 import ButtonComponent from '~/components/Button.jsx';
 import {jsonWithError} from 'remix-toast';
+import {Header} from '~/components/Header';
 
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
@@ -65,6 +66,8 @@ const LoginIndex = () => {
   };
 
   return (
+    <>
+    <Header />
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
@@ -105,6 +108,7 @@ const LoginIndex = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
