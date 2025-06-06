@@ -21,6 +21,7 @@ import ButtonComponent from '~/components/Button';
 import Marquee from '~/components/Marquee';
 import ProductSlider from '~/components/ProductSlider';
 import Testimonialslider from '~/components/Testimonialslider';
+import {Header} from '~/components/Header';
 
 const Home = () => {
   const tabsData = [
@@ -42,6 +43,7 @@ const Home = () => {
   ];
   return (
     <div>
+      <Header />
       <section className="hero-slider">
         <HeroSlider />
       </section>
