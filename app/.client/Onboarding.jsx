@@ -9,10 +9,10 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import DatePicker from '~/components/DatePicker.jsx';
 import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
-import { STEPS_CONSTANTS } from '../constants/UiConstants';
-import arrow from "/assets/Images/arrow.png"
-import collectionitems from "/assets/Images/collectionitems.png"
-import selected from "/assets/Images/selected.png"
+import {STEPS_CONSTANTS} from '../constants/UiConstants';
+import arrow from '/assets/Images/arrow.png';
+import collectionitems from '/assets/Images/collectionitems.png';
+import selected from '/assets/Images/selected.png';
 import {Image} from '@shopify/hydrogen';
 
 import React from 'react';
@@ -23,10 +23,8 @@ import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
 import placeholder from '/assets/Images/placeholder.jpg';
 
-
-
-const OnboardingClient = ({ onStepChange }) => {
-  const { user, collections, context } = useLoaderData();
+const OnboardingClient = ({onStepChange}) => {
+  const {user, collections, context} = useLoaderData();
   const navigate = useNavigate();
   const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
@@ -54,13 +52,13 @@ const OnboardingClient = ({ onStepChange }) => {
   const [step3Error, setStep3Error] = useState('');
   const [step4Errors, setStep4Errors] = useState({});
   const handleGuestNoChange = (e) => {
-    setEventData(prev => ({
+    setEventData((prev) => ({
       ...prev,
       noOfGuest: e.target.value,
     }));
   };
   const setSelectedDate = (date) => {
-    setEventData(prev => ({
+    setEventData((prev) => ({
       ...prev,
       selectedDate: date,
     }));
@@ -153,19 +151,18 @@ const OnboardingClient = ({ onStepChange }) => {
         id: e.id,
       }));
       setEventTypes(events);
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
   const handleSelectChange = (value) => {
-    setEventData(prev => ({
+    setEventData((prev) => ({
       ...prev,
       selectedOption: {label: value.label, id: value.id},
     }));
   };
   // Main state for selected date
   const handleEventNameChange = (e) => {
-    setEventData(prev => ({
+    setEventData((prev) => ({
       ...prev,
       eventName: e.target.value,
     }));
@@ -190,7 +187,8 @@ const OnboardingClient = ({ onStepChange }) => {
       if (data) {
         // Log the backend response to inspect the keys
         // Use the correct key for registry id and event id (POST or PUT)
-        const registryId = data.data.registry?.id || data.data.id || eventData.id;
+        const registryId =
+          data.data.registry?.id || data.data.id || eventData.id;
         const eventId = data.data.event?.id || eventData.eventId;
         const event = {
           ...eventData,
@@ -244,8 +242,7 @@ const OnboardingClient = ({ onStepChange }) => {
       localStorage.setItem('@ShippingData', JSON.stringify(shippingData));
       setAddressData(shippingData);
       setStep(step + 1);
-    } catch (e) {
-    }
+    } catch (e) {}
   };
 
   const handleNoOfGuest = async () => {
@@ -258,8 +255,7 @@ const OnboardingClient = ({ onStepChange }) => {
     try {
       const data = await Registry_Services.updateEvent(payload, token);
       setStep(step + 1);
-    } catch (e) {
-    }
+    } catch (e) {}
   };
   const handleOnboard = async () => {
     const payload = {
@@ -275,9 +271,11 @@ const OnboardingClient = ({ onStepChange }) => {
       try {
         const collectionsString = JSON.stringify(selectedSubCollections);
         localStorage.setItem('@SelectedSubCollections', collectionsString);
-        
+
         // Verify storage immediately
-        const storedCollections = localStorage.getItem('@SelectedSubCollections');
+        const storedCollections = localStorage.getItem(
+          '@SelectedSubCollections',
+        );
 
         if (!storedCollections) {
           throw new Error('Failed to store collections in localStorage');
@@ -339,27 +337,27 @@ const OnboardingClient = ({ onStepChange }) => {
 
         // Process each sub-collection one at a time
         for (const subCollection of selectedSubCollections) {
-
           try {
             // Fetch products for this collection
             const result = await context.storefront.query(productsQuery, {
               variables: {
-                collectionId: subCollection.id
-              }
+                collectionId: subCollection.id,
+              },
             });
 
             if (result?.collection?.products?.edges) {
               // Store products for this collection
               const productsKey = `@Products_${subCollection.id}`;
-              const productsString = JSON.stringify(result.collection.products.edges);
-              
+              const productsString = JSON.stringify(
+                result.collection.products.edges,
+              );
+
               localStorage.setItem(productsKey, productsString);
-              
+
               // Verify storage
               const storedProducts = localStorage.getItem(productsKey);
             }
-          } catch (error) {
-          }
+          } catch (error) {}
         }
 
         // Navigate after all operations are complete
@@ -477,22 +475,37 @@ const OnboardingClient = ({ onStepChange }) => {
         );
       case STEPS_CONSTANTS.GUEST_INFO:
         return (
-          <Step3 value={eventData.noOfGuest} onChange={handleGuestNoChange} step3Error={step3Error} />
+          <Step3
+            value={eventData.noOfGuest}
+            onChange={handleGuestNoChange}
+            step3Error={step3Error}
+          />
         );
       case STEPS_CONSTANTS.SHIPPING_INFO:
         return (
-          <Step4 formData={addressData} handleInputChange={handleInputChange} step4Errors={step4Errors} />
+          <Step4
+            formData={addressData}
+            handleInputChange={handleInputChange}
+            step4Errors={step4Errors}
+          />
         );
       case STEPS_CONSTANTS.PREFER_GIFT_INFO:
         return <Step5 />;
       case STEPS_CONSTANTS.COLLECTION_INFO:
-        return <Step6 collections={collections} onCollectionsSelect={setSelectedCollections} />;
+        return (
+          <Step6
+            collections={collections}
+            onCollectionsSelect={setSelectedCollections}
+          />
+        );
       case STEPS_CONSTANTS.STYLE_INFO:
-        return <Step7 
-          selectedCollections={selectedCollections} 
-          storefront={context.storefront}
-          onSubCollectionsSelect={setSelectedSubCollections}
-        />;
+        return (
+          <Step7
+            selectedCollections={selectedCollections}
+            storefront={context.storefront}
+            onSubCollectionsSelect={setSelectedSubCollections}
+          />
+        );
       default:
         return null;
     }
@@ -519,11 +532,24 @@ const OnboardingClient = ({ onStepChange }) => {
         {/* Back and Next buttons */}
         <div className="flex justify-between mt-4">
           {/* <Button text="Back" onClick={goBack} disabled={step === 1} /> */}
-           <button onClick={goBack} disabled={step === 1}  type="submit" text="Next" className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]" >
-           <img src={arrow} alt="" className='rotate-180 max-[768px]:w-4' /> Back
+          <button
+            onClick={goBack}
+            disabled={step === 1}
+            type="submit"
+            text="Next"
+            className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+          >
+            <img src={arrow} alt="" className="rotate-180 max-[768px]:w-4" />{' '}
+            Back
           </button>
-           <button onClick={goNext}  type="submit" text="Next" className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]" >
-            {step === 7 ? 'Submit' : 'Next'} <img src={arrow} alt="" className='max-[768px]:w-4' />
+          <button
+            onClick={goNext}
+            type="submit"
+            text="Next"
+            className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+          >
+            {step === 7 ? 'Submit' : 'Next'}{' '}
+            <img src={arrow} alt="" className="max-[768px]:w-4" />
           </button>
         </div>
       </div>
@@ -533,19 +559,22 @@ const OnboardingClient = ({ onStepChange }) => {
 
 const Step1 = ({selectedDate, setSelectedDate}) => {
   return (
-    <div className='text-center'>
+    <div className="text-center">
       <div className="p-4 w-[300px] mx-auto customdatepicker">
         <DatePicker
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
           placeholder="Choose a Date"
           inputProps={{
-            className:"rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker",
+            className:
+              'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
-        <button className='border-b-2 border-b-white text-center mt-10'>I'LL ADD THIS LATER</button>
+      <button className="border-b-2 border-b-white text-center mt-10">
+        I'LL ADD THIS LATER
+      </button>
     </div>
   );
 };
@@ -569,7 +598,7 @@ const Step2 = ({
           {'(ie. bridal shower , engagement party)'}
         </h2>
       </div>
-      <div className='customselect mb-6'>
+      <div className="customselect mb-6">
         <CustomSelect
           title={'Event Type'}
           options={eventData}
@@ -579,7 +608,9 @@ const Step2 = ({
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black"
         />
         {step2Errors?.selectedOption && (
-          <div className="input-error-message">{step2Errors.selectedOption}</div>
+          <div className="input-error-message">
+            {step2Errors.selectedOption}
+          </div>
         )}
       </div>
       {/* Event Name Input */}
@@ -591,13 +622,14 @@ const Step2 = ({
         className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
         error={step2Errors?.eventName}
       />
-      <div className='mt-6 customdatepicker'>
+      <div className="mt-6 customdatepicker">
         <DatePicker
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
           label="Choose a Date"
           inputProps={{
-            className: 'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black h-[68px] customDatePicker',
+            className:
+              'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black h-[68px] customDatePicker',
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
@@ -617,14 +649,15 @@ const Step3 = ({value, onChange, step3Error}) => {
       <div className="text-center">
         {/* <Heading text={'How many guests are you inviting?'} /> */}
         <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto">
-          This will help us calculate the magic number to ensure all guests have a good amount of gifts to choose from.
+          This will help us calculate the magic number to ensure all guests have
+          a good amount of gifts to choose from.
         </h2>
       </div>
       {/* Event Name Input */}
       <Input
         label="Number of Guests"
         value={value}
-        onChange={e => {
+        onChange={(e) => {
           const val = e.target.value;
           if (/^\d*$/.test(val)) {
             onChange(e);
@@ -637,9 +670,9 @@ const Step3 = ({value, onChange, step3Error}) => {
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
       {step3Error && <div className="input-error-message">{step3Error}</div>}
-      <div className='text-center'>
-        <button type='button' className='mt-10 border-b-2 border-b-white'>
-        I'LL ADD THIS LATER
+      <div className="text-center">
+        <button type="button" className="mt-10 border-b-2 border-b-white">
+          I'LL ADD THIS LATER
         </button>
       </div>
     </div>
@@ -718,8 +751,8 @@ const Step4 = ({formData, handleInputChange, step4Errors}) => {
           error={step4Errors?.country}
         />
       </div>
-      <div className='text-center'>
-        <button className='mt-10 border-b-2 border-b-white'>
+      <div className="text-center">
+        <button className="mt-10 border-b-2 border-b-white">
           I'LL ADD THIS LATER
         </button>
       </div>
@@ -736,46 +769,59 @@ const Step5 = () => {
       id: 1,
       label: 'Cash',
       image: collectionitems,
-      selectedImage: selected
+      selectedImage: selected,
     },
-    {id: 2, label: 'Gifts & Cash', image: collectionitems,  selectedImage: selected},
-    {id: 3, label: 'Gifts', image: collectionitems,  selectedImage: selected},
-    {id: 4, label: 'Not Sure Yet', image: collectionitems,  selectedImage: selected},
+    {
+      id: 2,
+      label: 'Gifts & Cash',
+      image: collectionitems,
+      selectedImage: selected,
+    },
+    {id: 3, label: 'Gifts', image: collectionitems, selectedImage: selected},
+    {
+      id: 4,
+      label: 'Not Sure Yet',
+      image: collectionitems,
+      selectedImage: selected,
+    },
   ];
 
   return (
     <div className="flex flex-col items-center">
       {/* <Heading text={'What is your preferred gift?'} /> */}
       <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto text-center">
-      Most guests prefer to give a gift that you can keep forever.
-        </h2>
+        Most guests prefer to give a gift that you can keep forever.
+      </h2>
       <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto text-center">
-      CHOOSE AS MANY AS YOU'D LIKE:
-        </h2>
+        CHOOSE AS MANY AS YOU'D LIKE:
+      </h2>
       {/* Grid */}
-      <div className="grid grid-cols-3 max-[768px]:grid-cols-2">
+      <div className="grid grid-cols-2 max-[768px]:grid-cols-2">
         {options.map((option) => (
           <button
             key={option.id}
             onClick={() => setSelectedOption(option.id)}
             className={`p-6 flex items-center justify-center flex-col max-[768px]:p-2 rounded-full text-center text-white font-normal text-[20px] ${
-              selectedOption === option.id
-                ? ''
-                : ''
+              selectedOption === option.id ? '' : ''
             }`}
           >
-            <div className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-40 aspect-[1/1] flex items-center justify-center ${
-              selectedOption === option.id
-                ? 'bg-[#223247]'
-                : 'bg-[#F5F2ED]'
-            }`}>
-              {selectedOption === option.id 
-                ? <img src={option.selectedImage} className='max-[768px]:w-16' alt="" />
-                : <img src={option.image} className='max-[768px]:w-16' alt="" />
-              }
+            <div
+              className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-40 aspect-[1/1] flex items-center justify-center ${
+                selectedOption === option.id ? 'bg-[#223247]' : 'bg-[#F5F2ED]'
+              }`}
+            >
+              {selectedOption === option.id ? (
+                <img
+                  src={option.selectedImage}
+                  className="max-[768px]:w-16"
+                  alt=""
+                />
+              ) : (
+                <img src={option.image} className="max-[768px]:w-16" alt="" />
+              )}
             </div>
-            <span className='text-[20px] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center'>
-            {option.label}
+            <span className="text-[20px] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center">
+              {option.label}
             </span>
           </button>
         ))}
@@ -784,15 +830,14 @@ const Step5 = () => {
   );
 };
 
-const Step6 = ({ collections, onCollectionsSelect }) => {
+const Step6 = ({collections, onCollectionsSelect}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
 
   // Filter collections to only show parent collections
-  const parentCollections = collections?.nodes?.filter(
-    (collection) => {
-      return collection?.metafield?.value === "true";
-    }
-  ) || [];
+  const parentCollections =
+    collections?.nodes?.filter((collection) => {
+      return collection?.metafield?.value === 'true';
+    }) || [];
 
   const handleOptionClick = (collection) => {
     setSelectedOptions((prev) => {
@@ -808,13 +853,14 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
   return (
     <div className="">
       <p className="font-normal mb-10 mt-4 w-[80%] text-2xl mx-auto text-center">
-        Pick a style, and we'll make gift recommendations tailored to your taste.
+        Pick a style, and we'll make gift recommendations tailored to your
+        taste.
       </p>
       <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
       <div className="">
-        <Swiper
+        {/* <Swiper
           spaceBetween={0}
           slidesPerView={4}
           loop={true}
@@ -848,7 +894,7 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
           ) : (
             <p className="col-span-2 text-center text-gray-500">No collections available.</p>
           )}
-        </Swiper>
+        </Swiper> */}
         <div className="relative">
           <div className="swiper-button-prev-collection absolute top-[90px] -left-16  cursor-pointer text-white uppercase flex ">
             <img src={nextitem} alt="" className="rotate-180 invert-100" />
@@ -856,31 +902,54 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
               more
             </span>
           </div>
-          <Swiper spaceBetween={20} slidesPerView={4} loop={true} className=""  modules={[Navigation]}
+          <Swiper
+            spaceBetween={20}
+            slidesPerView={4}
+            loop={true}
+            className=""
+            modules={[Navigation]}
             navigation={{
               nextEl: '.swiper-button-next-collection',
               prevEl: '.swiper-button-prev-collection',
-            }}>
+            }}
+          >
             {parentCollections.length > 0 ? (
               parentCollections.map((collection) => {
                 // Add this console.log to check each collection
 
                 return (
                   <SwiperSlide key={collection.id}>
-                    <button key={collection.id} onClick={()=> handleOptionClick(collection)}
+                    <button
+                      key={collection.id}
+                      onClick={() => handleOptionClick(collection)}
                       className={` ${
-                      selectedOptions.some((item) => item.id === collection.id)
-                      ? ''
-                      : ''
+                        selectedOptions.some(
+                          (item) => item.id === collection.id,
+                        )
+                          ? ''
+                          : ''
                       }`}
-                      >
+                    >
                       {collection.image && (
-                        <div className={selectedOptions.some((item) => item.id === collection.id) ? 'tickafter' : ''} >
-                          <Image alt={collection.image.altText || collection.title} aspectRatio="1/1" data={collection.image}
-                            loading="lazy" sizes="(min-width: 45em) 400px, 100vw" />
+                        <div
+                          className={
+                            selectedOptions.some(
+                              (item) => item.id === collection.id,
+                            )
+                              ? 'tickafter'
+                              : ''
+                          }
+                        >
+                          <Image
+                            alt={collection.image.altText || collection.title}
+                            aspectRatio="1/1"
+                            data={collection.image}
+                            loading="lazy"
+                            sizes="(min-width: 45em) 400px, 100vw"
+                          />
                         </div>
                       )}
-                      <span className='mt-4 block tracking-wider text-[15px] font-medium'>
+                      <span className="mt-4 block tracking-wider text-[15px] font-medium">
                         {collection.title}
                       </span>
                     </button>
@@ -888,7 +957,9 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
                 );
               })
             ) : (
-              <p className="col-span-2 text-center text-gray-500">No collections available.</p>
+              <p className="col-span-2 text-center text-gray-500">
+                No collections available.
+              </p>
             )}
           </Swiper>
           <div className="swiper-button-next-collection absolute top-[90px] -right-16 cursor-pointer text-white uppercase flex">
@@ -903,7 +974,7 @@ const Step6 = ({ collections, onCollectionsSelect }) => {
   );
 };
 
-const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
+const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [subCollectionsData, setSubCollectionsData] = useState([]);
   const [error, setError] = useState(null);
@@ -911,7 +982,7 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
   useEffect(() => {
     const fetchSubCollections = async () => {
       setError(null);
-      const subCollectionIds = selectedCollections.flatMap(collection => {
+      const subCollectionIds = selectedCollections.flatMap((collection) => {
         const subCollectionsValue = collection.subCollections?.value;
         if (subCollectionsValue) {
           try {
@@ -929,7 +1000,7 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ ids: subCollectionIds }),
+            body: JSON.stringify({ids: subCollectionIds}),
           });
           const data = await response.json();
           if (!response.ok) {
@@ -951,13 +1022,16 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
       const isSelected = prev.some((item) => item.id === subCollection.id);
       const newSelection = isSelected
         ? prev.filter((item) => item.id !== subCollection.id)
-        : [...prev, {
-            id: subCollection.id,
-            title: subCollection.title,
-            image: subCollection.image,
-            handle: subCollection.handle,
-            description: subCollection.description
-          }];
+        : [
+            ...prev,
+            {
+              id: subCollection.id,
+              title: subCollection.title,
+              image: subCollection.image,
+              handle: subCollection.handle,
+              description: subCollection.description,
+            },
+          ];
       onSubCollectionsSelect(newSelection);
       return newSelection;
     });
@@ -966,16 +1040,13 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
   return (
     <div className="">
       <p className="font-normal mb-10 mt-4 w-[80%] text-2xl mx-auto text-center">
-        Pick a style, and we'll make gift recommendations tailored to your taste.
+        Pick a style, and we'll make gift recommendations tailored to your
+        taste.
       </p>
       <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
-      {error && (
-        <p className="text-red-500 mb-4">
-          Error: {error}
-        </p>
-      )}
+      {error && <p className="text-red-500 mb-4">Error: {error}</p>}
       <div className="relative">
         <div className="swiper-button-prev-subcollection absolute top-[90px] -left-16  cursor-pointer text-white uppercase flex ">
           <img src={nextitem} alt="" className="rotate-180 invert-100" />
@@ -983,11 +1054,17 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
             more
           </span>
         </div>
-        <Swiper spaceBetween={20} slidesPerView={4} loop={true} className=""  modules={[Navigation]}
+        <Swiper
+          spaceBetween={20}
+          slidesPerView={4}
+          loop={true}
+          className=""
+          modules={[Navigation]}
           navigation={{
             nextEl: '.swiper-button-next-subcollection',
             prevEl: '.swiper-button-prev-subcollection',
-          }}>
+          }}
+        >
           {subCollectionsData.length > 0 ? (
             subCollectionsData.map((subCollection) => (
               <SwiperSlide key={subCollection.id}>
@@ -1001,37 +1078,53 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
                   }`}
                 >
                   {subCollection.image ? (
-                    <div className={selectedOptions.some((item) => item.id === subCollection.id) ? 'tickafter' : ''} >
-                      <Image 
-                        alt={subCollection.image.altText || subCollection.title} 
-                        aspectRatio="1/1" 
+                    <div
+                      className={
+                        selectedOptions.some(
+                          (item) => item.id === subCollection.id,
+                        )
+                          ? 'tickafter'
+                          : ''
+                      }
+                    >
+                      <Image
+                        alt={subCollection.image.altText || subCollection.title}
+                        aspectRatio="1/1"
                         data={{
                           url: subCollection.image.url,
                           altText: subCollection.image.altText,
                           width: subCollection.image.width,
-                          height: subCollection.image.height
+                          height: subCollection.image.height,
                         }}
-                        loading="lazy" 
-                        sizes="(min-width: 45em) 400px, 100vw" 
+                        loading="lazy"
+                        sizes="(min-width: 45em) 400px, 100vw"
                       />
                     </div>
                   ) : (
-                    <div className={selectedOptions.some((item) => item.id === subCollection.id) ? 'tickafter' : ''} >
-                      <Image 
-                        alt={subCollection.title} 
-                        aspectRatio="1/1" 
+                    <div
+                      className={
+                        selectedOptions.some(
+                          (item) => item.id === subCollection.id,
+                        )
+                          ? 'tickafter'
+                          : ''
+                      }
+                    >
+                      <Image
+                        alt={subCollection.title}
+                        aspectRatio="1/1"
                         data={{
                           url: placeholder,
                           altText: subCollection.title,
                           width: 400,
-                          height: 400
+                          height: 400,
                         }}
-                        loading="lazy" 
-                        sizes="(min-width: 45em) 400px, 100vw" 
+                        loading="lazy"
+                        sizes="(min-width: 45em) 400px, 100vw"
                       />
                     </div>
                   )}
-                  <span className='mt-4 block tracking-wider text-[15px] font-medium'>
+                  <span className="mt-4 block tracking-wider text-[15px] font-medium">
                     {subCollection.title}
                   </span>
                 </button>
@@ -1039,7 +1132,9 @@ const Step7 = ({ selectedCollections, storefront, onSubCollectionsSelect }) => {
             ))
           ) : (
             <p className="col-span-2 text-center text-gray-500">
-              {error ? 'Error loading sub-categories' : 'No sub-categories available. Please select parent categories in the previous step.'}
+              {error
+                ? 'Error loading sub-categories'
+                : 'No sub-categories available. Please select parent categories in the previous step.'}
             </p>
           )}
         </Swiper>
