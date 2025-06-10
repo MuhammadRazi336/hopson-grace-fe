@@ -104,7 +104,7 @@ export async function action({request, context}) {
       {
         cartId: hashedCartId,
         id: Number(itemId),
-        title: product.title,
+        title: product.title || product.cashFund?.name,
         price: productTypeId === 2 ? amount : Number(product.amount),
         image: product.images?.[0]?.src || '',
         productTypeId: productTypeId,
@@ -186,8 +186,6 @@ export default function CoupleProfile() {
     return 0;
   });
 
-  // console.log('🚀 ~ CoupleProfile ~ cashfundData:', cashfundData);
-  // console.log('🚀 ~ CoupleProfile ~ data:', data);
   const fetcher = useFetcher();
   const handleAddToCart = (productId) => {
     const product = data.find((item) => item.id === productId);
@@ -303,6 +301,7 @@ export default function CoupleProfile() {
               <CoupleProductCard
                 key={product.id}
                 name={product.title || product.cashFund?.name || ''}
+                image={product.images?.edges[0]?.node?.url || ''}
                 price={product.amount}
                 description={product.description || product.cashFund?.note || ''}
                 isGroupGift={product.isGroupPayment}

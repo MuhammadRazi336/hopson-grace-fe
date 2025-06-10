@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 
 const CoupleProductCard = ({
+  image,
   name,
   price,
   description,
@@ -14,6 +15,7 @@ const CoupleProductCard = ({
 }) => {
   const [contributionAmount, setContributionAmount] = useState('');
   const [error, setError] = useState('');
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   const handleInputChange = (e) => {
     const value = parseFloat(e.target.value);
@@ -124,9 +126,15 @@ const CoupleProductCard = ({
   return (
     <div className="max-w-xs border border-gray-200 rounded-lg shadow-md p-4 flex flex-col justify-between">
       <div>
-        <div className="bg-gray-200 h-40 w-full rounded mb-4 flex items-center justify-center">
-          <div className="text-gray-500">Image</div>
-        </div>
+        {image ? (
+          <div className="bg-gray-200 h-40 w-full rounded mb-4 flex items-center justify-center">
+            <img src={image} alt={name} className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className="bg-gray-200 h-40 w-full rounded mb-4 flex items-center justify-center">
+            <div className="text-gray-500">No image</div>
+          </div>
+        )}
         <h2 className="text-lg font-bold">{name}</h2>
         <p className="text-gray-500">{price}</p>
         {isGroupGift && (
@@ -135,7 +143,25 @@ const CoupleProductCard = ({
         {isCashFund && (
           <p className="text-sm text-green-500 italic">This is a Cash Fund</p>
         )}
-        <p className="text-gray-600 mt-2">{description}</p>
+        {description && (
+          <div className="text-gray-600 mt-2">
+            {description.length > 100 ? (
+              <>
+                <p>
+                  {showFullDescription ? description : `${description.slice(0, 100)}...`}
+                </p>
+                <button
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="text-blue-500 hover:text-blue-700 text-sm mt-1"
+                >
+                  {showFullDescription ? 'Read Less' : 'Read More'}
+                </button>
+              </>
+            ) : (
+              <p>{description}</p>
+            )}
+          </div>
+        )}
         {(isGroupGift || isCashFund) && (
           <div className="mt-2">
             <p className="text-sm text-gray-500">

@@ -36,6 +36,7 @@ const Cart = () => {
   const [items, setItems] = useState(JSON.parse(cartItems));
   const fetcher = useFetcher();
 
+
   useEffect(() => {
     if (fetcher.data?.success) {
       setItems((prevItems) =>
@@ -80,7 +81,7 @@ const Cart = () => {
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 bg-gray-300 rounded-md"></div>
                       <div>
-                        <h4 className="font-semibold text-sm">{item.title}</h4>
+                        <h4 className="font-semibold text-sm">{item.title || item.cashFund?.name}</h4>
                         <button
                           type="button"
                           className="text-xs delete-cart-item text-gray-500 underline hover:text-gray-700"

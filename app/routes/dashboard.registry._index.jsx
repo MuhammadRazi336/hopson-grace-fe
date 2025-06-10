@@ -172,7 +172,7 @@ const ProductPage = ({data}) => {
               key={product.id || product.productId || Math.random()}
               productName={product.title || 'No Name'}
               productImage={
-                product.images?.edges?.[0]?.node?.src || 'https://www.dummyimage.co.uk'
+                product.images?.edges?.[0]?.node?.url || 'https://www.dummyimage.co.uk'
               }
               price={price && price.amount && price.currencyCode ? price : { amount: 0, currencyCode: 'USD' }}
               collected={typeof product.collectedAmount === 'number' ? product.collectedAmount : 0}

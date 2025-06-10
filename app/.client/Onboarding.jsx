@@ -422,7 +422,7 @@ const OnboardingClient = ({onStepChange}) => {
         errors.city = 'City is required';
       }
       if (!addressData.province || addressData.province.trim() === '') {
-        errors.province = 'Province is required';
+        errors.province = 'Province/State is required';
       }
       if (!addressData.country || addressData.country.trim() === '') {
         errors.country = 'Country is required';
@@ -733,7 +733,7 @@ const Step4 = ({formData, handleInputChange, step4Errors}) => {
 
         {/* Province */}
         <Input
-          placeholder="Province *"
+          placeholder="Province/State *"
           name="province"
           value={formData.province}
           onChange={handleInputChange}
