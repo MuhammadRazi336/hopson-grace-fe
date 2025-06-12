@@ -7,7 +7,7 @@ import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {useNavigate} from 'react-router-dom';
 import {Header} from '~/components/Header';
-
+import {CoupleFooter} from '~/components/CoupleFooter';
 
 export async function loader({request, context}) {
   const url = new URL(request.url);
@@ -60,7 +60,7 @@ export default function FindCoupleForm() {
                   className="max-w-[315px] mb-4"
                 />
                 <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-                  enter either person's kjkjkjfirst and last name
+                  enter either person's first and last name
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
@@ -119,6 +119,8 @@ export default function FindCoupleForm() {
           </section>
         </>
       )}
+
+      <CoupleFooter />
     </div>
   );
 }
