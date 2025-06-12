@@ -252,7 +252,7 @@ export default function SideCart({open, onClose, cartItems = []}) {
           </div>
         </div>
 
-        <div>
+        <div className="mt-[8rem]">
           <h2 className="text-3xl text-center font-bold prata pt-5">
             add a little something extra?
           </h2>
@@ -262,7 +262,27 @@ export default function SideCart({open, onClose, cartItems = []}) {
             className="w-auto  mx-auto mt-4"
           />
 
-          
+          {/* Related Items Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+            {relatedItems.map((item, idx) => (
+              <div
+                key={idx}
+                className="bg-white  flex flex-col items-start mb-6"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className=" object-cover  mb-2"
+                />
+                <div className=" text-lg mb-1">
+                  {item.name}
+                </div>
+                
+                <div className=" text-lg">${item.price}</div>
+        
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
