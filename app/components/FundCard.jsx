@@ -3,6 +3,7 @@ import React from 'react';
 const FundCard = ({
   title,
   totalAmount,
+  image,
   collectedAmount,
   onViewContributors,
 }) => {
@@ -10,8 +11,10 @@ const FundCard = ({
 
   return (
     <div className="w-75 bg-white rounded-lg shadow-md overflow-hidden m-4">
-      <div className="h-40 bg-black flex items-center justify-center">
-        <div className="w-16 h-16 bg-white rounded-md"></div>
+      <div className="h-60 flex items-center justify-center">
+        <div className="w-full h-full">
+          <img src={image} alt="Cash Fund" className="w-full h-full object-cover" />
+        </div>
       </div>
 
       <div className="p-4">

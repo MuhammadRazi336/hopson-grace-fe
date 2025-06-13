@@ -12,6 +12,20 @@ export async function loader({ context }) {
     context
   );
 
+  // Defensive check for image
+  if (data?.data && Array.isArray(data.data)) {
+    data.data.forEach((item, idx) => {
+      if (item && item.image && item.image.fileUrl) {
+        // ok
+      } else {
+        // Ensure item.image is at least an empty object
+        if (item && !item.image) item.image = {};
+      }
+    });
+  }
+
+  // Remove or comment out the direct console.log that assumes image exists
+  // console.log('data', data.data[1].image.fileUrl);
 
   return { cashFundData: data?.data || [] };
 }
@@ -51,6 +65,7 @@ const CashFunds = () => {
             <Card
               id={card.id}
               key={index}
+              image={card.image && card.image.fileUrl ? card.image.fileUrl : undefined}
               title={card.name}
               amount={card.amount}
               buttonLabel={'Personalize Fund'}
@@ -65,12 +80,20 @@ const CashFunds = () => {
 
 export default CashFunds;
 
-const Card = ({title, amount, buttonLabel, onButtonClick, id}) => {
+const Card = ({title, amount, buttonLabel, onButtonClick, id, image}) => {
   return (
     <div className="w-full bg-white shadow-md rounded-md overflow-hidden">
-      <div className="bg-black h-60 flex items-center justify-center">
+      <div className="h-60 flex items-center justify-center">
         {/* Placeholder for the image or icon */}
-        <div className="w-12 h-12 bg-white rounded-md"></div>
+        <div className="w-full h-full">
+          {image ? (
+            <img src={image} alt="Cash Fund" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+              No Image
+            </div>
+          )}
+        </div>
       </div>
       <div className="p-4">
         <h3 className="text-lg font-semibold">{title}</h3>

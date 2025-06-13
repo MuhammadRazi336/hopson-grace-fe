@@ -373,7 +373,7 @@ export function CoupleProfileViewHeader() {
         
             <img src="/assets/Images/couple-header-logo.png" alt="Hamburger" className="w-[150px] -mb-6 h-auto -ml-10" />
         
-        <h1 className="my-0">Cart</h1>
+        <h1 className="my-0"><Link to="/cart">Cart</Link></h1>
     </div>
   );
 }
