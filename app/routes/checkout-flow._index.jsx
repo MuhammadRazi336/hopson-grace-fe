@@ -1,7 +1,14 @@
 import {Header} from '~/components/Header';
 import {CoupleProfileViewHeader} from '~/routes/couple.test._index';
+import {Footer} from '~/components/Footer';
+import {useState} from 'react';
+import teaImg from '/assets/Images/reading-image.png';
+import lineImg3 from '/assets/Images/line.png';
+import ImageAndText from '~/components/ImageAndText';
 
 export default function CheckoutFlow() {
+  const [showPreview, setShowPreview] = useState(false);
+
   return (
     <div className="pt-[80px]">
       <CoupleProfileViewHeader />
@@ -17,19 +24,135 @@ export default function CheckoutFlow() {
       <div className="max-w-4xl mx-auto mt-[80px]">
         <div className="flex items-center justify-around">
           <div className="w-4/12">
-            <h4 className="text-4xl font-bold text-center prata">1.</h4>
-            <p className="text-lg text-center">Add your messsage</p>
+            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+              Add your messsage
+            </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-4xl font-bold text-center prata">2.</h4>
-            <p className="text-lg text-center">Add your messsage</p>
+            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+              Billing & Payment
+            </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-4xl font-bold text-center prata">3.</h4>
-            <p className="text-lg text-center">Add your messsage</p>
+            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center">
+              Order Confirmation
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-20 py-[100px]">
+        <div className="container mx-auto bg-[#446184]  py-16">
+          <h2 className="md:text-[36px] font-normal text-center text-white ivyora">
+            enclose your <span className="font-italic">PERSONAL MESSAGE</span>{' '}
+            here
+          </h2>
+
+          <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
+            Your message and gift notification will be sent to the couple
+            immediately upon completion of your order.
+          </p>
+
+          <div className="relative max-w-4xl mx-auto">
+            <img
+              src="/assets/Images/checkout-bg.png"
+              alt="checkout-flow"
+              className="w-full object-contain"
+            />
+            <div className="absolute top-0 left-0 w-full h-full">
+              <div className="flex items-center justify-start h-full flex-row">
+                <div
+                  className={`w-9/12 pl-16  ${
+                    !showPreview ? 'pt-16' : 'pt-10'
+                  }`}
+                >
+                  {/* Couples Name and Message Inputs */}
+
+                  <img
+                    src="/assets/Images/greeting-flower-checkout.png"
+                    alt="checkout-bg-1"
+                    className="w-auto h-auto mx-auto mb-8"
+                  />
+
+                  {!showPreview ? <MessageForm /> : <PreviewForm />}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowPreview(true)}
+            className=" text-[#223247] border-b border-[#223247 ] cursor-pointer font-bold text-lg  mx-auto mt-5 block"
+          >
+            Save and Preview
+          </button>
+
+          <div className="flex items-center gap-x-12 mt-8 justify-center">
+            <h4 className="text-[60px] text-white  text-center ">1</h4>
+            <h4 className="text-[30px] text-white  text-center ">/</h4>
+            <h4 className="text-[30px] text-white  text-center ">3</h4>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-16"></div>
+      <section className=" my-12 lg:my-[240px]">
+        <ImageAndText
+          direction={'right'}
+          imgBanner={teaImg}
+          lineimg={lineImg3}
+          title="questions? "
+          description="We’ve got answers."
+          buttontext={'PHONE, EMAIL OR LIVE CHAT'}
+          buttontype={'Color'}
+        />
+      </section>
+
+      <Footer />
+    </div>
+  );
+}
+
+const PreviewForm = () => {
+  return (
+    <div className="relative max-w-4xl mx-auto">
+      <h3 className="text-center text-3xl font-bold prata">jo & jon</h3>
+
+      <p className="text-center prata leading-relaxed text-xl mt-10">
+        We cannot wait to celebrate you as you embark on this most exciting next
+        chapter of your lives together. We love you always and are here for you
+        everyday along the way.
+      </p>
+      <p className="text-center prata text-xl mt-6">All our love,</p>
+      <p className="text-center prata text-xl mt-2">Aunty Jess & Uncle Paul</p>
+    </div>
+  );
+};
+
+const MessageForm = () => {
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Couples Name*"
+        className=" w-full prata text-center text-2xl mx-auto mb-4 border border-gray-300 rounded p-2 bg-[#FAF9F6] focus:outline-none focus:ring-2 focus:ring-gray-200"
+      />
+      <div className="w-full flex justify-center">
+        <div className="w-full ">
+          <textarea
+            placeholder="Your Message here...*"
+            maxLength={500}
+            rows={7}
+            className="w-full border italic border-gray-300  prata text-center text-xl outline-none p-3 bg-[#FAF9F6] resize-none focus:outline-none focus:ring-2 focus:ring-gray-200"
+          />
+          <div className="text-xs text-gray-400 mt-1 text-left">
+            500/500 characters remaining
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
