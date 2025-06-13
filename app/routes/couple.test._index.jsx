@@ -441,7 +441,7 @@ export function CoupleProfileViewHeader({onCartClick}) {
       />
 
       <span className="my-0 cursor-pointer" onClick={onCartClick}>
-        Cart
+        <img src="/assets/Images/cart-icon.png" alt="cart" className="w-7 h-7" />
       </span>
     </div>
   );

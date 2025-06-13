@@ -1,4 +1,5 @@
 // app/components/SideCart.jsx
+import {NavLink} from '@remix-run/react';
 export default function SideCart({open, onClose, cartItems = []}) {
   const relatedItems = [
     {
@@ -275,6 +276,18 @@ export default function SideCart({open, onClose, cartItems = []}) {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="flex justify-center gap-x-10 mt-12">
+          {/* CTA Button */}
+          <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white border-2 border-black hover:opacity-90 uppercase font-[800] text-black w-[225px] max-[1601px]:w-[200px] text-center">
+            continue shopping
+          </button>
+
+          {/* CTA Button */}
+          <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center">
+            checkout now
+          </button>
         </div>
       </div>
     </div>
