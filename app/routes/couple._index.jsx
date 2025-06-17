@@ -12,26 +12,26 @@ import {CoupleFooter} from '~/components/CoupleFooter';
 export async function loader({request, context}) {
   const url = new URL(request.url);
   const firstName = url.searchParams.get('firstName');
-  const lastName = url.searchParams.get('lastName');
+  const fianceFirstName = url.searchParams.get('fianceFirstName');
   const res = await context.ClientGet(
-    `users/find-couple?firstName=${firstName}&lastName=${lastName}`,
+    `users/find-couple?firstName=${firstName}&fianceFirstName=${fianceFirstName}`,
     context,
   );
   if (!res.data) {
     throw new Response('Not Found', {status: 404});
   }
-  return defer({data: res.data, name: {firstName, lastName}});
+  return defer({data: res.data, name: {firstName, fianceFirstName}});
 }
 
 export default function FindCoupleForm() {
   const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [fianceFirstName, setFianceFirstName] = useState('');
   const {data, name} = useLoaderData();
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate(`/couple/listing?firstName=${firstName}&lastName=${lastName}`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
   };
 
   return (
@@ -60,7 +60,7 @@ export default function FindCoupleForm() {
                   className="max-w-[315px] mb-4"
                 />
                 <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-                  enter either person's first and last name
+                enter couple's first and fiance's first name
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
@@ -79,14 +79,14 @@ export default function FindCoupleForm() {
                     </div>
                     <div className="w-full">
                       <input
-                        id="lastName"
-                        name="lastName"
+                        id="fianceFirstName"
+                        name="fianceFirstName"
                         type="text"
-                        placeholder="Last Name*"
-                        value={lastName}
+                        placeholder="Fiance's First Name*"
+                        value={fianceFirstName}
                         className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
                         required
-                        onChange={(e) => setLastName(e.target.value)}
+                        onChange={(e) => setFianceFirstName(e.target.value)}
                       />
                     </div>
                   </div>
@@ -146,7 +146,7 @@ export function FindCoupleFormBanner() {
             className="max-w-[315px] mb-4"
           />
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-            enter either person's first and last name
+            enter couple's first and fiance's first name
           </p>
 
           <form method="GET" className="w-full">
@@ -212,7 +212,7 @@ function FindCoupleBanner({firstName, setFirstName, lastName, setLastName}) {
             className="max-w-[315px] mb-4"
           />
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-            enter either person's first and last name
+          enter couple's first and fiance's first name
           </p>
           <form method="GET" className="w-full">
             <div className="flex gap-8 mb-4">

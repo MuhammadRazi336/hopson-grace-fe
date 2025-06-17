@@ -200,6 +200,7 @@ const FundPage = ({data}) => {
       {data.map((fund) => (
         <FundCard
           key={fund.productId || Math.random()}
+          image={fund.cashFund.image?.fileUrl}
           title={fund.cashFund?.name || 'No Fund Name'}
           totalAmount={typeof fund.amount === 'number' ? fund.amount : 0}
           collectedAmount={typeof fund.collectedAmount === 'number' ? fund.collectedAmount : 0}

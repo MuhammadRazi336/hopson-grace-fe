@@ -2,19 +2,18 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import {useState} from 'react';
-import {useFetcher, useLoaderData, Link} from '@remix-run/react';
-import {defer, redirect} from '@shopify/remix-oxygen';
+import {useFetcher, useLoaderData} from '@remix-run/react';
+import {defer, json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
-import AddGift from './dashboard.giftdetail';
 
 export async function loader({request, context}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const user = await requireAuth(context);
   const registry = context?.session?.get('@Registry');
-
+  console.log(registry, 'REGISTRY');
 
   return defer({products, collections, user, registry});
 }
@@ -24,14 +23,14 @@ export async function action({request, context}) {
   const {payload} = body;
   try {
     const response = await context.ClientPost(
-      payload,
+      JSON.parse(payload),
       'registryProducts',
       context,
     );
-    return defer({response});
+    return json({success: true, response});
   } catch (e) {
     console.log(e, 'ERROR');
-    return defer({e});
+    return json({success: false, error: e.message}, {status: 400});
   }
 }
 
@@ -63,97 +62,205 @@ async function loadCollectionData({context}) {
 }
 
 export default function AddGifts() {
-  const options = [
-    {label: 'Wedding Registry', value: 'wedding'},
-    {label: 'Baby Registry', value: 'baby'},
-    {label: 'Birthday Registry', value: 'birthday'},
-  ];
-  const [selected, setSelected] = useState({
-    label: 'Wedding Registry',
-    value: 'wedding',
-  });
+  const [availability, setAvailability] = useState('');
+  const [priceSort, setPriceSort] = useState('');
+  const [dateSort, setDateSort] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
 
-  const handleTileClick = (title) => {
-    alert(`You clicked on ${title}`);
-  };
   const {products, collections, registry} = useLoaderData();
   const fetcher = useFetcher();
-  const handleAddtoRegistry = ({id, price, quantity}) => {
-    const payload = {
-      productId: id,
-      amount: price,
-      registryId: Number(registry[0].id),
-      productTypeId: 1,
-      quantity,
-    };
-    fetcher.submit(
-      {payload}, // Send data as key-value pairs
-      {
-        method: 'post',
-        encType: 'application/json',
-      },
-    );
+
+  const handleAddtoRegistry = (product) => {
+    try {
+      // Check if registry exists and has an id
+      if (!registry || !registry.id) {
+        setAlertMessage('Registry not found. Please try again.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+
+      const firstVariant = product?.variants?.edges?.[0]?.node;
+      if (!firstVariant) {
+        setAlertMessage('Product variant not found.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+
+      const payload = {
+        productId: Number(extractShopifyId(product.id)),
+        amount: Number(firstVariant.priceV2.amount),
+        registryId: Number(registry.id),
+        productTypeId: 1,
+        quantity: 1,
+      };
+
+      console.log('Sending payload:', payload); // Add this for debugging
+
+      fetcher.submit(
+        {payload: JSON.stringify(payload)},
+        {
+          method: 'post',
+          encType: 'application/json',
+        },
+      );
+
+      // Show success alert
+      setAlertMessage(`${product.title} has been added to your registry!`);
+      setAlertType('success');
+      setShowAlert(true);
+
+      // Hide alert after 3 seconds
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    } catch (error) {
+      console.error('Error adding to registry:', error);
+      setAlertMessage('Failed to add to registry. Please try again.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    }
   };
+
+  // Filter the products based on selected filters
+  const filteredProducts = products.filter((productWrapper) => {
+    const product = productWrapper.node;
+    const firstVariant = product?.variants?.edges?.[0]?.node;
+
+    if (!firstVariant) return false;
+
+    if (availability) {
+      const isAvailable = firstVariant.availableForSale;
+      if (availability === 'in-stock' && !isAvailable) return false;
+      if (availability === 'out-of-stock' && isAvailable) return false;
+    }
+
+    return true;
+  }).sort((a, b) => {
+    const priceA = Number(a.node.variants.edges[0].node.priceV2.amount);
+    const priceB = Number(b.node.variants.edges[0].node.priceV2.amount);
+    const createdAtA = new Date(a.node.createdAt).getTime();
+    const createdAtB = new Date(b.node.createdAt).getTime();
+
+    if (priceSort === 'low-to-high') return priceA - priceB;
+    if (priceSort === 'high-to-low') return priceB - priceA;
+    if (dateSort === 'newest') return createdAtB - createdAtA;
+    if (dateSort === 'oldest') return createdAtA - createdAtB;
+
+    return 0;
+  });
+
   return (
     <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
-      <div className={'flex flex-row gap-4'}>
-        <div className={'flex-1'}>
-          <CustomSelect
-            options={options}
-            selected={selected}
-            setSelected={setSelected}
-          />
+      {/* Alert Component */}
+      {showAlert && (
+        <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
+          <div className="flex items-center">
+            {alertType === 'success' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+            {alertType === 'error' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            )}
+            <span>{alertMessage}</span>
+          </div>
         </div>
-        <div className={'flex-1'}>
-          <CustomSelect
-            options={options}
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </div>
-        <div className={'flex-1'}>
-          <CustomSelect
-            options={options}
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </div>
-        <div className={'flex-1'}>
-          <ButtonComponent className={'flex-1 w-full'} text={'Apply Filter'} />
+      )}
+
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold">Filter Registry Items</h3>
+        <div className="flex gap-4 mt-4">
+          {/* <select
+            className="border border-gray-300 rounded-lg px-4 py-2"
+            onChange={(e) => setAvailability(e.target.value)}
+            value={availability}
+          >
+            <option value="">Availability</option>
+            <option value="in-stock">In Stock</option>
+            <option value="out-of-stock">Out of Stock</option>
+          </select> */}
+          <select
+            className="border border-gray-300 rounded-lg px-4 py-2"
+            onChange={(e) => setPriceSort(e.target.value)}
+            value={priceSort}
+          >
+            <option value="">Price</option>
+            <option value="low-to-high">Low to High</option>
+            <option value="high-to-low">High to Low</option>
+          </select>
+          <select
+            className="border border-gray-300 rounded-lg px-4 py-2"
+            onChange={(e) => setDateSort(e.target.value)}
+            value={dateSort}
+          >
+            <option value="">Sort by Date</option>
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-      {products.map((productWrapper, index) => {
-  const product = productWrapper.node;
+        {filteredProducts.map((productWrapper, index) => {
+          const product = productWrapper.node;
+          const firstImage = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
+          const firstVariant = product?.variants?.edges?.[0]?.node;
 
-  const firstImage = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg'; // provide fallback image
-  const firstVariant = product?.variants?.edges?.[0]?.node;
+          if (!firstVariant) return null;
 
-  if (!firstVariant) return null; // skip products without variants
-
-  return (
-    <Link key={index} to={`/dashboard/addgifts/${product.handle}`}>
-      <RegistryProduct
-        image={firstImage}
-        productName={product.title}
-        price={firstVariant.priceV2.amount}
-        description={product.description}
-        onAddToRegistry={(quantity, isGroupGift) =>
-          handleAddtoRegistry({
-            id: Number(extractShopifyId(product.id)),
-            price: firstVariant.priceV2.amount,
-            quantity,
-          })
-        }
-        onGroupGiftTagChange={(isGroupGift) =>
-          console.log(`Group Gift tag changed: ${isGroupGift}`)
-        }
-      />
-    </Link>
-  );
-})}
+          return (
+            <div key={index} className="cursor-pointer">
+              <RegistryProduct
+                image={firstImage}
+                productName={product.title}
+                price={firstVariant.priceV2.amount}
+                description={product.description}
+                onAddToRegistry={() => handleAddtoRegistry(product)}
+                onGroupGiftTagChange={(isGroupGift) =>
+                  console.log(`Group Gift tag changed: ${isGroupGift}`)
+                }
+              />
+            </div>
+          );
+        })}
       </div>
+
       <div className="pt-6 font-sans">
         {/* Heading */}
         <h2 className="text-2xl font-semibold mb-6">
@@ -206,6 +313,18 @@ export default function AddGifts() {
           </button>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: translateY(-20px); }
+          10% { opacity: 1; transform: translateY(0); }
+          90% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(-20px); }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 3s ease-in-out;
+        }
+      `}</style>
     </div>
   );
 }
@@ -219,6 +338,7 @@ const PRODUCT_QUERY = `#graphql
           description
           id
           title
+          createdAt
           images(first: 10) {
             edges {
               node {
@@ -231,6 +351,7 @@ const PRODUCT_QUERY = `#graphql
             edges {
               node {
                 id
+                availableForSale
                 priceV2 {
                   amount
                   currencyCode
@@ -253,3 +374,16 @@ node {
     }
   }
 `;
+
+// Export metadata for Remix
+export const meta = () => {
+  return [
+    { title: "Add Gifts to Registry" },
+    { name: "description", content: "Add gifts to your registry" },
+  ];
+};
+
+// Export handle for Remix
+export const handle = {
+  hydrate: true,
+};

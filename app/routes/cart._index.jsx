@@ -6,11 +6,10 @@ import ButtonComponent from '~/components/Button';
 export async function loader({context, params}) {
   const cartItems = context?.session?.get('cart') || '[]';
   const cart = JSON.parse(cartItems);
-  const tax = 10;
-  const total = cart.reduce((sum, item) => sum + Number(item.price), 0) + tax;
+  const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
 
   return json(
-    {cartItems, tax, total},
+    {cartItems, total},
     {headers: {'Set-Cookie': await context.session.commit()}},
   );
 }
@@ -32,10 +31,11 @@ export async function action({request, context}) {
 }
 
 const Cart = () => {
-  const {cartItems, tax, total} = useLoaderData();
+  const {cartItems, total} = useLoaderData();
   const [items, setItems] = useState(JSON.parse(cartItems));
   const fetcher = useFetcher();
 
+  console.log(items);
 
   useEffect(() => {
     if (fetcher.data?.success) {
@@ -79,7 +79,9 @@ const Cart = () => {
                     className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 bg-gray-300 rounded-md"></div>
+                      <div className="w-20 h-20 bg-gray-300 rounded-md">
+                        <img src={item.cashFund?.image || item.image} alt={item.cashFund?.name || item.title} className="w-full h-full object-cover rounded-md" />
+                      </div>
                       <div>
                         <h4 className="font-semibold text-sm">{item.title || item.cashFund?.name}</h4>
                         <button
@@ -102,10 +104,6 @@ const Cart = () => {
               </div>
 
               <div className="bg-white rounded-lg shadow-md p-4 space-y-2">
-                <div className="flex justify-between">
-                  <p className="text-gray-600">Tax</p>
-                  <p className="font-semibold">{tax}</p>
-                </div>
                 <div className="flex justify-between">
                   <p className="text-gray-600">TOTAL</p>
                   <p className="font-semibold text-lg">{total}</p>

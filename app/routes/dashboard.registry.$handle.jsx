@@ -7,14 +7,16 @@ import {
 } from '@remix-run/react';
 import {useEffect, useState, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
-import ImageUpload from '~/components/ImageUpload';
 
 export async function loader({request, context, params}) {
   if (!params.handle || params.handle === '[object Object]') {
     return {data: {}};
   }
   const res = await context.ClientGet(`events/${params.handle}`, context);
-  return {data: res?.data || {}};
+  const user = context.session.get('@User')
+  const userData = await context.ClientGet(`users/${user.user.id}`, context);
+
+  return {data: res?.data || {}, userData: userData?.data || {}};
 }
 export async function action({request, context}) {
   const contentType = request.headers.get('content-type') || '';
@@ -77,12 +79,12 @@ export async function action({request, context}) {
 }
 
 export default function Index() {
-  const {data} = useLoaderData();
+  const {data, userData} = useLoaderData();
   const submit = useSubmit();
   const [eventState, setEventState] = useState(() => {
     // Initialize state with data from the loader
     const initialState = {
-      coupleName: data.coupleName || '',
+      coupleName: `${userData.user.firstName} & ${userData.user.fianceFirstName}` || '',
       hashtag: data.hashtags || [],
       weddingDate: data.eventDate || '',
       weddingTime: data.weddingTime || '',
@@ -111,7 +113,7 @@ export default function Index() {
   // Track if a new image file is selected
   const [newImageFile, setNewImageFile] = useState(null);
 
-  // Handle image change
+  // Handle image change (accepts a file directly)
   const handleImageChange = (imgFile) => {
     if (!imgFile) return;
     setNewImageFile(imgFile);
@@ -171,7 +173,7 @@ export default function Index() {
       });
 
       // Use fetch to your backend API endpoint
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${eventState.id}`, {
+      const response = await fetch(`http://localhost:3040/api/events/${eventState.id}`, {
         method: 'PUT',
         body: formData,
       });
@@ -184,7 +186,7 @@ export default function Index() {
       }
     } else {
       // No new image, send as JSON
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${eventState.id}`, {
+      const response = await fetch(`http://localhost:3040/api/events/${eventState.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -205,11 +207,23 @@ export default function Index() {
         <form onSubmit={handleSubmit}>
           <div className="flex gap-8">
             <div className="flex-1">
-              <div className="bg-gray-200 min-h-64 h-auto flex items-center justify-center rounded-lg">
-                <ImageUpload
-                  onImageChange={handleImageChange}
-                  initialImage={eventState.image}
+              <div className="border rounded-md p-4 flex flex-col items-center">
+                <div className="w-full h-48 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
+                  {newImageFile ? (
+                    <img src={URL.createObjectURL(newImageFile)} alt="Preview" className="max-h-48 object-contain" />
+                  ) : eventState.image?.fileUrl ? (
+                    <img src={eventState.image.fileUrl} alt="Current" className="max-h-48 object-contain" />
+                  ) : (
+                    <span className="text-gray-500">Upload New Photo (Max 5MB)</span>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="mt-4"
+                  onChange={e => handleImageChange(e.target.files[0])}
                 />
+                <p className="text-sm text-gray-500 mt-2">Supported formats: JPG, PNG, GIF (Max 5MB)</p>
               </div>
             </div>
             <div className="flex-1">
