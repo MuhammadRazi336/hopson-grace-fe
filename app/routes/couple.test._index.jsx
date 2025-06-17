@@ -2,6 +2,7 @@ import {useCallback, useState} from 'react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link} from '@remix-run/react';
 import SideCart from '~/components/SideCart';
+import CoupleFooter from '~/components/CoupleFooter';
 
 export default function CoupleProfileView() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -427,6 +428,9 @@ export default function CoupleProfileView() {
         />
       )}
       <SideCart open={sideCartOpen} onClose={onClose} />
+
+
+      <CoupleFooter />
     </>
   );
 }
