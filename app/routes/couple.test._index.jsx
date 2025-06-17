@@ -1,8 +1,7 @@
 import {useCallback, useState} from 'react';
-// import { X, ChevronUp, ChevronDown } from 'lucide-react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link} from '@remix-run/react';
-// import {Header} from '~/components/Header';
+import {CoupleFooter} from '~/components/CoupleFooter';
 
 export default function CoupleProfileView() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -363,6 +362,7 @@ export default function CoupleProfileView() {
           </div>
         </div>
       )}
+      <CoupleFooter />
     </>
   );
 }
