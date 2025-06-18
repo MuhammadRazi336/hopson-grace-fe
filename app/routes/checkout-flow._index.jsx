@@ -35,7 +35,7 @@ export default function CheckoutFlow() {
             immediately upon completion of your order.
           </p>
 
-          <div className="relative max-w-4xl mx-auto">
+          <div className="relative max-w-4xl mx-auto ">
             <img
               src="/assets/Images/checkout-bg.png"
               alt="checkout-flow"
@@ -95,16 +95,20 @@ export default function CheckoutFlow() {
 
 const PreviewForm = () => {
   return (
-    <div className="relative max-w-4xl mx-auto">
-      <h3 className="text-center text-3xl font-bold prata">jo & jon</h3>
+    <div className="relative max-w-4xl mx-auto max-h-[290px] overflow-y-hidden">
+      <h3 className="text-center text-3xl sm:text-2xl font-bold prata">
+        jo & jon
+      </h3>
 
-      <p className="text-center prata leading-relaxed text-xl mt-10">
+      <p className="text-center prata leading-relaxed text-xl sm:text-lg mt-10">
         We cannot wait to celebrate you as you embark on this most exciting next
         chapter of your lives together. We love you always and are here for you
         everyday along the way.
       </p>
-      <p className="text-center prata text-xl mt-6">All our love,</p>
-      <p className="text-center prata text-xl mt-2">Aunty Jess & Uncle Paul</p>
+      <p className="text-center prata text-xl sm:text-lg mt-6">All our love,</p>
+      <p className="text-center prata text-xl sm:text-lg mt-2">
+        Aunty Jess & Uncle Paul
+      </p>
     </div>
   );
 };
@@ -122,7 +126,7 @@ const MessageForm = () => {
           <textarea
             placeholder="Your Message here...*"
             maxLength={500}
-            className="w-full xl:h-40 h-[70px] border italic border-gray-300 prata text-sm sm:text-lg md:text-xl text-center outline-none p-1 sm:p-3 bg-[#FAF9F6] resize-none focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="w-full xl:h-40 md:h-32 h-[70px] border italic border-gray-300 prata text-sm sm:text-lg md:text-xl text-center outline-none p-1 sm:p-3 bg-[#FAF9F6] resize-none focus:outline-none focus:ring-2 focus:ring-gray-200"
           />
           <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 text-left">
             500/500 characters remaining
