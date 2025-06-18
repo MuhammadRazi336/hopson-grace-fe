@@ -13,7 +13,7 @@ export async function loader({request, context, params}) {
     return {data: {}};
   }
   const res = await context.ClientGet(`events/${params.handle}`, context);
-  const user = context.session.get('@User')
+  const user = context.session.get('@User');
   const userData = await context.ClientGet(`users/${user.user.id}`, context);
 
   return {data: res?.data || {}, userData: userData?.data || {}};
@@ -32,7 +32,9 @@ export async function action({request, context}) {
         try {
           body.hashtags = JSON.parse(value);
         } catch {
-          body.hashtags = String(value).split(',').map((tag) => tag.trim());
+          body.hashtags = String(value)
+            .split(',')
+            .map((tag) => tag.trim());
         }
       } else if (!isNaN(Number(value)) && value !== '') {
         body[key] = Number(value);
@@ -84,7 +86,8 @@ export default function Index() {
   const [eventState, setEventState] = useState(() => {
     // Initialize state with data from the loader
     const initialState = {
-      coupleName: `${userData.user.firstName} & ${userData.user.fianceFirstName}` || '',
+      coupleName:
+        `${userData.user.firstName} & ${userData.user.fianceFirstName}` || '',
       hashtag: data.hashtags || [],
       weddingDate: data.eventDate || '',
       weddingTime: data.weddingTime || '',
@@ -140,7 +143,9 @@ export default function Index() {
       try {
         hashtagsValue = JSON.parse(hashtagsValue);
       } catch {
-        hashtagsValue = String(hashtagsValue).split(',').map((tag) => tag.trim());
+        hashtagsValue = String(hashtagsValue)
+          .split(',')
+          .map((tag) => tag.trim());
       }
     }
     const payload = {
@@ -173,10 +178,13 @@ export default function Index() {
       });
 
       // Use fetch to your backend API endpoint
-      const response = await fetch(`http://localhost:3040/api/events/${eventState.id}`, {
-        method: 'PUT',
-        body: formData,
-      });
+      const response = await fetch(
+        `https://dev-hopsongrace.codup.io/api/events/${eventState.id}`,
+        {
+          method: 'PUT',
+          body: formData,
+        },
+      );
 
       if (response.ok) {
         window.location.href = '/dashboard/registry';
@@ -186,11 +194,14 @@ export default function Index() {
       }
     } else {
       // No new image, send as JSON
-      const response = await fetch(`http://localhost:3040/api/events/${eventState.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `https://dev-hopsongrace.codup.io/api/events/${eventState.id}`,
+        {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        },
+      );
 
       if (response.ok) {
         window.location.href = '/dashboard/registry';
@@ -210,20 +221,32 @@ export default function Index() {
               <div className="border rounded-md p-4 flex flex-col items-center">
                 <div className="w-full h-48 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
                   {newImageFile ? (
-                    <img src={URL.createObjectURL(newImageFile)} alt="Preview" className="max-h-48 object-contain" />
+                    <img
+                      src={URL.createObjectURL(newImageFile)}
+                      alt="Preview"
+                      className="max-h-48 object-contain"
+                    />
                   ) : eventState.image?.fileUrl ? (
-                    <img src={eventState.image.fileUrl} alt="Current" className="max-h-48 object-contain" />
+                    <img
+                      src={eventState.image.fileUrl}
+                      alt="Current"
+                      className="max-h-48 object-contain"
+                    />
                   ) : (
-                    <span className="text-gray-500">Upload New Photo (Max 5MB)</span>
+                    <span className="text-gray-500">
+                      Upload New Photo (Max 5MB)
+                    </span>
                   )}
                 </div>
                 <input
                   type="file"
                   accept="image/*"
                   className="mt-4"
-                  onChange={e => handleImageChange(e.target.files[0])}
+                  onChange={(e) => handleImageChange(e.target.files[0])}
                 />
-                <p className="text-sm text-gray-500 mt-2">Supported formats: JPG, PNG, GIF (Max 5MB)</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Supported formats: JPG, PNG, GIF (Max 5MB)
+                </p>
               </div>
             </div>
             <div className="flex-1">
