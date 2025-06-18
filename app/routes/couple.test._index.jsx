@@ -105,20 +105,20 @@ export default function CoupleProfileView() {
           alt="Couple"
           className="w-full h-auto"
         />
-        <div className="flex justify-center items-end -mb-10 -translate-y-[200px]">
-          <div className="w-4/12">
-            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto">
+        <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
+          <div className="xl:w-4/12 w-full">
+            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
               joanna & jonathan
             </h1>
           </div>
-          <div className="w-4/12">
+          <div className="xl:w-4/12 w-full">
             <img
               src="/assets/Images/couple-picture.png"
               alt="Couple"
-              className="rounded-full w-full h-full mx-auto"
+              className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto"
             />
           </div>
-          <div className="w-4/12">
+          <div className="xl:w-4/12 w-full">
             <div className="mr-16">
               <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
                 05.20.2027
@@ -136,7 +136,7 @@ export default function CoupleProfileView() {
             </div>
           </div>
         </div>
-        <h2 className="md:text-[42px] font-normal ivyora">
+        <h2 className="md:text-[42px] xl:mt-0 mt-16 font-normal ivyora">
           we are looking <span className="font-italic">SO FORWARD</span> to
           celebrating with you
         </h2>
@@ -147,7 +147,6 @@ export default function CoupleProfileView() {
           deserunt ut deserunt quaerat.
         </p>
       </div>
-
       <div className="container mx-auto bg-[#FAF9F6] py-10 px-6">
         <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
           our registry selections
@@ -231,8 +230,8 @@ export default function CoupleProfileView() {
           ))}
         </div>
       </div>
-      <div className="container pt-12  mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
-        <div className="py-10 px-6 md:py-12 md:px-[6rem] lg:px-[8rem] bg-[#446184] relative flex items-center justify-center flex-col lg:w-[65%] w-1/2 max-[768px]:p-10 lg:mt-20 mt-6">
+      <div className="container pt-12 md:flex-nowrap flex-wrap mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
+        <div className="py-10 px-6 md:py-12 md:px-[6rem] lg:px-[8rem] bg-[#446184] relative flex items-center justify-center flex-col  lg:w-[65%] w-full max-[768px]:p-10 lg:mt-20 mt-6">
           <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
             gift any amount
           </h3>
@@ -271,7 +270,7 @@ export default function CoupleProfileView() {
             </div>
           </div>
         </div>
-        <div className="lg:w-[35%] w-1/2  ">
+        <div className="lg:w-[35%] w-full  ">
           {' '}
           <img
             src="/assets/Images/gift.png"
@@ -280,6 +279,7 @@ export default function CoupleProfileView() {
           />
         </div>
       </div>
+      
       {isPopupOpen && selectedGiftData && (
         <div
           className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
@@ -416,7 +416,6 @@ export default function CoupleProfileView() {
           </div>
         </div>
       )}
-
       {sideCartOpen && (
         <div
           className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
@@ -424,7 +423,6 @@ export default function CoupleProfileView() {
         />
       )}
       <SideCart open={sideCartOpen} onClose={onClose} />
-
       <CoupleFooter />
     </>
   );
@@ -436,7 +434,7 @@ export function CoupleProfileViewHeader({onCartClick}) {
       <img
         src="/assets/Images/couple-header-logo.png"
         alt="Hamburger"
-        className="w-[150px] -mb-6 h-auto -ml-10"
+        className="w-[150px] xl:-mb-6 mb-0 h-auto -ml-10"
       />
 
       <span className="my-0 cursor-pointer" onClick={onCartClick}>
