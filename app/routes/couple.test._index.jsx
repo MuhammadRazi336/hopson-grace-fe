@@ -279,7 +279,7 @@ export default function CoupleProfileView() {
           />
         </div>
       </div>
-      
+
       {isPopupOpen && selectedGiftData && (
         <div
           className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
@@ -298,7 +298,7 @@ export default function CoupleProfileView() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
               {/* Product Image Section */}
-              <div className="relative py-8 pl-8">
+              <div className="relative py-8 pl-8 md:pr-0 pr-8">
                 <img
                   src={selectedGiftData.image || '/placeholder.svg'}
                   alt={selectedGiftData.name}
@@ -430,21 +430,19 @@ export default function CoupleProfileView() {
 
 export function CoupleProfileViewHeader({onCartClick}) {
   return (
-    <div className="container mx-auto flex justify-between items-start pt-6 absolute top-0 left-0 right-0">
+    <div className="container mx-auto flex justify-between md:items-start items-center md:pt-6 pt-2 absolute top-0 left-0 right-0">
       <img
         src="/assets/Images/couple-header-logo.png"
         alt="Hamburger"
-        className="w-[150px] xl:-mb-6 mb-0 h-auto -ml-10"
+        className="md:w-[150px] w-[100px] xl:-mb-6 mb-0 h-auto md:-ml-10 -ml-2"
       />
 
       <span className="my-0 cursor-pointer" onClick={onCartClick}>
-        <Link to="/cart">
-          <img
-            src="/assets/Images/cart-icon.png"
-            alt="cart"
-            className="w-7 h-7"
-          />
-        </Link>
+        <img
+          src="/assets/Images/cart-icon.png"
+          alt="cart"
+          className="w-7 h-7"
+        />
       </span>
     </div>
   );
