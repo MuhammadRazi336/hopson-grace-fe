@@ -5,6 +5,9 @@ import {useState} from 'react';
 import {useFetcher, useLoaderData} from '@remix-run/react';
 import RegistryChecklist from '~/components/RegistryChecklist';
 import {json, redirect} from '@shopify/remix-oxygen';
+import FooterBottom from '~/components/FooterBottom';
+import NotificationCard from '~/components/NotificationCard';
+import RegistryStatusCard from '~/components/RegistryStatusCard';
 
 export async function loader(args) {
   const {context, request} = args;
@@ -127,9 +130,10 @@ const index = () => {
     );
   };
   return (
+    <>
     <div>
-      <div className="flex gap-8">
-        <div className="flex flex-col gap-4 flex-2">
+      <div className="flex gap-8 w-full">
+        <div className="flex flex-col gap-4 flex-1">
           <div>
             <CustomSelect
               label="Registry Collection:"
@@ -168,52 +172,19 @@ const index = () => {
           </div>
           <RegistryChecklist registry={registry} />
         </div>
-        <div className="flex flex-col gap-4 flex-2">
+        <div className="flex flex-col gap-4 flex-shrink-0">
           <div>
-            <h1 className="text-xl font-bold mb-2">Notifications</h1>
-            <div className=" p-4 rounded-md flex">
-              <div className="flex-1 border rounded-md p-4 mr-4 bg-gray-300">
-                {/* Empty card */}
-              </div>
-              <div className="flex-1 flex flex-col justify-center">
-                <h2 className="text-lg font-normal my-5">
-                  Want to see how your registry appears to your guests?
-                </h2>
-                <p className="mt-2 text-center my-5">Preview as a guest</p>
-                <ButtonComponent
-                  className="mt-5 w-1/1.3"
-                  text="Preview Registry"
-                />
-              </div>
-            </div>
+            <NotificationCard/>
           </div>
           <div>
             <div>
-              <h1 className="text-xl font-bold mb-2">Your Registry Advisor</h1>
-              <div className=" p-4 rounded-md flex">
-                <div className="flex-1 border rounded-md p-4 mr-4 bg-gray-300">
-                  {/* Empty card */}
-                </div>
-                <div className="flex-1 flex flex-col justify-center">
-                  <h2 className="text-lg font-semibold">Jocelyn Robinson</h2>
-                  <h3 className="font-normal">
-                    jocelyn@registry.com | 403-123-4567
-                  </h3>
-                  <p className="mt-5 mb-3">
-                    Hi! I'm your registry advisor. I'm here to help you through
-                    the process.
-                  </p>
-                  <ButtonComponent
-                    className="mt-5 w-1/1.3"
-                    text="Contact Your Advisor"
-                  />
-                </div>
-              </div>
+              <RegistryStatusCard/>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 };
 
