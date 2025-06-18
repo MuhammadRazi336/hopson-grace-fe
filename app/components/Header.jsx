@@ -61,7 +61,7 @@ export function Header() {
       <header
         className={`flex justify-between px-4 lg:px-[74px] max-[1024px]:flex-row-reverse max-[1024px]:items-center max-[1024px]:py-4 ${
           isFixed
-            ? 'fixed top-0 left-0 w-full z-20 bg-black py-4 pt-6 transition-all'
+            ? 'fixed top-0 left-0 w-full z-50 bg-black py-4 pt-6 transition-all'
             : 'relative bg-white pt-4 lg:pt-11'
         }`}
       >
