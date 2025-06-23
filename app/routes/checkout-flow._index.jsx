@@ -5,7 +5,7 @@ import {useState} from 'react';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import ImageAndText from '~/components/ImageAndText';
-
+import CheckoutSteps from '~/components/CheckoutSteps';
 export default function CheckoutFlow() {
   const [showPreview, setShowPreview] = useState(false);
 
@@ -21,30 +21,9 @@ export default function CheckoutFlow() {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto mt-[80px]">
-        <div className="flex items-center justify-around">
-          <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
-              Add your messsage
-            </p>
-          </div>
-          <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
-              Billing & Payment
-            </p>
-          </div>
-          <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center">
-              Order Confirmation
-            </p>
-          </div>
-        </div>
-      </div>
+      <CheckoutSteps />
 
-      <div className="mx-20 py-[100px]">
+      <div className="xl:mx-20 py-[100px] mx-6">
         <div className="container mx-auto bg-[#446184]  py-16">
           <h2 className="md:text-[36px] font-normal text-center text-white ivyora">
             enclose your <span className="font-italic">PERSONAL MESSAGE</span>{' '}
@@ -56,7 +35,7 @@ export default function CheckoutFlow() {
             immediately upon completion of your order.
           </p>
 
-          <div className="relative max-w-4xl mx-auto">
+          <div className="relative max-w-4xl mx-auto ">
             <img
               src="/assets/Images/checkout-bg.png"
               alt="checkout-flow"
@@ -65,16 +44,14 @@ export default function CheckoutFlow() {
             <div className="absolute top-0 left-0 w-full h-full">
               <div className="flex items-center justify-start h-full flex-row">
                 <div
-                  className={`w-9/12 pl-16  ${
-                    !showPreview ? 'pt-16' : 'pt-10'
+                  className={`w-9/12 xl:pl-16 pl-8  ${
+                    !showPreview ? 'xl:pt-16 pt-8 ' : 'pt-10'
                   }`}
                 >
-                  {/* Couples Name and Message Inputs */}
-
                   <img
                     src="/assets/Images/greeting-flower-checkout.png"
                     alt="checkout-bg-1"
-                    className="w-auto h-auto mx-auto mb-8"
+                    className="w-[15%] xl:w-auto h-auto mx-auto xl:mb-8 mb-1"
                   />
 
                   {!showPreview ? <MessageForm /> : <PreviewForm />}
@@ -105,7 +82,7 @@ export default function CheckoutFlow() {
           imgBanner={teaImg}
           lineimg={lineImg3}
           title="questions? "
-          description="We’ve got answers."
+          description="We've got answers."
           buttontext={'PHONE, EMAIL OR LIVE CHAT'}
           buttontype={'Color'}
         />
@@ -118,16 +95,20 @@ export default function CheckoutFlow() {
 
 const PreviewForm = () => {
   return (
-    <div className="relative max-w-4xl mx-auto">
-      <h3 className="text-center text-3xl font-bold prata">jo & jon</h3>
+    <div className="relative max-w-4xl mx-auto max-h-[290px] overflow-y-hidden">
+      <h3 className="text-center text-3xl sm:text-2xl font-bold prata">
+        jo & jon
+      </h3>
 
-      <p className="text-center prata leading-relaxed text-xl mt-10">
+      <p className="text-center prata leading-relaxed text-xl sm:text-lg mt-10">
         We cannot wait to celebrate you as you embark on this most exciting next
         chapter of your lives together. We love you always and are here for you
         everyday along the way.
       </p>
-      <p className="text-center prata text-xl mt-6">All our love,</p>
-      <p className="text-center prata text-xl mt-2">Aunty Jess & Uncle Paul</p>
+      <p className="text-center prata text-xl sm:text-lg mt-6">All our love,</p>
+      <p className="text-center prata text-xl sm:text-lg mt-2">
+        Aunty Jess & Uncle Paul
+      </p>
     </div>
   );
 };
@@ -138,17 +119,16 @@ const MessageForm = () => {
       <input
         type="text"
         placeholder="Couples Name*"
-        className=" w-full prata text-center text-2xl mx-auto mb-4 border border-gray-300 rounded p-2 bg-[#FAF9F6] focus:outline-none focus:ring-2 focus:ring-gray-200"
+        className="w-full prata text-sm sm:text-xl md:text-2xl text-center mx-auto mb-2 sm:mb-4 border border-gray-300 rounded py-0 sm:py-2 bg-[#FAF9F6] focus:outline-none focus:ring-2 focus:ring-gray-200"
       />
       <div className="w-full flex justify-center">
-        <div className="w-full ">
+        <div className="w-full">
           <textarea
             placeholder="Your Message here...*"
             maxLength={500}
-            rows={7}
-            className="w-full border italic border-gray-300  prata text-center text-xl outline-none p-3 bg-[#FAF9F6] resize-none focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="w-full xl:h-40 md:h-32 h-[70px] border italic border-gray-300 prata text-sm sm:text-lg md:text-xl text-center outline-none p-1 sm:p-3 bg-[#FAF9F6] resize-none focus:outline-none focus:ring-2 focus:ring-gray-200"
           />
-          <div className="text-xs text-gray-400 mt-1 text-left">
+          <div className="text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 text-left">
             500/500 characters remaining
           </div>
         </div>

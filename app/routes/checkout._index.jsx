@@ -5,7 +5,7 @@ import {Footer} from '~/components/Footer';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
-
+import CheckoutSteps from '~/components/CheckoutSteps';
 const cartItems = [
   {
     name: 'Coluna Fruit Bowl',
@@ -47,28 +47,7 @@ export default function Checkout() {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto mt-[80px]">
-        <div className="flex items-center justify-around">
-          <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
-              Add your messsage
-            </p>
-          </div>
-          <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
-              Billing & Payment
-            </p>
-          </div>
-          <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center">
-              Order Confirmation
-            </p>
-          </div>
-        </div>
-      </div>
+      <CheckoutSteps />
 
       <div className="container mx-auto py-[100px]">
         <div className=" bg-[#446184]  py-16 px-16">
@@ -82,7 +61,7 @@ export default function Checkout() {
             immediately upon completion of your order.
           </p>
 
-          <div className="flex mt-[100px]">
+          <div className="flex mt-[80px]">
             <div className="w-1/2">
               <h4 className="text-xl text-white text-center ">Billing</h4>
             </div>
@@ -90,7 +69,7 @@ export default function Checkout() {
               <h4 className="text-xl text-white text-center ">Order Summary</h4>
             </div>
           </div>
-          <div className="flex items-center gap-x-4 mt-[20px]">
+          <div className="flex items-start gap-x-4 mt-[20px]">
             <div className="w-1/2">
               <div className="flex flex-col gap-y-4">
                 <div className="grid grid-cols-2 gap-x-4">
@@ -146,7 +125,7 @@ export default function Checkout() {
                 </div>
               </div>
             </div>
-            <div className="w-1/2 bg-white p-6">
+            <div className="w-1/2 bg-white p-6 mt-2">
               <div className="max-h-[440px] overflow-y-auto bg-[#FAF9F6]  px-4 py-2">
                 {cartItems.map((item, idx) => (
                   <div
