@@ -39,7 +39,11 @@ const GiftTracker = () => {
             {giftTrackingData.map((gift, index) => (
               <tr key={index} className="hover:bg-gray-50">
                 <td className="border px-4 py-2">{gift.name}</td>
-                <td className="border px-4 py-2">{gift.purchaseDate}</td>
+                <td className="border px-4 py-2">{new Date(gift.purchaseDate).toLocaleDateString('en-US', {
+                  month: 'long',
+                  day: 'numeric', 
+                  year: 'numeric'
+                })}</td>
                 <td className="border px-4 py-2">{gift.totalAmount}</td>
                 <td className="border px-4 py-2">{gift.giftFor}</td>
                 <td className="border px-4 py-2">
