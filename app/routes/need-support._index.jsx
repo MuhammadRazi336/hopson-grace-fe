@@ -8,7 +8,7 @@ export default function CheckoutFlow() {
       <CoupleProfileViewHeader />
       <div className=" p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          <span className="prata uppercase">SHIP</span> my gifts
+          need <span className="prata uppercase">support</span>
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"

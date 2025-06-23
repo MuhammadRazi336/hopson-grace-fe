@@ -5,7 +5,6 @@ import {useState} from 'react';
 import teaImg from '/assets/Images/reading-image.png';
 import NotificationCard from '~/components/NotificationCard';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
-// import giftIcon from '/assets/Images/gift-icon.png';
 
 export default function DashboardHome() {
   const orders = [

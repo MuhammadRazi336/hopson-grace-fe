@@ -51,7 +51,10 @@ const Faqs = () => {
   ];
 
   return (
-    <div className="max-w-[1560px] px-4 mx-auto flex items-center flex-col">
+    <div
+      className="max-w-[1560px] px-4 mx-auto flex items-center flex-col"
+      id="faq-section"
+    >
       <h2 className="prata text-center text-3xl lg:text-5xl font-normal mb-0">
         Frequently Asked Questions
       </h2>
@@ -115,7 +118,18 @@ const Faqs = () => {
       </div>
 
       <div className="more-less mt-[45px]">
-        <button className="flex items-center flex-col" onClick={toggleFaqs}>
+        <button
+          className="flex items-center flex-col"
+          onClick={() => {
+            toggleFaqs();
+            if (isExpanded) {
+              const faqSection = document.getElementById('faq-section');
+              if (faqSection) {
+                faqSection.scrollIntoView({behavior: 'smooth'});
+              }
+            }
+          }}
+        >
           <span>{isExpanded ? 'Less' : 'More'}</span>
           <img
             src={moreImg}
