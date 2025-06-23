@@ -61,7 +61,7 @@ export default function Checkout() {
             immediately upon completion of your order.
           </p>
 
-          <div className="flex mt-[100px]">
+          <div className="flex mt-[80px]">
             <div className="w-1/2">
               <h4 className="text-xl text-white text-center ">Billing</h4>
             </div>
@@ -69,7 +69,7 @@ export default function Checkout() {
               <h4 className="text-xl text-white text-center ">Order Summary</h4>
             </div>
           </div>
-          <div className="flex items-center gap-x-4 mt-[20px]">
+          <div className="flex items-start gap-x-4 mt-[20px]">
             <div className="w-1/2">
               <div className="flex flex-col gap-y-4">
                 <div className="grid grid-cols-2 gap-x-4">
@@ -125,7 +125,7 @@ export default function Checkout() {
                 </div>
               </div>
             </div>
-            <div className="w-1/2 bg-white p-6">
+            <div className="w-1/2 bg-white p-6 mt-2">
               <div className="max-h-[440px] overflow-y-auto bg-[#FAF9F6]  px-4 py-2">
                 {cartItems.map((item, idx) => (
                   <div
