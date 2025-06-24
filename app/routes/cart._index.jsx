@@ -15,19 +15,86 @@ export async function loader({context, params}) {
 }
 
 export async function action({request, context}) {
-  const formData = await request.formData();
-  const itemId = formData.get('itemId');
+  try {
+    const formData = await request.formData();
+    const itemId = formData.get('itemId');
+    const productData = formData.get('productData');
 
-  let cart = JSON.parse(context?.session?.get('cart') || '[]');
+    // Get current cart
+    let cart = [];
+    try {
+      cart = JSON.parse(context?.session?.get('cart') || '[]');
+      if (!Array.isArray(cart)) cart = [];
+    } catch (e) {
+      console.error('Error parsing cart:', e);
+      cart = [];
+    }
 
-  cart = cart.filter((item) => item.id !== Number(itemId));
+    // Handle delete action
+    if (itemId && !productData) {
+      console.log('Deleting item:', itemId);
+      cart = cart.filter(item => item.id !== Number(itemId));
+      context.session.set('cart', JSON.stringify(cart));
+      
+      return json(
+        { success: true, message: 'Item removed from cart' },
+        { headers: { 'Set-Cookie': await context.session.commit() } }
+      );
+    }
 
-  context.session.set('cart', JSON.stringify(cart));
+    // Handle add to cart action
+    if (productData) {
+      const product = JSON.parse(productData);
+      const amount = parseFloat(formData.get('amount') || product.amount || 0);
+      const productTypeId = product.productTypeId || 1;
 
-  return json(
-    {success: true},
-    {headers: {'Set-Cookie': await context.session.commit()}},
-  );
+      // Check for duplicates
+      const itemToAddId = productTypeId === 2 ? product.cashFund?.id : product.id;
+      const isDuplicate = cart.some(item => item.id === Number(itemToAddId));
+
+      if (isDuplicate) {
+        return json({ 
+          success: false, 
+          error: 'This item is already in your cart' 
+        });
+      }
+
+      // Add new item
+      const newItem = {
+        id: Number(itemToAddId),
+        title: product.title || product.cashFund?.name || 'Product',
+        price: productTypeId === 2 ? amount : Number(product.amount || 0),
+        image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '',
+        productTypeId: productTypeId,
+        registryId: product.registryId,
+        quantity: 1
+      };
+
+      cart.push(newItem);
+      context.session.set('cart', JSON.stringify(cart));
+
+      return json(
+        {
+          success: true,
+          message: `${newItem.title} added to cart`,
+          cartItems: JSON.stringify(cart)
+        },
+        { headers: { 'Set-Cookie': await context.session.commit() } }
+      );
+    }
+
+    return json({ 
+      success: false, 
+      error: 'Invalid request' 
+    });
+
+  } catch (error) {
+    console.error('Error in cart action:', error);
+    return json({ 
+      success: false, 
+      error: 'Failed to process cart action' 
+    });
+  }
 }
 
 const Cart = () => {
