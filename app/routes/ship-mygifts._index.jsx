@@ -24,15 +24,15 @@ export default function CheckoutFlow() {
 
       <div className="mb-16"></div>
       <section className="container mx-auto mb-10">
-        <div className="flex lg:gap-8 gap-2 items-stretch">
-          <div className="lg:w-[40%] w-1/2">
+        <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-stretch">
+          <div className="lg:w-[40%] w-full">
             <img
               src="/assets/Images/ship-my-gifts.png"
               alt="Image Banner"
               className="max-[1024px]:h-full object-cover object-[80%]"
             />
           </div>
-          <div className="bg-[#446184] -bottom-10 -left-16 py-16 relative flex items-center justify-center flex-col lg:w-[60%] w-1/2 max-[768px]:p-10">
+          <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[60%] w-full max-[768px]:p-10">
             <div className="flex flex-col items-center justify-center">
               <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center">
                 READY TO SHIP?

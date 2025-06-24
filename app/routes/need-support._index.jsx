@@ -24,18 +24,18 @@ export default function CheckoutFlow() {
 
       <div className="mb-16"></div>
       <section className="container mx-auto mb-10">
-        <div className="flex lg:gap-8 gap-2 items-stretch">
-          <div className="lg:w-[40%] w-1/2">
+        <div className="flex lg:gap-8 gap-2 flex-wrap xl:flex-nowrap items-stretch">
+          <div className="lg:w-[40%] w-full">
             <img
-              src="/assets/Images/ship-my-gifts.png"
+              src="/assets/Images/need-support-img.png"
               alt="Image Banner"
               className="max-[1024px]:h-full object-cover object-[80%]"
             />
           </div>
-          <div className="bg-[#446184] -bottom-10 -left-16 py-16 relative flex items-center justify-center flex-col lg:w-[60%] w-1/2 max-[768px]:p-10">
+          <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[60%] w-full max-[768px]:p-10">
             <div className="flex flex-col items-center justify-center">
-              <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center">
-                READY TO SHIP?
+              <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full  text-center">
+                QUESTIONS, PRODUCT REQUESTS, OR ISSUES?
               </h3>
               <img
                 src="/assets/Images/white-bdr.png"
@@ -43,18 +43,16 @@ export default function CheckoutFlow() {
                 className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%]"
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                ​ One free shipment of all your gifts is included. If you’d like
-                any gifts in the meantime, ​standard shipping rates apply.
+                Email us anytime at{' '}
+                <a href="mailto:support@theregistry.ca" className="text-white">
+                  {' '}
+                  support@theregistry.ca{' '}
+                </a>{' '}
+                <br /> We respond within one business day.
               </p>
-              <div>
-                <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm  hover:bg-gray-100">
-                  FULFILL MY REGISTRY & SHIP MY GIFTS
-                </button>
-              </div>
-            </div>
-            <div className="mt-14 flex flex-col items-center justify-center">
-              <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center">
-                WANT TO DECIDE IN PERSON?
+
+              <h3 className="text-2xl mt-10 text-white lg:text-5xl 2xl:text-xl 3xl:w-full  text-center">
+                PREFER A PHONE CALL?
               </h3>
               <img
                 src="/assets/Images/white-bdr.png"
@@ -62,12 +60,26 @@ export default function CheckoutFlow() {
                 className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%] mx-auto"
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                Book a virtual call or showroom appointment ​ to see your gifts
-                live before making you final decisions.
+                We’re available at 1-800-555-5555 <br />
+                10am–6pm (Mon–Sat) | 12pm–5pm (Sun).
+              </p>
+            </div>
+            <div className="mt-14 flex flex-col items-center justify-center">
+              <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center">
+                CHAT WITH US
+              </h3>
+              <img
+                src="/assets/Images/white-bdr.png"
+                alt="lineimg"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%] mx-auto"
+              />
+              <p className="text-sm lg:text-xl  ] mt-4 mb-4 text-center text-white">
+                Chat with us live between 10am–6pm (Mon–Sat) or 12pm–5pm (Sun).
+                <br /> Offline? Leave a message—we’ll reply by email.
               </p>
               <div>
                 <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
-                  BOOK AN APPOINTMENT
+                  START LIVE CHAT
                 </button>
               </div>
             </div>
@@ -83,15 +95,12 @@ export default function CheckoutFlow() {
           className="max-[1024px]:h-full object-cover object-[80%]"
         />
         <h3 className="text-xl text-center mt-10">
-          DIDN’T GET EVERYTHING ON YOUR LIST?
+          NEED A REFRESHER ON SETTING UP YOUR DASHBOARD?
         </h3>
-        <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center ">
-          Take advantage of our 15% discount, a one-time opportunity to complete
-          your registry.
-        </p>
+
         <div>
           <button className="border mb-20 font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
-            KEEP SHOPPING
+            SEE OUR QUICK-START GUIDE
           </button>
         </div>
       </div>
