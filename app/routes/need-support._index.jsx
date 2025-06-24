@@ -1,8 +1,9 @@
 import {Header} from '~/components/Header';
 import {CoupleProfileViewHeader} from '~/routes/couple.test._index';
 import {Footer} from '~/components/Footer';
+import WhiteThemeButton from '~/components/WhiteThemeButton';
 
-export default function CheckoutFlow() {
+export default function NeedSupport() {
   return (
     <div className="pt-[80px]">
       <CoupleProfileViewHeader />
@@ -98,11 +99,7 @@ export default function CheckoutFlow() {
           NEED A REFRESHER ON SETTING UP YOUR DASHBOARD?
         </h3>
 
-        <div>
-          <button className="border mb-20 font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
-            SEE OUR QUICK-START GUIDE
-          </button>
-        </div>
+        <WhiteThemeButton Text="SEE OUR QUICK-START GUIDE" link="/quick-start-guide" />
       </div>
 
       <Footer />

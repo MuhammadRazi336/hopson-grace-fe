@@ -2,7 +2,7 @@ import {Header} from '~/components/Header';
 import {CoupleProfileViewHeader} from '~/routes/couple.test._index';
 import {Footer} from '~/components/Footer';
 
-export default function CheckoutFlow() {
+export default function ShipMyGifts() {
   return (
     <div className="pt-[80px]">
       <CoupleProfileViewHeader />
