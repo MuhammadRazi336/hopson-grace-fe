@@ -271,7 +271,6 @@ export default function CoupleProfileView() {
           </div>
         </div>
         <div className="lg:w-[35%] w-full  ">
-          {' '}
           <img
             src="/assets/Images/gift.png"
             alt="Image Banner"

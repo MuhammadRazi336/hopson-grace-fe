@@ -207,11 +207,11 @@ function CoupleListing({data}) {
           {console.log(data)}
           {data.map((couple) => (
             <div className="flex justify-center items-center flex-col gap-y-4 pb-4">
-              <img
+              {/* <img
                 src={couple.event.image.fileUrl ? couple.event.image.fileUrl : `/assets/Images/couple-logo.png`}
                 alt="Couple"
                 className="w-32 h-32 mx-auto mt-12 rounded-full object-cover"
-              />
+              /> */}
 
               <h3 className="text-center prata uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto">
                 {couple.firstName + ' & ' + couple.fianceFirstName}

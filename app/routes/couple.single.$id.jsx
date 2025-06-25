@@ -1,10 +1,10 @@
 import {defer, json, useFetcher, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import CoupleProductCard from '~/components/CoupleProductCard';
-import { useState, useRef, useEffect } from 'react';
-import { CoupleProfileViewHeader } from './couple.test._index';
+import {useState, useRef, useEffect} from 'react';
+import {CoupleProfileViewHeader} from './couple.test._index';
 import SideCart from '~/components/SideCart';
-import { CoupleFooter } from '~/components/CoupleFooter';
+import {CoupleFooter} from '~/components/CoupleFooter';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -23,12 +23,15 @@ query {
   }
 }`;
 
-export async function loader({ params, context }) {
+export async function loader({params, context}) {
   const coupleId = params.id;
 
-  const response = await context.ClientGet(`registries/by-userId/${coupleId}`, context);
+  const response = await context.ClientGet(
+    `registries/by-userId/${coupleId}`,
+    context,
+  );
   const registryId = response.data[0]?.id;
-  if (!response.data) throw new Response('Not Found', { status: 404 });
+  if (!response.data) throw new Response('Not Found', {status: 404});
 
   const [res, cashRes, shopifyCollections] = await Promise.all([
     context.ClientGet(`registryProducts/${registryId}?type=gift`, context),
@@ -37,20 +40,25 @@ export async function loader({ params, context }) {
   ]);
 
   const ids = res?.data?.map(
-    (product) => `gid://shopify/Product/${product.productId}`
+    (product) => `gid://shopify/Product/${product.productId}`,
   );
   const products = await fetchProducts(context.storefront, ids);
-  
+
   let mergedArray = [];
   if (res?.data?.length) {
     mergedArray = res.data.map((item1) => {
       const product = products?.nodes?.find(
-        (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`
+        (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
       );
-      let status = item1.isPurchased ? 'purchased' : item1.productTypeId === 2 ? 'cashFund' : 'addToCart';
+      let status = item1.isPurchased
+        ? 'purchased'
+        : item1.productTypeId === 2
+        ? 'cashFund'
+        : 'addToCart';
       return {
         status,
-        isCashFund: item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
+        isCashFund:
+          item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
         availableForSale: product?.availableForSale ?? true,
         ...item1,
         ...(product || {}),
@@ -81,7 +89,10 @@ export async function loader({ params, context }) {
   }
 
   // Calculate cart total
-  const cartTotal = cartItems.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + Number(item.price) * (item.quantity || 1),
+    0,
+  );
 
   return defer({
     data: [...mergedArray, ...cashFundProducts],
@@ -91,8 +102,8 @@ export async function loader({ params, context }) {
     collections: shopifyCollections.collections.nodes,
     cart: {
       items: cartItems,
-      total: cartTotal
-    }
+      total: cartTotal,
+    },
   });
 }
 
@@ -103,15 +114,18 @@ export async function action({request, context}) {
     const itemId = formData.get('itemId');
     const productData = formData.get('productData');
 
-    console.log('Action received:', { clearCart, itemId, productData });
+    console.log('Action received:', {clearCart, itemId, productData});
 
     // Ensure we have access to session
     if (!context.session) {
       console.error('Session not available');
-      return json({ 
-        success: false, 
-        error: 'Session not available' 
-      }, { status: 500 });
+      return json(
+        {
+          success: false,
+          error: 'Session not available',
+        },
+        {status: 500},
+      );
     }
 
     // Get the current cart
@@ -123,33 +137,35 @@ export async function action({request, context}) {
       context.session.set('cart', '[]');
       console.log('Clearing cart');
       return json(
-        { success: true, action: 'clear' },
+        {success: true, action: 'clear'},
         {
           headers: {
-            'Set-Cookie': await context.session.commit()
-          }
-        }
+            'Set-Cookie': await context.session.commit(),
+          },
+        },
       );
     }
 
     if (itemId && !productData) {
       console.log('Removing item from cart:', itemId);
-      const updatedCart = cartItems.filter(item => item.id !== Number(itemId));
+      const updatedCart = cartItems.filter(
+        (item) => item.id !== Number(itemId),
+      );
       context.session.set('cart', JSON.stringify(updatedCart));
       console.log('Updated cart after removal:', updatedCart);
       return json(
-        { success: true, action: 'remove', itemId },
+        {success: true, action: 'remove', itemId},
         {
           headers: {
-            'Set-Cookie': await context.session.commit()
-          }
-        }
+            'Set-Cookie': await context.session.commit(),
+          },
+        },
       );
     }
 
     if (!productData) {
       console.error('No product data provided');
-      return json({ success: false, error: 'Product data is required' });
+      return json({success: false, error: 'Product data is required'});
     }
 
     const product = JSON.parse(productData);
@@ -167,42 +183,53 @@ export async function action({request, context}) {
 
     let addItemId;
     if (productTypeId === 2) {
-      addItemId = product.cashFund?.id || product.productId || product.cashFundId || product.id;
+      addItemId =
+        product.cashFund?.id ||
+        product.productId ||
+        product.cashFundId ||
+        product.id;
       if (!addItemId || isNaN(Number(addItemId))) {
         console.error('Cash fund contribution missing ID:', product);
-        return json({ success: false, error: 'Cash fund contribution missing ID' });
+        return json({
+          success: false,
+          error: 'Cash fund contribution missing ID',
+        });
       }
       addItemId = Number(addItemId);
     } else {
       addItemId = getNumericId(product.id);
     }
 
-    console.log('Processed item ID:', { addItemId, originalId: product.id });
+    console.log('Processed item ID:', {addItemId, originalId: product.id});
 
     if (!addItemId) {
       console.error('Invalid product ID:', product.id);
-      return json({ success: false, error: 'Invalid product ID' });
+      return json({success: false, error: 'Invalid product ID'});
     }
 
     // Check for duplicates before adding to cart
-    const isDuplicate = cartItems.some(item => {
-      const duplicateCheck = productTypeId === 2 
-        ? item.originalId === product.id 
-        : item.id === addItemId;
-      console.log('Duplicate check:', { 
-        itemInCart: item, 
-        newItem: { id: addItemId, originalId: product.id },
-        isDuplicate: duplicateCheck 
+    const isDuplicate = cartItems.some((item) => {
+      const duplicateCheck =
+        productTypeId === 2
+          ? item.originalId === product.id
+          : item.id === addItemId;
+      console.log('Duplicate check:', {
+        itemInCart: item,
+        newItem: {id: addItemId, originalId: product.id},
+        isDuplicate: duplicateCheck,
       });
       return duplicateCheck;
     });
 
     if (isDuplicate) {
       console.log('Duplicate item detected');
-      return json({
-        success: false,
-        error: 'This item is already in your cart'
-      }, { status: 400 });
+      return json(
+        {
+          success: false,
+          error: 'This item is already in your cart',
+        },
+        {status: 400},
+      );
     }
 
     // Create cart item
@@ -210,12 +237,15 @@ export async function action({request, context}) {
       id: addItemId,
       title: product.title || product.cashFund?.name || 'Product',
       price: productTypeId === 2 ? amount : Number(product.amount || 0),
-      image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '',
+      image:
+        product.images?.edges?.[0]?.node?.url ||
+        product.cashFund?.image?.fileUrl ||
+        '',
       productTypeId: productTypeId,
       registryId: Number(product.registryId || response?.data[0]?.id),
       quantity: 1,
       originalId: product.id,
-      isCashFund: productTypeId === 2 ? true : false
+      isCashFund: productTypeId === 2 ? true : false,
     };
 
     console.log('New cart item:', cartItem);
@@ -230,21 +260,23 @@ export async function action({request, context}) {
         success: true,
         action: 'add',
         item: cartItem,
-        message: `${cartItem.title} added to cart`
+        message: `${cartItem.title} added to cart`,
       },
       {
         headers: {
-          'Set-Cookie': await context.session.commit()
-        }
-      }
+          'Set-Cookie': await context.session.commit(),
+        },
+      },
     );
-
   } catch (error) {
     console.error('Error in action:', error);
-    return json({ 
-      success: false, 
-      error: error.message || 'Failed to add item to cart' 
-    }, { status: 500 });
+    return json(
+      {
+        success: false,
+        error: error.message || 'Failed to add item to cart',
+      },
+      {status: 500},
+    );
   }
 }
 
@@ -262,7 +294,8 @@ async function hashCartId(cartId) {
 }
 
 export default function CoupleProfile() {
-  const { data, cashfundData, response, registryId, collections, cart } = useLoaderData() || [];
+  const {data, cashfundData, response, registryId, collections, cart} =
+    useLoaderData() || [];
   const fetcher = useFetcher();
 
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -297,29 +330,23 @@ export default function CoupleProfile() {
     // Ensure registryId is included
     const productWithRegistry = {
       ...product,
-      registryId: registryId
+      registryId: registryId,
     };
 
     fetcher.submit(
       {
-        productData: JSON.stringify(productWithRegistry)
+        productData: JSON.stringify(productWithRegistry),
       },
-      { method: 'post' }
+      {method: 'post'},
     );
   };
 
   const handleRemoveFromCart = (itemId) => {
-    fetcher.submit(
-      { itemId },
-      { method: 'post' }
-    );
+    fetcher.submit({itemId}, {method: 'post'});
   };
 
   const handleClearCart = () => {
-    fetcher.submit(
-      { clearCart: 'true' },
-      { method: 'post' }
-    );
+    fetcher.submit({clearCart: 'true'}, {method: 'post'});
   };
 
   const handleContribute = (productId, amount) => {
@@ -330,65 +357,93 @@ export default function CoupleProfile() {
     const productWithRegistry = {
       ...product,
       registryId: registryId,
-      amount: amount
+      amount: amount,
     };
 
     fetcher.submit(
       {
-        productData: JSON.stringify(productWithRegistry)
+        productData: JSON.stringify(productWithRegistry),
       },
-      { method: 'post' }
+      {method: 'post'},
     );
   };
 
   // Filter products
   const filteredData = data
-  .filter((product) => {
-    if (selectedCategory) {
-      const collectionTitles = product.collections?.nodes?.map((c) => c.title) || [];
-      if (!collectionTitles.includes(selectedCategory)) return false;
-    }
+    .filter((product) => {
+      if (selectedCategory) {
+        const collectionTitles =
+          product.collections?.nodes?.map((c) => c.title) || [];
+        if (!collectionTitles.includes(selectedCategory)) return false;
+      }
 
-    if (availability) {
-      if (product.isCashFund) {
-        return availability === 'in-stock';
+      if (availability) {
+        if (product.isCashFund) {
+          return availability === 'in-stock';
+        }
+        const isAvailable = product.availableForSale ?? true;
+        const isPurchased = product.status === 'purchased';
+        if (availability === 'in-stock') {
+          return isAvailable && !isPurchased;
+        }
+        if (availability === 'out-of-stock') {
+          return !isAvailable || isPurchased;
+        }
       }
-      const isAvailable = product.availableForSale ?? true;
-      const isPurchased = product.status === 'purchased';
-      if (availability === 'in-stock') {
-        return isAvailable && !isPurchased;
+      return true;
+    })
+    .sort((a, b) => {
+      if (priceSort === 'low-to-high') {
+        return (a.amount ?? 0) - (b.amount ?? 0);
       }
-      if (availability === 'out-of-stock') {
-        return !isAvailable || isPurchased;
+      if (priceSort === 'high-to-low') {
+        return (b.amount ?? 0) - (a.amount ?? 0);
       }
-    }
-    return true; 
-  })
-  .sort((a, b) => {
-    if (priceSort === 'low-to-high') {
-      return (a.amount ?? 0) - (b.amount ?? 0);
-    }
-    if (priceSort === 'high-to-low') {
-      return (b.amount ?? 0) - (a.amount ?? 0);
-    }
-    return 0;
-  });
+      return 0;
+    });
 
   // Calculate cart totals
-  const cartTotal = cart.items.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+  const cartTotal = cart.items.reduce(
+    (sum, item) => sum + Number(item.price) * (item.quantity || 1),
+    0,
+  );
 
   const childCollections = collections.filter(
-    (collection) => collection.metafield?.value === "true"
+    (collection) => collection.metafield?.value === 'true',
   );
   return (
     <>
       {showAlert && (
-        <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
+        <div
+          className={`fixed top-4 right-4 ${
+            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+        >
           <div className="flex items-center">
             {alertType === 'success' ? (
-              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
             ) : (
-              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
             )}
             <span>{alertMessage}</span>
           </div>
@@ -404,24 +459,24 @@ export default function CoupleProfile() {
         <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
           <div className="xl:w-4/12 w-full">
             <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
-            {response?.data[0]?.events[0]?.coupleName}
+              {response?.data[0]?.events[0]?.coupleName}
             </h1>
           </div>
           <div className="xl:w-4/12 w-full">
-              {response?.data[0]?.events[0]?.image?.fileUrl ? (
-                <img
-                  src={response.data[0].events[0].image.fileUrl}
-                  alt="Couple's Image"
-                    className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto"
-                />
-              ) : (
-                <span className="text-gray-500">No Image Available</span>
-              )}
+            {response?.data[0]?.events[0]?.image?.fileUrl ? (
+              <img
+                src={response.data[0].events[0].image.fileUrl}
+                alt="Couple's Image"
+                className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto"
+              />
+            ) : (
+              <span className="text-gray-500">No Image Available</span>
+            )}
           </div>
           <div className="xl:w-4/12 w-full">
             <div className="mr-16">
               <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
-              {response?.data[0]?.events[0]?.eventDate}
+                {response?.data[0]?.events[0]?.eventDate}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
@@ -429,9 +484,16 @@ export default function CoupleProfile() {
                 className="max-w-[370px] h-auto ml-auto"
               />
               <div className="text-right ">
-                <p className="text-lg my-1 uppercase">{response?.data[0]?.events[0]?.location}</p>
-                <p className="text-lg my-1 uppercase">{response?.data[0]?.events[0]?.city}, {response?.data[0]?.events[0]?.province}</p>
-                <p className="text-lg my-1 uppercase">{response?.data[0]?.events[0]?.weddingTime}</p>
+                <p className="text-lg my-1 uppercase">
+                  {response?.data[0]?.events[0]?.location}
+                </p>
+                <p className="text-lg my-1 uppercase">
+                  {response?.data[0]?.events[0]?.city},{' '}
+                  {response?.data[0]?.events[0]?.province}
+                </p>
+                <p className="text-lg my-1 uppercase">
+                  {response?.data[0]?.events[0]?.weddingTime}
+                </p>
               </div>
             </div>
           </div>
@@ -439,13 +501,12 @@ export default function CoupleProfile() {
         <h2 className="md:text-[42px] xl:mt-0 mt-16 font-normal ivyora">
           we are looking <span className="font-italic">SO FORWARD</span> to
           celebrating with you
-          </h2>
+        </h2>
 
         <p className="max-w-2xl mx-auto my-5 leading-relaxed">
-            {response?.data[0]?.events[0]?.welcomeMessage}
-          </p>
-        </div>
-
+          {response?.data[0]?.events[0]?.welcomeMessage}
+        </p>
+      </div>
 
       <div className="container mx-auto bg-[#FAF9F6] py-10 px-6">
         <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
@@ -459,38 +520,63 @@ export default function CoupleProfile() {
 
         <div className="filters">
           <div className="filter-item flex gap-x-12 mt-12 justify-center">
-            <div className="relative" onClick={() => {
-              const nextCategory = selectedCategory === '' ? (childCollections[0]?.title || '') : 
-                selectedCategory === childCollections[childCollections.length - 1]?.title ? '' :
-                childCollections[childCollections.findIndex(c => c.title === selectedCategory) + 1]?.title || '';
-              setSelectedCategory(nextCategory);
-            }}>
+            <div
+              className="relative"
+              onClick={() => {
+                const nextCategory =
+                  selectedCategory === ''
+                    ? childCollections[0]?.title || ''
+                    : selectedCategory ===
+                      childCollections[childCollections.length - 1]?.title
+                    ? ''
+                    : childCollections[
+                        childCollections.findIndex(
+                          (c) => c.title === selectedCategory,
+                        ) + 1
+                      ]?.title || '';
+                setSelectedCategory(nextCategory);
+              }}
+            >
               <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
                 <strong>Categories</strong> {selectedCategory || 'All'}
               </h3>
             </div>
 
-            <div className="relative" onClick={() => {
-              const options = ['', 'low-to-high', 'high-to-low'];
-              const currentIndex = options.indexOf(priceSort);
-              const nextIndex = (currentIndex + 1) % options.length;
-              setPriceSort(options[nextIndex]);
-            }}>
+            <div
+              className="relative"
+              onClick={() => {
+                const options = ['', 'low-to-high', 'high-to-low'];
+                const currentIndex = options.indexOf(priceSort);
+                const nextIndex = (currentIndex + 1) % options.length;
+                setPriceSort(options[nextIndex]);
+              }}
+            >
               <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                <strong>price</strong> {priceSort === 'low-to-high' ? 'low to high' : 
-                                     priceSort === 'high-to-low' ? 'high to low' : 'All'}
+                <strong>price</strong>{' '}
+                {priceSort === 'low-to-high'
+                  ? 'low to high'
+                  : priceSort === 'high-to-low'
+                  ? 'high to low'
+                  : 'All'}
               </h3>
             </div>
 
-            <div className="relative" onClick={() => {
-              const options = ['', 'in-stock', 'out-of-stock'];
-              const currentIndex = options.indexOf(availability);
-              const nextIndex = (currentIndex + 1) % options.length;
-              setAvailability(options[nextIndex]);
-            }}>
+            <div
+              className="relative"
+              onClick={() => {
+                const options = ['', 'in-stock', 'out-of-stock'];
+                const currentIndex = options.indexOf(availability);
+                const nextIndex = (currentIndex + 1) % options.length;
+                setAvailability(options[nextIndex]);
+              }}
+            >
               <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                <strong>status</strong> {availability === 'in-stock' ? 'Available' :
-                                      availability === 'out-of-stock' ? 'Purchased' : 'All'}
+                <strong>status</strong>{' '}
+                {availability === 'in-stock'
+                  ? 'Available'
+                  : availability === 'out-of-stock'
+                  ? 'Purchased'
+                  : 'All'}
               </h3>
             </div>
           </div>
@@ -498,21 +584,25 @@ export default function CoupleProfile() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
           {filteredData.map((product, index) => (
-              <CoupleProductCard
-                key={product.id}
-            name={product.title || product.cashFund?.name || ''}
-            image={product.images?.edges[0]?.node?.url || product.cashFund?.image?.fileUrl || ''}
-                price={product.amount}
-            description={product.description || product.cashFund?.note || ''}
-                isGroupGift={product.isGroupPayment}
-                isCashFund={product.isCashFund}
-                status={product.status}
-                contributedAmount={Number(product.collectedAmount) || 0}
-                maxContribution={Number(product.amount) || 0}
-                onAddToCart={() => handleAddToCart(product.id)}
-                onContribute={(amount) => handleContribute(product.id, amount)}
-              />
-            ))}
+            <CoupleProductCard
+              key={product.id}
+              name={product.title || product.cashFund?.name || ''}
+              image={
+                product.images?.edges[0]?.node?.url ||
+                product.cashFund?.image?.fileUrl ||
+                ''
+              }
+              price={product.amount}
+              description={product.description || product.cashFund?.note || ''}
+              isGroupGift={product.isGroupPayment}
+              isCashFund={product.isCashFund}
+              status={product.status}
+              contributedAmount={Number(product.collectedAmount) || 0}
+              maxContribution={Number(product.amount) || 0}
+              onAddToCart={() => handleAddToCart(product.id)}
+              onContribute={(amount) => handleContribute(product.id, amount)}
+            />
+          ))}
         </div>
       </div>
       <div className="container pt-12 md:flex-nowrap flex-wrap mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
@@ -565,16 +655,14 @@ export default function CoupleProfile() {
         </div>
       </div>
 
-
-
       {sideCartOpen && (
         <div
-        className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
+          className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
           onClick={onClose}
         />
       )}
-      <SideCart 
-        open={sideCartOpen} 
+      <SideCart
+        open={sideCartOpen}
         onClose={onClose}
         cartItems={cart.items}
         total={cart.total}
@@ -582,7 +670,6 @@ export default function CoupleProfile() {
         onCartChange={handleRemoveFromCart}
         onClearCart={handleClearCart}
       />
-
 
       {/* {isPopupOpen && selectedGiftData && (
         <div
@@ -715,7 +802,6 @@ export default function CoupleProfile() {
     </div>
       )} */}
 
-
       <CoupleFooter />
     </>
   );
@@ -731,13 +817,13 @@ export default function CoupleProfile() {
 //       />
 
 //       <span className="my-0 cursor-pointer" onClick={onCartClick}>
-        
+
 //           <img
 //             src="/assets/Images/cart-icon.png"
 //             alt="cart"
 //             className="w-7 h-7"
 //           />
-       
+
 //       </span>
 //     </div>
 //   );

@@ -92,9 +92,9 @@ const CoupleProductCard = ({
             {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
             <button
               onClick={handleButtonClick}
-              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full"
+              className="mt-auto bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white"
             >
-              Contribute to Cash Fund
+              Contribute
             </button>
           </>
         );
@@ -102,19 +102,21 @@ const CoupleProductCard = ({
         return (
           <button
             onClick={handleButtonClick}
-            className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 w-full"
+            className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
           >
             Add to Cart
           </button>
         );
       case 'purchased':
         return (
-          <button
-            className="bg-gray-400 text-white py-2 px-4 rounded cursor-not-allowed w-full"
-            disabled
-          >
-            Purchased
-          </button>
+          <>
+            <button
+              onClick={handleButtonClick}
+              className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
+            >
+              Add to Cart
+            </button>
+          </>
         );
       default:
         return null;
@@ -123,32 +125,62 @@ const CoupleProductCard = ({
 
   const progressPercentage = (contributedAmount / maxContribution) * 100;
 
+  //AWS Image URL Cleanup
+  const cleanUrl = getCleanImageUrl(image);
+
+  function getCleanImageUrl(url) {
+    const match = url.match(/^(.*\.(jpg|png|webp))/i);
+    return match ? match[1] : url;
+  }
+
   return (
-    <div className="max-w-xs border border-gray-200 rounded-lg shadow-md p-4 flex flex-col justify-between">
-      <div>
+    <div
+      className={`${
+        status === 'purchased' ? 'overlay-gifted' : ''
+      } p-4 flex flex-col justify-between`}
+    >
+      <div className="flex flex-col justify-between">
         {image ? (
-          <div className="bg-gray-200 h-40 w-full rounded mb-4 flex items-center justify-center">
-            <img src={image} alt={name} className="w-full h-full object-cover" />
+          <div
+            className={`${
+              !cleanUrl ? 'bg-gray-200 ' : ''
+            } h-[380px] w-full mb-4 flex items-center justify-center`}
+          >
+            <img
+              src={cleanUrl}
+              alt={name}
+              className="w-full h-full object-cover mb-4"
+            />
           </div>
         ) : (
-          <div className="bg-gray-200 h-40 w-full rounded mb-4 flex items-center justify-center">
+          <div className="bg-gray-200  h-[380px] w-full rounded mb-4 flex items-center justify-center">
             <div className="text-gray-500">No image</div>
           </div>
         )}
-        <h2 className="text-lg font-bold">{name}</h2>
-        <p className="text-gray-500">{price}</p>
-        {isGroupGift && (
+        <h2 className="text-lg font-semibold cursor-pointer">{name}</h2>
+        <div className="flex justify-between items-center">
+          <p className="font-semibold text-md">${price}</p>
+
+          {isCashFund && (
+            <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
+              Remaining: ${maxContribution - contributedAmount}
+            </p>
+          )}
+        </div>
+        {/* {isGroupGift && (
           <p className="text-sm text-blue-500 italic">This is a group gift</p>
         )}
         {isCashFund && (
           <p className="text-sm text-green-500 italic">This is a Cash Fund</p>
-        )}
-        {description && (
+        )} */}
+        {/* {description && (
           <div className="text-gray-600 mt-2">
             {description.length > 100 ? (
               <>
                 <p>
-                  {showFullDescription ? description : `${description.slice(0, 100)}...`}
+                  {showFullDescription
+                    ? description
+                    : `${description.slice(0, 100)}...`}
                 </p>
                 <button
                   onClick={() => setShowFullDescription(!showFullDescription)}
@@ -161,19 +193,20 @@ const CoupleProductCard = ({
               <p>{description}</p>
             )}
           </div>
-        )}
+        )} */}
         {(isGroupGift || isCashFund) && (
           <div className="mt-2">
             <p className="text-sm text-gray-500">
               Contributed: ${contributedAmount.toFixed(2)} / $
               {maxContribution.toFixed(2)}
             </p>
-            <div className="w-full bg-gray-300 rounded-full h-2 mt-1">
+
+            {/* <div className="w-full bg-gray-300 rounded-full h-2 mt-1">
               <div
                 className="bg-blue-500 h-2 rounded-full"
                 style={{width: `${progressPercentage}%`}}
               ></div>
-            </div>
+            </div> */}
           </div>
         )}
       </div>

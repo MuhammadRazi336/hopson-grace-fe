@@ -1,5 +1,4 @@
 import {Header} from '~/components/Header';
-import {CoupleProfileViewHeader} from '~/routes/couple.test._index';
 import {Footer} from '~/components/Footer';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Pagination} from 'swiper/modules';
@@ -97,9 +96,9 @@ export default function AddGiftsLanding() {
     },
   ];
   return (
-    <div className="pt-[80px]">
-      <CoupleProfileViewHeader />
-      <div className=" p-4 mt-[80px]">
+    <div className="">
+      <Header />
+      <div className="pt-[80px] p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
           <span className="prata uppercase">Add</span> or{' '}
           <span className="prata uppercase">edit gifts</span>
@@ -115,11 +114,11 @@ export default function AddGiftsLanding() {
         </p>
       </div>
 
-      <section className="container ">
+      <section className=" ">
         <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 -left-[4%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-white h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 " />
+          <div className=" ">
+            <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
+              <img src={nextitem} alt="" className="rotate-180 size-6" />
             </div>
 
             <Swiper
@@ -202,14 +201,14 @@ export default function AddGiftsLanding() {
                 </h3>
               </SwiperSlide>
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 -right-[4%] max-[1601px]:-right-[0%] cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-white max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <img src={nextitem} className="" alt="" />
+            <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
+              <img src={nextitem} className="size-6" alt="" />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="w-full px-4 max-w-[1440px] mx-auto">
+      <section className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-10">
           <SidebarFilter />
           <ProductGrid products={products} />

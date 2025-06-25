@@ -164,17 +164,19 @@ export default function CheckoutFlow() {
 const PreviewForm = () => {
   return (
     <div className="relative max-w-4xl mx-auto max-h-[290px] overflow-y-hidden">
-      <h3 className="text-center text-3xl sm:text-2xl font-bold prata">
+      <h3 className="text-center italic text-3xl sm:text-2xl font-bold prata">
         jo & jon
       </h3>
 
-      <p className="text-center prata leading-relaxed text-xl sm:text-lg xl:mt-4 md:mt-5 mt-5">
+      <p className="text-center prata italic leading-relaxed text-xl sm:text-lg xl:mt-4 md:mt-5 mt-5">
         We cannot wait to celebrate you as you embark on this most exciting next
         chapter of your lives together. We love you always and are here for you
         everyday along the way.
       </p>
-      <p className="text-center prata text-xl sm:text-lg mt-6">All our love,</p>
-      <p className="text-center prata text-xl sm:text-lg mt-2">
+      <p className="text-center prata italic text-xl sm:text-lg mt-6">
+        All our love,
+      </p>
+      <p className="text-center prata italic text-xl sm:text-lg mt-2">
         Aunty Jess & Uncle Paul
       </p>
     </div>

@@ -260,8 +260,8 @@ const Message = () => {
                       </div>
                     ) : (
                       <div className="relative max-w-4xl mx-auto">
-                        <h3 className="text-center text-3xl font-bold prata">{couplesName}</h3>
-                        <p className="text-center prata leading-relaxed text-xl mt-10">
+                        <h3 className="text-center text-3xl font-bold italic prata">{couplesName}</h3>
+                        <p className="text-center prata italic leading-relaxed text-xl mt-10">
                           {message}
                         </p>
                       </div>
