@@ -238,7 +238,7 @@ export default function AddGifts() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
         {filteredProducts.map((productWrapper, index) => {
-          const product = productWrapper.node;
+          const product = productWrapper.node
           const firstImage = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
           const firstVariant = product?.variants?.edges?.[0]?.node;
 

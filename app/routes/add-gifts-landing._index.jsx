@@ -43,7 +43,7 @@ export default function AddGiftsLanding() {
   const products = [
     {
       id: 1,
-      name: 'Marble Butter Keeper',
+      name: 'Marble ButAAAter Keeper',
       price: '$80.00',
       image: '/assets/Images/gift-prod-1.png',
     },
@@ -551,16 +551,61 @@ function SidebarFilter() {
 
 function ProductGrid({products}) {
   return (
-    <div className="w-full xl:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-0 p-4">
+    <div className="w-full xl:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
       {products.map((product) => (
-        <div key={product.id} className="text-center">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-[300px] object-cover mb-4"
-          />
-          <h3 className="text-sm font-semibold uppercase">{product.name}</h3>
-          <p className="text-sm mt-1">{product.price}</p>
+        <div
+          key={product.id}
+          className="relative group h-[460px]"
+        >
+          {/* Product Image and Info */}
+          <div className="p-4 z-10 relative">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-[300px] object-cover"
+            />
+            <h3 className="text-sm font-semibold uppercase mt-3">
+              {product.name}
+            </h3>
+            <p className="text-sm mt-1">{product.price}</p>
+          </div>
+
+          {/* Expanding Overlay */}
+          <div className="absolute inset-0 z-40 bg-[#FAF9F6] p-4 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+            <div>
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-[90%] h-[220px] mx-auto object-cover mb-2"
+              />
+              <h4 className="text-xs font-medium uppercase text-left mb-1">
+                {product.brand || 'BRAND NAME'}
+              </h4>
+              <h3 className="text-sm font-bold uppercase text-left leading-snug">
+                {product.name}
+              </h3>
+              <p className="text-sm mt-2 text-left">{product.price}</p>
+            </div>
+
+            <div className="flex items-center justify-between mt-4">
+              {/* Quantity Controls */}
+              <div className="flex flex-col items-center text-xs">
+                <span className="font-medium">QTY</span>
+                <div className="flex flex-col items-center">
+                  <button className="text-lg leading-none">▲</button>
+                  <span className="my-1">
+                    <input type="number" className="w-10 text-center border-none pr-1" value={1} />
+                  </span>
+                  <button className="text-lg leading-none">▼</button>
+                </div>
+              </div>
+
+              {/* Add to Registry Button */}
+              <button className="bg-[#446184] text-white text-xs font-bold py-4 px-8">
+                ADD TO REGISTRY
+              </button>
+            </div>
+          </div>
         </div>
       ))}
     </div>

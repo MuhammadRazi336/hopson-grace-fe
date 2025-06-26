@@ -137,7 +137,7 @@ const CoupleProductCard = ({
   return (
     <div
       className={`${
-        status === 'purchased' ? 'overlay-gifted' : ''
+        status  === 'purchased' || maxContribution - contributedAmount === 0 ? 'overlay-gifted' : ''
       } p-4 flex flex-col justify-between`}
     >
       <div className="flex flex-col justify-between">
@@ -154,7 +154,7 @@ const CoupleProductCard = ({
             />
 
             {isGroupGift && (
-              <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 z-10 flex items-center justify-center">
+              <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100  flex items-center justify-center">
                 <h2 className=" prata text-black text-sm text-center font-bold mt-1">
                   group <br /> gift
                 </h2>
