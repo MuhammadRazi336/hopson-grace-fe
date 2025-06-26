@@ -99,7 +99,7 @@ export default function CategoryLanding() {
   return (
     <div className="">
       <Header />
-      <div className="pt-[80px] relative p-4 mt-[80px]">
+      <div className=" relative p-4 mt-[40px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
           kitchen & pantry
         </h2>

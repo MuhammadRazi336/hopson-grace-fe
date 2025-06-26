@@ -1108,6 +1108,7 @@ td.rdp-day.rdp-outside {
   background-color: #FAF9F6;
   opacity: 0.8;
   top: -10px;
+  z-index: 10;
 }
 
 .overlay-gifted::after {
@@ -1122,4 +1123,5 @@ td.rdp-day.rdp-outside {
   font-family: 'prata';
   font-size: 30px;
   top: -40px;
+  z-index: 10;
 }

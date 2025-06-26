@@ -145,13 +145,21 @@ const CoupleProductCard = ({
           <div
             className={`${
               !cleanUrl ? 'bg-gray-200 ' : ''
-            } h-[380px] w-full mb-4 flex items-center justify-center`}
+            } h-[380px] w-full mb-4 flex items-center justify-center relative`}
           >
             <img
               src={cleanUrl}
               alt={name}
               className="w-full h-full object-cover mb-4"
             />
+
+            {isGroupGift && (
+              <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 z-10 flex items-center justify-center">
+                <h2 className=" prata text-black text-sm text-center font-bold mt-1">
+                  group <br /> gift
+                </h2>
+              </div>
+            )}
           </div>
         ) : (
           <div className="bg-gray-200  h-[380px] w-full rounded mb-4 flex items-center justify-center">
