@@ -22,7 +22,7 @@ import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
 import PreviewRegistry from '~/components/PreviewRegistry';
 
-export default function AddGiftsLanding() {
+export default function CategoryLanding() {
   const tabsData = [
     {
       label: 'REAL REGISTRIES',

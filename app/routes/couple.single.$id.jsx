@@ -306,6 +306,11 @@ export default function CoupleProfile() {
   const [alertType, setAlertType] = useState('success');
   const [sideCartOpen, setSideCartOpen] = useState(false);
 
+  // Add missing popup state variables
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedGiftData, setSelectedGiftData] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
   // Handle fetcher responses
   useEffect(() => {
     if (fetcher.data) {
@@ -322,6 +327,18 @@ export default function CoupleProfile() {
   }, [fetcher.data]);
 
   const onClose = () => setSideCartOpen(false);
+
+  // Add popup functions
+  const handleTitleClick = (product) => {
+    setSelectedGiftData(product);
+    setSelectedImageIndex(0); // Reset selected image for the new item
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    setSelectedGiftData(null);
+  };
 
   const handleAddToCart = (productId) => {
     const product = data.find((item) => item.id === productId);
@@ -601,6 +618,7 @@ export default function CoupleProfile() {
               maxContribution={Number(product.amount) || 0}
               onAddToCart={() => handleAddToCart(product.id)}
               onContribute={(amount) => handleContribute(product.id, amount)}
+              onTitleClick={() => handleTitleClick(product)}
             />
           ))}
         </div>
@@ -671,7 +689,7 @@ export default function CoupleProfile() {
         onClearCart={handleClearCart}
       />
 
-      {/* {isPopupOpen && selectedGiftData && (
+      {isPopupOpen && selectedGiftData && (
         <div
           className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
           onClick={closePopup}
@@ -688,32 +706,54 @@ export default function CoupleProfile() {
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
-              <div className="relative py-8 pl-8">
+              {/* Product Image Section */}
+              <div className="relative py-8 pl-8 md:pr-0 pr-8">
                 <img
-                  src={selectedGiftData.image || '/placeholder.svg'}
-                  alt={selectedGiftData.name}
+                  src={
+                    selectedGiftData.images?.edges?.[0]?.node?.url ||
+                    selectedGiftData.cashFund?.image?.fileUrl ||
+                    '/placeholder.svg'
+                  }
+                  alt={
+                    selectedGiftData.title ||
+                    selectedGiftData.cashFund?.name ||
+                    'Product'
+                  }
                   className="w-full h-auto object-cover md:rounded-l-lg"
                 />
+                {/* Simplified Thumbnail Display - shows current image as a non-interactive thumbnail */}
                 <div className="flex gap-2 mt-4 px-4 md:px-0">
                   <div
                     className={`border p-1 w-20 h-20 border-[#3d5a80] border-2`}
                   >
                     <img
-                      src={selectedGiftData.image || '/placeholder.svg'}
+                      src={
+                        selectedGiftData.images?.edges?.[0]?.node?.url ||
+                        selectedGiftData.cashFund?.image?.fileUrl ||
+                        '/placeholder.svg'
+                      }
                       alt={`Thumbnail 1`}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className={` p-1 w-20 h-20 border-[#3d5a80] border-2`}>
                     <img
-                      src={selectedGiftData.image || '/placeholder.svg'}
+                      src={
+                        selectedGiftData.images?.edges?.[0]?.node?.url ||
+                        selectedGiftData.cashFund?.image?.fileUrl ||
+                        '/placeholder.svg'
+                      }
                       alt={`Thumbnail 1`}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className={` p-1 w-20 h-20 border-[#3d5a80] border-2`}>
                     <img
-                      src={selectedGiftData.image || '/placeholder.svg'}
+                      src={
+                        selectedGiftData.images?.edges?.[0]?.node?.url ||
+                        selectedGiftData.cashFund?.image?.fileUrl ||
+                        '/placeholder.svg'
+                      }
                       alt={`Thumbnail 1`}
                       className="w-full h-full object-cover"
                     />
@@ -721,18 +761,22 @@ export default function CoupleProfile() {
                 </div>
               </div>
 
+              {/* Product Details Section */}
               <div className="p-6 md:p-8 flex flex-col">
                 <div className="uppercase text-sm tracking-wider text-gray-700 font-medium">
                   HOPSON GRACE
                 </div>
                 <h1 className="text-3xl md:text-4xl font-serif mt-2 mb-4">
-                  {selectedGiftData.name}
+                  {selectedGiftData.title ||
+                    selectedGiftData.cashFund?.name ||
+                    'Product'}
                 </h1>
                 <div className="text-xl font-medium mb-6">
-                  ${selectedGiftData.price}
+                  ${selectedGiftData.amount}
                 </div>
 
                 <div className="flex items-center gap-4 mb-6">
+                  {/* Display Requested/Still Needs */}
                   <div className="flex flex-col items-start border border-gray-300 p-2 rounded text-sm">
                     <div>
                       Requested:{' '}
@@ -752,7 +796,19 @@ export default function CoupleProfile() {
                     </div>
                   </div>
 
+                  {/* Add to Cart Button */}
                   <button
+                    onClick={() => {
+                      if (selectedGiftData.isCashFund) {
+                        // For cash funds, you might want to show a contribution input
+                        // For now, let's just close the popup
+                        closePopup();
+                      } else {
+                        // For regular products, add to cart
+                        handleAddToCart(selectedGiftData.id);
+                        closePopup();
+                      }
+                    }}
                     className={`bg-[#3d5a80] text-white py-3 px-6 uppercase text-sm tracking-wider flex-grow rounded transition-colors
                       ${
                         selectedGiftData.stillNeeds === 0 ||
@@ -775,8 +831,10 @@ export default function CoupleProfile() {
                   </button>
                 </div>
 
+                {/* Product Description */}
                 <p className="text-gray-700 mb-6 leading-relaxed text-sm">
                   {selectedGiftData.description ||
+                    selectedGiftData.cashFund?.note ||
                     "Keep your butter spreadable and fresh in this butter keeper, a French invention when refrigeration didn't exist. Marble naturally keeps butter cool, and the French naturally know their way around the kitchen. Need we say more?"}
                 </p>
 
@@ -796,11 +854,11 @@ export default function CoupleProfile() {
                   </h2>
                   <p className="text-gray-700 text-sm">H 4.25" | 4" DIA</p>
                 </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-      )} */}
+      )}
 
       <CoupleFooter />
     </>

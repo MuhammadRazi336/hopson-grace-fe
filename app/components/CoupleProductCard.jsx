@@ -12,6 +12,7 @@ const CoupleProductCard = ({
   maxContribution,
   onAddToCart,
   onContribute,
+  onTitleClick,
 }) => {
   const [contributionAmount, setContributionAmount] = useState('');
   const [error, setError] = useState('');
@@ -157,7 +158,12 @@ const CoupleProductCard = ({
             <div className="text-gray-500">No image</div>
           </div>
         )}
-        <h2 className="text-lg font-semibold cursor-pointer">{name}</h2>
+        <h2
+          className="text-lg font-semibold cursor-pointer"
+          onClick={() => onTitleClick(name)}
+        >
+          {name}
+        </h2>
         <div className="flex justify-between items-center">
           <p className="font-semibold text-md">${price}</p>
 
@@ -167,46 +173,12 @@ const CoupleProductCard = ({
             </p>
           )}
         </div>
-        {/* {isGroupGift && (
-          <p className="text-sm text-blue-500 italic">This is a group gift</p>
-        )}
-        {isCashFund && (
-          <p className="text-sm text-green-500 italic">This is a Cash Fund</p>
-        )} */}
-        {/* {description && (
-          <div className="text-gray-600 mt-2">
-            {description.length > 100 ? (
-              <>
-                <p>
-                  {showFullDescription
-                    ? description
-                    : `${description.slice(0, 100)}...`}
-                </p>
-                <button
-                  onClick={() => setShowFullDescription(!showFullDescription)}
-                  className="text-blue-500 hover:text-blue-700 text-sm mt-1"
-                >
-                  {showFullDescription ? 'Read Less' : 'Read More'}
-                </button>
-              </>
-            ) : (
-              <p>{description}</p>
-            )}
-          </div>
-        )} */}
         {(isGroupGift || isCashFund) && (
           <div className="mt-2">
             <p className="text-sm text-gray-500">
               Contributed: ${contributedAmount.toFixed(2)} / $
               {maxContribution.toFixed(2)}
             </p>
-
-            {/* <div className="w-full bg-gray-300 rounded-full h-2 mt-1">
-              <div
-                className="bg-blue-500 h-2 rounded-full"
-                style={{width: `${progressPercentage}%`}}
-              ></div>
-            </div> */}
           </div>
         )}
       </div>
