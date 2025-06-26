@@ -101,114 +101,23 @@ export default function CategoryLanding() {
       <Header />
       <div className="pt-[80px] relative p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          <span className="prata uppercase">Add</span> or{' '}
-          <span className="prata uppercase">edit gifts</span>
+          kitchen & pantry
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"
           alt="Couple"
           className="max-w-[630px] mt-5 h-auto mx-auto"
         />
-        <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
-          Browse by category, filter by price, or get inspired with our curated
-          edits. Add, update, or switch things up whenever you like.
-        </p>
 
         <PreviewRegistry />
       </div>
 
       <section className=" ">
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" ">
-            <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 size-6" />
-            </div>
-
-            <Swiper
-              spaceBetween={15}
-              slidesPerView={3.25} // Shows 3 full + a portion of 4th
-              centeredSlides={true} // Enables .5 on both sides
-              loop={true}
-              modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
-              }}
-              className="px-[178px]"
-              breakpoints={{
-                345: {
-                  slidesPerView: 1.25,
-                  spaceBetween: 10,
-                  centeredSlides: true,
-                },
-                475: {
-                  slidesPerView: 2.25,
-                  spaceBetween: 15,
-                  centeredSlides: true,
-                },
-                768: {
-                  slidesPerView: 2.25,
-                  spaceBetween: 20,
-                  centeredSlides: true,
-                },
-                1024: {
-                  slidesPerView: 2.75,
-                  spaceBetween: 30,
-                  centeredSlides: true,
-                },
-                1366: {
-                  slidesPerView: 3.25,
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-                1600: {
-                  slidesPerView: 3.5,
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-              }}
-            >
-              {/* slides here */}
-              <SwiperSlide>
-                <img src={product1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  New Arrival
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={product2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  Tableware
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img
-                  src={product3}
-                  alt="Staub Cast Iron Q4"
-                  className="w-full"
-                />
-                <h3 className="mt-2.5 text-center uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-                  glassware & bareware
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={product4} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  New arrivals
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={product1} alt="tableware" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  tableware
-                </h3>
-              </SwiperSlide>
-            </Swiper>
-            <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
-              <img src={nextitem} className="size-6" alt="" />
-            </div>
-          </div>
-        </div>
+        <img
+          src="/assets/Images/category-banner.png"
+          alt="category-landing-bg"
+          className="w-full pt-16 pb-5"
+        />
       </section>
 
       <section className="container mx-auto">
@@ -231,7 +140,7 @@ export default function CategoryLanding() {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] py-8">
+      {/* <section className="bg-[#FAF9F6] py-8">
         <Heading
           text="Ready-Made Registries"
           classes={
@@ -247,11 +156,11 @@ export default function CategoryLanding() {
             className="button-cs text-black border-3 border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
           />
         </div>
-      </section>
+      </section> */}
 
       <section className="py-[70px]  my-12 lg:my-[240px] container">
         <Heading
-          text="bestsellers"
+          text="bestsellers in kitchen & pantry"
           classes={
             'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
           }
@@ -266,6 +175,59 @@ export default function CategoryLanding() {
           />
         </div>
       </section>
+
+      <section className="bg-[#FAF9F6] py-8 container mx-auto">
+        <Heading
+          text="explore more categories"
+          classes={
+            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+          }
+          image={lineImghead}
+          imageClasses={'max-[1024px]:max-w-[330px]'}
+        />
+
+        {/* slides here */}
+        <div className="grid lg:grid-cols-3 grid-cols-2 gap-y-16 gap-x-6 mt-16 mx-10">
+          <div>
+            <img src={product1} alt="New Arrival" className="w-full" />
+            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+              New Arrival
+            </h3>
+          </div>
+          <div>
+            <img src={product2} alt="Tableware" className="w-full" />
+            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+              Tableware
+            </h3>
+          </div>
+          <div>
+            <img src={product3} alt="Staub Cast Iron Q4" className="w-full" />
+            <h3 className="mt-2.5 text-center uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+              glassware & bareware
+            </h3>
+          </div>
+          <div>
+            <img src={product4} alt="New arrivals" className="w-full" />
+            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+              New arrivals
+            </h3>
+          </div>
+          <div>
+            <img src={product1} alt="tableware" className="w-full" />
+            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+              tableware
+            </h3>
+          </div>
+          <div>
+            <img src={product2} alt="Tableware" className="w-full" />
+            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+              Tableware
+            </h3>
+          </div>
+        </div>
+      </section>
+
+      <div className="mb-10 mt-5"></div>
 
       <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
         <Heading
