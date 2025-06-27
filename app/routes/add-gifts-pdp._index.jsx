@@ -12,6 +12,8 @@ import product2 from '/assets/Images/product2.png';
 import product1 from '/assets/Images/product1.png';
 import product4 from '/assets/Images/product4.png';
 import ExploreCategories from '~/components/ExploreCategories';
+import Heading from '~/components/Heading';
+import ButtonComponent from '~/components/Button';
 
 export default function ProductSection() {
   const images = [
@@ -26,40 +28,40 @@ export default function ProductSection() {
         <Header />
         <div className="flex container flex-col lg:flex-row max-w-screen-xl mx-auto px-4 py-12 gap-8">
           {/* Images Grid */}
-          <div className="grid grid-cols-2 gap-4 flex-1">
+          <div className=" grid grid-cols-2  gap-4 flex-1">
             {images.map((image, index) => (
               <img
                 key={index}
                 src={image}
                 alt={`Product ${index + 1}`}
-                className="object-cover aspect-square "
+                className="object-cover aspect-square w-full"
               />
             ))}
           </div>
 
           {/* Product Info */}
-          <div className="flex-1 ml-4 flex flex-col pr-12">
-            <h2 className="text-sm font-medium uppercase ">Hopson Grace</h2>
-            <h1 className="text-3xl m-0 mb-3 prata font-semibold">
+          <div className="flex-1 ml-4 flex flex-col pt-10 xl:pr-12 pr-0">
+            <h2 className="text-lg font-medium uppercase ">Hopson Grace</h2>
+            <h1 className="xl:text-4xl text-3xl m-0 mb-3 prata font-normal tracking-wider">
               marble butter keeper
             </h1>
-            <p className="text-xl font-medium">$80.00</p>
+            <p className="text-3xl mt-3 mb-1 font-medium tracking-wider">$80.00</p>
 
             {/* Quantity & Buttons */}
-            <div className="flex items-center gap-4 mt-4">
-              <span className="font-medium">QTY</span>
+            <div className="flex items-center gap-4 mb-4 mt-6 xl:flex-nowrap flex-wrap">
+              <span className="font-medium text-xl">QTY</span>
               <div className="flex flex-col items-center">
                 <button className="text-lg leading-none">▲</button>
                 <span className="my-1">
                   <input
                     type="number"
-                    className="w-10 text-center border-none pr-1"
+                    className="w-12 text-4xl text-center border-none pr-1"
                     value={1}
                   />
                 </span>
                 <button className="text-lg leading-none">▼</button>
               </div>
-              <button class="bg-[#446184] text-white text-xs font-bold py-4 px-8">
+              <button class="bg-[#446184] text-white text-lg font-bold py-4 px-8">
                 ADD TO REGISTRY
               </button>
               <div className="flex items-center gap-2">
@@ -75,7 +77,7 @@ export default function ProductSection() {
             </div>
 
             {/* Description */}
-            <div className=" text-md mt-6">
+            <div className=" text-xl mt-6">
               <p>
                 Keep your butter spreadable and fresh in this butter keeper, a
                 French invention when refrigeration didn’t exist. Marble
@@ -83,38 +85,43 @@ export default function ProductSection() {
                 way around the kitchen.
               </p>
 
-              <p className="mt-4 font-semibold">How it works:</p>
-              <p className="text-md">
+              <p className="mt-4 mb-2 font-semibold">How it works:</p>
+              <p className="text-xl">
                 Fill your butter keeper with 1/4&quot; cold water to keep butter
                 soft. Change water every 3–5 days to keep butter fresh.
               </p>
 
-              <p className="mt-4 font-semibold">Details:</p>
+              <p className="mt-4 mb-2 font-semibold">Details:</p>
               <p>H 4.25&quot; | 4&quot; DIA</p>
             </div>
           </div>
         </div>
 
         <section className="bg-[#446184] text-white py-12 px-6">
-          <div className="container mx-auto flex flex-col lg:flex-row gap-10">
+          <div className="container mx-auto flex flex-col lg:flex-row gap-10 items-center">
             {/* Left Text Section */}
-            <div className="lg:w-3/12 w-full flex flex-col gap-4">
-              <p className="text-sm tracking-wide uppercase mb-2 border-b border-white w-fit pb-1">
+            <div className="lg:w-4/12 w-full flex items-center flex-col gap-2">
+              <p className="text-[22px] tracking-wider uppercase   pb-1">
                 Meet the Maker
               </p>
-              <h2 className="text-3xl font-serif mb-1">hopson grace</h2>
-              <p className="text-xs uppercase mb-4">Toronto</p>
-              <p className="text-sm leading-relaxed mb-6">
+              <img
+                src={'/assets/Images/meet-the-maker-bdr.png'}
+                alt=""
+                className="w-auto -mt-3"
+              />
+              <h5 className="text-[40px] prata  mb-1">hopson grace</h5>
+              <p className="text-xl uppercase mb-4">Toronto</p>
+              <p className="text-xl leading-[1.7] text-center mb-6">
                 Lorem ipsum dolor sit amet. Ab nesciunt officia qui labore unde
                 33 veniam reprehenderit ut impedit perspiciatis in magnam
                 accusantium est ratione dignissimos qui dolor internos. Sit
                 laboriosam rerum est minima provident eos doloremque omnis.
               </p>
-              <button className="bg-white text-[#3e5c7b] px-4 py-2 text-sm font-semibold uppercase tracking-wide">
+              <button className=" text-white border-b px-4 pt-2 pb-1 text-sm font-semibold uppercase tracking-wide">
                 View Full Profile
               </button>
             </div>
-            <section className="lg:w-9/12 w-full  container ">
+            <section className="lg:w-8/12 w-full  container ">
               <div className="relative items-start mt-[105px] mb-10 max-[1024px]:my-10 mr-8">
                 <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
                   <Swiper
@@ -226,6 +233,24 @@ export default function ProductSection() {
         <div className="py-[120px] px-12">
           <ExploreCategories />
         </div>
+
+        <section className="py-[70px]  my-12 lg:my-[240px] container">
+          <Heading
+            text="you might also like"
+            classes={
+              'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
+            }
+            image={brandline}
+            imageClasses={'max-[1024px]:max-w-[330px]'}
+          />
+          <ProductSlider />
+          <div className="text-center">
+            <ButtonComponent
+              text="browse bestsellers"
+              className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+            />
+          </div>
+        </section>
       </div>
       <Footer />
     </>
