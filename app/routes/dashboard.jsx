@@ -305,7 +305,7 @@ const Dashboard_index = () => {
           activeTab={currentStep < introSteps.length - 2 ? introSteps[currentStep].tab : null}
         />
       </div>
-      <div className="p-4">
+      <div className="">
         {showIntro ? (
           <div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative bg-white min-h-[70vh]">
             {/* Welcome and couple name */}

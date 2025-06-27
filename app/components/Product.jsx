@@ -35,7 +35,7 @@ const ProductCard = ({
         )}
         <button
           onClick={onContributorsClick}
-          className="text-blue-600 hover:underline font-semibold mt-2 inline-block"
+          className="text-black hover:underline font-semibold mt-2 inline-block"
         >
           View Contributors
         </button>

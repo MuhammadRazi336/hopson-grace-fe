@@ -10,7 +10,7 @@ const FundCard = ({
   const progress = Math.min(collectedAmount / totalAmount, 1) * 100; // Calculate progress percentage
 
   return (
-    <div className="w-75 bg-white rounded-lg shadow-md overflow-hidden m-4">
+    <div className="w-full bg-white rounded-lg shadow-md overflow-hidden m-4">
       <div className="h-60 flex items-center justify-center">
         <div className="w-full h-full">
           <img src={image} alt="Cash Fund" className="w-full h-full object-cover" />
@@ -32,7 +32,7 @@ const FundCard = ({
         </div>
 
         <button
-          className="text-sm text-black font-bold underline"
+          className="text-black hover:underline font-semibold mt-2 inline-block"
           onClick={onViewContributors}
         >
           View Contributors

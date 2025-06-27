@@ -4,10 +4,15 @@ import FundCard from '~/components/FundCard.jsx';
 import {defer} from '@remix-run/server-runtime';
 import {Link, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
+import EditImagePopup from '~/components/EditImagePopup';
+import { CoupleFooter } from '~/components/CoupleFooter';
+import { useState } from 'react';
+import NotificationCard from '~/components/NotificationCard';
+import RegistryStatusCard from '~/components/RegistryStatusCard';
 
 export async function loader({ request, context }) {
   const registry = context?.session?.get('@Registry');
-
+  const user = context?.session?.get('@User');
 
   if (!registry || !registry.events || registry.events.length === 0) {
     throw new Response('Registry or Events not found', { status: 404 });
@@ -20,6 +25,11 @@ export async function loader({ request, context }) {
 
   const eventGet = await context.ClientGet(
     `events/${eventId}`,
+    context,
+  );
+
+  const userGet = await context.ClientGet(
+    `users/${user.user.id}`,
     context,
   );
 
@@ -86,80 +96,280 @@ export async function loader({ request, context }) {
     data: mergedArray,
     cashfundData: cashRes?.data || [],
     eventGet,
+    userGet,
     registry,
   });
 }
 
+export async function action({request, context}) {
+  const contentType = request.headers.get('content-type') || '';
+  let body, file;
+
+  const {payload} = await request.json();
+
+  const response = await context.ClientPut(
+    payload,
+    `events/${payload.id}`,
+    context,
+  );
+
+  return json(response);
+}
+
 const index = () => {
-  const {data, cashfundData, eventGet, registry} = useLoaderData();
+  const {data, cashfundData, eventGet, registry, userGet} = useLoaderData();
+
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Add state for the note textarea
+  const [note, setNote] = useState(eventGet?.data?.welcomeMessage || '');
+  const maxLength = 500;
+  const handleSavePreview = async () => {
+    try {
+      const payload = {
+        id: registry.events.id,
+        welcomeMessage: note,
+      };
+      const response = await fetch(`http://localhost:3040/api/events/${payload.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (response.ok) {
+        alert('Message updated!');
+      } else {
+        alert('Failed to update message');
+      }
+    } catch (err) {
+      alert('Error updating message');
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-gray-100 border border-gray-300 rounded-lg">
-      <h1 className="text-2xl font-bold mb-4">Registry Homepage</h1>
-      <div className="flex flex-col space-x-4 md:flex-row">
-        <div className="flex-1 h-64 bg-gray-300 rounded-lg flex items-center justify-center">
-          {/* Event image preview */}
-          {(() => {
-            const imageObj = eventGet?.data?.image;
-            const imageUrl = imageObj?.fileUrl || 'https://www.dummyimage.co.uk';
-            return (
-              <img
-                src={imageUrl}
-                alt={eventGet?.data?.coupleName || 'Event'}
-                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', borderRadius: '8px' }}
-                onError={e => { e.target.onerror = null; e.target.src = 'https://www.dummyimage.co.uk'; }}
-              />
-            );
-          })()}
-        </div>
-        <div className="flex-1 mt-4 lg:mt-0">
-          <h2 className="text-xl font-semibold">
-            {eventGet?.data?.coupleName}
+    <>
+    <div className='flex justify-between mt-6'>
+      <div className='flex-1 ml-[300px]'>
+        <div className='text-center'>
+          <h2 className="mt-16 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata lg:leading-[60px] font-normal mb-4">
+            <span className="prata uppercase">My registry</span> homepage
           </h2>
-          <p className="text-gray-600">{eventGet?.data?.hashtags}</p>
-          <p className="text-gray-600 mt-2">
-            {eventGet?.data?.eventDate} {eventGet?.data?.weddingTime} |{' '}
-            {eventGet?.data?.location} <br />
-            {eventGet?.data?.province}, {eventGet?.data?.city}
+          
+          <img
+            src="/assets/Images/profile-view-page-bdr.png"
+            alt="Couple"
+            className="max-w-[630px] h-auto mx-auto"
+          />
+          <p className='text-gray-600 max-w-[630px] mx-auto mt-10 text-2xl'>
+            Your guests will land here—so have fun with it! Leave them a message and upload your photos or video, or pick from our illustrations to create something uniquely you.
           </p>
-          <h3 className="text-lg font-semibold mt-4">Welcome Message</h3>
-          <p className="text-gray-600">{eventGet?.data?.welcomeMessage}</p>
-          <div className="mt-4 flex space-x-2">
-            <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-              Share Registry
-            </button>
-            
-  <Link to={`/dashboard/registry/${registry.events.id}`}>
-    <div className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
-      Edit Registry Page
+        </div>
+      </div>
+
+      <div className="w-[300px] flex flex-col gap-y-4">
+        <div>
+          <NotificationCard />
+        </div>
+        <div>
+          <RegistryStatusCard />
+        </div>
+      </div>
     </div>
-  </Link>
+
+    <EditImagePopup
+        isOpen={isEditPopupOpen}
+        onClose={() => setIsEditPopupOpen(false)}
+      />
+      <div className="text-center pt-[80px] container mx-auto font-sans">
+        <img
+          src="/assets/Images/couple-profile-bg.png"
+          alt="Couple"
+          className="w-full h-auto"
+        />
+        {/* <div
+          className="absolute top-[87%] -translate-x-[-73%] w-full h-full "
+          onClick={() => setIsEditPopupOpen(true)}
+        >
+          <img
+            src="/assets/Images/edit-icon.png"
+            alt="Edit"
+            className="w-auto h-auto rounded-full cursor-pointer"
+          />
+        </div> */}
+
+        <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
+          <div className="xl:w-4/12 w-full">
+            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
+              {userGet?.data?.user?.firstName} & {userGet?.data?.user?.fianceFirstName}
+            </h1>
+          </div>
+          <div className="xl:w-4/12 w-full">
+            <div className="relative">
+              <img
+                src="/assets/Images/couple-placeholder.png"
+                alt="Couple"
+                className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto"
+              />
+              <div
+                className="absolute top-[85%] -translate-x-[-55%] w-[70%]"
+                onClick={() => setIsEditPopupOpen(true)}
+              >
+                <img
+                  src="/assets/Images/edit-icon.png"
+                  alt="Edit"
+                  className="w-auto h-auto rounded-full cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="xl:w-4/12 w-full">
+            <div className="mr-16">
+              <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
+                {eventGet?.data?.eventDate}
+              </p>
+              <img
+                src="/assets/Images/profile-view-page-bdr.png"
+                alt="Couple"
+                className="max-w-[370px] h-auto ml-auto"
+              />
+              <div className="uppercase text-right ">
+                <p className="text-lg my-1">{eventGet?.data?.location}</p>
+                <p className="text-lg my-1">{eventGet?.data?.province}, {eventGet?.data?.city}</p>
+                <p className="text-lg my-1">{eventGet?.data?.weddingTime}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-3xl mx-auto mb-14">
+          <div className="border-3 border-gray-300 rounded p-4">
+            <textarea
+              className="w-full h-32 resize-none outline-none border-none text-gray-700 text-base placeholder-gray-500"
+              maxLength={maxLength}
+              placeholder="Write a short note to friends and family — a warm welcome, a thank you, or why you chose these gifts. (optional)"
+              value={note}
+              onChange={e => setNote(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-sm italic text-gray-400">
+              {maxLength - note.length}/{maxLength} characters remaining
+            </span>
+            <button
+              className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
+              onClick={handleSavePreview}
+              type="button"
+            >
+              Save & Preview
+            </button>
+            <Link to={`/dashboard/registry/${registry.events.id}`}>
+            <button
+              className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
+              type="button"
+            >
+              Edit Registry Details
+            </button>
+            </Link>
           </div>
         </div>
       </div>
-
-      <div className="mt-8 border-t border-gray-300 pt-4 border-b">
-        <Accordiance
-          title="Selected Wedding Registry Gifts"
-          ContentComponent={() => <ProductPage data={data} />}
+      <div className="container mx-auto bg-[#FAF9F6] py-10 px-6">
+        <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+          our registry selections
+        </h2>
+        <img
+          src="/assets/Images/profile-view-page-bdr.png"
+          alt="Couple"
+          className="max-w-[630px] h-auto mx-auto"
         />
+
+        <div className="filters">
+          <div className="filter-item flex gap-x-12 mt-12 justify-center">
+            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+              {' '}
+              <strong>Categories</strong> All{' '}
+            </h3>
+            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+              {' '}
+              <strong>price</strong> low to high{' '}
+            </h3>
+            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+              {' '}
+              <strong>status</strong> All{' '}
+            </h3>
+          </div>
+        </div>
+        <div className="gap-6 p-6 mt-12">
+          <h2 className='text-2xl font-bold text-center'>GIFTS</h2>
+          <ProductPage data={data} />
+        </div>
+
+        <div className="gap-6 p-6 mt-12">
+          <h2 className='text-2xl font-bold text-center'>CASH FUNDS</h2>
+          <FundPage data={cashfundData} />
+        </div>
+      </div>
+      <div className="container pt-12 md:flex-nowrap flex-wrap mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
+        <div className="py-10 px-6 md:py-12 md:px-[6rem] lg:px-[8rem] bg-[#446184] relative flex items-center justify-center flex-col  lg:w-[65%] w-full max-[768px]:p-10 lg:mt-20 mt-6">
+          <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
+            gift any amount
+          </h3>
+          <img
+            src="/assets/Images/white-bdr.png"
+            alt="couple"
+            className="max-w-[315px] mb-4 mt-4"
+          />
+          <h5 className="text-white text-xl font-normal">
+            CONTRIBUTE TO OUR JOURNEY!
+          </h5>
+          <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-4 font-normal text-center">
+            Help us create our dream wedding, honeymoon or life experience.
+            We're so grateful.
+          </p>
+          <div>
+            <div className="flex justify-center items-center gap-x-6">
+              <button
+                type="button"
+                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
+              >
+                $100
+              </button>
+              <button
+                type="button"
+                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
+              >
+                $500
+              </button>
+              <button
+                type="button"
+                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
+              >
+                None
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="lg:w-[35%] w-full  ">
+          {' '}
+          <img
+            src="/assets/Images/gift.png"
+            alt="Image Banner"
+            className="max-[1024px]:h-full object-cover object-[80%]"
+          />
+        </div>
       </div>
 
-      <div className="mt-4 border-t border-gray-300 pt-4 border-b">
-        <Accordiance
-          title="Selected Wedding Cash Funds"
-          ContentComponent={() => <FundPage data={cashfundData} />}
-        />
-      </div>
-    </div>
+      <CoupleFooter />
+    </>
   );
 };
 
 export default index;
 const ProductPage = ({data}) => {
   return (
-    <div className="container p-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="container">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
         {data.map((product) => {
           // Use priceV2 from Shopify, fallback to backend amount
           const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
@@ -196,17 +406,19 @@ const FundPage = ({data}) => {
   };
 
   return (
-    <div className="flex justify-center items-start flex-wrap p-4 bg-gray-100">
+    <div className="container">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
       {data.map((fund) => (
         <FundCard
           key={fund.productId || Math.random()}
           image={fund.cashFund.image?.fileUrl}
           title={fund.cashFund?.name || 'No Fund Name'}
-          totalAmount={typeof fund.amount === 'number' ? fund.amount : 0}
-          collectedAmount={typeof fund.collectedAmount === 'number' ? fund.collectedAmount : 0}
+          totalAmount={Number(fund.amount) ? fund.amount : 0}
+          collectedAmount={Number(fund.collectedAmount) ? fund.collectedAmount : 0}
           onViewContributors={() => handleViewContributors(fund.cashFund?.name || 'Unknown')}
         />
       ))}
     </div>
+  </div>
   );
 };
