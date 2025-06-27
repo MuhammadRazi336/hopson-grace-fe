@@ -1,4 +1,5 @@
 import {Link, useLoaderData} from '@remix-run/react';
+import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context} = args;
@@ -11,62 +12,125 @@ export async function loader(args) {
 
   return {giftTrackingData: data?.data || []};
 }
+
+const orders = [
+  {
+    order: '011488',
+    name: 'Wendy and Roger Pearlman',
+    date: '03/04/2024',
+    amount: '$125.00',
+    thanked: false,
+  },
+  {
+    order: '011489',
+    name: 'Aunty Jess and Uncle Paul',
+    date: '03/29/2024',
+    amount: '$225.00',
+    thanked: false,
+  },
+  {
+    order: '011488',
+    name: 'Wendy and Roger Pearlman',
+    date: '03/04/2024',
+    amount: '$1,400.00',
+    thanked: false,
+  },
+  {
+    order: '011488',
+    name: 'Wendy and Roger Pearlman',
+    date: '03/04/2024',
+    amount: '$50.00',
+    thanked: true,
+  },
+  {
+    order: '011488',
+    name: 'Wendy and Roger Pearlman',
+    date: '03/04/2024',
+    amount: '$2,800.00',
+    thanked: false,
+  },
+  {
+    order: '011488',
+    name: 'Wendy and Roger Pearlman',
+    date: '03/04/2024',
+    amount: '$2,800.00',
+    thanked: true,
+  },
+];
+
 const GiftTracker = () => {
   const {giftTrackingData} = useLoaderData();
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-center">Gift Tracker</h1>
-      <p className="mt-2 text-center">How It Works</p>
-      <p className="mt-2 text-center text-gray-600">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua.
-      </p>
+    <>
+    <div className="mx-auto pt-[80px]">
+    <div className="flex xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-16 container">
+        <div className="w-full flex flex-col gap-y-4 items-center pb-8">
+          <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+            gift <span className="prata uppercase">tracker</span>
+          </h2>
+          <p className="text-center text-base text-gray-600">
+            Keep track of who purchased what—and make saying thank you simple
+            and seamless.
+          </p>
+          <img
+            src="/assets/Images/profile-view-page-bdr.png"
+            alt="Couple"
+            className="max-w-[630px] h-auto mx-auto"
+          />
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full mt-4 border-collapse">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border px-4 py-2">Gift Purchased By</th>
-              <th className="border px-4 py-2">Purchase Date</th>
-              <th className="border px-4 py-2">Purchase Amount</th>
-              <th className="border px-4 py-2">Gift Is For</th>
-              <th className="border px-4 py-2">View Gifts</th>
-              <th className="border px-4 py-2">Thank You’s</th>
-            </tr>
-          </thead>
-          <tbody>
-            {giftTrackingData.map((gift, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="border px-4 py-2">{gift.name}</td>
-                <td className="border px-4 py-2">{new Date(gift.purchaseDate).toLocaleDateString('en-US', {
+          <div className="w-full space-y-3 bg-[#F5F2ED] p-5 mt-8">
+            {/* Header */}
+            <div className="grid grid-cols-6 bg-[#F5F2ED] px-4 pt-6 pb-4 text-xs font-semibold uppercase text-gray-600">
+              <div>Order #</div>
+              <div>Purchased By</div>
+              <div>Date</div>
+              <div>Purchase Amount</div>
+              <div>Gift / Message</div>
+              <div>Thank Yous</div>
+            </div>
+
+            {/* Rows */}
+            {giftTrackingData.map((item, idx) => (
+              <div
+                key={idx}
+                className="grid grid-cols-6 items-center  bg-white px-4 py-6 text-sm"
+              >
+                <div>{item.order}</div>
+                <div>{item.name}</div>
+                <div>{new Date(item.purchaseDate).toLocaleDateString('en-US', {
                   month: 'long',
                   day: 'numeric', 
                   year: 'numeric'
-                })}</td>
-                <td className="border px-4 py-2">{gift.totalAmount}</td>
-                <td className="border px-4 py-2">{gift.giftFor}</td>
-                <td className="border px-4 py-2">
-                  <Link to={`/dashboard/viewgifts/${gift.greetingId}`}>
-                    <div className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 text-center">
-                      View Gifts
-                    </div>
+                })}</div>
+                <div>{item.totalAmount}</div>
+                <div>
+                  <Link to={`/dashboard/viewgifts/${item.greetingId}`}>
+                  <button className="border border-gray-700 px-3 py-3 text-sm font-medium hover:bg-gray-100">
+                    View Gifts/Message
+                  </button>
                   </Link>
-                </td>
-                <td className="border px-4 py-2">
-                  <a href="/sendthanks">
-                    {gift.messageSent ? <span>&#10003;</span> : 'Send Thanks'}
-                  </a>
-                </td>
-              </tr>
+                </div>
+                <div>
+                  {item.messageSent ? (
+                    <span className="text-xl text-center block text-[#446184] font-bold">✓</span>
+                  ) : (
+                    <a href="/sendthanks">
+                    <button className=" text-white font-bold py-3 px-3 bg-[#446184] rounded-none cursor-pointer">
+                      SEND THANKS
+                    </button>
+                    </a>
+                  )}
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        </div>
       </div>
-      <p className="mt-4 text-center text-sm text-gray-500">
-        * Prices shown include Ontario GST/HST tax
-      </p>
+
+      <Footer />
     </div>
+    </>
   );
 };
 

@@ -15,11 +15,11 @@ export default function SendThanks() {
             <p>Sent By Mail (Mark Complete)</p>
           </div>
 
-          <Link to={`/sendthanks/toguest`}>
+          <a href={`dashboard/sendthanks/toguest`}>
             <div className="w-56 px-2 py-9 bg-gray-200 border border-gray-400 rounded hover:bg-gray-300">
               <p>Send Thank you by Email</p>
             </div>
-          </Link>
+          </a>
         </div>
 
         <Link>

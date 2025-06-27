@@ -7,16 +7,29 @@ import {
 } from '@remix-run/react';
 import {useEffect, useState, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
+import { Footer } from '~/components/Footer';
+import NotificationCard from '~/components/NotificationCard';
+import RegistryStatusCard from '~/components/RegistryStatusCard';
 
 export async function loader({request, context, params}) {
   if (!params.handle || params.handle === '[object Object]') {
     return {data: {}};
   }
-  const res = await context.ClientGet(`events/${params.handle}`, context);
   const user = context.session.get('@User');
-  const userData = await context.ClientGet(`users/${user.user.id}`, context);
 
-  return {data: res?.data || {}, userData: userData?.data || {}};
+
+  const [eventRes, userRes, shippingRes] = await Promise.all([
+    context.ClientGet(`events/${params.handle}`, context),
+    context.ClientGet(`users/${user.user.id}`, context),
+    context.ClientGet(`users/shippingAddress/${user.user.id}`, context),
+  ]);
+
+  const userData = userRes?.data || {};
+  const shippingData = shippingRes?.data || {};
+
+  // Combine shipping data into the main user object for easier state management
+
+  return {data: eventRes?.data || {}, userData: userData || {}, shippingData: shippingData || {}};
 }
 export async function action({request, context}) {
   const contentType = request.headers.get('content-type') || '';
@@ -81,317 +94,495 @@ export async function action({request, context}) {
 }
 
 export default function Index() {
-  const {data, userData} = useLoaderData();
-  const submit = useSubmit();
-  const [eventState, setEventState] = useState(() => {
-    // Initialize state with data from the loader
-    const initialState = {
-      coupleName:
-        `${userData.user.firstName} & ${userData.user.fianceFirstName}` || '',
-      hashtag: data.hashtags || [],
-      weddingDate: data.eventDate || '',
-      weddingTime: data.weddingTime || '',
-      location: data.location || '',
-      city: data.city || '',
-      province: data.province || '',
-      noOfGuest: Number(data.noOfGuest) || 0,
-      welcomeMessage: data.welcomeMessage || '',
-      id: Number(data.id) || 0,
-      eventTypeId: Number(data.eventTypeId) || 0,
-    };
+  const {data, userData, shippingData} = useLoaderData();
+  const [editForm, setEditForm] = useState(false);
 
-    // Add image data if it exists
-    if (data.image) {
-      initialState.image = {
-        originalName: data.image.originalName || '',
-        fileName: data.image.fileName || '',
-        fileUrl: data.image.fileUrl || '',
-        mimeType: data.image.mimeType || '',
-        size: data.image.size || 0,
-      };
-    }
-
-    return initialState;
+  // Consolidated state for the entire form
+  const [formState, setFormState] = useState({
+    // Event Details
+    coupleName:
+      data.coupleName ||
+      `${userData.user.firstName} & ${userData.user.fianceFirstName}`,
+    hashtag: data.hashtags?.join(', ') || '',
+    weddingDate: data.eventDate?.split('T')[0] || '',
+    weddingTime: data.weddingTime || '',
+    venue: data.location || '',
+    location: data.city || '',
+    noOfGuests: data.noOfGuest || 0,
+    welcomeMessage: data.welcomeMessage || '',
+    // User Details
+    yourFirstName: userData.user.firstName || '',
+    yourLastName: userData.user.lastName || '',
+    fianceFirstName: userData.user.fianceFirstName || '',
+    fianceLastName: userData.user.fianceLastName || '',
+    // Shipping Details (assuming these are stored on the user object)
+    shippingAddress: shippingData.address || '',
+    shippingPhone: shippingData.phoneNumber || '',
+    shippingPostalCode: shippingData.postalCode || '',
+    shippingCity: shippingData.city || '',
+    shippingProvince: shippingData.province || '',
+    shippingCountry: shippingData.country || '',
+    // IDs
+    eventId: data.id,
+    userId: userData.user.id,
+    image: data.image,
   });
-  // Track if a new image file is selected
-  const [newImageFile, setNewImageFile] = useState(null);
 
-  // Handle image change (accepts a file directly)
-  const handleImageChange = (imgFile) => {
-    if (!imgFile) return;
-    setNewImageFile(imgFile);
-    // Do NOT update eventState.image here!
-  };
+  const [newImageFile, setNewImageFile] = useState(null);
 
   const handleChange = (e) => {
     const {name, value} = e.target;
-    // Update the corresponding state value dynamically based on the input field's name
-    setEventState((prevState) => ({
-      ...prevState,
-      [name]:
-        name === 'hashtag' ? value.split(',').map((tag) => tag.trim()) : value,
-    }));
+    setFormState((prevState) => ({...prevState, [name]: value}));
+  };
+
+  const handleImageChange = (file) => {
+    if (file) {
+      setNewImageFile(file);
+      setFormState((prevState) => ({
+        ...prevState,
+        image: {...prevState.image, fileUrl: URL.createObjectURL(file)},
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted');
 
-    // Ensure hashtags is a JSON string for backend
-    let hashtagsValue = eventState.hashtag;
-    if (!Array.isArray(hashtagsValue)) {
-      try {
-        hashtagsValue = JSON.parse(hashtagsValue);
-      } catch {
-        hashtagsValue = String(hashtagsValue)
-          .split(',')
-          .map((tag) => tag.trim());
-      }
-    }
-    const payload = {
-      eventDate: eventState.weddingDate,
-      noOfGuest: Number(eventState.noOfGuest),
-      eventTypeId: Number(eventState.eventTypeId),
-      registryId: Number(data.registryId),
-      coupleName: eventState.coupleName,
-      hashtags: hashtagsValue,
-      weddingTime: eventState.weddingTime,
-      location: eventState.location,
-      city: eventState.city,
-      province: eventState.province,
-      welcomeMessage: eventState.welcomeMessage,
-      id: Number(eventState.id),
-      name: eventState.coupleName,
+    // 1. Event Payload
+    const eventPayload = {
+      id: formState.eventId,
+      coupleName: formState.coupleName,
+      hashtags: formState.hashtag.split(',').map((s) => s.trim()),
+      eventDate: formState.weddingDate,
+      weddingTime: formState.weddingTime,
+      location: formState.venue, // venue field is location in db
+      city: formState.location, // location field is city in db
+      noOfGuest: Number(formState.noOfGuests),
+      welcomeMessage: formState.welcomeMessage,
+      name: formState.coupleName,
     };
 
-    if (newImageFile) {
-      // Use FormData for file upload
-      const formData = new FormData();
-      formData.append('file', newImageFile);
-      Object.entries(payload).forEach(([key, value]) => {
-        if (key === 'image') return; // Do NOT append image
-        if (key === 'hashtags') {
-          formData.append('hashtags', JSON.stringify(value));
-        } else if (typeof value === 'number' || typeof value === 'string') {
-          formData.append(key, String(value));
+    // 2. User Payload
+    const userPayload = {
+      id: formState.userId,
+      firstName: formState.yourFirstName,
+      lastName: formState.yourLastName,
+      fianceFirstName: formState.fianceFirstName,
+      fianceLastName: formState.fianceLastName,
+    };
+
+    // 3. Shipping Payload
+    const shippingPayload = {
+      id: shippingData.id,
+      address: formState.shippingAddress,
+      phoneNumber: formState.shippingPhone,
+      postalCode: formState.shippingPostalCode,
+      city: formState.shippingCity,
+      province: formState.shippingProvince,
+      country: formState.shippingCountry,
+    };
+
+    try {
+      const apiCalls = [];
+
+      // API Call for Event Data
+      if (newImageFile) {
+        const eventFormData = new FormData();
+        eventFormData.append('file', newImageFile);
+        for (const [key, value] of Object.entries(eventPayload)) {
+          eventFormData.append(
+            key,
+            Array.isArray(value) ? JSON.stringify(value) : value,
+          );
         }
-      });
-
-      // Use fetch to your backend API endpoint
-      const response = await fetch(
-        `https://dev-hopsongrace.codup.io/api/events/${eventState.id}`,
-        {
-          method: 'PUT',
-          body: formData,
-        },
-      );
-
-      if (response.ok) {
-        window.location.href = '/dashboard/registry';
+        apiCalls.push(
+          fetch(`http://localhost:3040/api/events/${formState.eventId}`, {
+            method: 'PUT',
+            body: eventFormData,
+          }),
+        );
       } else {
-        const error = await response.json().catch(() => ({}));
-        alert(error.message || 'Failed to update event');
+        apiCalls.push(
+          fetch(`http://localhost:3040/api/events/${formState.eventId}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(eventPayload),
+          }),
+        );
       }
-    } else {
-      // No new image, send as JSON
-      const response = await fetch(
-        `https://dev-hopsongrace.codup.io/api/events/${eventState.id}`,
-        {
+
+      // API Call for User Data
+      apiCalls.push(
+        fetch(`http://localhost:3040/api/users/${formState.userId}`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload),
-        },
+          body: JSON.stringify(userPayload),
+        }),
       );
 
-      if (response.ok) {
-        window.location.href = '/dashboard/registry';
-      } else {
-        const error = await response.json().catch(() => ({}));
-        alert(error.message || 'Failed to update event');
+      // API Call for Shipping Data
+      apiCalls.push(
+        fetch(
+          `http://localhost:3040/api/users/shippingAddress/${shippingData.id}`,
+          {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(shippingPayload),
+          },
+        ),
+      );
+
+      const responses = await Promise.all(apiCalls);
+
+      const hasError = responses.some((res) => !res.ok);
+
+      if (hasError) {
+        // Find the first error to display
+        const errorResponse = responses.find((res) => !res.ok);
+        const errorData = await errorResponse.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Failed to update with status ${errorResponse.status}`,
+        );
       }
+
+      alert('All details updated successfully!');
+      setEditForm(false); // Switch back to view mode
+      // Optionally, you can redirect or refresh data here.
+      window.location.reload();
+    } catch (error) {
+      alert(`An error occurred: ${error.message}`);
     }
   };
+
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="shadow-lg rounded-lg p-8 w-full max-w-4xl border bg-gray-100">
-        <h1 className="text-2xl font-bold mb-6">Edit Page</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="flex gap-8">
-            <div className="flex-1">
-              <div className="border rounded-md p-4 flex flex-col items-center">
-                <div className="w-full h-48 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
-                  {newImageFile ? (
-                    <img
-                      src={URL.createObjectURL(newImageFile)}
-                      alt="Preview"
-                      className="max-h-48 object-contain"
-                    />
-                  ) : eventState.image?.fileUrl ? (
-                    <img
-                      src={eventState.image.fileUrl}
-                      alt="Current"
-                      className="max-h-48 object-contain"
-                    />
-                  ) : (
-                    <span className="text-gray-500">
-                      Upload New Photo (Max 5MB)
-                    </span>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="mt-4"
-                  onChange={(e) => handleImageChange(e.target.files[0])}
-                />
-                <p className="text-sm text-gray-500 mt-2">
-                  Supported formats: JPG, PNG, GIF (Max 5MB)
-                </p>
-              </div>
-            </div>
-            <div className="flex-1">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label
-                    className="block font-medium mb-1"
-                    htmlFor="coupleName"
-                  >
-                    Couple Name
-                  </label>
-                  <input
-                    name="coupleName"
-                    id="coupleName"
-                    value={eventState.coupleName}
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    onChange={handleChange} // Update state on change
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block font-medium mb-1" htmlFor="hashtag">
-                    Hashtag
-                  </label>
-                  <input
-                    name="hashtag"
-                    id="hashtag"
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    value={eventState.hashtag.join(', ')}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label
-                    className="block font-medium mb-1"
-                    htmlFor="weddingDate"
-                  >
-                    Wedding Date
-                  </label>
-                  <input
-                    value={eventState.weddingDate}
-                    id="weddingDate"
-                    name="weddingDate"
-                    type="date"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    onChange={handleChange} // Update state on change
-                  />
-                </div>
-                <div>
-                  <label
-                    className="block font-medium mb-1"
-                    htmlFor="weddingTime"
-                  >
-                    Wedding Time
-                  </label>
-                  <input
-                    id="weddingTime"
-                    type="time"
-                    name="weddingTime"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    onChange={handleChange}
-                    value={eventState.weddingTime}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block font-medium mb-1" htmlFor="location">
-                    Location
-                  </label>
-                  <input
-                    name="location"
-                    id="location"
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    onChange={handleChange}
-                    value={eventState.location}
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1" htmlFor="city">
-                    City
-                  </label>
-                  <input
-                    name="city"
-                    id="city"
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    onChange={handleChange}
-                    value={eventState.city}
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1" htmlFor="province">
-                    Province
-                  </label>
-                  <input
-                    name="province"
-                    id="province"
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    onChange={handleChange}
-                    value={eventState.province}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block font-medium mb-1" htmlFor="noOfGuest">
-                    Number of Guests
-                  </label>
-                  <input
-                    name="noOfGuest"
-                    id="noOfGuest"
-                    type="number"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2"
-                    onChange={handleChange}
-                    value={eventState.noOfGuest}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <label className="block font-medium mb-1" htmlFor="welcomeMessage">
-              Welcome Message
-            </label>
-            <textarea
-              name="welcomeMessage"
-              id="welcomeMessage"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 h-28"
-              onChange={handleChange}
-              value={eventState.welcomeMessage}
-            ></textarea>
-          </div>
-
-          <div className="flex gap-4 mt-6">
-            <button className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg">
-              Change Page Style
-            </button>
-            <ButtonComponent
-              text="save"
-              type="submit"
-              className="bg-black text-white px-6 py-2 rounded-lg"
+    <>
+      <div className="mx-auto pt-[80px]">
+        <div className="flex xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-16">
+          <div className="w-full xl:w-9/12 flex flex-col gap-y-4 items-center pb-8">
+            <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+              <span className="prata uppercase">My registry</span> details
+            </h2>
+            <img
+              src="/assets/Images/profile-view-page-bdr.png"
+              alt="Couple"
+              className="max-w-[630px] h-auto mx-auto"
             />
+
+            <div className="bg-[#446184] max-w-4xl mx-12 mt-10 text-white w-full min-h-[500px]">
+              {editForm ? (
+                <EditForm
+                  state={formState}
+                  onStateChange={handleChange}
+                  onImageChange={handleImageChange}
+                />
+              ) : (
+                <ViewForm state={formState} />
+              )}
+            </div>
+
+            <div className="flex max-w-4xl w-full justify-end">
+              {editForm ? (
+                <button
+                  onClick={handleSubmit}
+                  className="uppercase text-[#223247] border border-[#223247] cursor-pointer font-bold text-lg mt-5 px-12 py-2 bg-white"
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  onClick={() => setEditForm(true)}
+                  className="uppercase text-[#223247] border-b border-[#223247] cursor-pointer font-bold text-lg mt-5 block"
+                >
+                  Edit my info
+                </button>
+              )}
+            </div>
           </div>
-        </form>
+          <div className="w-full xl:w-3/12 flex flex-col gap-y-4">
+            <div>
+              <NotificationCard />
+            </div>
+            <div>
+              <RegistryStatusCard />
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    </>
+  );
+}
+
+function EditForm({state, onStateChange, onImageChange}) {
+  return (
+    <form className="grid grid-cols-2 gap-x-8 gap-y-4 p-8 bg-[#375a7f] text-white">
+      {/* Image Upload */}
+      <div className="col-span-2 flex flex-col items-center border border-gray-400 p-4 rounded-md">
+        <div className="w-full h-48 bg-gray-200 rounded flex items-center justify-center overflow-hidden mb-4">
+          {state.image?.fileUrl ? (
+            <img
+              src={state.image.fileUrl}
+              alt="Preview"
+              className="max-h-48 object-contain"
+            />
+          ) : (
+            <span className="text-gray-500">Upload New Photo</span>
+          )}
+        </div>
+        <input
+          type="file"
+          accept="image/*"
+          className="text-sm"
+          onChange={(e) => onImageChange(e.target.files[0])}
+        />
+      </div>
+
+      {/* User and Fiancé Details */}
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="yourFirstName">
+          YOUR FIRST NAME*
+        </label>
+        <input
+          type="text"
+          id="yourFirstName"
+          name="yourFirstName"
+          value={state.yourFirstName}
+          onChange={onStateChange}
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="yourLastName">
+          YOUR LAST NAME*
+        </label>
+        <input
+          type="text"
+          id="yourLastName"
+          name="yourLastName"
+          value={state.yourLastName}
+          onChange={onStateChange}
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="fianceFirstName">
+          YOUR FIANCÉ'S FIRST NAME*
+        </label>
+        <input
+          type="text"
+          id="fianceFirstName"
+          name="fianceFirstName"
+          value={state.fianceFirstName}
+          onChange={onStateChange}
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="fianceLastName">
+          YOUR FIANCÉ'S LAST NAME*
+        </label>
+        <input
+          type="text"
+          id="fianceLastName"
+          name="fianceLastName"
+          value={state.fianceLastName}
+          onChange={onStateChange}
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+
+      {/* Event Details */}
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="weddingDate">
+          WEDDING DATE*
+        </label>
+        <input
+          type="date"
+          id="weddingDate"
+          name="weddingDate"
+          value={state.weddingDate}
+          onChange={onStateChange}
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="venue">
+          WEDDING VENUE
+        </label>
+        <input
+          type="text"
+          id="venue"
+          name="venue"
+          value={state.venue}
+          onChange={onStateChange}
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block font-medium mb-1 text-base" htmlFor="location">
+            WEDDING LOCATION
+          </label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={state.location}
+            onChange={onStateChange}
+            className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1 text-base" htmlFor="noOfGuests">
+            NO. OF GUESTS
+          </label>
+          <input
+            type="number"
+            id="noOfGuests"
+            name="noOfGuests"
+            value={state.noOfGuests}
+            onChange={onStateChange}
+            className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          />
+        </div>
+      </div>
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="hashtag">
+          WEDDING HASHTAG
+        </label>
+        <input
+          type="text"
+          id="hashtag"
+          name="hashtag"
+          value={state.hashtag}
+          onChange={onStateChange}
+          placeholder="e.g., #HannaAndMax"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+
+      {/* Shipping Address */}
+      <div className="col-span-2 font-medium mb-2 mt-10">
+        YOUR SHIPPING ADDRESS
+      </div>
+      <div>
+        <input
+          type="text"
+          name="shippingAddress"
+          value={state.shippingAddress}
+          onChange={onStateChange}
+          placeholder="Address*"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="shippingPhone"
+          value={state.shippingPhone}
+          onChange={onStateChange}
+          placeholder="Phone Number*"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="shippingPostalCode"
+          value={state.shippingPostalCode}
+          onChange={onStateChange}
+          placeholder="Postal Code*"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="shippingCity"
+          value={state.shippingCity}
+          onChange={onStateChange}
+          placeholder="City*"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="shippingProvince"
+          value={state.shippingProvince}
+          onChange={onStateChange}
+          placeholder="Province/State*"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+      <div>
+        <input
+          type="text"
+          name="shippingCountry"
+          value={state.shippingCountry}
+          onChange={onStateChange}
+          placeholder="Country*"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+        />
+      </div>
+    </form>
+  );
+}
+
+function ViewForm({state}) {
+  return (
+    <div className="grid grid-cols-2">
+      <div className="p-8 flex flex-col gap-6">
+        <div>
+          <div className="text-xs tracking-widest mb-1">YOU</div>
+          <div className="text-lg ">
+            {state.yourFirstName} {state.yourLastName}
+          </div>
+        </div>
+        <div>
+          <div className="text-xs tracking-widest mb-1">YOUR FIANCÉ</div>
+          <div className="text-lg ">
+            {state.fianceFirstName} {state.fianceLastName}
+          </div>
+        </div>
+        <div>
+          <div className="text-xs tracking-widest mb-1">
+            YOUR SHIPPING ADDRESS
+          </div>
+          <div className="text-lg whitespace-pre-line">
+            {`${state.shippingAddress || '-'}\n${
+              state.shippingCity || ''
+            }, ${state.shippingProvince || ''}\n${
+              state.shippingPostalCode || ''
+            }\n${state.shippingCountry || ''}`}
+          </div>
+        </div>
+      </div>
+      <div className="p-8 flex flex-col gap-6">
+        <div>
+          <div className="text-xs tracking-widest mb-1">WEDDING DATE</div>
+          <div className="text-lg ">{state.weddingDate}</div>
+        </div>
+        <div>
+          <div className="text-xs tracking-widest mb-1">WEDDING VENUE</div>
+          <div className="text-lg ">{state.venue || '-'}</div>
+        </div>
+        <div className="flex flex-row gap-x-4">
+          <div>
+            <div className="text-xs tracking-widest mb-1">
+              WEDDING LOCATION (CITY)
+            </div>
+            <div className="text-lg ">{state.location || '-'}</div>
+          </div>
+          <div>
+            <div className="text-xs tracking-widest mb-1">NO. OF GUESTS</div>
+            <div className="text-lg ">{state.noOfGuests || '0'}</div>
+          </div>
+        </div>
+        <div>
+          <div className="text-xs tracking-widest mb-1">WEDDING HASHTAG</div>
+          <div className="text-lg ">{state.hashtag || '-'}</div>
+        </div>
       </div>
     </div>
   );
