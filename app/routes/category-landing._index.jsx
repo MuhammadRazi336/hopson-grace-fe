@@ -21,6 +21,7 @@ import lineImghead from '/assets/Images/line.png';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
 import PreviewRegistry from '~/components/PreviewRegistry';
+import ExploreCategories from '~/components/ExploreCategories';
 
 export default function CategoryLanding() {
   const tabsData = [
@@ -176,56 +177,7 @@ export default function CategoryLanding() {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] py-8 container mx-auto">
-        <Heading
-          text="explore more categories"
-          classes={
-            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
-        />
-
-        {/* slides here */}
-        <div className="grid lg:grid-cols-3 grid-cols-2 gap-y-16 gap-x-6 mt-16 mx-10">
-          <div>
-            <img src={product1} alt="New Arrival" className="w-full" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              New Arrival
-            </h3>
-          </div>
-          <div>
-            <img src={product2} alt="Tableware" className="w-full" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              Tableware
-            </h3>
-          </div>
-          <div>
-            <img src={product3} alt="Staub Cast Iron Q4" className="w-full" />
-            <h3 className="mt-2.5 text-center uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-              glassware & bareware
-            </h3>
-          </div>
-          <div>
-            <img src={product4} alt="New arrivals" className="w-full" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              New arrivals
-            </h3>
-          </div>
-          <div>
-            <img src={product1} alt="tableware" className="w-full" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              tableware
-            </h3>
-          </div>
-          <div>
-            <img src={product2} alt="Tableware" className="w-full" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              Tableware
-            </h3>
-          </div>
-        </div>
-      </section>
+      <ExploreCategories />
 
       <div className="mb-10 mt-5"></div>
 
