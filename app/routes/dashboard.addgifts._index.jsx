@@ -523,7 +523,7 @@ export default function AddGifts() {
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
           />
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 flex-1' ref={productGridRef}>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10 flex-1' ref={productGridRef}>
             {(() => {
               if (displayedProducts.length === 0) {
                 return <div className="col-span-3 text-center text-gray-400">Select a collection to view products.</div>;
