@@ -16,14 +16,14 @@ export default function AddCashTravelFund() {
   return (
     <div className="pt-[80px]">
       <CoupleProfileViewHeader />
-      <div className=" p-4">
+      {/* <div className=" p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5"> checkout</h2>
         <img
           src="/assets/Images/cart-head-bdr.png"
           alt="Hamburger"
           className="w-[150px] mx-auto -mt-4"
         />
-      </div>
+      </div> */}
 
       <div className="xl:mx-20 py-[100px] mx-6">
         <div className="container mx-auto bg-[#446184]  py-16">
@@ -264,18 +264,7 @@ export default function AddCashTravelFund() {
         </div>
       </div>
 
-      <div className="mb-16"></div>
-      <section className=" my-12 lg:my-[240px]">
-        <ImageAndText
-          direction={'right'}
-          imgBanner={teaImg}
-          lineimg={lineImg3}
-          title="questions? "
-          description="We've got answers."
-          buttontext={'PHONE, EMAIL OR LIVE CHAT'}
-          buttontype={'Color'}
-        />
-      </section>
+
 
       <Footer />
     </div>
