@@ -1,7 +1,7 @@
 import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
-import {useState} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {useFetcher, useLoaderData} from '@remix-run/react';
 import {defer, json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
@@ -49,9 +49,9 @@ export async function loader({request, context}) {
   const {collections} = await loadCollectionData({context});
   const user = await requireAuth(context);
   const registry = await context?.session?.get('@Registry');
-  console.log(registry, 'REGISTRY');
+  const userData = await context?.ClientGet(`users/${user?.user?.id}`, context);
 
-  return defer({products, collections, user, registry});
+  return defer({products, collections, user, registry, userData});
 }
 
 export async function action({request, context}) {
@@ -65,7 +65,6 @@ export async function action({request, context}) {
     );
     return json({success: true, response});
   } catch (e) {
-    console.log(e, 'ERROR');
     return json({success: false, error: e.message}, {status: 400});
   }
 }
@@ -97,6 +96,152 @@ async function loadCollectionData({context}) {
   }
 }
 
+function SidebarFilter({ collections, checkedCollectionIds, setCheckedCollectionIds }) {
+  const [openSections, setOpenSections] = useState({
+    categories: true,
+    brands: true,
+    styles: true,
+  });
+
+  const parentCollection = collections.filter(
+    (col) => col.parentMetafield?.value === 'true'
+  );
+
+  const subCollection = collections.filter(
+    (col) => col.parentMetafield?.value === 'false'
+  );
+
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  const handleSidebarCheckbox = (colId) => {
+    let newChecked;
+    if (checkedCollectionIds.includes(colId)) {
+      newChecked = checkedCollectionIds.filter(id => id !== colId);
+    } else {
+      newChecked = [...checkedCollectionIds, colId];
+    }
+    setCheckedCollectionIds(newChecked);
+  };
+
+  return (
+    <div className="w-full xl:w-1/4 p-6 h-fit bg-[#FAF9F6]">
+      <div className="mb-6">
+        <h2
+          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          onClick={() => toggleSection('categories')}
+        >
+          Product Categories
+          <span className="text-lg">
+            {openSections.categories ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-3 h-3 rotate-270"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-3 h-3 rotate-90"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.categories && (
+          <ul className="space-y-2 text-sm">
+            {parentCollection.map((col) => (
+              <li key={col.id}>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="mb-6">
+        <h2
+          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          onClick={() => toggleSection('brands')}
+        >
+          Our Brands
+          <span className="text-lg">
+            {openSections.brands ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-3 h-3 rotate-270"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-3 h-3 rotate-90"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.brands && (
+          <p className="text-sm text-gray-500 italic">No data</p>
+        )}
+      </div>
+
+      <div>
+        <h2
+          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          onClick={() => toggleSection('styles')}
+        >
+          Shop by Style
+          <span className="text-lg">
+            {openSections.styles ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-3 h-3 rotate-270"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-3 h-3 rotate-90"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.styles && (
+          <ul className="space-y-2 text-sm">
+            {subCollection.map((col) => (
+              <li key={col.id}>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AddGifts() {
   const [availability, setAvailability] = useState('');
   const [priceSort, setPriceSort] = useState('');
@@ -105,8 +250,84 @@ export default function AddGifts() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
 
-  const {products, collections, registry} = useLoaderData();
+  const {products, collections, registry, user, userData} = useLoaderData();
   const fetcher = useFetcher();
+
+  // State for checked collections and displayed products
+  const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const initialPreferencesApplied = useRef(false);
+  const [productsToShow, setProductsToShow] = useState(12);
+  const productGridRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      !initialPreferencesApplied.current &&
+      userData &&
+      collections &&
+      collections.length > 0
+    ) {
+      const preferredCategories = (userData.data?.user?.preferredCategory || []).map(s => s.trim().toLowerCase());
+      const preferredSubCategories = (userData.data?.user?.preferredSubCategory || []).map(s => s.trim().toLowerCase());
+
+      // Only check parent collections for preferredCategory, sub-collections for preferredSubCategory
+      const checkedIds = [
+        ...collections
+          .filter(
+            col =>
+              col.parentMetafield?.value === 'true' &&
+              preferredCategories.includes((col.title || '').trim().toLowerCase())
+          )
+          .map(col => col.id),
+        ...collections
+          .filter(
+            col =>
+              col.parentMetafield?.value === 'false' &&
+              preferredSubCategories.includes((col.title || '').trim().toLowerCase())
+          )
+          .map(col => col.id),
+      ];
+
+      setCheckedCollectionIds(checkedIds);
+      initialPreferencesApplied.current = true;
+    }
+  }, [userData, collections]);
+
+  // Helper to get all products for checked collections
+  const getProductsForCheckedCollections = (checkedIds) => {
+    const checkedParents = collections.filter(
+      col => col.parentMetafield?.value === 'true' && checkedIds.includes(col.id)
+    );
+    const checkedSubs = collections.filter(
+      col => col.parentMetafield?.value === 'false' && checkedIds.includes(col.id)
+    );
+    let parentProducts = [];
+    checkedParents.forEach(parentCol => {
+      let subCollectionGids = [];
+      const subColMeta = parentCol.subMetafield;
+      if (subColMeta?.value) {
+        try {
+          subCollectionGids = JSON.parse(subColMeta.value);
+        } catch {}
+      }
+      // Find sub-collections by GID
+      const subCols = collections.filter(
+        col => col.parentMetafield?.value === 'false' && subCollectionGids.includes(col.id)
+      );
+      parentProducts = parentProducts.concat(
+        subCols.length > 0 ? subCols.flatMap(col => (col.products?.edges || []).map(edge => edge.node)) : []
+      );
+    });
+    const subProducts = checkedSubs.length > 0 ? checkedSubs.flatMap(col => (col.products?.edges || []).map(edge => edge.node)) : [];
+    const allProducts = [...parentProducts, ...subProducts];
+    const uniqueProducts = Array.from(new Map(allProducts.map(p => [p.id, p])).values());
+    return uniqueProducts;
+  };
+
+  // Update displayedProducts when checkedCollectionIds changes
+  useEffect(() => {
+    setDisplayedProducts(getProductsForCheckedCollections(checkedCollectionIds));
+  }, [checkedCollectionIds]);
 
   const handleAddtoRegistry = (product) => {
     try {
@@ -142,8 +363,6 @@ export default function AddGifts() {
         quantity: 1,
       };
 
-      console.log('Sending payload:', payload); // Add this for debugging
-
       fetcher.submit(
         {payload: JSON.stringify(payload)},
         {
@@ -163,7 +382,6 @@ export default function AddGifts() {
         setAlertMessage('');
       }, 3000);
     } catch (error) {
-      console.error('Error adding to registry:', error);
       setAlertMessage('Failed to add to registry. Please try again.');
       setAlertType('error');
       setShowAlert(true);
@@ -203,7 +421,7 @@ export default function AddGifts() {
   });
 
   const parentCollection = collections.filter(
-    (col) => col.metafield?.value === "true"
+    (col) => col.parentMetafield?.value === "true"
   )
 
   return (
@@ -278,7 +496,7 @@ export default function AddGifts() {
               }}
             >
               {/* Dynamic slides from Shopify collections */}
-              {parentCollection.map((col, idx) => (
+              {collections.filter(col => col.parentMetafield?.value === 'true').map((col, idx) => (
                 <SwiperSlide key={col.title || idx}>
                   <img
                     src={col.image?.url || '/assets/Images/placeholder.png'}
@@ -300,44 +518,72 @@ export default function AddGifts() {
 
       <section className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-10">
-          <SidebarFilter />
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10'>
-          {/* <ProductGrid products={products} /> */}
-          {filteredProducts.map((productWrapper, index) => {
-          const product = productWrapper.node
-          const firstImage = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
-          const firstVariant = product?.variants?.edges?.[0]?.node;
-
-          if (!firstVariant) return null;
-
-          return (
-            <div key={index} className="cursor-pointer">
-              <RegistryProduct
-                image={firstImage}
-                productName={product.title}
-                price={firstVariant.priceV2.amount}
-                description={product.description}
-                onAddToRegistry={() => handleAddtoRegistry(product)}
-                onGroupGiftTagChange={(isGroupGift) =>
-                  console.log(`Group Gift tag changed: ${isGroupGift}`)
-                }
-              />
-            </div>
-          );
-        })}
-        </div>
+          <SidebarFilter
+            collections={collections}
+            checkedCollectionIds={checkedCollectionIds}
+            setCheckedCollectionIds={setCheckedCollectionIds}
+          />
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 flex-1' ref={productGridRef}>
+            {(() => {
+              if (displayedProducts.length === 0) {
+                return <div className="col-span-3 text-center text-gray-400">Select a collection to view products.</div>;
+              }
+              let anyRendered = false;
+              const productNodes = displayedProducts.slice(0, productsToShow).map((product) => {
+                const firstVariant = product?.variants?.edges?.[0]?.node;
+                if (!firstVariant) return null;
+                anyRendered = true;
+                const firstImage = product?.images?.edges?.[0]?.node?.url || '/fallback-image.jpg';
+                return (
+                  <RegistryProduct
+                    key={product.id}
+                    image={firstImage}
+                    productName={product.title}
+                    price={firstVariant.priceV2.amount}
+                    description={product.description}
+                    onAddToRegistry={() => handleAddtoRegistry(product)}
+                    onGroupGiftTagChange={(isGroupGift) =>
+                      console.log(`Group Gift tag changed: ${isGroupGift}`)
+                    }
+                  />
+                );
+              });
+              if (!anyRendered) {
+                return <div className="col-span-3 text-center text-gray-400">Select a collection to view products.</div>;
+              }
+              return productNodes;
+            })()}
+          </div>
         </div>
 
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">LOADING 12 of 427</p>
+            <p className="text-center text-md my-10">
+              LOADING {Math.min(productsToShow, displayedProducts.length)} of {displayedProducts.length}
+            </p>
 
-            <WhiteThemeButton Text="View more" link="/quick-start-guide" />
+            {displayedProducts.length > 12 && productsToShow < displayedProducts.length && (
+              <WhiteThemeButton
+                Text="View more"
+                link="#"
+                onClick={() => setProductsToShow((prev) => Math.min(prev + 12, displayedProducts.length))}
+              />
+            )}
 
-            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
-              Back to Top
-            </button>
+            {productsToShow > 12 && (
+              <button
+                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+                onClick={() => {
+                  setProductsToShow(12);
+                  if (productGridRef.current) {
+                    productGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+              >
+                Back to Top
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -689,11 +935,12 @@ const PRODUCT_QUERY = `#graphql
   }
 `;
 const COLLECTION_QUERY = `#graphql
-  query {
+    query {
     collections(first: 50) {
       nodes {
         description
         title
+        id
         image {
           id
           url
@@ -701,9 +948,43 @@ const COLLECTION_QUERY = `#graphql
           width
           height
         }
-          metafield(namespace: "parent", key: "collection") {
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
           id
           value
+        }
+        subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+        products(first: 10){
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              images(first: 10) {
+                edges {
+                  node {
+                    id
+                    url
+                  }
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -722,193 +1003,3 @@ export const meta = () => {
 export const handle = {
   hydrate: true,
 };
-
-function SidebarFilter() {
-  const {collections} = useLoaderData();
-  const [openSections, setOpenSections] = useState({
-    categories: true,
-    brands: true,
-    styles: true,
-  });
-
-  const parentCollection = collections.filter(
-    (col) => col.metafield?.value === "true"
-  )
-
-  const subCollection = collections.filter(
-    (col) => col.metafield?.value === "false"
-  )
-
-  const toggleSection = (section) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
-
-  return (
-    <div className="w-full xl:w-1/4 p-6 h-fit bg-[#FAF9F6]">
-      <div className="mb-6">
-        <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
-          onClick={() => toggleSection('categories')}
-        >
-          Product Categories
-          <span className="text-lg">
-            {openSections.categories ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-3 h-3 rotate-270"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-3 h-3 rotate-90"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.categories && (
-          <ul className="space-y-2 text-sm">
-            {parentCollection.map((col) => (
-              <li key={col.title}>
-                <label>
-                  <input type="checkbox" className="mr-2" />
-                  {col.title}
-              </label>
-            </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="mb-6">
-        <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
-          onClick={() => toggleSection('brands')}
-        >
-          Our Brands
-          <span className="text-lg">
-            {openSections.brands ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-3 h-3 rotate-270"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-3 h-3 rotate-90"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.brands && (
-          <p className="text-sm text-gray-500 italic">No data</p>
-        )}
-      </div>
-
-      <div>
-        <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
-          onClick={() => toggleSection('styles')}
-        >
-          Shop by Style
-          <span className="text-lg">
-            {openSections.styles ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-3 h-3 rotate-270"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-3 h-3 rotate-90"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.styles && (
-          <ul className="space-y-2 text-sm">
-            {subCollection.map((col) => (
-            <li key={col.title}>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                {col.title}
-              </label>
-            </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ProductGrid({products}) {
-  return (
-    <div className="w-full xl:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
-      {products.map((product) => (
-        <div
-          key={product.id}
-          className="relative group h-[460px]"
-        >
-          {/* Product Image and Info */}
-          <div className="p-4 z-10 relative">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-[300px] object-cover"
-            />
-            <h3 className="text-sm font-semibold uppercase mt-3">
-              {product.name}
-            </h3>
-            <p className="text-sm mt-1">{product.price}</p>
-          </div>
-
-          {/* Expanding Overlay */}
-          <div className="absolute inset-0 z-40 bg-[#FAF9F6] p-4 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
-            <div>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-[90%] h-[220px] mx-auto object-cover mb-2"
-              />
-              <h4 className="text-xs font-medium uppercase text-left mb-1">
-                {product.brand || 'BRAND NAME'}
-              </h4>
-              <h3 className="text-sm font-bold uppercase text-left leading-snug">
-                {product.name}
-              </h3>
-              <p className="text-sm mt-2 text-left">{product.price}</p>
-            </div>
-
-            <div className="flex items-center justify-between mt-4">
-              {/* Quantity Controls */}
-              <div className="flex flex-col items-center text-xs">
-                <span className="font-medium">QTY</span>
-                <div className="flex flex-col items-center">
-                  <button className="text-lg leading-none">▲</button>
-                  <span className="my-1">
-                    <input type="number" className="w-10 text-center border-none pr-1" value={1} />
-                  </span>
-                  <button className="text-lg leading-none">▼</button>
-                </div>
-              </div>
-
-              {/* Add to Registry Button */}
-              <button className="bg-[#446184] text-white text-xs font-bold py-4 px-8">
-                ADD TO REGISTRY
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}

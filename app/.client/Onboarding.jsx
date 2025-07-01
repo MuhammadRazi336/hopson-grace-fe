@@ -433,8 +433,36 @@ const OnboardingClient = ({onStepChange}) => {
     } else if (step === 5) {
       setStep(step + 1);
     } else if (step === 6) {
+      // Call API to update preferred categories when finishing Step 6
+      if (user && user.user && user.user.id) {
+        const preferredCategoryTitles = selectedCollections.map((col) => col.title);
+        const token = user.accessToken;
+        Registry_Services.updatePreferredCategories(
+          user.user.id,
+          {
+            preferredCategory: preferredCategoryTitles,
+            preferredSubCategory: selectedSubCollections.map((col) => col.title),
+          },
+          token
+        );
+      }
       setStep(step + 1);
     } else if (step === 7) {
+      // Call API to update preferred subcategories when finishing Step 7
+      if (user && user.user && user.user.id) {
+        const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
+        const token = user.accessToken;
+        Registry_Services.updatePreferredCategories(
+          user.user.id,
+          {
+            preferredCategory: selectedCollections.map((col) => col.title),
+            preferredSubCategory: preferredSubCategoryTitles,
+          },
+          token
+        );
+      }
+      setStep(step + 1);
+    } else if (step === 8) {
       await handleOnboard();
     }
   }
@@ -548,7 +576,7 @@ const OnboardingClient = ({onStepChange}) => {
             text="Next"
             className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
           >
-            {step === 7 ? 'Submit' : 'Next'}{' '}
+            {step === 8 ? 'Submit' : 'Next'}{' '}
             <img src={arrow} alt="" className="max-[768px]:w-4" />
           </button>
         </div>

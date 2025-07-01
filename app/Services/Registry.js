@@ -44,6 +44,12 @@ const Registry_Services = {
         Authorization: `Bearer ${token}`,
       },
     }),
+  updatePreferredCategories: (userId, payload, token) =>
+    axiosInstance.put(`users/preferred-categories/${userId}`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
 };
 
 export default Registry_Services;
