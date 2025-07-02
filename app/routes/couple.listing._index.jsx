@@ -13,13 +13,10 @@ export async function loader({request, context}) {
   const firstName = url.searchParams.get('firstName');
   const fianceFirstName = url.searchParams.get('fianceFirstName');
   const res = await context.ClientGet(
-    `users/find-couple?firstName=${firstName}&fianceFirstName=${fianceFirstName}`,
+    `users/find-couple?firstName=${firstName || ''}&fianceFirstName=${fianceFirstName || ''}`,
     context,
   );
-  if (!res.data) {
-    throw new Response('Not Found', {status: 404});
-  }
-  return defer({data: res.data});
+  return defer({data: res.data || []});
 }
 
 export default function FindCoupleForm() {

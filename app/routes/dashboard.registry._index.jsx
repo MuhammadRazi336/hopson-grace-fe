@@ -98,6 +98,7 @@ export async function loader({ request, context }) {
     eventGet,
     userGet,
     registry,
+    user,
   });
 }
 
@@ -117,7 +118,7 @@ export async function action({request, context}) {
 }
 
 const index = () => {
-  const {data, cashfundData, eventGet, registry, userGet} = useLoaderData();
+  const {data, cashfundData, eventGet, registry, userGet, user} = useLoaderData();
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -173,7 +174,7 @@ const index = () => {
           <NotificationCard />
         </div>
         <div>
-          <RegistryStatusCard />
+          <RegistryStatusCard status={registry?.status} registryId={registry?.id} token={user?.accessToken}/>
         </div>
       </div>
     </div>

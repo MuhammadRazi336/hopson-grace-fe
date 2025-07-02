@@ -93,7 +93,6 @@ export async function action({request, context}) {
 
 const index = () => {
   const {registries, registry, user} = useLoaderData();
-  // const action = useActionData();
 
   const fetcher = useFetcher();
 
@@ -207,7 +206,7 @@ const index = () => {
             <NotificationCard />
           </div>
           <div>
-            <RegistryStatusCard />
+            <RegistryStatusCard status={registry?.status} registryId={registry?.id} token={user?.accessToken}/>
           </div>
         </div>
       </div>

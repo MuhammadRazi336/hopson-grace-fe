@@ -16,6 +16,7 @@ export async function loader({request, context, params}) {
     return {data: {}};
   }
   const user = context.session.get('@User');
+  const registry = context.session.get('@Registry');
 
 
   const [eventRes, userRes, shippingRes] = await Promise.all([
@@ -29,7 +30,7 @@ export async function loader({request, context, params}) {
 
   // Combine shipping data into the main user object for easier state management
 
-  return {data: eventRes?.data || {}, userData: userData || {}, shippingData: shippingData || {}};
+  return {data: eventRes?.data || {}, userData: userData || {}, shippingData: shippingData || {}, registry: registry || {}, user};
 }
 export async function action({request, context}) {
   const contentType = request.headers.get('content-type') || '';
@@ -94,7 +95,7 @@ export async function action({request, context}) {
 }
 
 export default function Index() {
-  const {data, userData, shippingData} = useLoaderData();
+  const {data, userData, shippingData, registry, user} = useLoaderData();
   const [editForm, setEditForm] = useState(false);
 
   // Consolidated state for the entire form
@@ -303,7 +304,7 @@ export default function Index() {
               <NotificationCard />
             </div>
             <div>
-              <RegistryStatusCard />
+              <RegistryStatusCard status={registry?.status} registryId={registry?.id} token={user?.accessToken}/>
             </div>
           </div>
         </div>
