@@ -27,66 +27,66 @@ const ProductCard = ({
   };
 
   return (
-    <div className="h-full flex flex-col max-w-sm bg-gray-100 rounded-lg shadow-md p-4">
-      <div className="h-48 bg-black flex items-center justify-center rounded">
-        {image ? (
+    <div className="pt-0 relative z-0">
+      <div className="relative group h-[460px]">
+        {/* Product Image and Info */}
+        <div className="p-4 z-10 relative">
           <img
             src={image}
             alt={productName}
-            className="object-contain h-full w-full rounded"
+            className="w-full h-[300px] object-cover"
           />
-        ) : (
-          <div className="h-12 w-12 bg-white rounded"></div>
-        )}
-      </div>
-      <div className="mt-4 flex-1 flex flex-col">
-        <h2 className="text-lg font-bold">{productName}</h2>
-        <p className="text-gray-700">${price}</p>
-        <div className="mt-2 flex items-center">
-          <input
-            type="checkbox"
-            id="group-gift"
-            className="mr-2"
-            checked={isGroupGift}
-            onChange={handleGroupGiftChange}
-          />
-          <label htmlFor="group-gift" className="text-sm text-gray-600">
-            Tag as group gift?
-          </label>
-        </div>
-        {description && description.length > 100 ? (
-          <div className="text-sm text-gray-600 mt-2">
-            <p>
-              {isReadMore ? description : `${description.substring(0, 100)}...`}
-              <button
-                className="text-blue-600 hover:text-blue-800 ml-1"
-                onClick={e => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setIsReadMore(!isReadMore);
-                }}
-              >
-                {isReadMore ? 'Read Less' : 'Read More'}
-              </button>
-            </p>
+          <h3 className="text-[18px] font-semibold uppercase mt-3">
+            {productName}
+          </h3>
+          <p className="text-sm mt-1">${price}</p>
+          <div className="mt-2 flex items-center">
+            <input
+              type="checkbox"
+              id="group-gift"
+              className="mr-2"
+              checked={isGroupGift}
+              onChange={handleGroupGiftChange}
+            />
+            <label htmlFor="group-gift" className="text-sm text-gray-600">
+              Tag as group gift?
+            </label>
           </div>
-        ) : (
-          <p className="text-sm text-gray-600 mt-2">{description}</p>
-        )}
-        <div className="mt-4 flex items-center mt-auto">
-          <input
-            type="number"
-            value={quantity}
-            min="1"
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="w-12 h-10 border rounded text-center mr-2"
-          />
-          <button
-            onClick={handleAddToRegistry}
-            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
-          >
-            Add to Registry
-          </button>
+        </div>
+
+        {/* Expanding Overlay */}
+        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+          <div>
+            <img
+              src={image}
+              alt={productName}
+              className="w-full h-[220px] mx-auto object-cover mb-2"
+            />
+            <h4 className="text-xs font-medium uppercase text-left mb-1">
+              {'BRAND NAME'}
+            </h4>
+            <h3 className="text-sm font-bold uppercase text-left leading-snug">
+              {productName}
+            </h3>
+            <p className="text-sm mt-2 text-left">${price}</p>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            {/* Quantity Controls */}
+            <div className="flex flex-col w-full items-center text-xs">
+              {/* Add to Registry Button */}
+              <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+                personalize fund
+              </button>
+              {/* Add to Registry Button */}
+              <button
+                className="bg-[#446184] w-full block text-white text-xs font-bold py-4 px-8"
+                onClick={handleAddToRegistry}
+              >
+                ADD TO REGISTRY
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
