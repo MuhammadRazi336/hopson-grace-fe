@@ -8,7 +8,7 @@ import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
 import PreviewRegistry from '~/components/PreviewRegistry';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
 import product3 from '/assets/Images/gift-img-collection-1.png';
 import product2 from '/assets/Images/gift-img-collection-2.png';
@@ -23,8 +23,8 @@ import lineImghead from '/assets/Images/line.png';
 import CustomTab from '~/components/CustomTab';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
-import { Footer } from '~/components/Footer';
-import { Navigation } from 'swiper/modules';
+import {Footer} from '~/components/Footer';
+import {Navigation} from 'swiper/modules';
 
 const tabsData = [
   {
@@ -70,7 +70,9 @@ export async function action({request, context}) {
 }
 
 async function loadCriticalData({context}) {
-  const token = process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN;
+  const token =
+    process.env.PUBLIC_STOREFRONT_API_TOKEN ||
+    context.env?.PUBLIC_STOREFRONT_API_TOKEN;
   try {
     const [{products}] = await Promise.all([
       context.storefront.query(PRODUCT_QUERY),
@@ -96,7 +98,11 @@ async function loadCollectionData({context}) {
   }
 }
 
-function SidebarFilter({ collections, checkedCollectionIds, setCheckedCollectionIds }) {
+function SidebarFilter({
+  collections,
+  checkedCollectionIds,
+  setCheckedCollectionIds,
+}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
@@ -104,11 +110,11 @@ function SidebarFilter({ collections, checkedCollectionIds, setCheckedCollection
   });
 
   const parentCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'true'
+    (col) => col.parentMetafield?.value === 'true',
   );
 
   const subCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'false'
+    (col) => col.parentMetafield?.value === 'false',
   );
 
   const toggleSection = (section) => {
@@ -121,7 +127,7 @@ function SidebarFilter({ collections, checkedCollectionIds, setCheckedCollection
   const handleSidebarCheckbox = (colId) => {
     let newChecked;
     if (checkedCollectionIds.includes(colId)) {
-      newChecked = checkedCollectionIds.filter(id => id !== colId);
+      newChecked = checkedCollectionIds.filter((id) => id !== colId);
     } else {
       newChecked = [...checkedCollectionIds, colId];
     }
@@ -267,25 +273,33 @@ export default function AddGifts() {
       collections &&
       collections.length > 0
     ) {
-      const preferredCategories = (userData.data?.user?.preferredCategory || []).map(s => s.trim().toLowerCase());
-      const preferredSubCategories = (userData.data?.user?.preferredSubCategory || []).map(s => s.trim().toLowerCase());
+      const preferredCategories = (
+        userData.data?.user?.preferredCategory || []
+      ).map((s) => s.trim().toLowerCase());
+      const preferredSubCategories = (
+        userData.data?.user?.preferredSubCategory || []
+      ).map((s) => s.trim().toLowerCase());
 
       // Only check parent collections for preferredCategory, sub-collections for preferredSubCategory
       const checkedIds = [
         ...collections
           .filter(
-            col =>
+            (col) =>
               col.parentMetafield?.value === 'true' &&
-              preferredCategories.includes((col.title || '').trim().toLowerCase())
+              preferredCategories.includes(
+                (col.title || '').trim().toLowerCase(),
+              ),
           )
-          .map(col => col.id),
+          .map((col) => col.id),
         ...collections
           .filter(
-            col =>
+            (col) =>
               col.parentMetafield?.value === 'false' &&
-              preferredSubCategories.includes((col.title || '').trim().toLowerCase())
+              preferredSubCategories.includes(
+                (col.title || '').trim().toLowerCase(),
+              ),
           )
-          .map(col => col.id),
+          .map((col) => col.id),
       ];
 
       setCheckedCollectionIds(checkedIds);
@@ -296,13 +310,15 @@ export default function AddGifts() {
   // Helper to get all products for checked collections
   const getProductsForCheckedCollections = (checkedIds) => {
     const checkedParents = collections.filter(
-      col => col.parentMetafield?.value === 'true' && checkedIds.includes(col.id)
+      (col) =>
+        col.parentMetafield?.value === 'true' && checkedIds.includes(col.id),
     );
     const checkedSubs = collections.filter(
-      col => col.parentMetafield?.value === 'false' && checkedIds.includes(col.id)
+      (col) =>
+        col.parentMetafield?.value === 'false' && checkedIds.includes(col.id),
     );
     let parentProducts = [];
-    checkedParents.forEach(parentCol => {
+    checkedParents.forEach((parentCol) => {
       let subCollectionGids = [];
       const subColMeta = parentCol.subMetafield;
       if (subColMeta?.value) {
@@ -312,21 +328,36 @@ export default function AddGifts() {
       }
       // Find sub-collections by GID
       const subCols = collections.filter(
-        col => col.parentMetafield?.value === 'false' && subCollectionGids.includes(col.id)
+        (col) =>
+          col.parentMetafield?.value === 'false' &&
+          subCollectionGids.includes(col.id),
       );
       parentProducts = parentProducts.concat(
-        subCols.length > 0 ? subCols.flatMap(col => (col.products?.edges || []).map(edge => edge.node)) : []
+        subCols.length > 0
+          ? subCols.flatMap((col) =>
+              (col.products?.edges || []).map((edge) => edge.node),
+            )
+          : [],
       );
     });
-    const subProducts = checkedSubs.length > 0 ? checkedSubs.flatMap(col => (col.products?.edges || []).map(edge => edge.node)) : [];
+    const subProducts =
+      checkedSubs.length > 0
+        ? checkedSubs.flatMap((col) =>
+            (col.products?.edges || []).map((edge) => edge.node),
+          )
+        : [];
     const allProducts = [...parentProducts, ...subProducts];
-    const uniqueProducts = Array.from(new Map(allProducts.map(p => [p.id, p])).values());
+    const uniqueProducts = Array.from(
+      new Map(allProducts.map((p) => [p.id, p])).values(),
+    );
     return uniqueProducts;
   };
 
   // Update displayedProducts when checkedCollectionIds changes
   useEffect(() => {
-    setDisplayedProducts(getProductsForCheckedCollections(checkedCollectionIds));
+    setDisplayedProducts(
+      getProductsForCheckedCollections(checkedCollectionIds),
+    );
   }, [checkedCollectionIds]);
 
   const handleAddtoRegistry = (product) => {
@@ -393,40 +424,42 @@ export default function AddGifts() {
   };
 
   // Filter the products based on selected filters
-  const filteredProducts = products.filter((productWrapper) => {
-    const product = productWrapper.node;
-    const firstVariant = product?.variants?.edges?.[0]?.node;
+  const filteredProducts = products
+    .filter((productWrapper) => {
+      const product = productWrapper.node;
+      const firstVariant = product?.variants?.edges?.[0]?.node;
 
-    if (!firstVariant) return false;
+      if (!firstVariant) return false;
 
-    if (availability) {
-      const isAvailable = firstVariant.availableForSale;
-      if (availability === 'in-stock' && !isAvailable) return false;
-      if (availability === 'out-of-stock' && isAvailable) return false;
-    }
+      if (availability) {
+        const isAvailable = firstVariant.availableForSale;
+        if (availability === 'in-stock' && !isAvailable) return false;
+        if (availability === 'out-of-stock' && isAvailable) return false;
+      }
 
-    return true;
-  }).sort((a, b) => {
-    const priceA = Number(a.node.variants.edges[0].node.priceV2.amount);
-    const priceB = Number(b.node.variants.edges[0].node.priceV2.amount);
-    const createdAtA = new Date(a.node.createdAt).getTime();
-    const createdAtB = new Date(b.node.createdAt).getTime();
+      return true;
+    })
+    .sort((a, b) => {
+      const priceA = Number(a.node.variants.edges[0].node.priceV2.amount);
+      const priceB = Number(b.node.variants.edges[0].node.priceV2.amount);
+      const createdAtA = new Date(a.node.createdAt).getTime();
+      const createdAtB = new Date(b.node.createdAt).getTime();
 
-    if (priceSort === 'low-to-high') return priceA - priceB;
-    if (priceSort === 'high-to-low') return priceB - priceA;
-    if (dateSort === 'newest') return createdAtB - createdAtA;
-    if (dateSort === 'oldest') return createdAtA - createdAtB;
+      if (priceSort === 'low-to-high') return priceA - priceB;
+      if (priceSort === 'high-to-low') return priceB - priceA;
+      if (dateSort === 'newest') return createdAtB - createdAtA;
+      if (dateSort === 'oldest') return createdAtA - createdAtB;
 
-    return 0;
-  });
+      return 0;
+    });
 
   const parentCollection = collections.filter(
-    (col) => col.parentMetafield?.value === "true"
-  )
+    (col) => col.parentMetafield?.value === 'true',
+  );
 
   return (
     <>
-    <div className="pt-[80px] relative p-4 mt-[80px]">
+      <div className="pt-[80px] relative p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
           <span className="prata uppercase">Add</span> or{' '}
           <span className="prata uppercase">edit gifts</span>
@@ -496,18 +529,20 @@ export default function AddGifts() {
               }}
             >
               {/* Dynamic slides from Shopify collections */}
-              {collections.filter(col => col.parentMetafield?.value === 'true').map((col, idx) => (
-                <SwiperSlide key={col.title || idx}>
-                  <img
-                    src={col.image?.url || '/assets/Images/placeholder.png'}
-                    alt={col.title}
-                    className="w-full"
-                  />
-                  <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                    {col.title}
-                  </h3>
-                </SwiperSlide>
-              ))}
+              {collections
+                .filter((col) => col.parentMetafield?.value === 'true')
+                .map((col, idx) => (
+                  <SwiperSlide key={col.title || idx}>
+                    <img
+                      src={col.image?.url || '/assets/Images/placeholder.png'}
+                      alt={col.title}
+                      className="w-full"
+                    />
+                    <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      {col.title}
+                    </h3>
+                  </SwiperSlide>
+                ))}
             </Swiper>
             <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
               <img src={nextitem} className="size-6" alt="" />
@@ -523,33 +558,48 @@ export default function AddGifts() {
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
           />
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10 flex-1' ref={productGridRef}>
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10 flex-1"
+            ref={productGridRef}
+          >
             {(() => {
               if (displayedProducts.length === 0) {
-                return <div className="col-span-3 text-center text-gray-400">Select a collection to view products.</div>;
+                return (
+                  <div className="col-span-3 text-center text-gray-400">
+                    Select a collection to view products.
+                  </div>
+                );
               }
               let anyRendered = false;
-              const productNodes = displayedProducts.slice(0, productsToShow).map((product) => {
-                const firstVariant = product?.variants?.edges?.[0]?.node;
-                if (!firstVariant) return null;
-                anyRendered = true;
-                const firstImage = product?.images?.edges?.[0]?.node?.url || '/fallback-image.jpg';
-                return (
-                  <RegistryProduct
-                    key={product.id}
-                    image={firstImage}
-                    productName={product.title}
-                    price={firstVariant.priceV2.amount}
-                    description={product.description}
-                    onAddToRegistry={() => handleAddtoRegistry(product)}
-                    onGroupGiftTagChange={(isGroupGift) =>
-                      console.log(`Group Gift tag changed: ${isGroupGift}`)
-                    }
-                  />
-                );
-              });
+              const productNodes = displayedProducts
+                .slice(0, productsToShow)
+                .map((product) => {
+                  const firstVariant = product?.variants?.edges?.[0]?.node;
+                  if (!firstVariant) return null;
+                  anyRendered = true;
+                  const firstImage =
+                    product?.images?.edges?.[0]?.node?.url ||
+                    'assets/Images/placeholder.jpg';
+                  return (
+                    <RegistryProduct
+                      key={product.id}
+                      image={firstImage}
+                      productName={product.title}
+                      price={firstVariant.priceV2.amount}
+                      description={product.description}
+                      onAddToRegistry={() => handleAddtoRegistry(product)}
+                      onGroupGiftTagChange={(isGroupGift) =>
+                        console.log(`Group Gift tag changed: ${isGroupGift}`)
+                      }
+                    />
+                  );
+                });
               if (!anyRendered) {
-                return <div className="col-span-3 text-center text-gray-400">Select a collection to view products.</div>;
+                return (
+                  <div className="col-span-3 text-center text-gray-400">
+                    Select a collection to view products.
+                  </div>
+                );
               }
               return productNodes;
             })()}
@@ -560,16 +610,22 @@ export default function AddGifts() {
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
             <p className="text-center text-md my-10">
-              LOADING {Math.min(productsToShow, displayedProducts.length)} of {displayedProducts.length}
+              LOADING {Math.min(productsToShow, displayedProducts.length)} of{' '}
+              {displayedProducts.length}
             </p>
 
-            {displayedProducts.length > 12 && productsToShow < displayedProducts.length && (
-              <WhiteThemeButton
-                Text="View more"
-                link="#"
-                onClick={() => setProductsToShow((prev) => Math.min(prev + 12, displayedProducts.length))}
-              />
-            )}
+            {displayedProducts.length > 12 &&
+              productsToShow < displayedProducts.length && (
+                <WhiteThemeButton
+                  Text="View more"
+                  link="#"
+                  onClick={() =>
+                    setProductsToShow((prev) =>
+                      Math.min(prev + 12, displayedProducts.length),
+                    )
+                  }
+                />
+              )}
 
             {productsToShow > 12 && (
               <button
@@ -577,7 +633,10 @@ export default function AddGifts() {
                 onClick={() => {
                   setProductsToShow(12);
                   if (productGridRef.current) {
-                    productGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    productGridRef.current.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    });
                   }
                 }}
               >
@@ -729,53 +788,50 @@ export default function AddGifts() {
 
       <Footer />
 
-    
-
-
-
-
-
-
-    <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
-      {/* Alert Component */}
-      {showAlert && (
-        <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+      <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
+        {/* Alert Component */}
+        {showAlert && (
+          <div
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              {alertType === 'error' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold">Filter Registry Items</h3>
-        <div className="flex gap-4 mt-4">
-          {/* <select
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold">Filter Registry Items</h3>
+          <div className="flex gap-4 mt-4">
+            {/* <select
             className="border border-gray-300 rounded-lg px-4 py-2"
             onChange={(e) => setAvailability(e.target.value)}
             value={availability}
@@ -784,117 +840,130 @@ export default function AddGifts() {
             <option value="in-stock">In Stock</option>
             <option value="out-of-stock">Out of Stock</option>
           </select> */}
-          <select
-            className="border border-gray-300 rounded-lg px-4 py-2"
-            onChange={(e) => setPriceSort(e.target.value)}
-            value={priceSort}
-          >
-            <option value="">Price</option>
-            <option value="low-to-high">Low to High</option>
-            <option value="high-to-low">High to Low</option>
-          </select>
-          <select
-            className="border border-gray-300 rounded-lg px-4 py-2"
-            onChange={(e) => setDateSort(e.target.value)}
-            value={dateSort}
-          >
-            <option value="">Sort by Date</option>
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-          </select>
+            <select
+              className="border border-gray-300 rounded-lg px-4 py-2"
+              onChange={(e) => setPriceSort(e.target.value)}
+              value={priceSort}
+            >
+              <option value="">Price</option>
+              <option value="low-to-high">Low to High</option>
+              <option value="high-to-low">High to Low</option>
+            </select>
+            <select
+              className="border border-gray-300 rounded-lg px-4 py-2"
+              onChange={(e) => setDateSort(e.target.value)}
+              value={dateSort}
+            >
+              <option value="">Sort by Date</option>
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-        {filteredProducts.map((productWrapper, index) => {
-          const product = productWrapper.node
-          const firstImage = product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
-          const firstVariant = product?.variants?.edges?.[0]?.node;
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+          {filteredProducts.map((productWrapper, index) => {
+            const product = productWrapper.node;
+            const firstImage =
+              product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
+            const firstVariant = product?.variants?.edges?.[0]?.node;
 
-          if (!firstVariant) return null;
+            if (!firstVariant) return null;
 
-          return (
-            <div key={index} className="cursor-pointer">
-              <RegistryProduct
-                image={firstImage}
-                productName={product.title}
-                price={firstVariant.priceV2.amount}
-                description={product.description}
-                onAddToRegistry={() => handleAddtoRegistry(product)}
-                onGroupGiftTagChange={(isGroupGift) =>
-                  console.log(`Group Gift tag changed: ${isGroupGift}`)
-                }
+            return (
+              <div key={index} className="cursor-pointer">
+                <RegistryProduct
+                  image={firstImage}
+                  productName={product.title}
+                  price={firstVariant.priceV2.amount}
+                  description={product.description}
+                  onAddToRegistry={() => handleAddtoRegistry(product)}
+                  onGroupGiftTagChange={(isGroupGift) =>
+                    console.log(`Group Gift tag changed: ${isGroupGift}`)
+                  }
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="pt-6 font-sans">
+          {/* Heading */}
+          <h2 className="text-2xl font-semibold mb-6">
+            Browse Curated Collections
+          </h2>
+
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            {collections.map((col) => (
+              <CategoryTile
+                key={col.title}
+                title={col.title}
+                onClick={() => handleTileClick(col.title)}
               />
-            </div>
-          );
-        })}
+            ))}
+          </div>
+
+          {/* See More Button */}
+          <div className="flex justify-center">
+            <button
+              className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
+              onClick={() => alert('See More clicked')}
+            >
+              See More
+            </button>
+          </div>
+        </div>
+        <div className="pt-6 font-sans">
+          {/* Heading */}
+          <h2 className="text-2xl font-semibold mb-6">Browse By Categories</h2>
+
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            {collections.map((col) => (
+              <CategoryTile
+                key={col.title}
+                title={col.title}
+                onClick={() => handleTileClick(col.title)}
+              />
+            ))}
+          </div>
+
+          {/* See More Button */}
+          <div className="flex justify-center">
+            <button
+              className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
+              onClick={() => alert('See More clicked')}
+            >
+              See More
+            </button>
+          </div>
+        </div>
+
+        <style jsx>{`
+          @keyframes fadeInOut {
+            0% {
+              opacity: 0;
+              transform: translateY(-20px);
+            }
+            10% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+            90% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+            100% {
+              opacity: 0;
+              transform: translateY(-20px);
+            }
+          }
+          .animate-fade-in-out {
+            animation: fadeInOut 3s ease-in-out;
+          }
+        `}</style>
       </div>
-
-      <div className="pt-6 font-sans">
-        {/* Heading */}
-        <h2 className="text-2xl font-semibold mb-6">
-          Browse Curated Collections
-        </h2>
-
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {collections.map((col) => (
-            <CategoryTile
-              key={col.title}
-              title={col.title}
-              onClick={() => handleTileClick(col.title)}
-            />
-          ))}
-        </div>
-
-        {/* See More Button */}
-        <div className="flex justify-center">
-          <button
-            className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
-            onClick={() => alert('See More clicked')}
-          >
-            See More
-          </button>
-        </div>
-      </div>
-      <div className="pt-6 font-sans">
-        {/* Heading */}
-        <h2 className="text-2xl font-semibold mb-6">Browse By Categories</h2>
-
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {collections.map((col) => (
-            <CategoryTile
-              key={col.title}
-              title={col.title}
-              onClick={() => handleTileClick(col.title)}
-            />
-          ))}
-        </div>
-
-        {/* See More Button */}
-        <div className="flex justify-center">
-          <button
-            className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
-            onClick={() => alert('See More clicked')}
-          >
-            See More
-          </button>
-        </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translateY(-20px); }
-          10% { opacity: 1; transform: translateY(0); }
-          90% { opacity: 1; transform: translateY(0); }
-          100% { opacity: 0; transform: translateY(-20px); }
-        }
-        .animate-fade-in-out {
-          animation: fadeInOut 3s ease-in-out;
-        }
-      `}</style>
-    </div>
     </>
   );
 }
@@ -994,8 +1063,8 @@ const COLLECTION_QUERY = `#graphql
 // Export metadata for Remix
 export const meta = () => {
   return [
-    { title: "Add Gifts to Registry" },
-    { name: "description", content: "Add gifts to your registry" },
+    {title: 'Add Gifts to Registry'},
+    {name: 'description', content: 'Add gifts to your registry'},
   ];
 };
 
