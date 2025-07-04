@@ -265,6 +265,7 @@ export default function AddGifts() {
   const initialPreferencesApplied = useRef(false);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
+  const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
 
   useEffect(() => {
     if (
@@ -358,6 +359,12 @@ export default function AddGifts() {
     setDisplayedProducts(
       getProductsForCheckedCollections(checkedCollectionIds),
     );
+    // Sync Swiper selection with SidebarFilter
+    if (checkedCollectionIds.length === 1) {
+      setSelectedSwiperCollectionId(checkedCollectionIds[0]);
+    } else {
+      setSelectedSwiperCollectionId(null);
+    }
   }, [checkedCollectionIds]);
 
   const handleAddtoRegistry = (product) => {
@@ -461,8 +468,15 @@ export default function AddGifts() {
     <>
       <div className="pt-[80px] relative p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          <span className="prata uppercase">Add</span> or{' '}
-          <span className="prata uppercase">edit gifts</span>
+          {selectedSwiperCollectionId ? (
+            <>
+              <span className="prata uppercase">
+                {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
+              </span>
+            </>
+          ) : (
+            <span className="prata uppercase">Add or edit gifts</span>
+          )}
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"
@@ -532,7 +546,14 @@ export default function AddGifts() {
               {collections
                 .filter((col) => col.parentMetafield?.value === 'true')
                 .map((col, idx) => (
-                  <SwiperSlide key={col.title || idx}>
+                  <SwiperSlide
+                    key={col.title || idx}
+                    onClick={() => {
+                      setCheckedCollectionIds([col.id]);
+                      setSelectedSwiperCollectionId(col.id);
+                    }}
+                    style={{ cursor: 'pointer'}}
+                  >
                     <img
                       src={col.image?.url || '/assets/Images/placeholder.png'}
                       alt={col.title}

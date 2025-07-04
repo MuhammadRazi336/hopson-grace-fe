@@ -2,7 +2,7 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import Card from '~/components/Card.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import {useState} from 'react';
-import {useFetcher, useLoaderData} from '@remix-run/react';
+import {Link, useFetcher, useLoaderData} from '@remix-run/react';
 import RegistryChecklist from '~/components/RegistryChecklist';
 import {json, redirect} from '@shopify/remix-oxygen';
 import FooterBottom from '~/components/FooterBottom';
@@ -140,6 +140,7 @@ const index = () => {
       label: 'GIFTS ADDED',
       showIcon: true,
       buttonText: 'ADD GIFTS',
+      link: '/dashboard/addgifts',
     },
     {
       id: 'account',
@@ -160,6 +161,7 @@ const index = () => {
       label: 'GIFTS PURCHASED',
       showIcon: true,
       buttonText: 'VIEW GIFTS',
+      link: '/dashboard/gifttracker',
     },
   ];
 
@@ -242,9 +244,11 @@ const index = () => {
             </div>
             <p className="text-sm mt-2">{card.label}</p>
             {card.buttonText && (
+              <Link to={card.link}>
               <button className="bg-[#F6F5ED] font-bold text-black px-14 py-3 mt-4 text-base">
                 {card.buttonText}
               </button>
+              </Link>
             )}
           </div>
         ))}

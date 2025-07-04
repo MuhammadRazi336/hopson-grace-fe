@@ -1,6 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {useFetcher, useLoaderData} from '@remix-run/react';
 import {defer} from '@shopify/remix-oxygen';
+import Input from '~/components/Input';
+import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context, params} = args;
@@ -44,12 +46,13 @@ function NewCashFund() {
   const [allowFixedAmount, setAllowFixedAmount] = useState(!!cashFundData?.isFixedAmount);
   const [totalGoal, setTotalGoal] = useState(cashFundData?.amount || '');
   const [hideFromGuests, setHideFromGuests] = useState(!!cashFundData?.isAmountHide);
-  const [agreeToTerms, setAgreeToTerms] = useState(true);
+  const [agreedToTerms, setAgreedToTerms] = useState(true);
   const [noteToFamily, setNoteToFamily] = useState(cashFundData?.note || '');
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
   const fetcher = useFetcher();
+  const fileInputRef = useRef(null);
 
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
@@ -67,189 +70,317 @@ function NewCashFund() {
     }
   };
 
-  // Show alert immediately on submit, like add gifts index
+  // Show feedback on fetcher.data change
+  React.useEffect(() => {
+    if (fetcher.data?.response) {
+      setAlertMessage('Cash fund has been added to your registry!');
+      setAlertType('success');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    } else if (fetcher.data?.e) {
+      setAlertMessage('There was an error adding the cash fund.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    }
+  }, [fetcher.data]);
+
   const handleFormSubmit = (e) => {
-    if (!agreeToTerms) {
+    if (!agreedToTerms) {
       e.preventDefault();
-      alert('You must agree to the terms and conditions.');
+      setAlertMessage('You must agree to the terms and conditions.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
       return;
     }
     if (!cashFundName || !totalGoal || !registry?.id) {
       e.preventDefault();
-      alert('Please fill in all required fields.');
+      setAlertMessage('Please fill in all required fields.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
       return;
     }
-    setAlertMessage('Cash fund has been added to your registry!');
-    setAlertType('success');
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-      setAlertMessage('');
-    }, 3000);
+    // Otherwise, allow form to submit
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-gray-100 shadow-md rounded-md">
-      {/* Alert Component */}
-      {showAlert && (
-        <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>
-            )}
-            {alertType === 'error' && (
-              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"></path></svg>
-            )}
-            <span>{alertMessage}</span>
-          </div>
-        </div>
-      )}
-      <fetcher.Form
-        method="post"
-        encType="multipart/form-data"
-        className="space-y-6"
-        onSubmit={handleFormSubmit}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Photo Upload */}
-          <div className="border rounded-md p-4 flex flex-col items-center">
-            <div className="w-full h-48 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
-              {photoPreview ? (
-                <img src={photoPreview} alt="Preview" className="max-h-48 object-contain" />
-              ) : cashFundData?.image?.fileUrl ? (
-                <img src={cashFundData.image.fileUrl} alt="Current" className="max-h-48 object-contain" />
-              ) : (
-                <span className="text-gray-500">Upload New Photo (Max 5MB)</span>
-              )}
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              className="mt-4"
-              name="file"
-              onChange={handlePhotoUpload}
-            />
-            <p className="text-sm text-gray-500 mt-2">Supported formats: JPG, PNG, GIF (Max 5MB)</p>
-          </div>
-          {/* Form Inputs */}
-          <div>
-            <div className="mb-4">
-              <label htmlFor="cashFundName" className="block text-sm font-medium text-gray-700">
-                Cash Fund Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="cashFundName"
-                name="name"
-                value={cashFundName}
-                onChange={e => setCashFundName(e.target.value)}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Allow Gifts in</label>
-              <div className="flex items-center space-x-4 mt-1">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="isAnyAmount"
-                    checked={allowAnyAmount}
-                    onChange={e => setAllowAnyAmount(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Any Amount</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="isFixedAmount"
-                    checked={allowFixedAmount}
-                    onChange={e => setAllowFixedAmount(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                  />
-                  <span className="ml-2 text-gray-700">Fixed Amount</span>
-                </label>
+    <>
+    <div className="xl:mx-20 py-[100px] mx-6">
+        <div className="container mx-auto bg-[#446184]  py-16">
+          <h2 className="mt-0 text-white ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+            <span className="prata uppercase">NEW CASH</span> or{' '}
+            <span className="prata uppercase">TRAVEL</span> fund
+          </h2>
+          <img
+            src="/assets/Images/new-cash-bdr.png"
+            alt="Couple"
+            className="max-w-[630px] mt-5 h-auto mx-auto"
+          />
+
+          <p className="max-w-2xl mb-10 mx-auto text-center text-white mt-5 font-normal leading-relaxed">
+            Dolorem vero aut beatae aperiam est sunt dolorem sed molestiae
+            maiores. Aut doloremque libero 33 delectus perferendis eum libero
+            ipsam qui minus distinctio et fuga suscipit.
+          </p>
+
+          <div className="container mx-auto">
+            <fetcher.Form method="post" encType="multipart/form-data" onSubmit={handleFormSubmit}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Photo Section */}
+                <div className="space-y-4">
+                  <h2 className="text-white text-sm font-medium tracking-wide">
+                    PHOTO
+                  </h2>
+                  <div className="bg-[#F5F2ED]  aspect-square relative flex items-center justify-center">
+                    <div className="text-center">
+                      <img
+                        src={photoPreview || cashFundData?.image?.fileUrl || "/assets/Images/registrylogoSteps.png"}
+                        alt="gift"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      ref={fileInputRef}
+                      name="file"
+                      onChange={handlePhotoUpload}
+                    />
+                    <button
+                      className="cursor-pointer"
+                      type="button"
+                      onClick={() => fileInputRef.current && fileInputRef.current.click()}
+                    >
+                      <img
+                        src="/assets/Images/edit-icon.png"
+                        alt="edit"
+                        className="absolute -top-6 size-20 -right-4 "
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Details Section */}
+                <div className="space-y-6 ">
+                  <h2 className="text-white text-sm font-medium tracking-wide">
+                    DETAILS
+                  </h2>
+
+                  <div className=" rounded-lg p-4">
+                    <div className="w-full">
+                      <Input
+                        id="address"
+                        name="name"
+                        value={cashFundName}
+                        className="bg-white w-full p-4"
+                        placeholder="NEW HOME DOWN PAYMENT"
+                        onChange={(e) => setCashFundName(e.target.value)}
+                      />
+                    </div>
+
+                    {/* Payment Type Toggle */}
+                    <div className="flex mt-12 gap-4 mb-10 items-center justify-center">
+                      <span className="text-white text-center">
+                        ANY <br /> AMOUNT
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAllowAnyAmount(true);
+                          setAllowFixedAmount(false);
+                        }}
+                        className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                          allowAnyAmount
+                            ? 'bg-slate-600 text-white'
+                            : 'bg-gray-200 text-white  hover:bg-gray-300'
+                        }`}
+                      >
+                        {allowAnyAmount ? (
+                          <img
+                            src="/assets/Images/check-icon.png"
+                            alt="check"
+                            className="w-4 h-4"
+                          />
+                        ) : (
+                          <span className="w-4 h-4">&nbsp;</span>
+                        )}
+                      </button>
+                      <span className="text-white text-center">
+                        FIXED <br /> AMOUNT
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAllowAnyAmount(false);
+                          setAllowFixedAmount(true);
+                        }}
+                        className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                          allowFixedAmount
+                            ? 'bg-slate-600 text-white'
+                            : 'bg-gray-200 text-white hover:bg-gray-300'
+                        }`}
+                      >
+                        {allowFixedAmount ? (
+                          <img
+                            src="/assets/Images/check-icon.png"
+                            alt="check"
+                            className="w-4 h-4"
+                          />
+                        ) : (
+                          <span className="w-4 h-4">&nbsp;</span>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      {/* Total Goal Input */}
+                      <div className="w-7/12">
+                        <Input
+                          id="totalGoal"
+                          name="amount"
+                          value={totalGoal}
+                          className="bg-white w-full p-4"
+                          placeholder="Total Goal*"
+                          onChange={(e) => setTotalGoal(e.target.value)}
+                        />
+                      </div>
+
+                      {/* Hide from Guests Toggle */}
+                      <div className=" flex items-center justify-center gap-5 w-5/12 pl-2">
+                        <span className="text-white text-sm text-center">
+                          HIDE <br /> FROM <br /> GUESTS
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => setHideFromGuests(!hideFromGuests)}
+                          className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                            hideFromGuests
+                              ? 'bg-slate-600 text-white'
+                              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                          }`}
+                        >
+                          {hideFromGuests ? (
+                            <img
+                              src="/assets/Images/check-icon.png"
+                              alt="check"
+                              className="w-4 h-4"
+                            />
+                          ) : (
+                            <span className="w-4 h-4">&nbsp;</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Terms & Conditions */}
+                    <div className="space-y-3 mt-10">
+                      <h4 className="text-white font-medium text-md tracking-wide">
+                        TERMS & CONDITIONS
+                      </h4>
+                      <p className="text-white text-md prata tracking-wide italic font-normal ">
+                        Lorem ipsum dolor sit amet. Et temporibus quis et laborum
+                        rem sed beatae aperiam sit fuga dolorem vel molestiae
+                        beatae. Aut blanditiis libero. Ut distinctio praesentium
+                        non libero ipsum qui minus distinctio et fuga suscipit.
+                      </p>
+                      <div className="flex items-center space-x-2 mt-8">
+                        <span className="text-white text-sm text-center">
+                          AGREE
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => setAgreedToTerms(!agreedToTerms)}
+                          className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                            agreedToTerms
+                              ? 'bg-slate-600 text-white'
+                              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                          }`}
+                        >
+                          {agreedToTerms ? (
+                            <img
+                              src="/assets/Images/check-icon.png"
+                              alt="check"
+                              className="w-4 h-4"
+                            />
+                          ) : (
+                            <span className="w-4 h-4">&nbsp;</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="mb-4">
-              <label htmlFor="totalGoal" className="block text-sm font-medium text-gray-700">
-                Total Goal <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                id="totalGoal"
-                name="amount"
-                value={totalGoal}
-                onChange={e => setTotalGoal(e.target.value)}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                required
-                min="0"
-                step="0.01"
-              />
-            </div>
-            <div className="mb-4 flex items-center">
-              <input
-                type="checkbox"
-                id="hideFromGuests"
-                name="isAmountHide"
-                checked={hideFromGuests}
-                onChange={e => setHideFromGuests(e.target.checked)}
-                className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-              />
-              <label htmlFor="hideFromGuests" className="ml-2 text-sm text-gray-700">Hide From Guests</label>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Terms & Conditions</label>
-              <p className="text-sm text-gray-500 mt-1">Lorem ipsum dolor sit amet consectetur. A mauris nunc vel commodo amet venenatis tincidunt id vulputate.</p>
-              <div className="flex items-center mt-2">
-                <input
-                  type="checkbox"
-                  id="agreeToTerms"
-                  checked={agreeToTerms}
-                  onChange={e => setAgreeToTerms(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                  required
+
+              {/* Note Section */}
+              <div className="mt-8 space-y-4">
+                <textarea
+                  placeholder="Write a short note to friends and family — explaining the experience (optional)."
+                  name="note"
+                  value={noteToFamily}
+                  onChange={(e) => setNoteToFamily(e.target.value)}
+                  className="w-full h-32 p-4 bg-white resize-none"
                 />
-                <label htmlFor="agreeToTerms" className="ml-2 text-sm text-gray-700">Agree to Terms & Conditions</label>
+                <p className="text-gray-400 text-xs">
+                  300-500 characters remaining
+                </p>
               </div>
-            </div>
+
+              <input type="hidden" name="isAnyAmount" value={allowAnyAmount ? 'true' : 'false'} />
+              <input type="hidden" name="isFixedAmount" value={allowFixedAmount ? 'true' : 'false'} />
+              <input type="hidden" name="isAmountHide" value={hideFromGuests ? 'true' : 'false'} />
+              <input type="hidden" name="registryId" value={registry?.id || ''} />
+
+              {/* Add to Registry Button */}
+              <div className="mt-8 flex justify-end">
+                <button
+                  className="bg-white hover:bg-gray-400 text-gray-800 font-medium tracking-wide px-8 py-4 border-3 border-black"
+                  disabled={!agreedToTerms || fetcher.state === 'submitting'}
+                  type="submit"
+                >
+                  {fetcher.state === 'submitting' ? 'Adding to Registry...' : 'ADD TO REGISTRY'}
+                </button>
+              </div>
+            </fetcher.Form>
+
+            {/* Feedback Alert */}
+            {showAlert && (
+              <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
+                <div className="flex items-center">
+                  {alertType === 'success' && (
+                    <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>
+                  )}
+                  {alertType === 'error' && (
+                    <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                  )}
+                  <span>{alertMessage}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
-        <div className="mt-6">
-          <label htmlFor="noteToFamily" className="block text-sm font-medium text-gray-700">Note to Family and Friends</label>
-          <textarea
-            id="noteToFamily"
-            name="note"
-            rows="3"
-            value={noteToFamily}
-            onChange={e => setNoteToFamily(e.target.value)}
-            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          ></textarea>
-        </div>
-        <input type="hidden" name="registryId" value={registry?.id || ''} />
-        <div className="mt-6">
-          <button
-            className={`mt-4 w-full py-2 rounded-md ${fetcher.state === 'submitting' ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'} text-white`}
-            type="submit"
-            disabled={fetcher.state === 'submitting'}
-          >
-            {fetcher.state === 'submitting' ? 'Adding to Registry...' : 'Add to Registry'}
-          </button>
-        </div>
-      </fetcher.Form>
-      <style jsx>{`
-        @keyframes fadeInOut {
-          0% { opacity: 0; transform: translateY(-20px); }
-          10% { opacity: 1; transform: translateY(0); }
-          90% { opacity: 1; transform: translateY(0); }
-          100% { opacity: 0; transform: translateY(-20px); }
-        }
-        .animate-fade-in-out {
-          animation: fadeInOut 3s ease-in-out;
-        }
-      `}</style>
-    </div>
+      </div>
+      <Footer />
+    </>
   );
 }
 

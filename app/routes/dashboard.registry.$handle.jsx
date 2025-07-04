@@ -197,14 +197,14 @@ export default function Index() {
           );
         }
         apiCalls.push(
-          fetch(`http://localhost:3040/api/events/${formState.eventId}`, {
+          fetch(`https://dev-hopsongrace.codup.io/api/events/${formState.eventId}`, {
             method: 'PUT',
             body: eventFormData,
           }),
         );
       } else {
         apiCalls.push(
-          fetch(`http://localhost:3040/api/events/${formState.eventId}`, {
+          fetch(`https://dev-hopsongrace.codup.io/api/events/${formState.eventId}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(eventPayload),
@@ -214,7 +214,7 @@ export default function Index() {
 
       // API Call for User Data
       apiCalls.push(
-        fetch(`http://localhost:3040/api/users/${formState.userId}`, {
+        fetch(`https://dev-hopsongrace.codup.io/api/users/${formState.userId}`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(userPayload),
@@ -224,7 +224,7 @@ export default function Index() {
       // API Call for Shipping Data
       apiCalls.push(
         fetch(
-          `http://localhost:3040/api/users/shippingAddress/${shippingData.id}`,
+          `https://dev-hopsongrace.codup.io/api/users/shippingAddress/${shippingData.id}`,
           {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},

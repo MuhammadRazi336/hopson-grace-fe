@@ -139,7 +139,7 @@ const Dashboard_index = () => {
       const fetchUserData = async () => {
         try {
           const userId = JSON.parse(atob(token.split('.')[1])).id; // Extract user ID from token
-          const response = await fetch(`http://localhost:3040/api/users/${userId}`, {
+          const response = await fetch(`https://dev-hopsongrace.codup.io/api/users/${userId}`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }

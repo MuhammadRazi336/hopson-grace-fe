@@ -132,7 +132,7 @@ const index = () => {
         id: registry.events.id,
         welcomeMessage: note,
       };
-      const response = await fetch(`http://localhost:3040/api/events/${payload.id}`, {
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${payload.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
