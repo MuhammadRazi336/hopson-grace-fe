@@ -30,7 +30,10 @@ export function Header() {
   };
 
   const handleScroll = () => {
-    if (window.scrollY > 500 && document.body.scrollHeight > window.innerHeight) {
+    const scrollY = window.scrollY;
+    const threshold = 100; // Lower threshold for earlier activation
+
+    if (scrollY > threshold) {
       setIsFixed(true);
     } else {
       setIsFixed(false);
@@ -46,22 +49,32 @@ export function Header() {
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    let ticking = false;
+
+    const throttledHandleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledHandleScroll, {passive: true});
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', throttledHandleScroll);
     };
   }, []);
 
   return (
-    <div className={`${
-      isFixed ? 'lg:h-[442px]' : ''
-    }`}>
-        <TopHeader />
+    <div className={`${isFixed ? 'lg:h-[442px]' : ''}`}>
+      <TopHeader />
 
       <header
-        className={`flex justify-between px-4 lg:px-[74px] max-[1024px]:flex-row-reverse max-[1024px]:items-center max-[1024px]:py-4 ${
+        className={`flex justify-between px-4 lg:px-[74px] max-[1024px]:flex-row-reverse max-[1024px]:items-center max-[1024px]:py-4 transition-all duration-300 ease-in-out ${
           isFixed
-            ? 'fixed top-0 left-0 w-full z-50 bg-black py-4 pt-6 transition-all'
+            ? 'fixed top-0 left-0 w-full z-50 bg-black py-4 pt-6 shadow-lg'
             : 'relative bg-white pt-4 lg:pt-11'
         }`}
       >
@@ -93,7 +106,7 @@ export function Header() {
               <img
                 src={isFixed ? searchImgscroll : searchImg}
                 alt="Search Icon"
-                className={`${isFixed ? "max-[1601px]:w-8" : ""}`}
+                className={`${isFixed ? 'max-[1601px]:w-8' : ''}`}
               />
             </span>
           </button>
@@ -106,7 +119,7 @@ export function Header() {
               <img
                 src={isFixed ? userImgscroll : userImg}
                 alt="User Icon"
-                className={`${isFixed ? "max-[1601px]:w-8" : ""}`}
+                className={`${isFixed ? 'max-[1601px]:w-8' : ''}`}
               />
             </span>
           </NavLink>
@@ -119,8 +132,10 @@ export function Header() {
             <img
               src={isFixed ? registryLogoScroll : registryLogo}
               alt="Registry Logo"
-              className={`${
-                isFixed ? 'max-[1024px]:w-[60px]' : 'max-[1024px]:w-[200px] w-[90%]'
+              className={`transition-all duration-300 ease-in-out ${
+                isFixed
+                  ? 'max-[1024px]:w-[60px]'
+                  : 'max-[1024px]:w-[200px] w-[90%]'
               }`}
             />
           </NavLink>
@@ -155,9 +170,7 @@ export function Header() {
             </button>
           </div>
         </div>
-        {showPopup && (
-          <Popup onClose={handleClosePopup} />
-        )}
+        {showPopup && <Popup onClose={handleClosePopup} />}
       </header>
 
       <div
