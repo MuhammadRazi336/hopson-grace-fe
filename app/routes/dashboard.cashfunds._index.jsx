@@ -1,6 +1,6 @@
 import {useLoaderData, Link} from '@remix-run/react';
-import React, { useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import React, {useState} from 'react';
+import {Swiper, SwiperSlide} from 'swiper/react';
 import GiftAnyAmount from '~/components/GiftAnyAmount';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import product3 from '/assets/Images/gift-img-collection-1.png';
@@ -11,22 +11,25 @@ import youll1 from '/assets/Images/zam-zam.jpg';
 import youll2 from '/assets/Images/zam-zam.jpg';
 import youll3 from '/assets/Images/zam-zam.jpg';
 import nextitem from '/assets/Images/next.png';
-import { Footer } from '~/components/Footer';
+import {Footer} from '~/components/Footer';
 import PreviewRegistry from '~/components/PreviewRegistry';
-import { Navigation } from 'swiper/modules';
+import {Navigation} from 'swiper/modules';
 import Heading from '~/components/Heading';
 import lineImghead from '/assets/Images/line.png';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
-export async function loader({ context }) {
+export async function loader({context}) {
   const registry = context?.session?.get('@Registry');
 
   if (!registry || !registry.id) {
-    throw new Response('Registry not found in session', { status: 404 });
+    throw new Response('Registry not found in session', {status: 404});
   }
 
   const data = await context.ClientGet(
     `registryProducts/cash-fund/${registry.id}`,
-    context
+    context,
   );
 
   // Defensive check for image
@@ -44,7 +47,7 @@ export async function loader({ context }) {
   // Remove or comment out the direct console.log that assumes image exists
   // console.log('data', data.data[1].image.fileUrl);
 
-  return { cashFundData: data?.data || [] };
+  return {cashFundData: data?.data || []};
 }
 const CashFunds = () => {
   const {cashFundData} = useLoaderData();
@@ -55,7 +58,7 @@ const CashFunds = () => {
 
   return (
     <>
-    <div className="pt-[80px] relative p-4 mt-[80px]">
+      <div className="pt-[80px] relative p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
           <span className="prata uppercase">ADD CASH</span> or{' '}
           <span className="prata uppercase">TRAVEL</span>
@@ -173,18 +176,22 @@ const CashFunds = () => {
         <div className="flex flex-col md:flex-row gap-12 pt-10">
           <SidebarFilter />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {cashFundData.map((card, index) => (
-            <Card
-              id={card.id}
-              key={index}
-              image={card.image && card.image.fileUrl ? card.image.fileUrl : undefined}
-              title={card.name}
-              amount={card.amount}
-              buttonLabel={'Personalize Fund'}
-              onButtonClick={() => handleButtonClick(card.title)}
-            />
-          ))}
-        </div>
+            {cashFundData.map((card, index) => (
+              <Card
+                id={card.id}
+                key={index}
+                image={
+                  card.image && card.image.fileUrl
+                    ? card.image.fileUrl
+                    : undefined
+                }
+                title={card.name}
+                amount={card.amount}
+                buttonLabel={'Personalize Fund'}
+                onButtonClick={() => handleButtonClick(card.title)}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="flex justify-center items-center">
@@ -200,7 +207,7 @@ const CashFunds = () => {
           </div>
         </div>
       </section>
-{/* 
+      {/* 
       <section className="bg-[#FAF9F6] py-8">
         <Heading
           text="Ready-Made Registries"
@@ -356,7 +363,11 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image}) => {
         {/* Placeholder for the image or icon */}
         <div className="w-full h-full">
           {image ? (
-            <img src={image} alt="Cash Fund" className="w-full h-full object-cover" />
+            <img
+              src={image}
+              alt="Cash Fund"
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
               No Image
