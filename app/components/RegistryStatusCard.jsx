@@ -7,7 +7,7 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
   // Toggle handler
   const handleToggle = async () => {
     const newStatus = isDraft ? 'published' : 'draft';
-    await fetch(`http://localhost:3040/api/registries/status/${registryId}`, {
+    await fetch(`https://dev-hopsongrace.codup.io/api/registries/status/${registryId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
