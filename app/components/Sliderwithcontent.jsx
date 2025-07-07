@@ -12,7 +12,7 @@ const Sliderwithcontent = () => {
     <div>
       <Heading
         text="Kyle & Erik"
-        classes={`text-xl lg:text-3xl font-bold uppercase tracking-[0.1em] mb-4 lg:mb-[40px]`}
+        classes={`text-xl lg:text-3xl font-bold uppercase tracking-[0.1em] mt-16 mb-4 lg:mb-[40px]`}
       />
 
       <div className="tabandslider relative">
