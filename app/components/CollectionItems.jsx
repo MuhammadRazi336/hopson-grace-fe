@@ -6,6 +6,7 @@ import 'swiper/css/navigation';
 import iconitem from '/assets/Images/collectionitems.png';
 import nextitem from '/assets/Images/next.png';
 import vectorImg from '/assets/Images/Vector 14.png';
+import Button from '~/components/Button.jsx';
 
 const CollectionItems = () => {
   return (
@@ -165,6 +166,12 @@ const CollectionItems = () => {
       <div className="swiper-button-next-collection absolute flex right-[10px] top-13/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
         <span className="rotate-90 text-black max-[1024px]:text-sm">more</span>
         <img src={nextitem} alt="" />
+      </div>
+      <div className="flex justify-center items-center">
+        <Button
+          text="IT’S ALL IN THE DETAILS"
+          className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[18px] lg:py-[30px] lg:w-[320px] w-[280px] rounded-none max-[768px]:text-lg"
+        />
       </div>
     </div>
   );

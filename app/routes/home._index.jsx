@@ -123,13 +123,16 @@ const Home = () => {
 
       <section className="mb-[70px]">
         <Heading
-          text="Feel The Love"
+          text="inspiration"
           classes={
             'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[230px]'}
         />
+        <p className="text-center mt-5 md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+          A peek inside some of our most-loved celebrations.
+        </p>
         <Testimonialslider />
       </section>
 
