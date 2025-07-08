@@ -2,7 +2,7 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import {useState, useEffect, useRef} from 'react';
-import {useFetcher, useLoaderData} from '@remix-run/react';
+import {useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {defer, json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
@@ -258,6 +258,7 @@ export default function AddGifts() {
 
   const {products, collections, registry, user, userData} = useLoaderData();
   const fetcher = useFetcher();
+  const navigate = useNavigate();
 
   // State for checked collections and displayed products
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
@@ -609,6 +610,7 @@ export default function AddGifts() {
                       price={firstVariant.priceV2.amount}
                       description={product.description}
                       onAddToRegistry={() => handleAddtoRegistry(product)}
+                      onPersonalizeFund={() => navigate(`/dashboard/addgifts/${product.handle}`)}
                       onGroupGiftTagChange={(isGroupGift) =>
                         console.log(`Group Gift tag changed: ${isGroupGift}`)
                       }

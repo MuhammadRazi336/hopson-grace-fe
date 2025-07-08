@@ -1,3 +1,4 @@
+import { Link } from '@remix-run/react';
 import React, {useState} from 'react';
 
 const ProductCard = ({
@@ -6,6 +7,7 @@ const ProductCard = ({
   price,
   description,
   onAddToRegistry,
+  onPersonalizeFund,
   onGroupGiftTagChange,
 }) => {
   const [quantity, setQuantity] = useState(1);
@@ -75,7 +77,10 @@ const ProductCard = ({
             {/* Quantity Controls */}
             <div className="flex flex-col w-full items-center text-xs">
               {/* Add to Registry Button */}
-              <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+              <button
+                className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8"
+                onClick={onPersonalizeFund}
+              >
                 personalize fund
               </button>
               {/* Add to Registry Button */}

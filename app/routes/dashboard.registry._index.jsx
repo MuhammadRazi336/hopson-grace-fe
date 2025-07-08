@@ -122,6 +122,8 @@ const index = () => {
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [eventImage, setEventImage] = useState(eventGet?.data?.image?.fileUrl || '/assets/Images/couple-placeholder.png');
+  const [isUploading, setIsUploading] = useState(false);
 
   // Add state for the note textarea
   const [note, setNote] = useState(eventGet?.data?.welcomeMessage || '');
@@ -146,6 +148,35 @@ const index = () => {
       }
     } catch (err) {
       alert('Error updating message');
+    }
+  };
+
+  // Handle cropped image save from popup
+  const handleCroppedImageSave = async (croppedBlob) => {
+    if (!croppedBlob) return;
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', croppedBlob, 'profile.jpg');
+      formData.append('id', registry.events.id);
+      // Add any other required fields for your backend
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${registry.events.id}`, {
+        method: 'PUT',
+        body: formData,
+      });
+      if (response.ok) {
+        // Get the new image URL from the response if available
+        const data = await response.json();
+        let newImageUrl = data?.data?.image?.fileUrl || URL.createObjectURL(croppedBlob);
+        setEventImage(newImageUrl);
+        alert('Profile image updated!');
+      } else {
+        alert('Failed to update image');
+      }
+    } catch (err) {
+      alert('Error updating image');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -180,188 +211,192 @@ const index = () => {
     </div>
 
     <EditImagePopup
-        isOpen={isEditPopupOpen}
-        onClose={() => setIsEditPopupOpen(false)}
+      isOpen={isEditPopupOpen}
+      onClose={() => setIsEditPopupOpen(false)}
+      onSave={handleCroppedImageSave}
+    />
+    <div className="text-center pt-[80px] container mx-auto font-sans">
+      <img
+        src={"/assets/Images/couple-profile-bg.png"}
+        alt="Couple"
+        className="w-full h-auto"
+        style={{ maxHeight: 400, objectFit: 'cover' }}
       />
-      <div className="text-center pt-[80px] container mx-auto font-sans">
+      {/* <div
+        className="absolute top-[87%] -translate-x-[-73%] w-full h-full "
+        onClick={() => setIsEditPopupOpen(true)}
+      >
         <img
-          src="/assets/Images/couple-profile-bg.png"
-          alt="Couple"
-          className="w-full h-auto"
+          src="/assets/Images/edit-icon.png"
+          alt="Edit"
+          className="w-auto h-auto rounded-full cursor-pointer"
         />
-        {/* <div
-          className="absolute top-[87%] -translate-x-[-73%] w-full h-full "
-          onClick={() => setIsEditPopupOpen(true)}
-        >
-          <img
-            src="/assets/Images/edit-icon.png"
-            alt="Edit"
-            className="w-auto h-auto rounded-full cursor-pointer"
-          />
-        </div> */}
+      </div> */}
 
-        <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
-          <div className="xl:w-4/12 w-full">
-            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
-              {userGet?.data?.user?.firstName} & {userGet?.data?.user?.fianceFirstName}
-            </h1>
-          </div>
-          <div className="xl:w-4/12 w-full">
-            <div className="relative">
-              <img
-                src="/assets/Images/couple-placeholder.png"
-                alt="Couple"
-                className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto"
-              />
-              <div
-                className="absolute top-[85%] -translate-x-[-55%] w-[70%]"
-                onClick={() => setIsEditPopupOpen(true)}
-              >
-                <img
-                  src="/assets/Images/edit-icon.png"
-                  alt="Edit"
-                  className="w-auto h-auto rounded-full cursor-pointer"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="xl:w-4/12 w-full">
-            <div className="mr-16">
-              <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
-                {eventGet?.data?.eventDate}
-              </p>
-              <img
-                src="/assets/Images/profile-view-page-bdr.png"
-                alt="Couple"
-                className="max-w-[370px] h-auto ml-auto"
-              />
-              <div className="uppercase text-right ">
-                <p className="text-lg my-1">{eventGet?.data?.location}</p>
-                <p className="text-lg my-1">{eventGet?.data?.province}, {eventGet?.data?.city}</p>
-                <p className="text-lg my-1">{eventGet?.data?.weddingTime}</p>
-              </div>
-            </div>
-          </div>
+      <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
+        <div className="xl:w-4/12 w-full">
+          <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
+            {userGet?.data?.user?.firstName} & {userGet?.data?.user?.fianceFirstName}
+          </h1>
         </div>
-        <div className="max-w-3xl mx-auto mb-14">
-          <div className="border-3 border-gray-300 rounded p-4">
-            <textarea
-              className="w-full h-32 resize-none outline-none border-none text-gray-700 text-base placeholder-gray-500"
-              maxLength={maxLength}
-              placeholder="Write a short note to friends and family — a warm welcome, a thank you, or why you chose these gifts. (optional)"
-              value={note}
-              onChange={e => setNote(e.target.value)}
+        <div className="xl:w-4/12 w-full">
+          <div className="relative">
+            <img
+              src={eventImage}
+              alt="Couple"
+              className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto"
             />
-          </div>
-          <div className="flex justify-between items-center mt-2">
-            <span className="text-sm italic text-gray-400">
-              {maxLength - note.length}/{maxLength} characters remaining
-            </span>
-            <button
-              className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
-              onClick={handleSavePreview}
-              type="button"
+            <div
+              className="absolute top-[85%] -translate-x-[-55%] w-[70%]"
+              onClick={() => setIsEditPopupOpen(true)}
+              style={{ cursor: isUploading ? 'not-allowed' : 'pointer', opacity: isUploading ? 0.5 : 1 }}
             >
-              Save & Preview
-            </button>
-            <Link to={`/dashboard/registry/${registry.events.id}`}>
-            <button
-              className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
-              type="button"
-            >
-              Edit Registry Details
-            </button>
-            </Link>
+              <img
+                src="/assets/Images/edit-icon.png"
+                alt="Edit"
+                className="w-auto h-auto rounded-full cursor-pointer"
+              />
+            </div>
+            {isUploading && <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-60"><span>Uploading...</span></div>}
           </div>
         </div>
-      </div>
-      <div className="container mx-auto bg-[#FAF9F6] py-10 px-6">
-        <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
-          our registry selections
-        </h2>
-        <img
-          src="/assets/Images/profile-view-page-bdr.png"
-          alt="Couple"
-          className="max-w-[630px] h-auto mx-auto"
-        />
-
-        <div className="filters">
-          <div className="filter-item flex gap-x-12 mt-12 justify-center">
-            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
-              {' '}
-              <strong>Categories</strong> All{' '}
-            </h3>
-            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
-              {' '}
-              <strong>price</strong> low to high{' '}
-            </h3>
-            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
-              {' '}
-              <strong>status</strong> All{' '}
-            </h3>
-          </div>
-        </div>
-        <div className="gap-6 p-6 mt-12">
-          <h2 className='text-2xl font-bold text-center'>GIFTS</h2>
-          <ProductPage data={data} />
-        </div>
-
-        <div className="gap-6 p-6 mt-12">
-          <h2 className='text-2xl font-bold text-center'>CASH FUNDS</h2>
-          <FundPage data={cashfundData} />
-        </div>
-      </div>
-      <div className="container pt-12 md:flex-nowrap flex-wrap mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
-        <div className="py-10 px-6 md:py-12 md:px-[6rem] lg:px-[8rem] bg-[#446184] relative flex items-center justify-center flex-col  lg:w-[65%] w-full max-[768px]:p-10 lg:mt-20 mt-6">
-          <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
-            gift any amount
-          </h3>
-          <img
-            src="/assets/Images/white-bdr.png"
-            alt="couple"
-            className="max-w-[315px] mb-4 mt-4"
-          />
-          <h5 className="text-white text-xl font-normal">
-            CONTRIBUTE TO OUR JOURNEY!
-          </h5>
-          <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-4 font-normal text-center">
-            Help us create our dream wedding, honeymoon or life experience.
-            We're so grateful.
-          </p>
-          <div>
-            <div className="flex justify-center items-center gap-x-6">
-              <button
-                type="button"
-                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
-              >
-                $100
-              </button>
-              <button
-                type="button"
-                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
-              >
-                $500
-              </button>
-              <button
-                type="button"
-                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
-              >
-                None
-              </button>
+        <div className="xl:w-4/12 w-full">
+          <div className="mr-16">
+            <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
+              {eventGet?.data?.eventDate}
+            </p>
+            <img
+              src="/assets/Images/profile-view-page-bdr.png"
+              alt="Couple"
+              className="max-w-[370px] h-auto ml-auto"
+            />
+            <div className="uppercase text-right ">
+              <p className="text-lg my-1">{eventGet?.data?.location}</p>
+              <p className="text-lg my-1">{eventGet?.data?.province}, {eventGet?.data?.city}</p>
+              <p className="text-lg my-1">{eventGet?.data?.weddingTime}</p>
             </div>
           </div>
         </div>
-        <div className="lg:w-[35%] w-full  ">
-          {' '}
-          <img
-            src="/assets/Images/gift.png"
-            alt="Image Banner"
-            className="max-[1024px]:h-full object-cover object-[80%]"
+      </div>
+      <div className="max-w-3xl mx-auto mb-14">
+        <div className="border-3 border-gray-300 rounded p-4">
+          <textarea
+            className="w-full h-32 resize-none outline-none border-none text-gray-700 text-base placeholder-gray-500"
+            maxLength={maxLength}
+            placeholder="Write a short note to friends and family — a warm welcome, a thank you, or why you chose these gifts. (optional)"
+            value={note}
+            onChange={e => setNote(e.target.value)}
           />
         </div>
+        <div className="flex justify-between items-center mt-2">
+          <span className="text-sm italic text-gray-400">
+            {maxLength - note.length}/{maxLength} characters remaining
+          </span>
+          <button
+            className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
+            onClick={handleSavePreview}
+            type="button"
+          >
+            Save & Preview
+          </button>
+          <Link to={`/dashboard/registry/${registry.events.id}`}>
+          <button
+            className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
+            type="button"
+          >
+            Edit Registry Details
+          </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+    <div className="container mx-auto bg-[#FAF9F6] py-10 px-6">
+      <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+        our registry selections
+      </h2>
+      <img
+        src="/assets/Images/profile-view-page-bdr.png"
+        alt="Couple"
+        className="max-w-[630px] h-auto mx-auto"
+      />
+
+      <div className="filters">
+        <div className="filter-item flex gap-x-12 mt-12 justify-center">
+          <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+            {' '}
+            <strong>Categories</strong> All{' '}
+          </h3>
+          <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+            {' '}
+            <strong>price</strong> low to high{' '}
+          </h3>
+          <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+            {' '}
+            <strong>status</strong> All{' '}
+          </h3>
+        </div>
+      </div>
+      <div className="gap-6 p-6 mt-12">
+        <h2 className='text-2xl font-bold text-center'>GIFTS</h2>
+        <ProductPage data={data} />
       </div>
 
-      <CoupleFooter />
+      <div className="gap-6 p-6 mt-12">
+        <h2 className='text-2xl font-bold text-center'>CASH FUNDS</h2>
+        <FundPage data={cashfundData} />
+      </div>
+    </div>
+    <div className="container pt-12 md:flex-nowrap flex-wrap mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
+      <div className="py-10 px-6 md:py-12 md:px-[6rem] lg:px-[8rem] bg-[#446184] relative flex items-center justify-center flex-col  lg:w-[65%] w-full max-[768px]:p-10 lg:mt-20 mt-6">
+        <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
+          gift any amount
+        </h3>
+        <img
+          src="/assets/Images/white-bdr.png"
+          alt="couple"
+          className="max-w-[315px] mb-4 mt-4"
+        />
+        <h5 className="text-white text-xl font-normal">
+          CONTRIBUTE TO OUR JOURNEY!
+        </h5>
+        <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-4 font-normal text-center">
+          Help us create our dream wedding, honeymoon or life experience.
+          We're so grateful.
+        </p>
+        <div>
+          <div className="flex justify-center items-center gap-x-6">
+            <button
+              type="button"
+              className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
+            >
+              $100
+            </button>
+            <button
+              type="button"
+              className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
+            >
+              $500
+            </button>
+            <button
+              type="button"
+              className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
+            >
+              None
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="lg:w-[35%] w-full  ">
+        {' '}
+        <img
+          src="/assets/Images/gift.png"
+          alt="Image Banner"
+          className="max-[1024px]:h-full object-cover object-[80%]"
+        />
+      </div>
+    </div>
+
+    <CoupleFooter />
     </>
   );
 };
