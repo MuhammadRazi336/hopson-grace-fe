@@ -134,7 +134,7 @@ const index = () => {
         id: registry.events.id,
         welcomeMessage: note,
       };
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${payload.id}`, {
+      const response = await fetch(`http://localhost:3040/api/events/${payload.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ const index = () => {
       formData.append('file', croppedBlob, 'profile.jpg');
       formData.append('id', registry.events.id);
       // Add any other required fields for your backend
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${registry.events.id}`, {
+      const response = await fetch(`http://localhost:3040/api/events/${registry.events.id}`, {
         method: 'PUT',
         body: formData,
       });

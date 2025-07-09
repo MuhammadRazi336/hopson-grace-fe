@@ -97,6 +97,7 @@ export async function action({request, context}) {
 export default function Index() {
   const {data, userData, shippingData, registry, user} = useLoaderData();
   const [editForm, setEditForm] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
 
   // Consolidated state for the entire form
   const [formState, setFormState] = useState({
@@ -134,6 +135,14 @@ export default function Index() {
   const handleChange = (e) => {
     const {name, value} = e.target;
     setFormState((prevState) => ({...prevState, [name]: value}));
+    
+    // Clear validation error when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleImageChange = (file) => {
@@ -146,8 +155,84 @@ export default function Index() {
     }
   };
 
+  // Validation function
+  const validateForm = () => {
+    const errors = {};
+
+    // User Details Validation
+    if (!formState.yourFirstName || formState.yourFirstName.trim() === '') {
+      errors.yourFirstName = 'Your first name is required';
+    }
+    if (!formState.yourLastName || formState.yourLastName.trim() === '') {
+      errors.yourLastName = 'Your last name is required';
+    }
+    if (!formState.fianceFirstName || formState.fianceFirstName.trim() === '') {
+      errors.fianceFirstName = 'Fiancé\'s first name is required';
+    }
+    if (!formState.fianceLastName || formState.fianceLastName.trim() === '') {
+      errors.fianceLastName = 'Fiancé\'s last name is required';
+    }
+
+    // Event Details Validation
+    if (!formState.weddingDate || formState.weddingDate.trim() === '') {
+      errors.weddingDate = 'Wedding date is required';
+    } else {
+      const selectedDate = new Date(formState.weddingDate);
+      const today = new Date();
+      if (selectedDate < today) {
+        errors.weddingDate = 'Wedding date cannot be in the past';
+      }
+    }
+
+    if (!formState.venue || formState.venue.trim() === '') {
+      errors.venue = 'Wedding venue is required';
+    }
+
+    if (!formState.location || formState.location.trim() === '') {
+      errors.location = 'Wedding location (city) is required';
+    }
+
+    if (!formState.noOfGuests || formState.noOfGuests <= 0) {
+      errors.noOfGuests = 'Number of guests must be greater than 0';
+    }
+
+    // Shipping Address Validation
+    if (!formState.shippingAddress || formState.shippingAddress.trim() === '') {
+      errors.shippingAddress = 'Shipping address is required';
+    }
+
+    if (!formState.shippingPhone || formState.shippingPhone.trim() === '') {
+      errors.shippingPhone = 'Phone number is required';
+    }
+
+    if (!formState.shippingPostalCode || formState.shippingPostalCode.trim() === '') {
+      errors.shippingPostalCode = 'Postal code is required';
+    }
+
+    if (!formState.shippingCity || formState.shippingCity.trim() === '') {
+      errors.shippingCity = 'City is required';
+    }
+
+    if (!formState.shippingProvince || formState.shippingProvince.trim() === '') {
+      errors.shippingProvince = 'Province/State is required';
+    }
+
+    if (!formState.shippingCountry || formState.shippingCountry.trim() === '') {
+      errors.shippingCountry = 'Country is required';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate form before submission
+    if (!validateForm()) {
+      // alert('Please fix the validation errors before submitting.');
+      return;
+    }
 
     // 1. Event Payload
     const eventPayload = {
@@ -246,12 +331,13 @@ export default function Index() {
         );
       }
 
-      alert('All details updated successfully!');
+      // alert('All details updated successfully!');
       setEditForm(false); // Switch back to view mode
+      setValidationErrors({}); // Clear validation errors
       // Optionally, you can redirect or refresh data here.
       window.location.reload();
     } catch (error) {
-      alert(`An error occurred: ${error.message}`);
+      // alert(`An error occurred: ${error.message}`);
     }
   };
 
@@ -275,6 +361,7 @@ export default function Index() {
                   state={formState}
                   onStateChange={handleChange}
                   onImageChange={handleImageChange}
+                  validationErrors={validationErrors}
                 />
               ) : (
                 <ViewForm state={formState} />
@@ -314,7 +401,7 @@ export default function Index() {
   );
 }
 
-function EditForm({state, onStateChange, onImageChange}) {
+function EditForm({state, onStateChange, onImageChange, validationErrors}) {
   return (
     <form className="grid grid-cols-2 gap-x-8 gap-y-4 p-8 bg-[#375a7f] text-white">
       {/* Image Upload */}
@@ -349,8 +436,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           name="yourFirstName"
           value={state.yourFirstName}
           onChange={onStateChange}
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.yourFirstName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.yourFirstName && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.yourFirstName}</p>
+        )}
       </div>
       <div>
         <label className="block font-medium mb-1 text-base" htmlFor="yourLastName">
@@ -362,8 +452,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           name="yourLastName"
           value={state.yourLastName}
           onChange={onStateChange}
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.yourLastName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.yourLastName && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.yourLastName}</p>
+        )}
       </div>
       <div>
         <label className="block font-medium mb-1 text-base" htmlFor="fianceFirstName">
@@ -375,8 +468,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           name="fianceFirstName"
           value={state.fianceFirstName}
           onChange={onStateChange}
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.fianceFirstName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.fianceFirstName && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.fianceFirstName}</p>
+        )}
       </div>
       <div>
         <label className="block font-medium mb-1 text-base" htmlFor="fianceLastName">
@@ -388,8 +484,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           name="fianceLastName"
           value={state.fianceLastName}
           onChange={onStateChange}
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.fianceLastName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.fianceLastName && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.fianceLastName}</p>
+        )}
       </div>
 
       {/* Event Details */}
@@ -403,12 +502,15 @@ function EditForm({state, onStateChange, onImageChange}) {
           name="weddingDate"
           value={state.weddingDate}
           onChange={onStateChange}
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.weddingDate ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.weddingDate && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.weddingDate}</p>
+        )}
       </div>
       <div>
         <label className="block font-medium mb-1 text-base" htmlFor="venue">
-          WEDDING VENUE
+          WEDDING VENUE*
         </label>
         <input
           type="text"
@@ -416,13 +518,16 @@ function EditForm({state, onStateChange, onImageChange}) {
           name="venue"
           value={state.venue}
           onChange={onStateChange}
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.venue ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.venue && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.venue}</p>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block font-medium mb-1 text-base" htmlFor="location">
-            WEDDING LOCATION
+            WEDDING LOCATION*
           </label>
           <input
             type="text"
@@ -430,12 +535,15 @@ function EditForm({state, onStateChange, onImageChange}) {
             name="location"
             value={state.location}
             onChange={onStateChange}
-            className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+            className={`outline-none text-black w-full border ${validationErrors.location ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
           />
+          {validationErrors.location && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors.location}</p>
+          )}
         </div>
         <div>
           <label className="block font-medium mb-1 text-base" htmlFor="noOfGuests">
-            NO. OF GUESTS
+            NO. OF GUESTS*
           </label>
           <input
             type="number"
@@ -443,8 +551,12 @@ function EditForm({state, onStateChange, onImageChange}) {
             name="noOfGuests"
             value={state.noOfGuests}
             onChange={onStateChange}
-            className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+            min="1"
+            className={`outline-none text-black w-full border ${validationErrors.noOfGuests ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
           />
+          {validationErrors.noOfGuests && (
+            <p className="text-red-500 text-sm mt-1">{validationErrors.noOfGuests}</p>
+          )}
         </div>
       </div>
       <div>
@@ -473,8 +585,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           value={state.shippingAddress}
           onChange={onStateChange}
           placeholder="Address*"
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.shippingAddress ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.shippingAddress && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingAddress}</p>
+        )}
       </div>
       <div>
         <input
@@ -483,8 +598,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           value={state.shippingPhone}
           onChange={onStateChange}
           placeholder="Phone Number*"
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.shippingPhone ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.shippingPhone && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingPhone}</p>
+        )}
       </div>
       <div>
         <input
@@ -493,8 +611,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           value={state.shippingPostalCode}
           onChange={onStateChange}
           placeholder="Postal Code*"
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.shippingPostalCode ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.shippingPostalCode && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingPostalCode}</p>
+        )}
       </div>
       <div>
         <input
@@ -503,8 +624,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           value={state.shippingCity}
           onChange={onStateChange}
           placeholder="City*"
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.shippingCity ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.shippingCity && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingCity}</p>
+        )}
       </div>
       <div>
         <input
@@ -513,8 +637,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           value={state.shippingProvince}
           onChange={onStateChange}
           placeholder="Province/State*"
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.shippingProvince ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.shippingProvince && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingProvince}</p>
+        )}
       </div>
       <div>
         <input
@@ -523,8 +650,11 @@ function EditForm({state, onStateChange, onImageChange}) {
           value={state.shippingCountry}
           onChange={onStateChange}
           placeholder="Country*"
-          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
+          className={`outline-none text-black w-full border ${validationErrors.shippingCountry ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
+        {validationErrors.shippingCountry && (
+          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingCountry}</p>
+        )}
       </div>
     </form>
   );

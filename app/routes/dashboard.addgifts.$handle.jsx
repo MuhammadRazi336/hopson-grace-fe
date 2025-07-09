@@ -87,13 +87,14 @@ const GiftDetailHandle = () => {
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
-  const handleAddtoRegistry = ({id, price, quantity}) => {
+  const handleAddtoRegistry = ({id, price, quantity, isGroupPayment}) => {
     const payload = {
       productId: id,
       amount: Number(price),
       registryId: Number(registry.id),
       productTypeId: 1,
       quantity,
+      isGroupPayment: isGroupPayment || false
     };
     fetcher.submit(
       {payload: JSON.stringify(payload)},
@@ -157,11 +158,12 @@ const GiftDetailHandle = () => {
         productPrice={product.variants.edges[0].node.price}
         productDescription={product.description}
         productImages={product.images.edges}
-        onRegistryPress={({quantity}) => {
+        onRegistryPress={({quantity, isGroupGift}) => {
           handleAddtoRegistry({
             id: Number(extractShopifyId(product.id)),
             price: product.variants.edges[0].node.price.amount,
             quantity,
+            isGroupPayment: isGroupGift
           });
         }}
       />

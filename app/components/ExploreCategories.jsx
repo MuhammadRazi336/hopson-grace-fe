@@ -31,7 +31,7 @@ function ExploreCategories() {
       {/* slides here */}
       <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-6 mt-16 mx-10">
         {parentCollections.map((col) => (
-          <div>
+          <div key={col.id}>
             <img src={col.image.url} alt={col.title} className="w-full" />
             <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
               {col.title}

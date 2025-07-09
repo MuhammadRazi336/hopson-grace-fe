@@ -546,9 +546,9 @@ export default function AddGifts() {
               {/* Dynamic slides from Shopify collections */}
               {collections
                 .filter((col) => col.parentMetafield?.value === 'true')
-                .map((col, idx) => (
+                .map((col) => (
                   <SwiperSlide
-                    key={col.title || idx}
+                    key={col.id}
                     onClick={() => {
                       setCheckedCollectionIds([col.id]);
                       setSelectedSwiperCollectionId(col.id);
@@ -809,184 +809,68 @@ export default function AddGifts() {
         </div>
       </section>
 
+      {/* Alert Component */}
+      {showAlert && (
+        <div
+          className={`fixed top-4 right-4 ${
+            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+        >
+          <div className="flex items-center">
+            {alertType === 'success' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+            {alertType === 'error' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            )}
+            <span>{alertMessage}</span>
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 3s ease-in-out;
+        }
+      `}</style>
       <Footer />
-
-      <div className="max-w-4xl mx-auto min-h-svh m-2 p-4 bg-white-100 rounded-lg">
-        {/* Alert Component */}
-        {showAlert && (
-          <div
-            className={`fixed top-4 right-4 ${
-              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-          >
-            <div className="flex items-center">
-              {alertType === 'success' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
-                </svg>
-              )}
-              {alertType === 'error' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
-              <span>{alertMessage}</span>
-            </div>
-          </div>
-        )}
-
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold">Filter Registry Items</h3>
-          <div className="flex gap-4 mt-4">
-            {/* <select
-            className="border border-gray-300 rounded-lg px-4 py-2"
-            onChange={(e) => setAvailability(e.target.value)}
-            value={availability}
-          >
-            <option value="">Availability</option>
-            <option value="in-stock">In Stock</option>
-            <option value="out-of-stock">Out of Stock</option>
-          </select> */}
-            <select
-              className="border border-gray-300 rounded-lg px-4 py-2"
-              onChange={(e) => setPriceSort(e.target.value)}
-              value={priceSort}
-            >
-              <option value="">Price</option>
-              <option value="low-to-high">Low to High</option>
-              <option value="high-to-low">High to Low</option>
-            </select>
-            <select
-              className="border border-gray-300 rounded-lg px-4 py-2"
-              onChange={(e) => setDateSort(e.target.value)}
-              value={dateSort}
-            >
-              <option value="">Sort by Date</option>
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-          {filteredProducts.map((productWrapper, index) => {
-            const product = productWrapper.node;
-            const firstImage =
-              product?.images?.edges?.[0]?.node?.src || '/fallback-image.jpg';
-            const firstVariant = product?.variants?.edges?.[0]?.node;
-
-            if (!firstVariant) return null;
-
-            return (
-              <div key={index} className="cursor-pointer">
-                <RegistryProduct
-                  image={firstImage}
-                  productName={product.title}
-                  price={firstVariant.priceV2.amount}
-                  description={product.description}
-                  onAddToRegistry={() => handleAddtoRegistry(product)}
-                  onGroupGiftTagChange={(isGroupGift) =>
-                    console.log(`Group Gift tag changed: ${isGroupGift}`)
-                  }
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="pt-6 font-sans">
-          {/* Heading */}
-          <h2 className="text-2xl font-semibold mb-6">
-            Browse Curated Collections
-          </h2>
-
-          {/* Grid Layout */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {collections.map((col) => (
-              <CategoryTile
-                key={col.title}
-                title={col.title}
-                onClick={() => handleTileClick(col.title)}
-              />
-            ))}
-          </div>
-
-          {/* See More Button */}
-          <div className="flex justify-center">
-            <button
-              className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
-              onClick={() => alert('See More clicked')}
-            >
-              See More
-            </button>
-          </div>
-        </div>
-        <div className="pt-6 font-sans">
-          {/* Heading */}
-          <h2 className="text-2xl font-semibold mb-6">Browse By Categories</h2>
-
-          {/* Grid Layout */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-            {collections.map((col) => (
-              <CategoryTile
-                key={col.title}
-                title={col.title}
-                onClick={() => handleTileClick(col.title)}
-              />
-            ))}
-          </div>
-
-          {/* See More Button */}
-          <div className="flex justify-center">
-            <button
-              className="bg-black text-white px-6 py-3 rounded-lg text-center font-medium hover:bg-gray-800"
-              onClick={() => alert('See More clicked')}
-            >
-              See More
-            </button>
-          </div>
-        </div>
-
-        <style jsx>{`
-          @keyframes fadeInOut {
-            0% {
-              opacity: 0;
-              transform: translateY(-20px);
-            }
-            10% {
-              opacity: 1;
-              transform: translateY(0);
-            }
-            90% {
-              opacity: 1;
-              transform: translateY(0);
-            }
-            100% {
-              opacity: 0;
-              transform: translateY(-20px);
-            }
-          }
-          .animate-fade-in-out {
-            animation: fadeInOut 3s ease-in-out;
-          }
-        `}</style>
-      </div>
     </>
   );
 }

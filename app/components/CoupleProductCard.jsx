@@ -60,68 +60,77 @@ const CoupleProductCard = ({
   };
 
   const renderButton = () => {
-    switch (status) {
-      case 'groupGift':
-        return (
-          <>
-            <input
-              type="number"
-              value={contributionAmount}
-              onChange={handleInputChange}
-              placeholder="Enter amount"
-              className="border rounded px-2 py-1 w-full mb-2"
-            />
-            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-            <button
-              onClick={handleButtonClick}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full"
-            >
-              Contribute to Group Gift
-            </button>
-          </>
-        );
-      case 'cashFund':
-        return (
-          <>
-            <input
-              type="number"
-              value={contributionAmount}
-              onChange={handleInputChange}
-              placeholder="Enter amount"
-              className="border rounded px-2 py-1 w-full mb-2"
-            />
-            {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-            <button
-              onClick={handleButtonClick}
-              className="mt-auto bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white"
-            >
-              Contribute
-            </button>
-          </>
-        );
-      case 'addToCart':
-        return (
+    // Check for group gift first (both status and prop)
+    if (status === 'groupGift' || isGroupGift) {
+      return (
+        <>
+          <input
+            type="number"
+            value={contributionAmount}
+            onChange={handleInputChange}
+            placeholder="Enter amount"
+            className="border rounded px-2 py-1 w-full mb-2"
+          />
+          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+          <button
+            onClick={handleButtonClick}
+            className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
+          >
+            Contribute
+          </button>
+        </>
+      );
+    }
+    
+    // Check for cash fund
+    if (status === 'cashFund' || isCashFund) {
+      return (
+        <>
+          <input
+            type="number"
+            value={contributionAmount}
+            onChange={handleInputChange}
+            placeholder="Enter amount"
+            className="border rounded px-2 py-1 w-full mb-2"
+          />
+          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+          <button
+            onClick={handleButtonClick}
+            className="mt-auto bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white"
+          >
+            Contribute
+          </button>
+        </>
+      );
+    }
+    
+    // Check for add to cart
+    if (status === 'addToCart') {
+      return (
+        <button
+          onClick={handleButtonClick}
+          className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
+        >
+          Add to Cart
+        </button>
+      );
+    }
+    
+    // Check for purchased
+    if (status === 'purchased') {
+      return (
+        <>
           <button
             onClick={handleButtonClick}
             className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
           >
             Add to Cart
           </button>
-        );
-      case 'purchased':
-        return (
-          <>
-            <button
-              onClick={handleButtonClick}
-              className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
-            >
-              Add to Cart
-            </button>
-          </>
-        );
-      default:
-        return null;
+        </>
+      );
     }
+    
+    return null;
   };
 
   const progressPercentage = (contributedAmount / maxContribution) * 100;
@@ -175,7 +184,7 @@ const CoupleProductCard = ({
         <div className="flex justify-between items-center">
           <p className="font-semibold text-md">${price}</p>
 
-          {isCashFund && (
+          {(isCashFund || isGroupGift) && (
             <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
               Remaining: ${maxContribution - contributedAmount}
             </p>
