@@ -69,7 +69,7 @@ const Faqs = () => {
             isExpanded ? 'line-vertical-extend' : 'line-vertical'
           }`}
         >
-          {faqs.slice(0, 4).map((faq) => (
+          {faqs.slice(0, 2).map((faq) => (
             <div
               className="flex w-full lg:w-1/2 mt-20 max-[1024px]:mt-10 px-10 max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center "
               key={faq.number}
