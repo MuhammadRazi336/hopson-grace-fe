@@ -579,6 +579,28 @@ export type CatalogQuery = {
   };
 };
 
+export type GetProductByHandleQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+}>;
+
+export type GetProductByHandleQuery = {
+  productByHandle?: StorefrontAPI.Maybe<
+    Pick<
+      StorefrontAPI.Product,
+      'id' | 'title' | 'descriptionHtml' | 'description'
+    > & {
+      images: {edges: Array<{node: Pick<StorefrontAPI.Image, 'id' | 'src'>}>};
+      variants: {
+        edges: Array<{
+          node: Pick<StorefrontAPI.ProductVariant, 'id' | 'title'> & {
+            price: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
+          };
+        }>;
+      };
+    }
+  >;
+};
+
 export type PageQueryVariables = StorefrontAPI.Exact<{
   language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
@@ -1142,6 +1164,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query Catalog(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    products(first: $first, last: $last, before: $startCursor, after: $endCursor) {\n      nodes {\n        ...ProductItem\n      }\n      pageInfo {\n        hasPreviousPage\n        hasNextPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment MoneyProductItem on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment ProductItem on Product {\n    id\n    handle\n    title\n    featuredImage {\n      id\n      altText\n      url\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        ...MoneyProductItem\n      }\n      maxVariantPrice {\n        ...MoneyProductItem\n      }\n    }\n    variants(first: 1) {\n      nodes {\n        selectedOptions {\n          name\n          value\n        }\n      }\n    }\n  }\n\n': {
     return: CatalogQuery;
     variables: CatalogQueryVariables;
+  };
+  '#graphql\nquery getProductByHandle($handle: String!) {\n  productByHandle(handle: $handle) {\n    id\n    title\n    descriptionHtml\n    description\n    images(first:10) {\n            edges {\n            node {\n            id\n            src\n            }\n            }\n            }\n    variants(first: 10) {\n      edges {\n        node {\n          id\n          title\n           price {\n      amount\n      currencyCode\n    }\n        }\n      }\n    }\n  }\n}': {
+    return: GetProductByHandleQuery;
+    variables: GetProductByHandleQueryVariables;
   };
   '#graphql\n  query Page(\n    $language: LanguageCode,\n    $country: CountryCode,\n    $handle: String!\n  )\n  @inContext(language: $language, country: $country) {\n    page(handle: $handle) {\n      id\n      title\n      body\n      seo {\n        description\n        title\n      }\n    }\n  }\n': {
     return: PageQuery;
