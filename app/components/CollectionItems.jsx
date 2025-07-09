@@ -31,7 +31,7 @@ const CollectionItems = () => {
           }}
           breakpoints={{
             340: {
-              slidesPerView: 1,
+              slidesPerView: 2,
               spaceBetween: 0,
             },
             475: {
@@ -159,11 +159,11 @@ const CollectionItems = () => {
           </SwiperSlide>
         </Swiper>
       </div>
-      <div className="swiper-button-prev-collection absolute flex left-[10px] top-13/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
+      <div className="swiper-button-prev-collection absolute flex left-[10px] top-9/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
         <img src={nextitem} alt="" className="rotate-180" />
         <span className="rotate-90 text-black max-[1024px]:text-sm">more</span>
       </div>
-      <div className="swiper-button-next-collection absolute flex right-[10px] top-13/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
+      <div className="swiper-button-next-collection absolute flex right-[10px] top-9/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
         <span className="rotate-90 text-black max-[1024px]:text-sm">more</span>
         <img src={nextitem} alt="" />
       </div>
