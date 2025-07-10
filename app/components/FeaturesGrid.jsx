@@ -80,7 +80,7 @@ import {
             {features.map((feature, index) => {
               const IconComponent = feature.icon
               return (
-                <div key={index} className="text-center space-y-4 w-3/12">
+                <div key={index} className="text-center space-y-4 lg:w-3/12 md:w-4/12 w-1/2">
                   {/* Icon Circle */}
                   <div className="mx-auto w-[180px] h-[180px] bg-slate-600 rounded-full flex items-center justify-center">
                     <IconComponent className="w-16 h-16 text-white" />
