@@ -4,6 +4,7 @@ import CustomTabs from '~/components/Tabs.jsx';
 import {useEffect, useRef, useState} from 'react';
 import NotificationCard from '~/components/NotificationCard';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
+import { Footer } from '~/components/Footer';
 
 const introSteps = [
   {
@@ -390,7 +391,9 @@ const Dashboard_index = () => {
           <Outlet />
         )}
       </div>
+      <Footer/>
     </div>
+    
   );
 };
 
