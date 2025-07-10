@@ -48,7 +48,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 >
                   <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em]">
                     <li>
-                      <Link className="text-white" to="/about-us">
+                      <Link className="text-white" to="/aboutus">
                         ABOUT US
                       </Link>
                     </li>
@@ -58,8 +58,28 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
+                      <Link className="text-white" to="/why-the-registry">
+                      WHY THE REGISTRY?
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/how-it-works">
+                      HOW IT WORKS
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/our-philosophy">
+                      OUR PHILOSOPHY
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/your-registry-advisor">
+                      YOUR REGISTRY ADVISOR
+                      </Link>
+                    </li>
+                    <li>
                       <Link className="text-white" to="/meet-our-team">
-                        MEET OUR TEAM
+                      MEET OUR SISTER STORE  HOPSON GRACE
                       </Link>
                     </li>
                   </ul>
