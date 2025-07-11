@@ -19,14 +19,61 @@ export async function loader({request, context, params}) {
   const registry = context.session.get('@Registry');
 
 
-  const [eventRes, userRes, shippingRes] = await Promise.all([
-    context.ClientGet(`events/${params.handle}`, context),
-    context.ClientGet(`users/${user.user.id}`, context),
-    context.ClientGet(`users/shippingAddress/${user.user.id}`, context),
-  ]);
+  const eventRes = await context.ClientGet(`events/${params.handle}`, context);
+  const userRes = await context.ClientGet(`users/${user.user.id}`, context);
+
+  let shippingRes;
+  try {
+    shippingRes = await context.ClientGet(`users/shippingAddress/${user.user.id}`, context);
+  } catch (err) {
+    shippingRes = { data: {} };
+  }
 
   const userData = userRes?.data || {};
-  const shippingData = shippingRes?.data || {};
+  let shippingData = shippingRes?.data || {};
+
+  // If shipping address not found, create it and fetch again
+  if (!shippingData || Object.keys(shippingData).length === 0) {
+    const payload = {
+      userId: user.user.id,
+      address: '',
+      phoneNumber: '',
+      postalCode: '',
+      city: '',
+      province: '',
+      country: '',
+    };
+    try {
+      await context.ClientPost('users/shippingAddress', payload, context);
+      const newShippingRes = await context.ClientGet(`users/shippingAddress/${user.user.id}`, context);
+      shippingData = newShippingRes?.data || {};
+    } catch (err) {
+      // If POST or GET fails, use fallback
+      shippingData = {
+        address: '',
+        phoneNumber: '',
+        postalCode: '',
+        city: '',
+        province: '',
+        country: '',
+      };
+    }
+  }
+
+  // After your fallback logic for shippingData
+  // Ensure shippingData.id is a valid number
+  if (!shippingData.id || isNaN(Number(shippingData.id))) {
+    try {
+      const newShippingRes = await context.ClientGet(`users/shippingAddress/${user.user.id}`, context);
+      shippingData = newShippingRes?.data || shippingData;
+    } catch (err) {
+      // ignore, keep previous shippingData
+    }
+  }
+  // Final check
+  if (!shippingData.id || isNaN(Number(shippingData.id))) {
+    shippingData.id = null;
+  }
 
   // Combine shipping data into the main user object for easier state management
 
@@ -257,9 +304,8 @@ export default function Index() {
       fianceLastName: formState.fianceLastName,
     };
 
-    // 3. Shipping Payload
+    // 3. Shipping Payload (without id for POST)
     const shippingPayload = {
-      id: shippingData.id,
       address: formState.shippingAddress,
       phoneNumber: formState.shippingPhone,
       postalCode: formState.shippingPostalCode,
@@ -307,16 +353,45 @@ export default function Index() {
       );
 
       // API Call for Shipping Data
-      apiCalls.push(
-        fetch(
-          `https://dev-hopsongrace.codup.io/api/users/shippingAddress/${shippingData.id}`,
-          {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(shippingPayload),
+      if (!shippingData.id || isNaN(Number(shippingData.id))) {
+        // No address exists, so create it
+        await fetch('https://dev-hopsongrace.codup.io/api/users/shippingAddress', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user?.accessToken || ''}`
           },
-        ),
-      );
+          body: JSON.stringify({
+            userId: formState.userId,
+            ...shippingPayload,
+          }),
+        });
+        // Fetch the new address and update shippingData.id for future updates
+        const res = await fetch(`https://dev-hopsongrace.codup.io/api/users/shippingAddress/${formState.userId}`, {
+          headers: {
+            'Authorization': `Bearer ${user?.accessToken || ''}`
+          }
+        });
+        const data = await res.json();
+        shippingData.id = data?.id;
+      } else {
+        // Address exists, so update it
+        apiCalls.push(
+          fetch(
+            `https://dev-hopsongrace.codup.io/api/users/shippingAddress/${shippingData.id}`,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+                // No Authorization header needed
+              },
+              body: JSON.stringify({
+                ...shippingPayload,
+              }),
+            },
+          ),
+        );
+      }
 
       const responses = await Promise.all(apiCalls);
 
@@ -335,7 +410,7 @@ export default function Index() {
       setEditForm(false); // Switch back to view mode
       setValidationErrors({}); // Clear validation errors
       // Optionally, you can redirect or refresh data here.
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       // alert(`An error occurred: ${error.message}`);
     }

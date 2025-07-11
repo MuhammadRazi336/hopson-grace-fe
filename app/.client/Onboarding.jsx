@@ -477,6 +477,9 @@ const OnboardingClient = ({onStepChange}) => {
       // }
     }
   };
+  // Handler to skip to the next step without validation
+  const handleSkip = () => setStep(step + 1);
+
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
     if (currentStep === 8) {
@@ -516,6 +519,7 @@ const OnboardingClient = ({onStepChange}) => {
           <Step1
             setSelectedDate={setSelectedDate}
             selectedDate={eventData.selectedDate}
+            onSkip={handleSkip}
           />
         );
       case STEPS_CONSTANTS.EVENT_ADD_INFO:
@@ -530,6 +534,7 @@ const OnboardingClient = ({onStepChange}) => {
             handleSelectChange={handleSelectChange}
             eventDateError={eventDateError}
             step2Errors={step2Errors}
+            onSkip={handleSkip}
           />
         );
       case STEPS_CONSTANTS.GUEST_INFO:
@@ -538,6 +543,7 @@ const OnboardingClient = ({onStepChange}) => {
             value={eventData.noOfGuest}
             onChange={handleGuestNoChange}
             step3Error={step3Error}
+            onSkip={handleSkip}
           />
         );
       case STEPS_CONSTANTS.SHIPPING_INFO:
@@ -546,6 +552,7 @@ const OnboardingClient = ({onStepChange}) => {
             formData={addressData}
             handleInputChange={handleInputChange}
             step4Errors={step4Errors}
+            onSkip={handleSkip}
           />
         );
       case STEPS_CONSTANTS.PREFER_GIFT_INFO:
@@ -615,7 +622,7 @@ const OnboardingClient = ({onStepChange}) => {
   );
 };
 
-const Step1 = ({selectedDate, setSelectedDate}) => {
+const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
   return (
     <div className="text-center">
       <div className="p-4 w-[300px] mx-auto customdatepicker">
@@ -630,9 +637,7 @@ const Step1 = ({selectedDate, setSelectedDate}) => {
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
-      <button className="border-b-2 border-b-white text-center mt-10">
-        I'LL ADD THIS LATER
-      </button>
+      {/* I'LL ADD THIS LATER button removed as requested */}
     </div>
   );
 };
@@ -647,6 +652,7 @@ const Step2 = ({
   eventData,
   eventDateError,
   step2Errors,
+  onSkip,
 }) => {
   return (
     <div>
@@ -698,10 +704,13 @@ const Step2 = ({
           <div className="input-error-message">{eventDateError}</div>
         )}
       </div>
+      {/* <button className="border-b-2 border-b-white text-center mt-10" type="button" onClick={onSkip}>
+        I'LL ADD THIS LATER
+      </button> */}
     </div>
   );
 };
-const Step3 = ({value, onChange, step3Error}) => {
+const Step3 = ({value, onChange, step3Error, onSkip}) => {
   return (
     <div>
       <div className="text-center">
@@ -729,7 +738,7 @@ const Step3 = ({value, onChange, step3Error}) => {
       />
       {step3Error && <div className="input-error-message">{step3Error}</div>}
       <div className="text-center">
-        <button type="button" className="mt-10 border-b-2 border-b-white">
+        <button type="button" className="mt-10 border-b-2 border-b-white" onClick={onSkip}>
           I'LL ADD THIS LATER
         </button>
       </div>
@@ -737,7 +746,7 @@ const Step3 = ({value, onChange, step3Error}) => {
   );
 };
 
-const Step4 = ({formData, handleInputChange, step4Errors}) => {
+const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
   // Submit handler to log the form data
 
   return (
@@ -810,7 +819,7 @@ const Step4 = ({formData, handleInputChange, step4Errors}) => {
         />
       </div>
       <div className="text-center">
-        <button className="mt-10 border-b-2 border-b-white">
+        <button className="mt-10 border-b-2 border-b-white" type="button" onClick={onSkip}>
           I'LL ADD THIS LATER
         </button>
       </div>
