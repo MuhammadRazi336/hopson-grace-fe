@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useLoaderData, useNavigate} from '@remix-run/react';
-
+import SwanImg from '/assets/Images/SwanImg.png';
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
 import Button from '~/components/Button.jsx';
@@ -479,6 +479,37 @@ const OnboardingClient = ({onStepChange}) => {
   };
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
+    if (currentStep === 8) {
+      return (
+        <div className="flex flex-col items-center justify-center text-white py-6 rounded-md">
+          <div className="uppercase tracking-widest font-semibold mb-4 text-center text-xl md:text-xl">
+            YOUR ACCOUNT IS CREATED.
+          </div>
+          <div className="my-4 flex flex-col items-center justify-center relative">
+            {/* FPO Placeholder Image */}
+            <div>
+              <img src={SwanImg} alt="" className="w-full h-full" />
+            </div>
+            <div className="flex items-center justify-center w-16 h-12 bg-white mx-auto mb-4 absolute top-8 left-14">
+              <span className="text-black font-normal text-lg">FPO</span>
+            </div>
+          </div>
+          <div className="font-semibold text-center mb-6 mt-4 text-base md:text-xl">
+            Now it’s time to set up your dashboard — your registry HQ.
+          </div>
+          <div className="text-center mb-6 text-lg md:text-xl max-w-xl">
+            From tracking gifts and checking messages to sending thank-you notes and setting up your home page, everything you need lives here. You’ll land here every time you log in.
+          </div>
+          <div className="uppercase font-semibold mb-6 text-center">READY?</div>
+          <button
+            className="bg-white text-black font-bold px-8 py-5 shadow hover:bg-gray-100 transition"
+            onClick={async () => { await handleOnboard(); navigate('/dashboard'); }}
+          >
+            GO TO MY DASHBOARD
+          </button>
+        </div>
+      );
+    }
     switch (currentStep) {
       case STEPS_CONSTANTS.EVENT_DATE_INFO:
         return (
@@ -547,39 +578,38 @@ const OnboardingClient = ({onStepChange}) => {
   return (
     <div className="flex justify-center items-center">
       {/* Main content wrapper */}
-      <Stepper step={step} totalSteps={8} />
-
+      {/* Hide Stepper and buttons on last step */}
+      {step !== 8 && <Stepper step={step} totalSteps={9} />}
       <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
-
         <div className="mb-6">
           {/* Render the step content dynamically */}
           {renderStepContent(step)}
         </div>
-
-        {/* Back and Next buttons */}
-        <div className="flex justify-between mt-4">
-          {/* <Button text="Back" onClick={goBack} disabled={step === 1} /> */}
-          <button
-            onClick={goBack}
-            disabled={step === 1}
-            type="submit"
-            text="Next"
-            className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
-          >
-            <img src={arrow} alt="" className="rotate-180 max-[768px]:w-4" />{' '}
-            Back
-          </button>
-          <button
-            onClick={goNext}
-            type="submit"
-            text="Next"
-            className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
-          >
-            {step === 8 ? 'Submit' : 'Next'}{' '}
-            <img src={arrow} alt="" className="max-[768px]:w-4" />
-          </button>
-        </div>
+        {/* Back and Next buttons, hidden on last step */}
+        {step !== 8 && (
+          <div className="flex justify-between mt-4">
+            <button
+              onClick={goBack}
+              disabled={step === STEPS_CONSTANTS.EVENT_DATE_INFO}
+              type="submit"
+              text="Next"
+              className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+            >
+              <img src={arrow} alt="" className="rotate-180 max-[768px]:w-4" />{' '}
+              Back
+            </button>
+            <button
+              onClick={goNext}
+              type="submit"
+              text="Next"
+              className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+            >
+              {step === 9 ? 'Submit' : 'Next'}{' '}
+              <img src={arrow} alt="" className="max-[768px]:w-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

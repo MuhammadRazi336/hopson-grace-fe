@@ -2,6 +2,7 @@ import { useHydrated } from '~/utils/helpers.js';
 import Onboarding from '~/.client/Onboarding.jsx';
 import { requireAuth } from '~/utils/auth-guard.js';
 import { redirect } from '@shopify/remix-oxygen';
+import { useLoaderData } from '@remix-run/react';
 import StepsAndImage from '~/components/StepsAndImage';
 import { useState } from 'react';
 
@@ -62,12 +63,32 @@ export async function loader({ request, context }) {
 
 const OnboardingIndex = () => {
   const hydrated = useHydrated();
+  const { user } = useLoaderData();
   const [currentStep, setCurrentStep] = useState(1); // Start with step 1 for titles
+
+  // Get user first names for dynamic step title
+  const firstName = user?.user?.firstName || '';
+  const fianceFirstName = user?.user?.fianceFirstName || '';
+  
+  // Create dynamic step titles
+  const getStepTitle = (step) => {
+    if (step === 8) {
+      // Dynamic title for step 8 using user names
+      if (firstName && fianceFirstName) {
+        return `congratulations ${firstName} & ${fianceFirstName}!`;
+      } else if (firstName) {
+        return `congratulations ${firstName}!`;
+      } else {
+        return 'congratulations!';
+      }
+    }
+    return STEP_TITLES[step] || '';
+  };
 
   return (
     <div> 
       <StepsAndImage 
-        title={STEP_TITLES[currentStep]} 
+        title={getStepTitle(currentStep)} 
         stepNo={currentStep + 2} // Start from step 3 and increment
         totalSteps={9} // Add total number of steps
         content={hydrated && <Onboarding onStepChange={setCurrentStep} />} 
