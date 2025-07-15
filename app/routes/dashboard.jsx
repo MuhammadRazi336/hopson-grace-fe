@@ -5,6 +5,7 @@ import {useEffect, useRef, useState} from 'react';
 import NotificationCard from '~/components/NotificationCard';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
 import { Footer } from '~/components/Footer';
+import lineImg3 from '/assets/Images/line.png';
 
 const introSteps = [
   {
@@ -311,10 +312,10 @@ const Dashboard_index = () => {
           <div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative bg-white min-h-[70vh]">
             {/* Welcome and couple name */}
             <div className="mb-6 mt-16">
-              <div className="italic text-2xl text-center">welcome to your dashboard</div>
+              <div className="md:text-[42px] text-center xl:mt-0 mt-16 font-normal ivyora">welcome to your dashboard</div>
               <div className="font-serif text-3xl text-center mb-2">{coupleName}</div>
-              <div className="w-40 h-1 border-b-2 border-black mx-auto mb-2" />
-              <div className="uppercase text-sm text-center tracking-widest text-black/70">How this works</div>
+              <img src={lineImg3} alt="line" className="w-[60%] h-auto mx-auto" />
+              <div className="uppercase mt-6 text-sm text-center tracking-widest text-black/70">How this works</div>
             </div>
 
             {/* Right side cards */}
@@ -351,16 +352,7 @@ const Dashboard_index = () => {
 
             {/* Pagination centered below the card */}
             <div className="flex flex-col items-center mt-6 w-full max-w-lg">
-              <div className="text-lg font-bold text-center mb-2">
-                {currentStep + 1} <span className="font-normal">/ {introSteps.length}</span>
-              </div>
-              <button
-                className="font-bold uppercase tracking-wide text-black hover:underline mb-4"
-                onClick={handleFinishIntro}
-              >
-                Skip Intro
-              </button>
-              <div className="w-full flex justify-end">
+            <div className="w-full flex justify-end">
                 <button
                   className="font-bold uppercase tracking-wide text-black"
                   onClick={() => {
@@ -374,6 +366,16 @@ const Dashboard_index = () => {
                   {currentStep < introSteps.length - 1 ? 'Got it, Next →' : 'Done'}
                 </button>
               </div>
+              <div className="text-lg font-bold text-center mb-2">
+                <span className="text-3xl md:text-4xl font-semibold">{currentStep + 1}</span> <span className="font-normal text-lg">/ {introSteps.length}</span>
+              </div>
+              <button
+                className="font-bold uppercase tracking-wide text-black underline mb-4"
+                onClick={handleFinishIntro}
+              >
+                Skip Intro
+              </button>
+              
             </div>
 
             {/* Animated Arrow */}
