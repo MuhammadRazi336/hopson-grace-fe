@@ -160,7 +160,7 @@ const index = () => {
       total: registry?.giftAvailable || 0,
       label: 'GIFTS PURCHASED',
       showIcon: true,
-      buttonText: 'VIEW GIFTS',
+      buttonText: 'VIEW PURCHASES',
       link: '/dashboard/gifttracker',
     },
   ];
@@ -183,7 +183,12 @@ const index = () => {
     <div className="pt-[80px]">
       <div className="flex xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-16">
         <div className="w-full xl:w-9/12 flex flex-col gap-y-4 items-center pb-8">
-          <div className="w-64 h-32 bg-gray-500"></div>
+          <div className="w-64 h-32 bg-gray-300 flex items-center justify-center">
+            <h2 className="flex justify-center items-center font-normal text-center">FPO - 
+              <br />
+              GIF/ILLUSTRATION
+            </h2>
+          </div>
 
           <h2 className="md:text-[42px] text-center xl:mt-0 mt-16 font-normal ivyora">
             welcome to the heart of your wedding,
@@ -220,11 +225,11 @@ const index = () => {
             className="bg-[#446184] text-white pb-6 px-[50px] max-h-[700px] flex flex-col items-center"
           >
             {card.showIcon && (
-              <div className="flex bg-[#F6F5ED] rounded-full -mt-20 mb-6 w-28 h-28 items-center justify-center">
+              <div className="flex bg-[#F6F5ED] rounded-full -mt-24 mb-6 w-40 h-40 items-center justify-center">
                 <img
                   src="/assets/Images/gift-icon.png"
                   alt="Gift Icon"
-                  className="w-16 h-16 mb-4"
+                  className="w-24 h-24 mb-4"
                 />
               </div>
             )}
@@ -235,6 +240,9 @@ const index = () => {
               {card.description}
             </p>
             <div className="text-5xl mt-5 prata flex items-baseline">
+              {card.id === 'account' && (
+                <span className="text-2xl mr-1 self-start">$</span>
+              )}
               <span>{card.value}</span>
               {card.total && (
                 <span className="ml-1 text-4xl">

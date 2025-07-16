@@ -90,6 +90,7 @@ const Support = () => {
       <div className="container  mx-auto flex flex-col items-center justify-center">
         <img
           src="/assets/Images/registrylogoSteps.png"
+          width={100}
           alt="Image Banner"
           className="max-[1024px]:h-full object-cover object-[80%]"
         />
@@ -97,7 +98,7 @@ const Support = () => {
           NEED A REFRESHER ON SETTING UP YOUR DASHBOARD?
         </h3>
 
-        <WhiteThemeButton Text="SEE OUR QUICK-START GUIDE" link="/quick-start-guide" />
+        <WhiteThemeButton className="w-[400px]" Text="SEE OUR QUICK-START GUIDE" link="/quick-start-guide" />
       </div>
 
       <Footer />

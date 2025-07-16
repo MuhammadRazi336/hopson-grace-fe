@@ -11,7 +11,7 @@ const ShipGifts = () => {
         <img
           src="/assets/Images/profile-view-page-bdr.png"
           alt="Couple"
-          className="max-w-[630px] mt-5 h-auto mx-auto"
+          className="max-w-[630px] mt-10 h-auto mx-auto"
         />
         <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
           Enjoy one-time free shipping after the wedding—just let us know when
@@ -46,7 +46,7 @@ const ShipGifts = () => {
               </p>
               <div>
                 <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm  hover:bg-gray-100">
-                  FULFILL MY REGISTRY & SHIP MY GIFTS
+                  FULFILL MY REGISTRY <br /> & SHIP MY GIFTS
                 </button>
               </div>
             </div>
@@ -57,7 +57,7 @@ const ShipGifts = () => {
               <img
                 src="/assets/Images/white-bdr.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%] mx-auto"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] 2xl:w-[30%] mx-auto"
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
                 Book a virtual call or showroom appointment ​ to see your gifts
@@ -77,18 +77,19 @@ const ShipGifts = () => {
       <div className="container  mx-auto flex flex-col items-center justify-center">
         <img
           src="/assets/Images/registrylogoSteps.png"
+          width={100}
           alt="Image Banner"
           className="max-[1024px]:h-full object-cover object-[80%]"
         />
         <h3 className="text-xl text-center mt-10">
           DIDN’T GET EVERYTHING ON YOUR LIST?
         </h3>
-        <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center ">
+        <p className="text-sm lg:text-xl  max-w-[600px] mt-4 mb-4 text-center ">
           Take advantage of our 15% discount, a one-time opportunity to complete
           your registry.
         </p>
         <div>
-          <button className="border mb-20 font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
+          <button className="border w-[300px] mb-20 font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
             KEEP SHOPPING
           </button>
         </div>

@@ -36,12 +36,68 @@ const CustomTabs = ({
     }
   }, [activeTab, onTabRef]);
 
+  // Apply CSS immediately on mount to prevent flash of white background
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      .material-tailwind-tabs .material-tailwind-tab,
+      .material-tailwind-tabs .material-tailwind-tab-active,
+      .material-tailwind-tabs [data-value],
+      .material-tailwind-tabs div[data-projection-id],
+      .material-tailwind-tabs div.bg-white,
+      .material-tailwind-tabs div.absolute.inset-0.z-10.h-full.bg-white.rounded-md.shadow[data-projection-id],
+      .bg-white {
+        background-color: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <>
       <Header />
+      <style dangerouslySetInnerHTML={{ 
+        __html: `
+          /* Target all Material Tailwind tab elements immediately */
+          .material-tailwind-tabs .material-tailwind-tab,
+          .material-tailwind-tabs .material-tailwind-tab-active,
+          .material-tailwind-tabs [data-value],
+          .material-tailwind-tabs div[data-projection-id],
+          .material-tailwind-tabs div.bg-white,
+          .material-tailwind-tabs div.absolute.inset-0.z-10.h-full.bg-white.rounded-md.shadow[data-projection-id] {
+            background-color: transparent !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+          }
+          
+          /* Target any element with bg-white class */
+          .bg-white {
+            background-color: transparent !important;
+          }
+          
+          /* Ensure immediate application */
+          * {
+            transition: none !important;
+          }
+          
+          /* Target the first tab specifically */
+          .material-tailwind-tabs .material-tailwind-tab:first-child,
+          .material-tailwind-tabs .material-tailwind-tab-active:first-child {
+            background-color: transparent !important;
+          }
+        `
+      }} />
       <div className="w-full">
         <Tabs value={activeTab} className={`w-full ${className}`}>
-          <TabsHeader className={`w-full shadow-md flex justify-between ${headerClassName}`}>
+          <TabsHeader className={`w-full shadow-md flex justify-between bg-transparent ${headerClassName}`}>
             {tabsData.map(({label, route}) => (
               <Link
                 key={label}
@@ -50,7 +106,11 @@ const CustomTabs = ({
                 to={route}
                 onClick={() => setActiveTab(label)}
               >
-                <Tab value={label} className="w-full bg-transparent shadow-none p-0 min-w-0">
+                <Tab 
+                  value={label} 
+                  className="w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent"
+                  style={{backgroundColor: 'transparent'}}
+                >
                   <span className="relative inline-block">
                     {label}
                     <span

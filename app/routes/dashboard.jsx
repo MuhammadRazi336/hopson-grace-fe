@@ -297,7 +297,6 @@ const Dashboard_index = () => {
 
   return (
     <div className="w-full min-h-screen">
-      <style>{animationStyle}</style>
       <div className="w-full">
         <CustomTabs
           tabsData={tabData}
@@ -309,7 +308,7 @@ const Dashboard_index = () => {
       </div>
       <div className="">
         {showIntro ? (
-          <div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative bg-white min-h-[70vh]">
+          <><div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative min-h-[70vh]">
             {/* Welcome and couple name */}
             <div className="mb-6 mt-16">
               <div className="md:text-[42px] text-center xl:mt-0 mt-16 font-normal ivyora">welcome to your dashboard</div>
@@ -321,18 +320,16 @@ const Dashboard_index = () => {
             {/* Right side cards */}
             <div className="absolute right-4 top-4 flex flex-col gap-4">
               <div ref={(node) => setNotificationNode(node)}>
-                <NotificationCard 
-                  className={currentStep === 7 ? 'border-2 border-black' : ''} 
-                  count={2} 
-                  onView={() => {}} 
-                />
+                <NotificationCard
+                  className={currentStep === 7 ? 'border-2 border-black' : ''}
+                  count={2}
+                  onView={() => { } } />
               </div>
               <div ref={(node) => setStatusNode(node)}>
-                <RegistryStatusCard 
-                  className={currentStep === 8 ? 'border-2 border-black' : ''} 
-                  status="draft" 
-                  onToggle={() => {}} 
-                />
+                <RegistryStatusCard
+                  className={currentStep === 8 ? 'border-2 border-black' : ''}
+                  status="draft"
+                  onToggle={() => { } } />
               </div>
             </div>
 
@@ -352,7 +349,7 @@ const Dashboard_index = () => {
 
             {/* Pagination centered below the card */}
             <div className="flex flex-col items-center mt-6 w-full max-w-lg">
-            <div className="w-full flex justify-end">
+              <div className="w-full flex justify-end">
                 <button
                   className="font-bold uppercase tracking-wide text-black"
                   onClick={() => {
@@ -361,7 +358,7 @@ const Dashboard_index = () => {
                     } else {
                       handleFinishIntro();
                     }
-                  }}
+                  } }
                 >
                   {currentStep < introSteps.length - 1 ? 'Got it, Next →' : 'Done'}
                 </button>
@@ -375,7 +372,7 @@ const Dashboard_index = () => {
               >
                 Skip Intro
               </button>
-              
+
             </div>
 
             {/* Animated Arrow */}
@@ -385,15 +382,15 @@ const Dashboard_index = () => {
                 toRef={getCurrentStepNode()}
                 show={showIntro}
                 containerRef={overlayRef}
-                arrowConfig={introSteps[currentStep].arrow}
-              />
+                arrowConfig={introSteps[currentStep].arrow} />
             )}
           </div>
+          <Footer />
+          </>
         ) : (
           <Outlet />
         )}
       </div>
-      <Footer/>
     </div>
     
   );

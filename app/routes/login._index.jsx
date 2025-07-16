@@ -1,10 +1,10 @@
-import {redirect} from '@shopify/remix-oxygen';
+import {redirect, json} from '@shopify/remix-oxygen';
 import {requireAuth} from '~/utils/auth-guard.js';
-import {Link, useActionData, useFetcher, useSubmit} from '@remix-run/react';
+import {Link, useActionData, useFetcher, useSubmit, useNavigate} from '@remix-run/react';
 import {toast} from 'react-toastify';
 
 import Input from '~/components/Input.jsx';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import ButtonComponent from '~/components/Button.jsx';
 import {jsonWithError} from 'remix-toast';
 import {Header} from '~/components/Header';
@@ -26,7 +26,13 @@ export async function action({request, context}) {
       const user = response.data;
       context.session.set('@User', user);
       const cookie = await context.session.commit();
-      return redirect('/dashboard', {
+      
+      // Return the user data so it can be saved to localStorage before redirect
+      return json({ 
+        success: true, 
+        user: user,
+        redirect: '/dashboard'
+      }, {
         headers: {
           'Set-Cookie': cookie,
         },
@@ -42,6 +48,7 @@ export async function action({request, context}) {
 const LoginIndex = () => {
   const submit = useSubmit();
   const actionData = useActionData();
+  const navigate = useNavigate();
   console.log(actionData, 'ActionData');
   const [formData, setFormData] = useState({
     email: '',
@@ -64,6 +71,20 @@ const LoginIndex = () => {
     };
     submit({payload}, {method: 'post', encType: 'application/json'});
   };
+
+  // Save token to localStorage when login is successful and redirect
+  useEffect(() => {
+    if (actionData?.success && actionData?.user) {
+      const user = actionData.user;
+      localStorage.setItem('@token', user.accessToken);
+      console.log('Token saved to localStorage:', user.accessToken);
+      
+      // Redirect to dashboard after saving token
+      if (actionData.redirect) {
+        navigate(actionData.redirect);
+      }
+    }
+  }, [actionData, navigate]);
 
   return (
     <>
