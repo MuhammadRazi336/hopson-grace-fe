@@ -233,19 +233,19 @@ const index = () => {
                 />
               </div>
             )}
-            <h3 className="text-lg font-semibold mb-4 mt-[50px]">
+            <h3 className="text-2xl font-semibold mb-6 mt-[50px]">
               {card.title}
             </h3>
-            <p className="text-lg min-h-[240px]  text-center mb-6">
+            <p className="text-xl min-h-[240px]  text-center mb-6">
               {card.description}
             </p>
-            <div className="text-5xl mt-5 prata flex items-baseline">
+            <div className="text-5xl prata flex items-baseline">
               {card.id === 'account' && (
                 <span className="text-2xl mr-1 self-start">$</span>
               )}
               <span>{card.value}</span>
               {card.total && (
-                <span className="ml-1 text-4xl">
+                <span className="ml-1 text-5xl">
                   /<span className="text-3xl">{card.total}</span>
                 </span>
               )}
@@ -253,7 +253,7 @@ const index = () => {
             <p className="text-sm mt-2">{card.label}</p>
             {card.buttonText && (
               <Link to={card.link}>
-              <button className="bg-[#F6F5ED] font-bold text-black px-14 py-3 mt-4 text-base">
+              <button className="bg-[#F6F5ED] font-bold text-black px-14 py-4 mt-10 mb-10 text-base">
                 {card.buttonText}
               </button>
               </Link>
