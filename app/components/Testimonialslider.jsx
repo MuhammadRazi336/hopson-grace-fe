@@ -37,10 +37,10 @@ const Testimonialslider = () => {
             <img
               src={test1}
               alt="Testimonial"
-              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[95vw]"
+              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[140vw]"
             />
             <div className="bg-[#446184] text-white h-auto px-11 pb-11 relative lg:w-[680px] -left-[83px] -bottom-[117px] max-[1024px]:p-5 max-[1024px]:-bottom-[19px] max-[1024px]:-left-[30px] ">
-              <p className="mt-[80px] text-2xl font-normal  tracking-wider leading-[45px] max-[1024px]:text-[16px] max-[1024px]:mt-10 max-[1024px]:leading-normal">
+              <p className="mt-[80px] text-2xl font-normal tracking-wider leading-[45px] max-[1024px]:text-[16px] max-[1024px]:mt-10 max-[1024px]:leading-normal">
                 The first time Karelle met Christopher tate velit esse cillum
                 dolore eu fugiat nulla pariatur. Excepteur sint obcaecat
                 cupiditat non proident, sunt in culpa qui officia deserunt
@@ -74,7 +74,7 @@ const Testimonialslider = () => {
             <img
               src={test2}
               alt="Testimonial"
-              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[95vw]"
+              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[140vw]"
             />
             <div className="bg-[#446184] text-white h-auto px-11 pb-11 relative lg:w-[680px] -left-[83px] -bottom-[117px] max-[1024px]:p-5 max-[1024px]:-bottom-[19px] max-[1024px]:-left-[30px]">
               <p className="mt-[80px] text-2xl font-normal  tracking-wider leading-[45px] max-[1024px]:text-[16px] max-[1024px]:mt-10 max-[1024px]:leading-normal">
@@ -111,7 +111,7 @@ const Testimonialslider = () => {
             <img
               src={test1}
               alt="Testimonial"
-              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[95vw]"
+              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[140vw]"
             />
             <div className="bg-[#446184] text-white h-auto px-11 pb-11 relative lg:w-[680px] -left-[83px] -bottom-[117px] max-[1024px]:p-5 max-[1024px]:-bottom-[19px] max-[1024px]:-left-[30px]">
               <p className="mt-[80px] text-2xl font-normal  tracking-wider leading-[45px] max-[1024px]:text-[16px] max-[1024px]:mt-10 max-[1024px]:leading-normal">
@@ -148,7 +148,7 @@ const Testimonialslider = () => {
             <img
               src={test2}
               alt="Testimonial"
-              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[95vw]"
+              className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[140vw]"
             />
             <div className="bg-[#446184] text-white h-auto px-11 pb-11 relative lg:w-[680px] -left-[83px] -bottom-[117px] max-[1024px]:p-5 max-[1024px]:-bottom-[19px] max-[1024px]:-left-[30px]">
               <p className="mt-[80px] text-2xl font-normal  tracking-wider leading-[45px] max-[1024px]:text-[16px] max-[1024px]:mt-10 max-[1024px]:leading-normal">

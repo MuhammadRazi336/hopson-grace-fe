@@ -42,7 +42,7 @@ const Home = () => {
     },
   ];
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <Header />
       <section className="hero-slider">
         <HeroSlider />
@@ -54,7 +54,7 @@ const Home = () => {
         <CollectionItems />
       </section>
 
-      <section className="mb-[90px]">
+      <section className="mb-[90px] mt-12">
         <ImageAndText
           direction={'right'}
           imgBanner={cupImg}
@@ -64,6 +64,7 @@ const Home = () => {
           description="There's no question too small or request too big for our Registry advisors. We're always at your service."
           buttontext={'CREATE YOUR REGISTRY'}
           buttontype={'Color'}
+          buttonLink={'/register'}
         />
       </section>
 
@@ -181,6 +182,7 @@ const Home = () => {
           description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
           buttontext={'GET STARTED'}
           buttontype={'Color'}
+          buttonLink={'/register'}
         />
       </section>
       <Footer />

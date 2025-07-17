@@ -107,10 +107,10 @@ export function Header() {
       <TopHeader />
 
       <header
-        className={`flex justify-between px-4 lg:px-[74px] max-[1024px]:flex-row-reverse max-[1024px]:items-center max-[1024px]:py-4 transition-all duration-300 ease-in-out ${
+        className={`header-animated flex justify-between px-4 lg:px-[74px] max-[1024px]:flex-row-reverse max-[1024px]:items-center transition-all duration-200 ease-in-out ${
           isFixed
-            ? 'fixed top-0 left-0 w-full z-50 bg-black py-4 pt-6 shadow-lg'
-            : 'relative bg-white pt-4 lg:pt-11'
+            ? 'fixed top-0 left-0 w-full z-50 bg-black py-4 pt-6 shadow-lg h-[100px]'
+            : 'relative bg-white pt-4 lg:pt-11 h-[160px]'
         }`}
       >
         {/* User Icon */}
@@ -167,7 +167,7 @@ export function Header() {
             <img
               src={isFixed ? registryLogoScroll : registryLogo}
               alt="Registry Logo"
-              className={`transition-all duration-300 ease-in-out ${
+              className={`transition-all duration-600 ease-in-out ${
                 isFixed
                   ? 'max-[1024px]:w-[60px]'
                   : 'max-[1024px]:w-[200px] w-[90%]'

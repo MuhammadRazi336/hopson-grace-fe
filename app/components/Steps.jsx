@@ -1,13 +1,33 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, EffectFade} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import moreitem from '/assets/Images/more.png';
 
+const stepsData = [
+  {
+    title: "Let's Connect",
+    description:
+      "Enter your names and wedding details and start adding gifts and funds. It's that easy! If you'd prefer to talk to us first or set up your registry in our Toronto showroom, we can do that as well.",
+  },
+  {
+    title: "Let's Connect",
+    description:
+      "Enter your names and wedding details and start adding gifts and funds. It's that easy! If you'd prefer to talk to us first or set up your registry in our Toronto showroom, we can do that as well.",
+  },
+  {
+    title: "Let's Connect",
+    description:
+      "Enter your names and wedding details and start adding gifts and funds. It's that easy! If you'd prefer to talk to us first or set up your registry in our Toronto showroom, we can do that as well.",
+  },
+];
+
 const Steps = () => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+  const [currentStep, setCurrentStep] = useState(0);
+  const totalSteps = stepsData.length;
 
   return (
     <div className="relative w-full max-w-[550px] mx-auto step-slider">
@@ -26,76 +46,33 @@ const Steps = () => {
         }}
         allowTouchMove={false}
         loop={true}
+        onSlideChange={(swiper) => {
+          // Swiper's realIndex is 0-based and ignores loop duplicates
+          setCurrentStep(swiper.realIndex);
+        }}
       >
-        <SwiperSlide>
-          <div className="flex items-start py-6">
-            <div className="text-[56px] prata font-normal leading-9 mr-2 max-[1024px]:hidden">
-              1.
-            </div>
-            <div>
-              <div className="flex ">
-                <div className="text-3xl 2xl:text-[56px] lg:text-[42px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
-                  1.
-                </div>
-                <h2 className="uppercase text-lg 2xl:text-[20px] font-80 mb-6 leading-[28px] tracking-[10%]">
-                  Let's Connect
-                </h2>
+        {stepsData.map((step, idx) => (
+          <SwiperSlide key={idx}>
+            <div className="flex items-start py-6">
+              <div className="text-[56px] prata font-normal leading-9 mr-2 max-[1024px]:hidden">
+                {idx + 1}.
               </div>
-              <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
-                Enter your names and wedding details and start adding gifts and
-                funds. It's that easy! If you'd prefer to talk to us first or
-                set up your registry in our Toronto showroom, we can do that as
-                well.
-              </p>
-            </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="flex items-start py-6">
-            <div className="text-[56px] prata font-normal leading-9 mr-2 max-[1024px]:hidden">
-              2.
-            </div>
-            <div>
-              <div className="flex ">
-                <div className="text-3xl lg:text-[56px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
-                  2.
+              <div>
+                <div className="flex ">
+                  <div className="text-3xl 2xl:text-[56px] lg:text-[42px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
+                    {idx + 1}.
+                  </div>
+                  <h2 className="uppercase text-lg 2xl:text-[20px] font-80 mb-6 leading-[28px] tracking-[10%]">
+                    {step.title}
+                  </h2>
                 </div>
-                <h2 className="uppercase text-lg lg:text-[24px] font-80 mb-6 leading-[28px] tracking-[10%]">
-                  Let's Connect
-                </h2>
+                <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
+                  {step.description}
+                </p>
               </div>
-              <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
-                Enter your names and wedding details and start adding gifts and
-                funds. It's that easy! If you'd prefer to talk to us first or
-                set up your registry in our Toronto showroom, we can do that as
-                well.
-              </p>
             </div>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="flex items-start py-6">
-            <div className="text-[56px] prata font-normal leading-9 mr-2 max-[1024px]:hidden">
-              3.
-            </div>
-            <div>
-              <div className="flex ">
-                <div className="text-3xl lg:text-[56px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
-                  3.
-                </div>
-                <h2 className="uppercase text-lg lg:text-[24px] font-80 mb-6 leading-[28px] tracking-[10%]">
-                  Let's Connect
-                </h2>
-              </div>
-              <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
-                Enter your names and wedding details and start adding gifts and
-                funds. It's that easy! If you'd prefer to talk to us first or
-                set up your registry in our Toronto showroom, we can do that as
-                well.
-              </p>
-            </div>
-          </div>
-        </SwiperSlide>
+          </SwiperSlide>
+        ))}
       </Swiper>
 
       {/* Custom Navigation */}
@@ -112,10 +89,10 @@ const Steps = () => {
         </button>
         <div className="text-sm font-light my-1 absolute left-[-40px] top-[46px] flex items-center gap-[5px]">
           <span className="lg:text-[40px] max-[1024px]:text-[24px] lg:leading-6 font-normal">
-            1
+            {currentStep + 1}
           </span>{' '}
           <span className="text-gray-950 font-normal lg:text-lg text-sm">
-            / 5
+            / {totalSteps}
           </span>
         </div>
         <button

@@ -7,6 +7,7 @@ import vectorImg from '/assets/Images/Vector 22.png';
 import sampleVideo from '/assets/Images/sample.webm';
 import 'swiper/css/pagination';
 import Button from '~/components/Button.jsx';
+import { NavLink } from '@remix-run/react';
 
 const HeroSlider = () => {
   const slides = [
@@ -54,14 +55,18 @@ const HeroSlider = () => {
                   {slide.description}
                 </p>
               <div className="mx-auto flex lg:flex-row flex-col gap-6 justify-center items-center ">
+                <NavLink to="/register">
                 <Button
                   text="Begin Your Journey"
                   className="text-white bg-[#446184] py-[22px] lg:py-[30px] lg:w-[320px] w-[280px] rounded-none button-cs max-[768px]:text-lg"
                 />
+                </NavLink>
+                <NavLink to="/couple">
                 <Button
                   text="Find a Couple"
                   className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[18px] lg:py-[30px] lg:w-[320px] w-[280px] rounded-none max-[768px]:text-lg"
                 />
+                </NavLink>
               </div>
               </div>
             </div>
