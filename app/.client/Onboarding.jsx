@@ -637,7 +637,9 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
         />
       </div>
-      {/* I'LL ADD THIS LATER button removed as requested */}
+      <button className="border-b-2 border-b-white text-center mt-10" type="button" onClick={onSkip}>
+        I'LL ADD THIS LATER
+      </button>
     </div>
   );
 };
