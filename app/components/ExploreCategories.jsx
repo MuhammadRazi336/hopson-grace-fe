@@ -38,36 +38,6 @@ function ExploreCategories() {
             </h3>
           </div>
         ))}
-        {/* <div>
-          <img src={product2} alt="Tableware" className="w-full" />
-          <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-            Tableware
-          </h3>
-        </div>
-        <div>
-          <img src={product3} alt="Staub Cast Iron Q4" className="w-full" />
-          <h3 className="mt-2.5 text-center uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-            glassware & bareware
-          </h3>
-        </div>
-        <div>
-          <img src={product4} alt="New arrivals" className="w-full" />
-          <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-            New arrivals
-          </h3>
-        </div>
-        <div>
-          <img src={product1} alt="tableware" className="w-full" />
-          <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-            tableware
-          </h3>
-        </div>
-        <div>
-          <img src={product2} alt="Tableware" className="w-full" />
-          <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-            Tableware
-          </h3>
-        </div> */}
       </div>
     </section>
   );

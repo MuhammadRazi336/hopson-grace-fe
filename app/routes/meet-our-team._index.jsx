@@ -1,8 +1,7 @@
 import {Header} from '~/components/Header';
 import {Footer} from '~/components/Footer';
 import Heading from '~/components/Heading';
-import lineImghead from '/assets/Images/line.png';
-import lineImg3 from '/assets/Images/line.png';
+ import lineImg3 from '/assets/Images/line.png';
 import RegistryLogo from '/assets/Images/registry-monogram.png';
 import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';

@@ -1,9 +1,10 @@
 // app/components/SideCart.jsx
-import { Link, useFetcher } from '@remix-run/react';
+import { Link, useFetcher, useNavigate } from '@remix-run/react';
 import React, {useEffect, useState} from 'react';
 
 export default function SideCart({open, onClose, cartItems: initialCartItems = '[]', total = 0, subtotal = 0, onCartChange, onClearCart}) {
   const fetcher = useFetcher();
+  const navigate = useNavigate();
   const [items, setItems] = useState(() => {
     try {
       console.log('Initial cart items:', initialCartItems);
@@ -242,13 +243,15 @@ export default function SideCart({open, onClose, cartItems: initialCartItems = '
                 continue shopping
               </button>
 
-              <Link to="/cart/message">
                 <button 
+                onClick={() => {
+                  console.log('SideCart: Button clicked, navigating to /cart/message');
+                  navigate('/cart/message');
+                }}
                   className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center"
                 >
                   checkout now
                 </button>
-              </Link>
             </div>
           </>
         )}

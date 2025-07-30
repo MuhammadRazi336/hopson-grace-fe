@@ -72,8 +72,15 @@ export async function action({request, context}) {
       );
     }
 
-    // If action is checkout, redirect to checkout
-    return redirect('/cart/checkout', {
+    // If action is checkout, redirect to checkout with email and registryId
+    const email = formData.get('email');
+    const registryId = formData.get('registryId');
+    
+    const checkoutUrl = email && registryId 
+      ? `/cart/checkout?email=${email}&registryId=${registryId}`
+      : '/cart/checkout';
+      
+    return redirect(checkoutUrl, {
       headers: {
         'Set-Cookie': await context.session.commit()
       }
@@ -157,6 +164,13 @@ const Message = () => {
     formData.set('message', message);
     formData.set('couplesName', couplesName);
     
+    // Get email and registryId from localStorage
+    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    const registryId = typeof window !== 'undefined' ? localStorage.getItem('registryId') : '';
+    
+    formData.set('email', email);
+    formData.set('registryId', registryId);
+    
     submit(formData, {
       method: 'post',
     });
@@ -216,6 +230,16 @@ const Message = () => {
           )}
 
           <Form method="post">
+            <input 
+              type="hidden" 
+              name="email" 
+              value={typeof window !== 'undefined' ? localStorage.getItem('guestEmail') || '' : ''} 
+            />
+            <input 
+              type="hidden" 
+              name="registryId" 
+              value={typeof window !== 'undefined' ? localStorage.getItem('registryId') || '' : ''} 
+            />
             <div className="relative max-w-4xl mx-auto">
               <img
                 src="/assets/Images/checkout-bg.png"

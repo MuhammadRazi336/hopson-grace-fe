@@ -5,6 +5,7 @@ import cancel from "/assets/Images/Group 125.png"
 import Button from '~/components/Button.jsx';
 import { Link, NavLink } from "@remix-run/react";
 import brandImg from "/assets/Images/menu-our-brand2.png"
+import productImg from "/assets/Images/menu-product.png"
 import instagram from "/assets/Images/instagram.png"
 import facebook from "/assets/Images/facebook2.png"
 import more from "/assets/Images/more.png"
@@ -15,23 +16,24 @@ import { useState } from 'react';
 
 
 const HeaderMobileMenu = ({ onClose, onPopup }) => {
-  const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+  const [isBrandSubMenuOpen, setIsBrandSubMenuOpen] = useState(false);
+  const [isProductSubMenuOpen, setIsProductSubMenuOpen] = useState(false);
   const [activeBrand, setActiveBrand] = useState(null);
 
-  const handleBrandClick = (brand) => {
-      if(isSubMenuOpen){
-          setIsSubMenuOpen(false);
-        } else {
-          setIsSubMenuOpen(true);
-      }
-    // if (activeBrand === brand) {
-    //   // If the same brand is clicked again, navigate to the brand page
-    //   window.location.href = `/our-brands/${brand}`;
-    // } else {
-    //   // Open the submenu for the selected brand
-    // //   setActiveBrand(brand);
-    //   setIsSubMenuOpen(true);
-    // }
+  const handleBrandClick = () => {
+    if(isBrandSubMenuOpen){
+      setIsBrandSubMenuOpen(false);
+    } else {
+      setIsBrandSubMenuOpen(true);
+    }
+  };
+
+  const handleProductClick = () => {
+    if(isProductSubMenuOpen){
+      setIsProductSubMenuOpen(false);
+    } else {
+      setIsProductSubMenuOpen(true);
+    }
   };
 
   return (
@@ -58,10 +60,10 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
         <ul className="">
           <li className="group py-2.5">
             <button onClick={handleBrandClick} className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full  px-8">
-              OUR BRANDS <img src={more} className={`w-2.5 ${isSubMenuOpen ? 'rotate-180' : 'rotate-0'}`} alt="" />
+              OUR BRANDS <img src={more} className={`w-2.5 ${isBrandSubMenuOpen ? 'rotate-180' : 'rotate-0'}`} alt="" />
             </button>
             {/* Submenu */}
-            <div className={`mt-2.5 ${isSubMenuOpen ? 'flex' : 'hidden'} z-20 w-full py-8 px-8 bg-[#F5F2ED]`}>
+            <div className={`mt-2.5 ${isBrandSubMenuOpen ? 'flex' : 'hidden'} z-20 w-full py-8 px-8 bg-[#F5F2ED]`}>
               <div className="flex flex-col ">
                 <div className="">
                   <h4 className="text-[16px] font-semibold mb-4">TOP TRENDING BRANDS</h4>
@@ -110,22 +112,72 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
               </div>
             </div>
           </li>
-          <li className="py-2.5 px-8">
-            <NavLink to="/products"
-              className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              SHOP <img src={more} className="w-2.5" />
-            </NavLink>
+          <li className="group py-2.5">
+            <button onClick={handleProductClick} className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full px-8">
+              PRODUCTS <img src={more} className={`w-2.5 ${isProductSubMenuOpen ? 'rotate-180' : 'rotate-0'}`} alt="" />
+            </button>
+            {/* Submenu */}
+            <div className={`mt-2.5 ${isProductSubMenuOpen ? 'flex' : 'hidden'} z-20 w-full py-8 px-8 bg-[#F5F2ED]`}>
+              <div className="flex flex-col">
+                <div className="">
+                  <ul className="text-[16px]">
+                    <li>
+                      <NavLink to="/products/new-arrivals" className="block mb-4 text-black hover:bg-gray-200">
+                        NEW ARRIVALS
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/bestsellers" className="block mb-4 text-black hover:bg-gray-200">
+                        BESTSELLERS
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/kitchen-essentials" className="block mb-4 text-black hover:bg-gray-200">
+                        KITCHEN ESSENTIALS
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/tableware-entertaining" className="block mb-4 text-black hover:bg-gray-200">
+                        TABLEWARE & ENTERTAINING
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/decor-furniture" className="block mb-4 text-black hover:bg-gray-200">
+                        DECOR & FURNITURE
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/bed-bath" className="block mb-4 text-black hover:bg-gray-200">
+                        BED & BATH
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/travel-outdoors" className="block mb-4 text-black hover:bg-gray-200">
+                        TRAVEL & OUTDOORS
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/music-tech" className="block mb-4 text-black hover:bg-gray-200">
+                        MUSIC & TECH
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink to="/products/gift-cards" className="block mb-4 text-black hover:bg-gray-200">
+                        GIFT CARDS
+                      </NavLink>
+                    </li>
+                  </ul>
+                </div>
+                <div className="relative mt-4">
+                  <img src={productImg} alt="Products" className="w-full" />
+                </div>
+              </div>
+            </div>
           </li>
           <li className="py-2.5 px-8">
             <NavLink to="/cash-funds"
               className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
               CASH FUNDS <img src={more} className="w-2.5" />
-            </NavLink>
-          </li>
-          <li className="py-2.5 px-8">
-            <NavLink to="/bespoke-travel"
-              className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              BESPOKE TRAVEL <img src={more} className="w-2.5" />
             </NavLink>
           </li>
           <li className="py-2.5 px-8">
@@ -141,15 +193,15 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
             </NavLink>
           </li>
           <li className="py-2.5 px-8">
-            <NavLink to="/showroom"
-              className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              SHOWROOM <img src={more} className="w-2.5" />
-            </NavLink>
-          </li>
-          <li className="py-2.5 px-8">
             <NavLink to="/about-us"
               className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
               ABOUT US <img src={more} className="w-2.5" />
+            </NavLink>
+          </li>
+          <li className="py-2.5 px-8">
+            <NavLink to="/contact-us"
+              className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
+              CONTACT US <img src={more} className="w-2.5" />
             </NavLink>
           </li>
         </ul>

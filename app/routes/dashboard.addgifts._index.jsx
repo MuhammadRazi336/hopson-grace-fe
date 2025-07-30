@@ -495,80 +495,95 @@ export default function AddGifts() {
       <section className=" ">
         <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
           <div className=" ">
-            <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 size-6" />
-            </div>
+            {!selectedSwiperCollectionId && (
+              <>
+                <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
+                  <img src={nextitem} alt="" className="rotate-180 size-6" />
+                </div>
 
-            <Swiper
-              spaceBetween={15}
-              slidesPerView={3.25} // Shows 3 full + a portion of 4th
-              centeredSlides={true} // Enables .5 on both sides
-              loop={true}
-              modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
-              }}
-              className="px-[178px]"
-              breakpoints={{
-                345: {
-                  slidesPerView: 1.25,
-                  spaceBetween: 10,
-                  centeredSlides: true,
-                },
-                475: {
-                  slidesPerView: 2.25,
-                  spaceBetween: 15,
-                  centeredSlides: true,
-                },
-                768: {
-                  slidesPerView: 2.25,
-                  spaceBetween: 20,
-                  centeredSlides: true,
-                },
-                1024: {
-                  slidesPerView: 2.75,
-                  spaceBetween: 30,
-                  centeredSlides: true,
-                },
-                1366: {
-                  slidesPerView: 3.25,
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-                1600: {
-                  slidesPerView: 3.5,
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-              }}
-            >
-              {/* Dynamic slides from Shopify collections */}
-              {collections
-                .filter((col) => col.parentMetafield?.value === 'true')
-                .map((col) => (
-                  <SwiperSlide
-                    key={col.id}
-                    onClick={() => {
-                      setCheckedCollectionIds([col.id]);
-                      setSelectedSwiperCollectionId(col.id);
-                    }}
-                    style={{ cursor: 'pointer'}}
-                  >
-                    <img
-                      src={col.image?.url || '/assets/Images/placeholder.png'}
-                      alt={col.title}
-                      className="w-full"
-                    />
-                    <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                      {col.title}
-                    </h3>
-                  </SwiperSlide>
-                ))}
-            </Swiper>
-            <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
-              <img src={nextitem} className="size-6" alt="" />
-            </div>
+                <Swiper
+                  spaceBetween={15}
+                  slidesPerView={3.25} // Shows 3 full + a portion of 4th
+                  centeredSlides={true} // Enables .5 on both sides
+                  loop={true}
+                  modules={[Navigation]}
+                  navigation={{
+                    nextEl: '.swiper-button-next-prod',
+                    prevEl: '.swiper-button-prev-prod',
+                  }}
+                  className="px-[178px]"
+                  breakpoints={{
+                    345: {
+                      slidesPerView: 1.25,
+                      spaceBetween: 10,
+                      centeredSlides: true,
+                    },
+                    475: {
+                      slidesPerView: 2.25,
+                      spaceBetween: 15,
+                      centeredSlides: true,
+                    },
+                    768: {
+                      slidesPerView: 2.25,
+                      spaceBetween: 20,
+                      centeredSlides: true,
+                    },
+                    1024: {
+                      slidesPerView: 2.75,
+                      spaceBetween: 30,
+                      centeredSlides: true,
+                    },
+                    1366: {
+                      slidesPerView: 3.25,
+                      spaceBetween: 39,
+                      centeredSlides: true,
+                    },
+                    1600: {
+                      slidesPerView: 3.5,
+                      spaceBetween: 39,
+                      centeredSlides: true,
+                    },
+                  }}
+                >
+                  {/* Dynamic slides from Shopify collections */}
+                  {collections
+                    .filter((col) => col.parentMetafield?.value === 'true')
+                    .map((col) => (
+                      <SwiperSlide
+                        key={col.id}
+                        onClick={() => {
+                          setCheckedCollectionIds([col.id]);
+                          setSelectedSwiperCollectionId(col.id);
+                        }}
+                        style={{ cursor: 'pointer'}}
+                      >
+                        <img
+                          src={col.image?.url || '/assets/Images/placeholder.png'}
+                          alt={col.title}
+                          className="w-full"
+                        />
+                        <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                          {col.title}
+                        </h3>
+                      </SwiperSlide>
+                    ))}
+                </Swiper>
+                <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
+                  <img src={nextitem} className="size-6" alt="" />
+                </div>
+              </>
+            )}
+
+            {/* Selected collection image at 100% width */}
+            {selectedSwiperCollectionId && (
+              <div className="relative">
+                <img
+                  src={collections.find(col => col.id === selectedSwiperCollectionId)?.image?.url || '/assets/Images/placeholder.png'}
+                  alt={collections.find(col => col.id === selectedSwiperCollectionId)?.title}
+                  className="w-full h-[510px] lg:h-[800px] object-cover"
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>

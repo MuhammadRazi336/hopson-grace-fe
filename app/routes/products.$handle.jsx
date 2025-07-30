@@ -1,309 +1,938 @@
-import {Suspense} from 'react';
-import {defer, redirect} from '@shopify/remix-oxygen';
-import {Await, useLoaderData} from '@remix-run/react';
-import {
-  getSelectedProductOptions,
-  Analytics,
-  useOptimisticVariant,
-} from '@shopify/hydrogen';
-import {getVariantUrl} from '~/lib/variants';
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
-import {ProductForm} from '~/components/ProductForm';
+import CustomSelect from '~/components/CustomSelect.jsx';
+import ButtonComponent from '~/components/Button.jsx';
+import RegistryProduct from '~/components/RegistryProduct.jsx';
+import {useState, useEffect, useRef} from 'react';
+import {useFetcher, useLoaderData, useNavigate, useParams} from '@remix-run/react';
+import {defer, json} from '@shopify/remix-oxygen';
+import CategoryTile from '~/components/CategoryTile.jsx';
+import {extractShopifyId} from '~/utils/helpers.js';
+import PreviewRegistry from '~/components/PreviewRegistry';
+import {Swiper, SwiperSlide} from 'swiper/react';
+import nextitem from '/assets/Images/next.png';
+import product3 from '/assets/Images/gift-img-collection-1.png';
+import product2 from '/assets/Images/gift-img-collection-2.png';
+import product1 from '/assets/Images/gift-img-collection-3.png';
+import product4 from '/assets/Images/gift-img-collection-4.png';
+import youll1 from '/assets/Images/youll-1.png';
+import youll2 from '/assets/Images/youll-2.png';
+import youll3 from '/assets/Images/youll-3.png';
+import WhiteThemeButton from '~/components/WhiteThemeButton';
+import Heading from '~/components/Heading';
+import lineImghead from '/assets/Images/line.png';
+import CustomTab from '~/components/CustomTab';
+import brandline from '/assets/Images/brandline.png';
+import ProductSlider from '~/components/ProductSlider';
+import {Footer} from '~/components/Footer';
+import {Navigation} from 'swiper/modules';
+import {Header} from '~/components/Header';
+import ExploreCategories from '~/components/ExploreCategories';
 
-/**
- * @type {MetaFunction<typeof loader>}
- */
-export const meta = ({data}) => {
-  return [{title: `Hydrogen | ${data?.product.title ?? ''}`}];
-};
+const tabsData = [
+  {
+    label: 'REAL REGISTRIES',
+    value: 1,
+    route: 'realregistries',
+  },
+  {
+    label: 'THEMED REGISTRIES',
+    value: 2,
+    route: 'themedregistries',
+  },
+  {
+    label: 'LOREM IPSUM',
+    value: 3,
+    route: 'lorem',
+  },
+];
 
-/**
- * @param {LoaderFunctionArgs} args
- */
-export async function loader(args) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
+export async function loader({request, context, params}) {
+  const {products} = await loadCriticalData({context});
+  const {collections} = await loadCollectionData({context});
+  const registry = await context?.session?.get('@Registry');
+  const userData = null; // No user data for public pages
 
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
-
-  return defer({...deferredData, ...criticalData});
+  return defer({products, collections, registry, userData});
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- * @param {LoaderFunctionArgs}
- */
-async function loadCriticalData({context, params, request}) {
-  const {handle} = params;
-  const {storefront} = context;
-  console.log(handle, 'handle');
-  if (!handle) {
-    throw new Error('Expected product handle to be defined');
+export async function action({request, context}) {
+  const body = await request.json();
+  const {payload} = body;
+  try {
+    const response = await context.ClientPost(
+      JSON.parse(payload),
+      'registryProducts',
+      context,
+    );
+    return json({success: true, response});
+  } catch (e) {
+    return json({success: false, error: e.message}, {status: 400});
   }
+}
 
-  const [{product}] = await Promise.all([
-    storefront.query(PRODUCT_QUERY, {
-      variables: {handle, selectedOptions: getSelectedProductOptions(request)},
-    }),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-
-  if (!product?.id) {
-    throw new Response(null, {status: 404});
+async function loadCriticalData({context}) {
+  const token =
+    process.env.PUBLIC_STOREFRONT_API_TOKEN ||
+    context.env?.PUBLIC_STOREFRONT_API_TOKEN;
+  try {
+    const [{products}] = await Promise.all([
+      context.storefront.query(PRODUCT_QUERY),
+    ]);
+    return {
+      products: products?.edges || [],
+    };
+  } catch (error) {
+    throw error;
   }
+}
 
-  const firstVariant = product.variants.nodes[0];
-  const firstVariantIsDefault = Boolean(
-    firstVariant.selectedOptions.find(
-      (option) => option.name === 'Title' && option.value === 'Default Title',
-    ),
+async function loadCollectionData({context}) {
+  try {
+    const [{collections}] = await Promise.all([
+      context.storefront.query(COLLECTION_QUERY),
+    ]);
+    return {
+      collections: collections?.nodes || [],
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
+function SidebarFilter({
+  collections,
+  checkedCollectionIds,
+  setCheckedCollectionIds,
+}) {
+  const [openSections, setOpenSections] = useState({
+    categories: true,
+    brands: true,
+    styles: true,
+  });
+
+  const parentCollection = collections.filter(
+    (col) => col.parentMetafield?.value === 'true',
   );
 
-  if (firstVariantIsDefault) {
-    product.selectedVariant = firstVariant;
+  const subCollection = collections.filter(
+    (col) => col.parentMetafield?.value === 'false',
+  );
+
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  const handleSidebarCheckbox = (colId) => {
+    let newChecked;
+    if (checkedCollectionIds.includes(colId)) {
+      newChecked = checkedCollectionIds.filter((id) => id !== colId);
   } else {
-    // if no selected variant was returned from the selected options,
-    // we redirect to the first variant's url with it's selected options applied
-    if (!product.selectedVariant) {
-      throw redirectToFirstVariant({product, request});
+      newChecked = [...checkedCollectionIds, colId];
     }
-  }
-
-  return {
-    product,
+    setCheckedCollectionIds(newChecked);
   };
-}
-
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- * @param {LoaderFunctionArgs}
- */
-function loadDeferredData({context, params}) {
-  // In order to show which variants are available in the UI, we need to query
-  // all of them. But there might be a *lot*, so instead separate the variants
-  // into it's own separate query that is deferred. So there's a brief moment
-  // where variant options might show as available when they're not, but after
-  // this deffered query resolves, the UI will update.
-  const variants = context.storefront
-    .query(VARIANTS_QUERY, {
-      variables: {handle: params.handle},
-    })
-    .catch((error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
-    });
-
-  return {
-    variants,
-  };
-}
-
-/**
- * @param {{
- *   product: ProductFragment;
- *   request: Request;
- * }}
- */
-function redirectToFirstVariant({product, request}) {
-  const url = new URL(request.url);
-  const firstVariant = product.variants.nodes[0];
-
-  return redirect(
-    getVariantUrl({
-      pathname: url.pathname,
-      handle: product.handle,
-      selectedOptions: firstVariant.selectedOptions,
-      searchParams: new URLSearchParams(url.search),
-    }),
-    {
-      status: 302,
-    },
-  );
-}
-
-export default function Product() {
-  /** @type {LoaderReturnData} */
-  const {product, variants} = useLoaderData();
-  const selectedVariant = useOptimisticVariant(
-    product.selectedVariant,
-    variants,
-  );
-
-  const {title, descriptionHtml} = product;
 
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <Suspense
-          fallback={
-            <ProductForm
-              product={product}
-              selectedVariant={selectedVariant}
-              variants={[]}
-            />
-          }
+    <div className="w-full xl:w-1/4 p-6 h-fit bg-[#FAF9F6]">
+      <div className="mb-6">
+        <h2
+          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          onClick={() => toggleSection('categories')}
         >
-          <Await
-            errorElement="There was a problem loading product variants"
-            resolve={variants}
-          >
-            {(data) => (
-              <ProductForm
-                product={product}
-                selectedVariant={selectedVariant}
-                variants={data?.product?.variants.nodes || []}
+          Product Categories
+          <span className="text-lg">
+            {openSections.categories ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-3 h-3 rotate-270"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-3 h-3 rotate-90"
               />
             )}
-          </Await>
-        </Suspense>
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
+          </span>
+        </h2>
+        {openSections.categories && (
+          <ul className="space-y-2 text-sm">
+            {parentCollection.map((col) => (
+              <li key={col.id}>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-      <Analytics.ProductView
-        data={{
-          products: [
-            {
-              id: product.id,
-              title: product.title,
-              price: selectedVariant?.price.amount || '0',
-              vendor: product.vendor,
-              variantId: selectedVariant?.id || '',
-              variantTitle: selectedVariant?.title || '',
-              quantity: 1,
-            },
-          ],
-        }}
-      />
+
+      <div className="mb-6">
+        <h2
+          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          onClick={() => toggleSection('brands')}
+        >
+          Our Brands
+          <span className="text-lg">
+            {openSections.brands ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-3 h-3 rotate-270"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-3 h-3 rotate-90"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.brands && (
+          <p className="text-sm text-gray-500 italic">No data</p>
+        )}
+      </div>
+
+      <div>
+        <h2
+          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          onClick={() => toggleSection('styles')}
+        >
+          Shop by Style
+          <span className="text-lg">
+            {openSections.styles ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-3 h-3 rotate-270"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-3 h-3 rotate-90"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.styles && (
+          <ul className="space-y-2 text-sm">
+            {subCollection.map((col) => (
+              <li key={col.id}>
+                <label>
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
 
-const PRODUCT_VARIANT_FRAGMENT = `#graphql
-  fragment ProductVariant on ProductVariant {
+export default function ProductCollection() {
+  const [availability, setAvailability] = useState('');
+  const [priceSort, setPriceSort] = useState('');
+  const [dateSort, setDateSort] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
+
+  const {products, collections, registry} = useLoaderData();
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
+  const params = useParams();
+
+  // Get the collection from URL parameter
+  const currentCollection = collections.find(col => col.handle === params.handle);
+
+  // State for checked collections and displayed products
+  const [checkedCollectionIds, setCheckedCollectionIds] = useState(currentCollection ? [currentCollection.id] : []);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const initialPreferencesApplied = useRef(false);
+  const [productsToShow, setProductsToShow] = useState(12);
+  const productGridRef = useRef(null);
+  const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null); // Always start with null to show swiper
+
+  // Helper to get all products for checked collections
+  const getProductsForCheckedCollections = (checkedIds) => {
+    const checkedParents = collections.filter(
+      (col) =>
+        col.parentMetafield?.value === 'true' && checkedIds.includes(col.id),
+    );
+    const checkedSubs = collections.filter(
+      (col) =>
+        col.parentMetafield?.value === 'false' && checkedIds.includes(col.id),
+    );
+    let parentProducts = [];
+    checkedParents.forEach((parentCol) => {
+      let subCollectionGids = [];
+      const subColMeta = parentCol.subMetafield;
+      if (subColMeta?.value) {
+        try {
+          subCollectionGids = JSON.parse(subColMeta.value);
+        } catch (error) {
+          console.error('Error parsing subCollectionGids:', error);
+        }
+      }
+      // Find sub-collections by GID
+      const subCols = collections.filter(
+        (col) =>
+          col.parentMetafield?.value === 'false' &&
+          subCollectionGids.includes(col.id),
+      );
+      parentProducts = parentProducts.concat(
+        subCols.length > 0
+          ? subCols.flatMap((col) =>
+              (col.products?.edges || []).map((edge) => edge.node),
+            )
+          : [],
+      );
+    });
+    const subProducts =
+      checkedSubs.length > 0
+        ? checkedSubs.flatMap((col) =>
+            (col.products?.edges || []).map((edge) => edge.node),
+          )
+        : [];
+    const allProducts = [...parentProducts, ...subProducts];
+    const uniqueProducts = Array.from(
+      new Map(allProducts.map((p) => [p.id, p])).values(),
+    );
+    return uniqueProducts;
+  };
+
+  // Update displayedProducts when checkedCollectionIds changes
+  useEffect(() => {
+    setDisplayedProducts(
+      getProductsForCheckedCollections(checkedCollectionIds),
+    );
+    // Only sync Swiper selection if it's manually changed, not from initial URL
+    // Removed automatic sync to keep swiper visible initially
+  }, [checkedCollectionIds]);
+
+  const handleAddtoRegistry = (product) => {
+    try {
+      // Check if user is logged in by looking for token in localStorage
+      const token = localStorage.getItem('@token') || localStorage.getItem('@Token');
+      
+      if (!token) {
+        // No token found, redirect to login
+        navigate('/login');
+        return;
+      }
+
+      // Check if registry exists and has an id
+      if (!registry || !registry.id) {
+        setAlertMessage('Registry not found. Please try again.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+
+      const firstVariant = product?.variants?.edges?.[0]?.node;
+      if (!firstVariant) {
+        setAlertMessage('Product variant not found.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+
+      const payload = {
+        productId: Number(extractShopifyId(product.id)),
+        amount: Number(firstVariant.priceV2.amount),
+        registryId: Number(registry.id),
+        productTypeId: 1,
+        quantity: 1,
+      };
+
+      fetcher.submit(
+        {payload: JSON.stringify(payload)},
+        {
+          method: 'post',
+          encType: 'application/json',
+        },
+      );
+
+      // Show success alert
+      setAlertMessage(`${product.title} has been added to your registry!`);
+      setAlertType('success');
+      setShowAlert(true);
+
+      // Hide alert after 3 seconds
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    } catch (error) {
+      setAlertMessage('Failed to add to registry. Please try again.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    }
+  };
+
+  // Filter the products based on selected filters
+  const filteredProducts = products
+    .filter((productWrapper) => {
+      const product = productWrapper.node;
+      const firstVariant = product?.variants?.edges?.[0]?.node;
+
+      if (!firstVariant) return false;
+
+      if (availability) {
+        const isAvailable = firstVariant.availableForSale;
+        if (availability === 'in-stock' && !isAvailable) return false;
+        if (availability === 'out-of-stock' && isAvailable) return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      const priceA = Number(a.node.variants.edges[0].node.priceV2.amount);
+      const priceB = Number(b.node.variants.edges[0].node.priceV2.amount);
+      const createdAtA = new Date(a.node.createdAt).getTime();
+      const createdAtB = new Date(b.node.createdAt).getTime();
+
+      if (priceSort === 'low-to-high') return priceA - priceB;
+      if (priceSort === 'high-to-low') return priceB - priceA;
+      if (dateSort === 'newest') return createdAtB - createdAtA;
+      if (dateSort === 'oldest') return createdAtA - createdAtB;
+
+      return 0;
+    });
+
+  const parentCollection = collections.filter(
+    (col) => col.parentMetafield?.value === 'true',
+  );
+
+  return (
+    <>
+      <Header />
+
+      <div className="w-full h-[2px] bg-black"></div>
+
+      <div className="pt-[80px] relative p-4 mt-[80px]">
+        <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+          {selectedSwiperCollectionId ? (
+            <span className="prata uppercase">
+              {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
+            </span>
+          ) : currentCollection ? (
+            <span className="prata uppercase">{currentCollection.title}</span>
+          ) : (
+            <span className="prata uppercase">Browse Products</span>
+          )}
+        </h2>
+        <img
+          src="/assets/Images/profile-view-page-bdr.png"
+          alt="Couple"
+          className="max-w-[630px] mt-5 h-auto mx-auto"
+        />
+        <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
+          Browse by category, filter by price, or get inspired with our curated
+          edits. Add, update, or switch things up whenever you like.
+        </p>
+
+        <PreviewRegistry />
+      </div>
+
+      <section className=" ">
+        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+          <div className=" ">
+            {!selectedSwiperCollectionId && (
+              <>
+                <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
+                  <img src={nextitem} alt="" className="rotate-180 size-6" />
+                </div>
+
+                <Swiper
+                  spaceBetween={15}
+                  slidesPerView={3.25} // Shows 3 full + a portion of 4th
+                  centeredSlides={true} // Enables .5 on both sides
+                  loop={true}
+                  modules={[Navigation]}
+                  navigation={{
+                    nextEl: '.swiper-button-next-prod',
+                    prevEl: '.swiper-button-prev-prod',
+                  }}
+                  className="px-[178px]"
+                  breakpoints={{
+                    345: {
+                      slidesPerView: 1.25,
+                      spaceBetween: 10,
+                      centeredSlides: true,
+                    },
+                    475: {
+                      slidesPerView: 2.25,
+                      spaceBetween: 15,
+                      centeredSlides: true,
+                    },
+                    768: {
+                      slidesPerView: 2.25,
+                      spaceBetween: 20,
+                      centeredSlides: true,
+                    },
+                    1024: {
+                      slidesPerView: 2.75,
+                      spaceBetween: 30,
+                      centeredSlides: true,
+                    },
+                    1366: {
+                      slidesPerView: 3.25,
+                      spaceBetween: 39,
+                      centeredSlides: true,
+                    },
+                    1600: {
+                      slidesPerView: 3.5,
+                      spaceBetween: 39,
+                      centeredSlides: true,
+                    },
+                  }}
+                >
+                  {/* Dynamic slides from Shopify collections */}
+                  {collections
+                    .filter((col) => col.parentMetafield?.value === 'true')
+                    .map((col) => (
+                      <SwiperSlide
+                        key={col.id}
+                        onClick={() => {
+                          setCheckedCollectionIds([col.id]);
+                          setSelectedSwiperCollectionId(col.id);
+                        }}
+                        style={{ cursor: 'pointer'}}
+                      >
+                        <img
+                          src={col.image?.url || '/assets/Images/placeholder.png'}
+                          alt={col.title}
+                          className="w-full"
+                        />
+                        <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                          {col.title}
+                        </h3>
+                      </SwiperSlide>
+                    ))}
+                </Swiper>
+                <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
+                  <img src={nextitem} className="size-6" alt="" />
+                </div>
+              </>
+            )}
+
+            {/* Selected collection image at 100% width - replaces swiper */}
+            {selectedSwiperCollectionId && (
+              <div className="relative">
+                <img
+                  src={collections.find(col => col.id === selectedSwiperCollectionId)?.image?.url || '/assets/Images/placeholder.png'}
+                  alt={collections.find(col => col.id === selectedSwiperCollectionId)?.title}
+                  className="w-full h-[510px] lg:h-[800px] object-cover"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto">
+        <div className="flex flex-col md:flex-row gap-12 pt-10">
+          <SidebarFilter
+            collections={collections}
+            checkedCollectionIds={checkedCollectionIds}
+            setCheckedCollectionIds={setCheckedCollectionIds}
+          />
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10 flex-1"
+            ref={productGridRef}
+          >
+            {(() => {
+              if (displayedProducts.length === 0) {
+                return (
+                  <div className="col-span-3 text-center text-gray-400">
+                    Select a collection to view products.
+                  </div>
+                );
+              }
+              let anyRendered = false;
+              const productNodes = displayedProducts
+                .slice(0, productsToShow)
+                .map((product) => {
+                  const firstVariant = product?.variants?.edges?.[0]?.node;
+                  if (!firstVariant) return null;
+                  anyRendered = true;
+                  const firstImage =
+                    product?.images?.edges?.[0]?.node?.url ||
+                    'assets/Images/placeholder.jpg';
+                  return (
+                    <RegistryProduct
+                      key={product.id}
+                      image={firstImage}
+                      productName={product.title}
+                      price={firstVariant.priceV2.amount}
+                      description={product.description}
+                      onAddToRegistry={() => handleAddtoRegistry(product)}
+                      onGroupGiftTagChange={(isGroupGift) =>
+                        console.log(`Group Gift tag changed: ${isGroupGift}`)
+                      }
+                    />
+                  );
+                });
+              if (!anyRendered) {
+                return (
+                  <div className="col-span-3 text-center text-gray-400">
+                    Select a collection to view products.
+                  </div>
+                );
+              }
+              return productNodes;
+            })()}
+          </div>
+        </div>
+
+        <div className="flex justify-center items-center">
+          <div className="w-full xl:w-1/4 "> </div>
+          <div className="w-full xl:w-3/4 flex flex-col items-center">
+            <p className="text-center text-md my-10">
+              LOADING {Math.min(productsToShow, displayedProducts.length)} of{' '}
+              {displayedProducts.length}
+            </p>
+
+            {displayedProducts.length > 12 &&
+              productsToShow < displayedProducts.length && (
+                <WhiteThemeButton
+                  Text="View more"
+                  link="#"
+                  onClick={() =>
+                    setProductsToShow((prev) =>
+                      Math.min(prev + 12, displayedProducts.length),
+                    )
+                  }
+                />
+              )}
+
+            {productsToShow > 12 && (
+              <button
+                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+                onClick={() => {
+                  setProductsToShow(12);
+                  if (productGridRef.current) {
+                    productGridRef.current.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    });
+                  }
+                }}
+              >
+                Back to Top
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+        <Heading
+          text="we think you'll love"
+          classes={
+            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+          }
+          image={lineImghead}
+          imageClasses={'max-[1024px]:max-w-[330px]'}
+        />
+
+        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
+            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <img src={nextitem} alt="" className="rotate-180 " />
+              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+            </div>
+
+            <Swiper
+              spaceBetween={15}
+              slidesPerView={3}
+              loop={true}
+              modules={[Navigation]}
+              navigation={{
+                nextEl: '.swiper-button-next-prod',
+                prevEl: '.swiper-button-prev-prod',
+              }}
+              className="px-[178px]"
+              breakpoints={{
+                345: {
+                  spaceBetween: 10,
+                  centeredSlides: true,
+                },
+                475: {
+                  spaceBetween: 15,
+                  centeredSlides: true,
+                },
+                768: {
+                  spaceBetween: 20,
+                  centeredSlides: true,
+                },
+                1024: {
+                  spaceBetween: 30,
+                  centeredSlides: true,
+                },
+                1366: {
+                  spaceBetween: 39,
+                  centeredSlides: true,
+                },
+                1600: {
+                  spaceBetween: 39,
+                  centeredSlides: true,
+                },
+              }}
+            >
+              {/* slides here */}
+              <SwiperSlide>
+                <img src={youll1} alt="New Arrival" className="w-full" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  ARKE GLASS BOTTLE FOR CARBONATOR PRO
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll2} alt="Tableware" className="w-full" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  SMEG TOASTER, 2 SLICE
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
+                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                  THE BARISTA TOUCH ESPRESSO MAKER
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll1} alt="New arrivals" className="w-full" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  ARKE GLASS BOTTLE FOR CARBONATOR PRO
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
+                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                  THE BARISTA TOUCH ESPRESSO MAKER
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+            </Swiper>
+            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+              <img src={nextitem} className="" alt="" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="py-[120px] px-12">
+          <ExploreCategories />
+        </div>
+
+      {/* Alert Component */}
+      {showAlert && (
+        <div
+          className={`fixed top-4 right-4 ${
+            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+        >
+          <div className="flex items-center">
+            {alertType === 'success' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+            {alertType === 'error' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            )}
+            <span>{alertMessage}</span>
+      </div>
+    </div>
+      )}
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 3s ease-in-out;
+        }
+      `}</style>
+      <Footer />
+    </>
+  );
+}
+
+const PRODUCT_QUERY = `#graphql
+  query {
+    products(first: 10) {
+      edges {
+        node {
+          handle
+          description
+          id
+          title
+          createdAt
+          images(first: 10) {
+            edges {
+              node {
+                id
+                src
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                id
     availableForSale
-    compareAtPrice {
+                priceV2 {
       amount
       currencyCode
     }
-    id
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+const COLLECTION_QUERY = `#graphql
+    query {
+    collections(first: 50) {
+      nodes {
+        description
+        title
+        id
+        handle
     image {
-      __typename
       id
       url
       altText
       width
       height
     }
-    price {
-      amount
-      currencyCode
-    }
-    product {
-      title
-      handle
-    }
-    selectedOptions {
-      name
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
+          id
+          value
+        }
+        subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
       value
     }
-    sku
-    title
-    unitPrice {
-      amount
-      currencyCode
-    }
-  }
-`;
-
-const PRODUCT_FRAGMENT = `#graphql
-  fragment Product on Product {
+        products(first: 10){
+          edges {
+            node {
     id
     title
-    vendor
     handle
-    descriptionHtml
     description
-    options {
-      name
-      optionValues {
-        name
-      }
-    }
-    selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
-      ...ProductVariant
+              images(first: 10) {
+                edges {
+                  node {
+                    id
+                    url
+                  }
+                }
     }
     variants(first: 1) {
-      nodes {
-        ...ProductVariant
-      }
-    }
-    seo {
-      description
-      title
-    }
-  }
-  ${PRODUCT_VARIANT_FRAGMENT}
-`;
-
-const PRODUCT_QUERY = `#graphql
-  query Product(
-    $country: CountryCode
-    $handle: String!
-    $language: LanguageCode
-    $selectedOptions: [SelectedOptionInput!]!
-  ) @inContext(country: $country, language: $language) {
-    product(handle: $handle) {
-      ...Product
-    }
-  }
-  ${PRODUCT_FRAGMENT}
-`;
-
-const PRODUCT_VARIANTS_FRAGMENT = `#graphql
-  fragment ProductVariants on Product {
-    variants(first: 250) {
-      nodes {
-        ...ProductVariant
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
-  ${PRODUCT_VARIANT_FRAGMENT}
 `;
 
-const VARIANTS_QUERY = `#graphql
-  ${PRODUCT_VARIANTS_FRAGMENT}
-  query ProductVariants(
-    $country: CountryCode
-    $language: LanguageCode
-    $handle: String!
-  ) @inContext(country: $country, language: $language) {
-    product(handle: $handle) {
-      ...ProductVariants
-    }
-  }
-`;
+// Export metadata for Remix
+export const meta = () => {
+  return [
+    {title: 'Product Collection'},
+    {name: 'description', content: 'Browse our product collection'},
+  ];
+};
 
-/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
-/** @typedef {import('storefrontapi.generated').ProductFragment} ProductFragment */
-/** @typedef {import('@shopify/hydrogen/storefront-api-types').SelectedOption} SelectedOption */
-/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
+// Export handle for Remix
+export const handle = {
+  hydrate: true,
+};

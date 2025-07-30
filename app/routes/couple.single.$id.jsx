@@ -75,35 +75,12 @@ export async function loader({params, context}) {
       }))
     : [];
 
-  // Get cart data from session
-  let cartItems = [];
-  try {
-    console.log('Session in loader:', context.session);
-    const cartData = context.session.get('cart');
-    console.log('Cart data from session:', cartData);
-    cartItems = cartData ? JSON.parse(cartData) : [];
-    console.log('Parsed cart items:', cartItems);
-  } catch (error) {
-    console.error('Error accessing cart data in loader:', error);
-    cartItems = [];
-  }
-
-  // Calculate cart total
-  const cartTotal = cartItems.reduce(
-    (sum, item) => sum + Number(item.price) * (item.quantity || 1),
-    0,
-  );
-
   return defer({
     data: [...mergedArray, ...cashFundProducts],
     cashfundData: cashFundProducts,
     response,
     registryId,
     collections: shopifyCollections.collections.nodes,
-    cart: {
-      items: cartItems,
-      total: cartTotal,
-    },
   });
 }
 
@@ -114,11 +91,9 @@ export async function action({request, context}) {
     const itemId = formData.get('itemId');
     const productData = formData.get('productData');
 
-    console.log('Action received:', {clearCart, itemId, productData});
 
     // Ensure we have access to session
     if (!context.session) {
-      console.error('Session not available');
       return json(
         {
           success: false,
@@ -130,12 +105,10 @@ export async function action({request, context}) {
 
     // Get the current cart
     const cartItems = JSON.parse(context.session.get('cart') || '[]');
-    console.log('Current cart items:', cartItems);
 
     // Handle cart operations
     if (clearCart === 'true') {
       context.session.set('cart', '[]');
-      console.log('Clearing cart');
       return json(
         {success: true, action: 'clear'},
         {
@@ -147,12 +120,10 @@ export async function action({request, context}) {
     }
 
     if (itemId && !productData) {
-      console.log('Removing item from cart:', itemId);
       const updatedCart = cartItems.filter(
         (item) => item.id !== Number(itemId),
       );
       context.session.set('cart', JSON.stringify(updatedCart));
-      console.log('Updated cart after removal:', updatedCart);
       return json(
         {success: true, action: 'remove', itemId},
         {
@@ -164,12 +135,10 @@ export async function action({request, context}) {
     }
 
     if (!productData) {
-      console.error('No product data provided');
       return json({success: false, error: 'Product data is required'});
     }
 
     const product = JSON.parse(productData);
-    console.log('Parsed product data:', product);
 
     const amount = parseFloat(formData.get('amount') || product.amount || 0);
     const productTypeId = product.productTypeId || 1;
@@ -189,7 +158,6 @@ export async function action({request, context}) {
         product.cashFundId ||
         product.id;
       if (!addItemId || isNaN(Number(addItemId))) {
-        console.error('Cash fund contribution missing ID:', product);
         return json({
           success: false,
           error: 'Cash fund contribution missing ID',
@@ -200,10 +168,7 @@ export async function action({request, context}) {
       addItemId = getNumericId(product.id);
     }
 
-    console.log('Processed item ID:', {addItemId, originalId: product.id});
-
     if (!addItemId) {
-      console.error('Invalid product ID:', product.id);
       return json({success: false, error: 'Invalid product ID'});
     }
 
@@ -213,16 +178,10 @@ export async function action({request, context}) {
         productTypeId === 2
           ? item.originalId === product.id
           : item.id === addItemId;
-      console.log('Duplicate check:', {
-        itemInCart: item,
-        newItem: {id: addItemId, originalId: product.id},
-        isDuplicate: duplicateCheck,
-      });
       return duplicateCheck;
     });
 
     if (isDuplicate) {
-      console.log('Duplicate item detected');
       return json(
         {
           success: false,
@@ -248,12 +207,10 @@ export async function action({request, context}) {
       isCashFund: productTypeId === 2 ? true : false,
     };
 
-    console.log('New cart item:', cartItem);
 
     // Update cart in session
     const updatedCart = [...cartItems, cartItem];
     context.session.set('cart', JSON.stringify(updatedCart));
-    console.log('Updated cart:', updatedCart);
 
     return json(
       {
@@ -269,7 +226,6 @@ export async function action({request, context}) {
       },
     );
   } catch (error) {
-    console.error('Error in action:', error);
     return json(
       {
         success: false,
@@ -294,9 +250,17 @@ async function hashCartId(cartId) {
 }
 
 export default function CoupleProfile() {
-  const {data, cashfundData, response, registryId, collections, cart} =
+  const {data, cashfundData, response, registryId, collections} =
     useLoaderData() || [];
   const fetcher = useFetcher();
+
+  console.log('CoupleProfile: data from loader:', data);
+  console.log('CoupleProfile: data structure check:', data.map(item => ({
+    id: item.id,
+    productId: item.productId,
+    title: item.title,
+    cashFundName: item.cashFund?.name
+  })));
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [availability, setAvailability] = useState('');
@@ -305,11 +269,81 @@ export default function CoupleProfile() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
   const [sideCartOpen, setSideCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartLoading, setCartLoading] = useState(false);
 
   // Add missing popup state variables
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedGiftData, setSelectedGiftData] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  
+  // Function to fetch cart items from API
+  const fetchCartItems = async () => {
+    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    
+    if (!email || !registryId) {
+      return;
+    }
+    
+    setCartLoading(true);
+    try {
+      const res = await fetch(`http://localhost:3040/api/cart/get-cart/${registryId}/${email}`);
+      const apiData = await res.json();
+      
+      if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
+        // Extract registryProducts from the first cart
+        const cartData = apiData.data[0];
+        console.log('Cart API Response:', cartData);
+        console.log('Cart Items:', cartData.cartItemProducts);
+        
+        // Transform the API data to match SideCart expectations
+        const transformedItems = (cartData.cartItemProducts || []).map(cartItem => {
+          const registryProduct = cartItem.registryProduct;
+          console.log('Cart Item:', cartItem);
+          console.log('Registry Product:', registryProduct);
+          
+          // Try to find the product in our loaded data to get title and image
+          const productFromData = data.find(p => 
+            (p.productId && p.productId === registryProduct.productId) || 
+            (p.id && p.id === registryProduct.productId)
+          );
+          
+          return {
+            id: cartItem.id,
+            price: Number(cartItem.price), // Use the price from cartItem
+            quantity: Number(registryProduct.quantity) || 1,
+            title: cartItem.title || productFromData?.title || productFromData?.cashFund?.name || `Product ${registryProduct.productId}`,
+            image: cartItem.image || productFromData?.images?.edges?.[0]?.node?.url || productFromData?.cashFund?.image?.fileUrl || '/placeholder.svg',
+            isCashFund: registryProduct.productTypeId === 2,
+            productId: registryProduct.productId,
+            amount: Number(registryProduct.amount), // Keep original amount for reference
+            registryProductId: registryProduct.id, // Keep registry product ID for reference
+          };
+        });
+        console.log('Transformed Items:', transformedItems);
+        setCartItems(transformedItems);
+      } else {
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      setCartItems([]);
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
+  // Fetch cart items on component mount and when email changes
+  useEffect(() => {
+    fetchCartItems();
+  }, [registryId]);
+
+  // Fetch cart items whenever sidecart is opened
+  useEffect(() => {
+    if (sideCartOpen) {
+      fetchCartItems();
+    }
+  }, [sideCartOpen]);
 
   // Handle fetcher responses
   useEffect(() => {
@@ -320,6 +354,8 @@ export default function CoupleProfile() {
       } else {
         setAlertMessage(fetcher.data.message || 'Cart updated successfully');
         setAlertType('success');
+        // Refresh cart items after successful cart operation
+        fetchCartItems();
       }
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
@@ -340,49 +376,264 @@ export default function CoupleProfile() {
     setSelectedGiftData(null);
   };
 
+  const [guestEmail, setGuestEmail] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('guestEmail') || '';
+    }
+    return '';
+  });
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [pendingCartAction, setPendingCartAction] = useState(null); // { type: 'add'|'contribute', productId, amount }
+  const [isApiLoading, setIsApiLoading] = useState(false);
+  const emailInputRef = useRef();
+
+  // Fetch cart items when email changes
+  useEffect(() => {
+    if (guestEmail && registryId) {
+      fetchCartItems();
+    }
+  }, [guestEmail, registryId]);
+
+  // Helper to call /api/cart
+  const callCartApi = async (email) => {
+    setIsApiLoading(true);
+    try {
+      const res = await fetch('http://localhost:3040/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail: email, registryId: Number(registryId) }),
+      });
+      const data = await res.json();
+      setIsApiLoading(false);
+      if (data.code === 200) {
+        return { success: true, data };
+      } else {
+        return { success: false, error: data.message || 'Failed to initialize cart' };
+      }
+    } catch (e) {
+      setIsApiLoading(false);
+      return { success: false, error: e.message };
+    }
+  };
+
+  // Helper to call /api/cart/add-to-cart/{registryId}/{userEmail}
+  const callAddToCartApi = async (email, registryProductId, price, productData) => {
+    setIsApiLoading(true);
+    try {
+      const payload = { 
+        registryProductId: Number(registryProductId),
+        price: Number(price),
+        title: productData.title || productData.cashFund?.name || 'Product',
+        image: productData.images?.edges?.[0]?.node?.url || productData.cashFund?.image?.fileUrl || '',
+        description: productData.description || productData.cashFund?.note || ''
+      };
+      console.log('Sending to Cart API:', payload);
+      
+      const res = await fetch(`https://dev-hopsongrace.codup.io/api/cart/add-to-cart/${registryId}/${email}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      setIsApiLoading(false);
+      if (data.code === 200) {
+        return { success: true, data };
+      } else {
+        return { success: false, error: data.message || 'Failed to add to cart' };
+      }
+    } catch (e) {
+      setIsApiLoading(false);
+      return { success: false, error: e.message };
+    }
+  };
+
+  // Modified Add to Cart
   const handleAddToCart = (productId) => {
+    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    if (!email) {
+      setPendingCartAction({ type: 'add', productId });
+      setShowEmailModal(true);
+      return;
+    }
     const product = data.find((item) => item.id === productId);
     if (!product) return;
 
-    // Ensure registryId is included
-    const productWithRegistry = {
-      ...product,
-      registryId: registryId,
-    };
-
-    fetcher.submit(
-      {
-        productData: JSON.stringify(productWithRegistry),
-      },
-      {method: 'post'},
-    );
+    // Check if product is already in cart
+    const isAlreadyInCart = cartItems.some(item => item.productId === (product.productId || product.id));
+    if (isAlreadyInCart) {
+      setAlertMessage('This item is already in your cart');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
+    // Store registryId in localStorage when first item is added to cart
+    if (typeof window !== 'undefined' && product.registryId) {
+      localStorage.setItem('registryId', product.registryId);
+      console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+    }
+    
+    // Use the correct product ID for registryProductId
+    const registryProductId = product.productId || product.id;
+    const price = product.amount || 0;
+    callAddToCartApi(email, registryProductId, price, product).then((result) => {
+      if (result.success) {
+        // Refresh cart items after successful addition
+        fetchCartItems();
+        setAlertMessage(`${product.title || 'Item'} added to cart successfully`);
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      } else {
+        setAlertMessage('Failed to add item to cart');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      }
+    });
   };
 
-  const handleRemoveFromCart = (itemId) => {
-    fetcher.submit({itemId}, {method: 'post'});
-  };
-
-  const handleClearCart = () => {
-    fetcher.submit({clearCart: 'true'}, {method: 'post'});
-  };
-
+    // Modified Contribute
   const handleContribute = (productId, amount) => {
+    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    if (!email) {
+      setPendingCartAction({ type: 'contribute', productId, amount });
+      setShowEmailModal(true);
+      return;
+    }
     const product = data.find((item) => item.id === productId);
     if (!product) return;
 
-    // Ensure registryId is included
-    const productWithRegistry = {
-      ...product,
-      registryId: registryId,
-      amount: amount,
-    };
+    // Check if product is already in cart
+    const isAlreadyInCart = cartItems.some(item => item.productId === (product.productId || product.id));
+    if (isAlreadyInCart) {
+      setAlertMessage('This item is already in your cart');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
+    // Store registryId in localStorage when first item is added to cart
+    if (typeof window !== 'undefined' && product.registryId) {
+      localStorage.setItem('registryId', product.registryId);
+      console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+    }
+    
+    // Use the correct product ID for registryProductId
+    const registryProductId = product.productId || product.id;
+    callAddToCartApi(email, registryProductId, amount, product).then((result) => {
+      if (result.success) {
+        // Refresh cart items after successful contribution
+        fetchCartItems();
+        setAlertMessage(`$${amount} contributed to ${product.title || 'fund'} successfully`);
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      } else {
+        setAlertMessage('Failed to contribute to fund');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      }
+    });
+  };
 
-    fetcher.submit(
-      {
-        productData: JSON.stringify(productWithRegistry),
-      },
-      {method: 'post'},
-    );
+  // Modal submit handler
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    const email = guestEmail.trim();
+    if (!email) return;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guestEmail', email);
+    }
+    // First call the initial cart API
+    await callCartApi(email);
+    setShowEmailModal(false);
+    if (pendingCartAction) {
+      if (pendingCartAction.type === 'add') {
+        const product = data.find((item) => item.id === pendingCartAction.productId);
+        if (product) {
+          // Store registryId in localStorage when first item is added to cart
+          if (typeof window !== 'undefined' && product.registryId) {
+            localStorage.setItem('registryId', product.registryId);
+            console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+          }
+          const registryProductId = product.productId || product.id;
+          const price = product.amount || 0;
+          await callAddToCartApi(email, registryProductId, price, product);
+        }
+      } else if (pendingCartAction.type === 'contribute') {
+        const product = data.find((item) => item.id === pendingCartAction.productId);
+        if (product) {
+          // Store registryId in localStorage when first item is added to cart
+          if (typeof window !== 'undefined' && product.registryId) {
+            localStorage.setItem('registryId', product.registryId);
+            console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+          }
+          const registryProductId = product.productId || product.id;
+          await callAddToCartApi(email, registryProductId, pendingCartAction.amount, product);
+        }
+      }
+      setPendingCartAction(null);
+    }
+  };
+
+  // Re-add handleRemoveFromCart for SideCart
+  const handleRemoveFromCart = (itemId) => {
+    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    if (!email || !registryId || !itemId) return;
+    
+    // Find the cart item to get the registryProductId
+    const cartItem = cartItems.find(item => item.id === itemId);
+    if (!cartItem) return;
+    
+    // Use registryProductId from the cart item
+    const registryProductId = cartItem.registryProductId;
+    if (!registryProductId) {
+      setAlertMessage('Invalid cart item');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
+    // Call the remove from cart API
+    fetch(`http://localhost:3040/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.code === 200) {
+        // Refresh cart items after successful removal
+        fetchCartItems();
+        setAlertMessage('Item removed from cart successfully');
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      } else {
+        setAlertMessage('Failed to remove item from cart');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      }
+    })
+    .catch(error => {
+      console.error('Error removing item from cart:', error);
+      setAlertMessage('Error removing item from cart');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    });
+  };
+
+  // Re-add handleClearCart for SideCart
+  const handleClearCart = () => {
+    // TODO: Implement clear cart API call
+    // For now, just refresh the cart
+    fetchCartItems();
   };
 
   // Filter products
@@ -419,9 +670,9 @@ export default function CoupleProfile() {
       return 0;
     });
 
-  // Calculate cart totals
-  const cartTotal = cart.items.reduce(
-    (sum, item) => sum + Number(item.price) * (item.quantity || 1),
+  // Calculate cart totals from API data
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + Number(item.price) * (Number(item.quantity) || 1),
     0,
   );
 
@@ -682,9 +933,9 @@ export default function CoupleProfile() {
       <SideCart
         open={sideCartOpen}
         onClose={onClose}
-        cartItems={cart.items}
-        total={cart.total}
-        subtotal={cart.total}
+        cartItems={cartItems}
+        total={cartTotal}
+        subtotal={cartTotal}
         onCartChange={handleRemoveFromCart}
         onClearCart={handleClearCart}
       />
@@ -857,6 +1108,43 @@ export default function CoupleProfile() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {showEmailModal && (
+        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+          <form
+            className="bg-white p-6 rounded shadow-lg w-full max-w-sm relative"
+            onSubmit={handleEmailSubmit}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Close (cross) button */}
+            <button
+              type="button"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold focus:outline-none"
+              aria-label="Close"
+              onClick={() => setShowEmailModal(false)}
+            >
+              &times;
+            </button>
+            <h2 className="text-lg font-bold mb-4">Enter your email to continue</h2>
+            <input
+              ref={emailInputRef}
+              type="email"
+              className="border p-2 w-full mb-4"
+              placeholder="Guest Email"
+              value={guestEmail}
+              onChange={e => setGuestEmail(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+              disabled={isApiLoading}
+            >
+              {isApiLoading ? 'Processing...' : 'Continue'}
+            </button>
+          </form>
         </div>
       )}
 

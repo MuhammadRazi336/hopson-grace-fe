@@ -1,4 +1,5 @@
 import {Button, Typography} from '@material-tailwind/react';
+import { Link } from '@remix-run/react';
 
 export default function ButtonComponent({
   text,
@@ -6,9 +7,11 @@ export default function ButtonComponent({
   type = 'button',
   disabled = false,
   className,
+  // link,
   ...rest
 }) {
   return (
+    // <Link to={link}>
     <Button
       onClick={onClick}
       type={type}
@@ -20,5 +23,6 @@ export default function ButtonComponent({
     >
       <Typography>{text}</Typography>
     </Button>
+    // </Link>
   );
 }

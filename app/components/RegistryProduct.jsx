@@ -77,12 +77,14 @@ const ProductCard = ({
             {/* Quantity Controls */}
             <div className="flex flex-col w-full items-center text-xs">
               {/* Add to Registry Button */}
-              <button
-                className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8"
-                onClick={onPersonalizeFund}
-              >
-                personalize fund
-              </button>
+              {onPersonalizeFund && (
+                <button
+                  className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8"
+                  onClick={onPersonalizeFund}
+                >
+                  personalize fund
+                </button>
+              )}
               {/* Add to Registry Button */}
               <button
                 className="bg-[#446184] w-full block text-white text-xs font-bold py-4 px-8"
