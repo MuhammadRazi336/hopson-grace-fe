@@ -287,7 +287,7 @@ export default function CoupleProfile() {
     
     setCartLoading(true);
     try {
-      const res = await fetch(`http://localhost:3040/api/cart/get-cart/${registryId}/${email}`);
+      const res = await fetch(`https://dev-hopsongrace.codup.io/api/cart/get-cart/${registryId}/${email}`);
       const apiData = await res.json();
       
       if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
@@ -398,7 +398,7 @@ export default function CoupleProfile() {
   const callCartApi = async (email) => {
     setIsApiLoading(true);
     try {
-      const res = await fetch('http://localhost:3040/api/cart', {
+      const res = await fetch('https://dev-hopsongrace.codup.io/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: email, registryId: Number(registryId) }),
@@ -600,7 +600,7 @@ export default function CoupleProfile() {
     }
     
     // Call the remove from cart API
-    fetch(`http://localhost:3040/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
+    fetch(`https://dev-hopsongrace.codup.io/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
     })
