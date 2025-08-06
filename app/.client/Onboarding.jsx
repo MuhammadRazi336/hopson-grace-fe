@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useLoaderData, useNavigate} from '@remix-run/react';
-import SwanImg from '/assets/Images/SwanImg.png';
+import GlassImg from '/assets/Images/GlassImg.png';
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
 import Button from '~/components/Button.jsx';
@@ -11,9 +11,20 @@ import moment from 'moment';
 import Registry_Services from '~/Services/Registry.js';
 import {STEPS_CONSTANTS} from '../constants/UiConstants';
 import arrow from '/assets/Images/arrow.png';
-import collectionitems from '/assets/Images/collectionitems.png';
+// import collectionitems from '/assets/Images/collectionitems.png';
+import WorldBestBrands from '/assets/Images/WORLDSBESTBRANDS.png';
+import CashTravel from '/assets/Images/CASHTRAVEL.png';
+import Both from '/assets/Images/CASHTRAVELGIFTS.png';
 import selected from '/assets/Images/selected.png';
 import {Image} from '@shopify/hydrogen';
+
+// Collection icons for Step6
+import Tableware from '/assets/Images/TABLEWARE.png';
+import Kitchen from '/assets/Images/KITCHEN.png';
+import Homedecor from '/assets/Images/HOMEDECOR.png';
+import BedBath from '/assets/Images/BEDBATH.png';
+import TravelOutdoors from '/assets/Images/BESPOKETRAVEL.png';
+import Music from '/assets/Images/MUSIC.png';
 
 import React from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
@@ -491,7 +502,7 @@ const OnboardingClient = ({onStepChange}) => {
           <div className="my-4 flex flex-col items-center justify-center relative">
             {/* FPO Placeholder Image */}
             <div>
-              <img src={SwanImg} alt="" className="w-full h-full" />
+              <img src={GlassImg} alt="" className="w-full h-full" />
             </div>
             <div className="flex items-center justify-center w-16 h-12 bg-white mx-auto mb-4 absolute top-8 left-14">
               <span className="text-black font-normal text-lg">FPO</span>
@@ -836,21 +847,20 @@ const Step5 = () => {
   const options = [
     {
       id: 1,
-      label: 'Cash',
-      image: collectionitems,
+      label: 'Gifts',
+      image: WorldBestBrands,
       selectedImage: selected,
     },
     {
       id: 2,
-      label: 'Gifts & Cash',
-      image: collectionitems,
+      label: 'Cash',
+      image: CashTravel,
       selectedImage: selected,
     },
-    {id: 3, label: 'Gifts', image: collectionitems, selectedImage: selected},
     {
-      id: 4,
-      label: 'Not Sure Yet',
-      image: collectionitems,
+      id: 3,
+      label: 'Both',
+      image: Both,
       selectedImage: selected,
     },
   ];
@@ -865,7 +875,7 @@ const Step5 = () => {
         CHOOSE AS MANY AS YOU'D LIKE:
       </h2>
       {/* Grid */}
-      <div className="grid grid-cols-2 max-[768px]:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3">
         {options.map((option) => (
           <button
             key={option.id}
@@ -908,6 +918,23 @@ const Step6 = ({collections, onCollectionsSelect}) => {
       return collection?.metafield?.value === 'true';
     }) || [];
 
+  // Mapping function to assign icons to collections based on title
+  const getCollectionIcon = (collectionTitle) => {
+    const title = collectionTitle.toLowerCase();
+    
+    // Map collection titles to specific icons
+    if (title.includes('tableware') || title.includes('dining') || title.includes('plate') || title.includes('cup')) return Tableware;
+    if (title.includes('kitchen') || title.includes('cook') || title.includes('utensil') || title.includes('appliance')) return Kitchen;
+    if (title.includes('home decor') || title.includes('decoration') || title.includes('furniture') || title.includes('art')) return Homedecor;
+    if (title.includes('bed') || title.includes('bath') || title.includes('bedroom') || title.includes('bathroom') || title.includes('linen')) return BedBath;
+    if (title.includes('travel') || title.includes('outdoor') || title.includes('adventure') || title.includes('luggage')) return TravelOutdoors;
+    if (title.includes('music') || title.includes('audio') || title.includes('sound') || title.includes('instrument')) return Music;
+    if (title.includes('gift') || title.includes('present')) return GiftIcon;
+    
+    // Default fallback icon
+    return GiftIcon;
+  };
+
   const handleOptionClick = (collection) => {
     setSelectedOptions((prev) => {
       const isSelected = prev.some((item) => item.id === collection.id);
@@ -920,7 +947,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
   };
 
   return (
-    <div className="">
+    <div className="flex flex-col items-center">
       <p className="font-normal mb-10 mt-4 w-[80%] text-2xl mx-auto text-center">
         Pick a style, and we'll make gift recommendations tailored to your
         taste.
@@ -928,116 +955,46 @@ const Step6 = ({collections, onCollectionsSelect}) => {
       <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
-      <div className="">
-        {/* <Swiper
-          spaceBetween={0}
-          slidesPerView={4}
-          loop={true}
-          className=""
-        >
-          {parentCollections.length > 0 ? (
-            parentCollections.map((collection) => (
-              <SwiperSlide key={collection.id}>
-                <button
-                  key={collection.id}
-                  onClick={() => handleOptionClick(collection)}
-                  className={`p-6 border rounded-md text-center font-medium text-gray-700 transition-colors duration-200 ${
-                    selectedOptions.some((item) => item.id === collection.id)
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-gray-100 hover:bg-gray-200'
-                  }`}
-                >
-                  {collection.image && (
-                    <Image
-                      alt={collection.image.altText || collection.title}
-                      aspectRatio="1/1"
-                      data={collection.image}
-                      loading="lazy"
-                      sizes="(min-width: 45em) 400px, 100vw"
-                    />
-                  )}
-                  {collection.title}
-                </button>
-              </SwiperSlide>
-            ))
-          ) : (
-            <p className="col-span-2 text-center text-gray-500">No collections available.</p>
-          )}
-        </Swiper> */}
-        <div className="relative">
-          <div className="swiper-button-prev-collection absolute top-[90px] -left-16  cursor-pointer text-white uppercase flex ">
-            <img src={nextitem} alt="" className="rotate-180 invert-100" />
-            <span className="-rotate-90 text-white block tracking-wider max-[1024px]:hidden">
-              more
-            </span>
-          </div>
-          <Swiper
-            spaceBetween={20}
-            slidesPerView={4}
-            loop={true}
-            className=""
-            modules={[Navigation]}
-            navigation={{
-              nextEl: '.swiper-button-next-collection',
-              prevEl: '.swiper-button-prev-collection',
-            }}
-          >
-            {parentCollections.length > 0 ? (
-              parentCollections.map((collection) => {
-                // Add this console.log to check each collection
-
-                return (
-                  <SwiperSlide key={collection.id}>
-                    <button
-                      key={collection.id}
-                      onClick={() => handleOptionClick(collection)}
-                      className={` ${
-                        selectedOptions.some(
-                          (item) => item.id === collection.id,
-                        )
-                          ? ''
-                          : ''
-                      }`}
-                    >
-                      {collection.image && (
-                        <div
-                          className={
-                            selectedOptions.some(
-                              (item) => item.id === collection.id,
-                            )
-                              ? 'tickafter'
-                              : ''
-                          }
-                        >
-                          <Image
-                            alt={collection.image.altText || collection.title}
-                            aspectRatio="1/1"
-                            data={collection.image}
-                            loading="lazy"
-                            sizes="(min-width: 45em) 400px, 100vw"
-                          />
-                        </div>
-                      )}
-                      <span className="mt-4 block tracking-wider text-[15px] font-medium">
-                        {collection.title}
-                      </span>
-                    </button>
-                  </SwiperSlide>
-                );
-              })
-            ) : (
-              <p className="col-span-2 text-center text-gray-500">
-                No collections available.
-              </p>
-            )}
-          </Swiper>
-          <div className="swiper-button-next-collection absolute top-[90px] -right-16 cursor-pointer text-white uppercase flex">
-            <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
-              more
-            </span>
-            <img src={nextitem} className="invert-100" alt="" />
-          </div>
-        </div>
+      {/* Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {parentCollections.length > 0 ? (
+          parentCollections.map((collection) => (
+            <button
+              key={collection.id}
+              onClick={() => handleOptionClick(collection)}
+              className={`p-6 flex items-center justify-center flex-col max-[768px]:p-2 rounded-full text-center text-white font-normal text-[20px] ${
+                selectedOptions.some((item) => item.id === collection.id) ? '' : ''
+              }`}
+            >
+              <div
+                className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-40 aspect-[1/1] flex items-center justify-center relative ${
+                  selectedOptions.some((item) => item.id === collection.id) 
+                    ? 'bg-[#223247]' 
+                    : 'bg-[#F5F2ED]'
+                }`}
+              >
+                {selectedOptions.some((item) => item.id === collection.id) ? (
+                  <img
+                    src={selected}
+                    className="max-[768px]:w-16"
+                    alt="Selected"
+                  />
+                ) : (
+                  <img
+                    src={getCollectionIcon(collection.title)}
+                    className="max-[768px]:w-16 w-20 h-20 object-contain"
+                    alt={collection.title}
+                  />
+                )}
+              </div>
+              <span className="text-[20px] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center">
+                {collection.title}
+              </span>
+            </button>
+          ))
+        ) : (
+          <p className="col-span-3 text-center text-gray-500">No collections available.</p>
+        )}
       </div>
     </div>
   );

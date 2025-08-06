@@ -5,6 +5,7 @@ import {defer} from '@remix-run/server-runtime';
 import {Link, useLoaderData} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
+import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
 import {CoupleFooter} from '~/components/CoupleFooter';
 import {useState} from 'react';
 import NotificationCard from '~/components/NotificationCard';
@@ -33,6 +34,15 @@ export async function loader({request, context}) {
       eventGet.data.image = JSON.parse(eventGet.data.image);
     } catch {
       eventGet.data.image = null;
+    }
+  }
+
+  // Defensive: parse backgroundImage if it's a string
+  if (eventGet?.data?.backgroundImage && typeof eventGet.data.backgroundImage === 'string') {
+    try {
+      eventGet.data.backgroundImage = JSON.parse(eventGet.data.backgroundImage);
+    } catch {
+      eventGet.data.backgroundImage = null;
     }
   }
 
@@ -121,7 +131,16 @@ const index = () => {
     useLoaderData();
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [isBackgroundEditPopupOpen, setIsBackgroundEditPopupOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isBackgroundUploading, setIsBackgroundUploading] = useState(false);
+  const [eventImage, setEventImage] = useState(eventGet?.data?.image?.fileUrl || null);
+  const [backgroundImage, setBackgroundImage] = useState(
+    eventGet?.data?.backgroundImage?.fileUrl || 
+    (eventGet?.data?.backgroundImage && typeof eventGet.data.backgroundImage === 'string' ? eventGet.data.backgroundImage : null) ||
+    '/assets/Images/couple-profile-bg.png'
+  );
 
   // Add state for the note textarea
   const [note, setNote] = useState(eventGet?.data?.welcomeMessage || '');
@@ -132,16 +151,13 @@ const index = () => {
         id: registry.events.id,
         welcomeMessage: note,
       };
-      const response = await fetch(
-        `https://dev-hopsongrace.codup.io/api/events/${payload.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${payload.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(payload),
+      });
       if (response.ok) {
         alert('Message updated!');
       } else {
@@ -154,30 +170,92 @@ const index = () => {
 
   // Handle cropped image save from popup
   const handleCroppedImageSave = async (croppedBlob) => {
-    if (!croppedBlob) return;
+    if (!croppedBlob) {
+      alert('No image to upload');
+      return;
+    }
+    
     setIsUploading(true);
     try {
       const formData = new FormData();
       formData.append('file', croppedBlob, 'profile.jpg');
       formData.append('id', registry.events.id);
-      // Add any other required fields for your backend
-      const response = await fetch(`http://localhost:3040/api/events/${registry.events.id}`, {
+      
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${registry.events.id}`, {
         method: 'PUT',
         body: formData,
       });
+      
       if (response.ok) {
-        // Get the new image URL from the response if available
         const data = await response.json();
-        let newImageUrl = data?.data?.image?.fileUrl || URL.createObjectURL(croppedBlob);
-        setEventImage(newImageUrl);
-        alert('Profile image updated!');
+        console.log('Upload response:', data);
+        
+        // Update the event image state
+        if (data.data && data.data.image) {
+          const newImageUrl = data.data.image.fileUrl || data.data.image;
+          setEventImage(newImageUrl);
+          alert('Profile image updated successfully!');
+        } else {
+          // Fallback to blob URL for immediate display
+          const blobUrl = URL.createObjectURL(croppedBlob);
+          setEventImage(blobUrl);
+          alert('Profile image updated!');
+        }
       } else {
-        alert('Failed to update image');
+        const errorData = await response.json();
+        console.error('Upload failed:', errorData);
+        alert('Failed to update image. Please try again.');
       }
     } catch (err) {
-      alert('Error updating image');
+      console.error('Error uploading image:', err);
+      alert('Error updating image. Please try again.');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  // Handle background image save from popup
+  const handleBackgroundImageSave = async (croppedBlob) => {
+    if (!croppedBlob) {
+      alert('No background image to upload');
+      return;
+    }
+    
+    setIsBackgroundUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', croppedBlob, 'background.jpg');
+      
+      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${registry.events.id}/background-image`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Background upload response:', data);
+        
+        // Update the background image state
+        if (data.data && data.data.data && data.data.data.backgroundImage) {
+          const newBackgroundUrl = data.data.data.backgroundImage.fileUrl;
+          setBackgroundImage(newBackgroundUrl);
+          alert('Background image updated successfully!');
+        } else {
+          // Fallback to blob URL for immediate display
+          const blobUrl = URL.createObjectURL(croppedBlob);
+          setBackgroundImage(blobUrl);
+          alert('Background image updated!');
+        }
+      } else {
+        const errorData = await response.json();
+        console.error('Background upload failed:', errorData);
+        alert('Failed to update background image. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error uploading background image:', err);
+      alert('Error updating background image. Please try again.');
+    } finally {
+      setIsBackgroundUploading(false);
     }
   };
 
@@ -220,13 +298,38 @@ const index = () => {
       <EditImagePopup
         isOpen={isEditPopupOpen}
         onClose={() => setIsEditPopupOpen(false)}
+        onSave={handleCroppedImageSave}
+      />
+      <EditBackgroundImagePopup
+        isOpen={isBackgroundEditPopupOpen}
+        onClose={() => setIsBackgroundEditPopupOpen(false)}
+        onSave={handleBackgroundImageSave}
       />
       <div className="text-center pt-[80px] container mx-auto font-sans">
-        <img
-          src="/assets/Images/couple-profile-bg.png"
-          alt="Couple"
-          className="w-full h-auto"
-        />
+        <div className="relative">
+                     <img
+             src={backgroundImage}
+             alt="Couple Background"
+             className="w-full h-[400px] lg:h-[600px] object-cover"
+           />
+          <div
+            className="absolute top-4 right-4 cursor-pointer"
+            onClick={() => !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)}
+          >
+            <div className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-50">
+              <img
+                src="/assets/Images/edit-icon.png"
+                alt="Edit Background"
+                className={`w-auto h-auto ${isBackgroundUploading ? 'opacity-50' : ''}`}
+              />
+              {isBackgroundUploading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
         {/* <div
           className="absolute top-[87%] -translate-x-[-73%] w-full h-full "
           onClick={() => setIsEditPopupOpen(true)}
@@ -248,19 +351,24 @@ const index = () => {
           <div className="xl:w-4/12 w-full">
             <div className="relative">
               <img
-                src="/assets/Images/couple-placeholder.png"
+                src={eventImage || "/assets/Images/couple-placeholder.png"}
                 alt="Couple"
-                className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto"
+                className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto object-cover"
               />
               <div
                 className="absolute top-[85%] -translate-x-[-55%] w-[70%]"
-                onClick={() => setIsEditPopupOpen(true)}
+                onClick={() => !isUploading && setIsEditPopupOpen(true)}
               >
                 <img
                   src="/assets/Images/edit-icon.png"
                   alt="Edit"
-                  className="w-auto h-auto rounded-full cursor-pointer"
+                  className={`w-auto h-auto rounded-full cursor-pointer ${isUploading ? 'opacity-50' : ''}`}
                 />
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -512,7 +620,7 @@ const FundPage = ({data}) => {
               key={fund.productId || Math.random()}
               image={fund.cashFund.image?.fileUrl}
               title={fund.cashFund?.name || 'No Fund Name'}
-              totalAmount={Number(fund.amount) ? fund.amount : 0}
+              totalAmount={Number(fund.amount) === 0 ? "" : Number(fund.amount) ? fund.amount : 0}
               collectedAmount={
                 Number(fund.collectedAmount) ? fund.collectedAmount : 0
               }

@@ -254,13 +254,7 @@ export default function CoupleProfile() {
     useLoaderData() || [];
   const fetcher = useFetcher();
 
-  console.log('CoupleProfile: data from loader:', data);
-  console.log('CoupleProfile: data structure check:', data.map(item => ({
-    id: item.id,
-    productId: item.productId,
-    title: item.title,
-    cashFundName: item.cashFund?.name
-  })));
+  console.log('CoupleProfile: data from loader:', response);
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [availability, setAvailability] = useState('');
@@ -276,6 +270,7 @@ export default function CoupleProfile() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedGiftData, setSelectedGiftData] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [modalQuantity, setModalQuantity] = useState(1); // Add quantity state for modal
   
   // Function to fetch cart items from API
   const fetchCartItems = async () => {
@@ -301,6 +296,8 @@ export default function CoupleProfile() {
           const registryProduct = cartItem.registryProduct;
           console.log('Cart Item:', cartItem);
           console.log('Registry Product:', registryProduct);
+          console.log('CartItem quantity:', cartItem.quantity);
+          console.log('RegistryProduct quantity:', registryProduct.quantity);
           
           // Try to find the product in our loaded data to get title and image
           const productFromData = data.find(p => 
@@ -311,13 +308,14 @@ export default function CoupleProfile() {
           return {
             id: cartItem.id,
             price: Number(cartItem.price), // Use the price from cartItem
-            quantity: Number(registryProduct.quantity) || 1,
+            quantity: Number(cartItem.quantity || cartItem.purchasedQuantity || 1), // Use cartItem.quantity for purchased quantity
             title: cartItem.title || productFromData?.title || productFromData?.cashFund?.name || `Product ${registryProduct.productId}`,
             image: cartItem.image || productFromData?.images?.edges?.[0]?.node?.url || productFromData?.cashFund?.image?.fileUrl || '/placeholder.svg',
             isCashFund: registryProduct.productTypeId === 2,
             productId: registryProduct.productId,
             amount: Number(registryProduct.amount), // Keep original amount for reference
             registryProductId: registryProduct.id, // Keep registry product ID for reference
+            requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
           };
         });
         console.log('Transformed Items:', transformedItems);
@@ -374,6 +372,28 @@ export default function CoupleProfile() {
   const closePopup = () => {
     setIsPopupOpen(false);
     setSelectedGiftData(null);
+    setModalQuantity(1); // Reset quantity when closing modal
+  };
+
+  // Calculate still needs for modal
+  const getModalStillNeeds = () => {
+    if (!selectedGiftData) return 0;
+    if (selectedGiftData.status === 'purchased') return 0;
+    return Math.max(0, (selectedGiftData.quantity || 0) - (selectedGiftData.purchasedQuantity || 0));
+  };
+
+  // Handle quantity changes in modal
+  const incrementModalQuantity = () => {
+    const stillNeeds = getModalStillNeeds();
+    if (modalQuantity < stillNeeds) {
+      setModalQuantity(modalQuantity + 1);
+    }
+  };
+
+  const decrementModalQuantity = () => {
+    if (modalQuantity > 1) {
+      setModalQuantity(modalQuantity - 1);
+    }
   };
 
   const [guestEmail, setGuestEmail] = useState(() => {
@@ -447,11 +467,35 @@ export default function CoupleProfile() {
     }
   };
 
+  // Helper to call /api/cart/add-to-cart/{registryId}/{userEmail} with quantity
+  const callAddToCartApiWithQuantity = async (email, payload) => {
+    setIsApiLoading(true);
+    try {
+      console.log('Sending to Cart API with quantity:', payload);
+      
+      const res = await fetch(`https://dev-hopsongrace.codup.io/api/cart/add-to-cart/${registryId}/${email}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      setIsApiLoading(false);
+      if (data.code === 200) {
+        return { success: true, data };
+      } else {
+        return { success: false, error: data.message || 'Failed to add to cart' };
+      }
+    } catch (e) {
+      setIsApiLoading(false);
+      return { success: false, error: e.message };
+    }
+  };
+
   // Modified Add to Cart
-  const handleAddToCart = (productId) => {
+  const handleAddToCart = (productId, quantity = 1) => {
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
-      setPendingCartAction({ type: 'add', productId });
+      setPendingCartAction({ type: 'add', productId, quantity });
       setShowEmailModal(true);
       return;
     }
@@ -477,11 +521,22 @@ export default function CoupleProfile() {
     // Use the correct product ID for registryProductId
     const registryProductId = product.productId || product.id;
     const price = product.amount || 0;
-    callAddToCartApi(email, registryProductId, price, product).then((result) => {
+    
+    // Add quantity to the payload
+    const payload = { 
+      registryProductId: Number(registryProductId),
+      price: Number(price),
+      title: product.title || product.cashFund?.name || 'Product',
+      image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '',
+      description: product.description || product.cashFund?.note || '',
+      quantity: Number(quantity)
+    };
+    
+    callAddToCartApiWithQuantity(email, payload).then((result) => {
       if (result.success) {
         // Refresh cart items after successful addition
         fetchCartItems();
-        setAlertMessage(`${product.title || 'Item'} added to cart successfully`);
+        setAlertMessage(`${product.title || 'Item'} (${quantity}) added to cart successfully`);
         setAlertType('success');
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
@@ -562,7 +617,19 @@ export default function CoupleProfile() {
           }
           const registryProductId = product.productId || product.id;
           const price = product.amount || 0;
-          await callAddToCartApi(email, registryProductId, price, product);
+          const quantity = pendingCartAction.quantity || 1;
+          
+          // Add quantity to the payload
+          const payload = { 
+            registryProductId: Number(registryProductId),
+            price: Number(price),
+            title: product.title || product.cashFund?.name || 'Product',
+            image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '',
+            description: product.description || product.cashFund?.note || '',
+            quantity: Number(quantity)
+          };
+          
+          await callAddToCartApiWithQuantity(email, payload);
         }
       } else if (pendingCartAction.type === 'contribute') {
         const product = data.find((item) => item.id === pendingCartAction.productId);
@@ -581,7 +648,7 @@ export default function CoupleProfile() {
   };
 
   // Re-add handleRemoveFromCart for SideCart
-  const handleRemoveFromCart = (itemId) => {
+  const handleRemoveFromCart = (itemId, updatedItem = null) => {
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email || !registryId || !itemId) return;
     
@@ -599,34 +666,67 @@ export default function CoupleProfile() {
       return;
     }
     
-    // Call the remove from cart API
-    fetch(`https://dev-hopsongrace.codup.io/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.code === 200) {
-        // Refresh cart items after successful removal
-        fetchCartItems();
-        setAlertMessage('Item removed from cart successfully');
-        setAlertType('success');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      } else {
-        setAlertMessage('Failed to remove item from cart');
+    // If updatedItem is provided, this is a quantity update
+    if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
+      // Update quantity in cart
+      fetch(`https://dev-hopsongrace.codup.io/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: updatedItem.quantity }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          // Refresh cart items after successful update
+          fetchCartItems();
+          setAlertMessage('Quantity updated successfully');
+          setAlertType('success');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        } else {
+          setAlertMessage('Failed to update quantity');
+          setAlertType('error');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating quantity:', error);
+        setAlertMessage('Error updating quantity');
         setAlertType('error');
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
-      }
-    })
-    .catch(error => {
-      console.error('Error removing item from cart:', error);
-      setAlertMessage('Error removing item from cart');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
-    });
+      });
+    } else {
+      // Remove item from cart
+      fetch(`https://dev-hopsongrace.codup.io/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.code === 200) {
+          // Refresh cart items after successful removal
+          fetchCartItems();
+          setAlertMessage('Item removed from cart successfully');
+          setAlertType('success');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        } else {
+          setAlertMessage('Failed to remove item from cart');
+          setAlertType('error');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        }
+      })
+      .catch(error => {
+        console.error('Error removing item from cart:', error);
+        setAlertMessage('Error removing item from cart');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      });
+    }
   };
 
   // Re-add handleClearCart for SideCart
@@ -676,6 +776,27 @@ export default function CoupleProfile() {
     0,
   );
 
+  // Get recommended products (unpurchased products from the same couple, excluding cash funds)
+  const recommendedProducts = data
+    .filter(product => 
+      !product.isCashFund && 
+      product.status !== 'purchased' && 
+      !cartItems.some(cartItem => cartItem.productId === product.productId)
+    )
+    .slice(0, 4)
+    .map(product => ({
+      id: product.id,
+      title: product.title || product.cashFund?.name || '',
+      price: product.amount,
+      image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '/placeholder.svg',
+      productId: product.productId
+    }));
+
+  // Handle adding recommended product to cart
+  const handleAddRecommendedProduct = (product) => {
+    handleAddToCart(product.id);
+  };
+
   const childCollections = collections.filter(
     (collection) => collection.metafield?.value === 'true',
   );
@@ -720,9 +841,9 @@ export default function CoupleProfile() {
       <CoupleProfileViewHeader onCartClick={() => setSideCartOpen(true)} />
       <div className="text-center pt-[80px] container mx-auto font-sans">
         <img
-          src="/assets/Images/couple-profile-bg.png"
+          src={response?.data[0]?.events[0]?.backgroundImage?.fileUrl || "/assets/Images/couple-profile-bg.png"}
           alt="Couple"
-          className="w-full h-auto"
+          className="w-full h-[400px] lg:h-[600px] object-cover"
         />
         <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
           <div className="xl:w-4/12 w-full">
@@ -852,6 +973,7 @@ export default function CoupleProfile() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
           {filteredData.map((product, index) => (
+            console.log('product', product),
             <CoupleProductCard
               key={product.id}
               name={product.title || product.cashFund?.name || ''}
@@ -862,11 +984,14 @@ export default function CoupleProfile() {
               }
               price={product.amount}
               description={product.description || product.cashFund?.note || ''}
+              quantity={product.quantity}
               isGroupGift={product.isGroupPayment}
               isCashFund={product.isCashFund}
               status={product.status}
               contributedAmount={Number(product.collectedAmount) || 0}
               maxContribution={Number(product.amount) || 0}
+              purchasedQuantity={Number(product.purchasedQuantity) || 0}
+              isAnyAmount={product.cashFund?.isAnyAmount || false}
               onAddToCart={() => handleAddToCart(product.id)}
               onContribute={(amount) => handleContribute(product.id, amount)}
               onTitleClick={() => handleTitleClick(product)}
@@ -938,6 +1063,8 @@ export default function CoupleProfile() {
         subtotal={cartTotal}
         onCartChange={handleRemoveFromCart}
         onClearCart={handleClearCart}
+        recommendedProducts={recommendedProducts}
+        onAddRecommendedProduct={handleAddRecommendedProduct}
       />
 
       {isPopupOpen && selectedGiftData && (
@@ -1028,56 +1155,97 @@ export default function CoupleProfile() {
 
                 <div className="flex items-center gap-4 mb-6">
                   {/* Display Requested/Still Needs */}
+                  {/* {!selectedGiftData.isCashFund && !selectedGiftData.isGroupGift && (
                   <div className="flex flex-col items-start border border-gray-300 p-2 rounded text-sm">
                     <div>
                       Requested:{' '}
                       <span className="font-medium">
-                        {selectedGiftData.requested !== undefined
-                          ? selectedGiftData.requested
-                          : 'N/A'}
+                          {selectedGiftData.quantity || 'N/A'}
                       </span>
                     </div>
                     <div>
                       Still Needs:{' '}
                       <span className="font-medium">
-                        {selectedGiftData.stillNeeds !== undefined
-                          ? selectedGiftData.stillNeeds
-                          : 'N/A'}
+                          {selectedGiftData.status === 'purchased' 
+                            ? 0 
+                            : Math.max(0, (selectedGiftData.quantity || 0) - (selectedGiftData.purchasedQuantity || 0))}
                       </span>
                     </div>
                   </div>
+                  )} */}
+
+                  {/* Display Cash Fund/Group Gift Progress */}
+                  {/* {(selectedGiftData.isCashFund || selectedGiftData.isGroupGift) && (
+                    <div className="flex flex-col items-start border border-gray-300 p-2 rounded text-sm">
+                      <div>
+                        Contributed:{' '}
+                        <span className="font-medium">
+                          ${(selectedGiftData.collectedAmount || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      <div>
+                        Remaining:{' '}
+                        <span className="font-medium">
+                          ${Math.max(0, (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0)).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )} */}
+
+                  {/* Quantity Selector for Regular Products */}
+                  {!selectedGiftData.isCashFund && !selectedGiftData.isGroupGift && selectedGiftData.status !== 'purchased' && (
+                    <div className="flex flex-col items-center justify-center mb-4">
+                      <button
+                        onClick={incrementModalQuantity}
+                        disabled={modalQuantity >= getModalStillNeeds()}
+                        className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <img src="/assets/Images/arrowDown.png" alt="plus" className="w-4 h-4 rotate-180" />
+                      </button>
+                      
+                      <span className="mx-4 text-lg font-medium">{modalQuantity} / {getModalStillNeeds()}</span>
+                      <button
+                        onClick={decrementModalQuantity}
+                        disabled={modalQuantity <= 1}
+                        className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <img src="/assets/Images/arrowDown.png" alt="minus" className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
 
                   {/* Add to Cart Button */}
                   <button
                     onClick={() => {
-                      if (selectedGiftData.isCashFund) {
-                        // For cash funds, you might want to show a contribution input
+                      if (selectedGiftData.isCashFund || selectedGiftData.isGroupGift) {
+                        // For cash funds and group gifts, you might want to show a contribution input
                         // For now, let's just close the popup
                         closePopup();
                       } else {
-                        // For regular products, add to cart
-                        handleAddToCart(selectedGiftData.id);
+                        // For regular products, add to cart with quantity
+                        handleAddToCart(selectedGiftData.id, modalQuantity);
                         closePopup();
                       }
                     }}
                     className={`bg-[#3d5a80] text-white py-3 px-6 uppercase text-sm tracking-wider flex-grow rounded transition-colors
                       ${
-                        selectedGiftData.stillNeeds === 0 ||
-                        selectedGiftData.status === 'gifted'
+                        (selectedGiftData.status === 'purchased') ||
+                        (selectedGiftData.isCashFund && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0) ||
+                        (selectedGiftData.isGroupGift && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0)
                           ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
                           : 'hover:bg-[#2c425e]'
                       }
                     `}
                     disabled={
-                      selectedGiftData.stillNeeds === 0 ||
-                      selectedGiftData.status === 'gifted'
+                      (selectedGiftData.status === 'purchased') ||
+                      (selectedGiftData.isCashFund && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0) ||
+                      (selectedGiftData.isGroupGift && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0)
                     }
                   >
-                    {selectedGiftData.stillNeeds === 0 ||
-                    selectedGiftData.status === 'gifted'
-                      ? selectedGiftData.status === 'gifted'
-                        ? 'GIFTED'
-                        : 'NOT AVAILABLE'
+                    {selectedGiftData.status === 'purchased'
+                      ? 'PURCHASED'
+                      : (selectedGiftData.isCashFund || selectedGiftData.isGroupGift) && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0
+                      ? 'FULLY FUNDED'
                       : selectedGiftData.buttonLabel || 'ADD TO CART'}
                   </button>
                 </div>

@@ -1,4 +1,4 @@
-import {useLoaderData, Link} from '@remix-run/react';
+import {useLoaderData, Link, useFetcher} from '@remix-run/react';
 import React, {useState} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import GiftAnyAmount from '~/components/GiftAnyAmount';
@@ -47,10 +47,34 @@ export async function loader({context}) {
   // Remove or comment out the direct console.log that assumes image exists
   // console.log('data', data.data[1].image.fileUrl);
 
-  return {cashFundData: data?.data || []};
+  return {cashFundData: data?.data || [], registryId: registry?.id};
+}
+
+export async function action({request, context}) {
+  const formData = await request.formData();
+  
+  try {
+    console.log('Making API call to registryProducts/cash-fund');
+    const response = await context.ClientPost(
+      formData,
+      'registryProducts/cash-fund',
+      context,
+      {
+        headers: {
+          // Don't set Content-Type header, it will be automatically set with boundary
+          // when sending FormData
+        },
+      }
+    );
+    console.log('API response:', response);
+    return {response, success: true};
+  } catch (e) {
+    console.error('API error:', e);
+    return {error: e.message, success: false};
+  }
 }
 const CashFunds = () => {
-  const {cashFundData} = useLoaderData();
+  const {cashFundData, registryId} = useLoaderData();
 
   const handleButtonClick = (title) => {
     alert(`Button clicked for ${title}`);
@@ -74,8 +98,6 @@ const CashFunds = () => {
           honeymoon or a wine subscription from your favourite vineyard.
           Whatever your dream, this is the place to make it happen.
         </p>
-
-        <PreviewRegistry />
       </div>
 
       <section className=" ">
@@ -175,22 +197,23 @@ const CashFunds = () => {
       <section className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-10">
           <SidebarFilter />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {cashFundData.map((card, index) => (
-              <Card
-                id={card.id}
-                key={index}
-                image={
-                  card.image && card.image.fileUrl
-                    ? card.image.fileUrl
-                    : undefined
-                }
-                title={card.name}
-                amount={card.amount}
-                buttonLabel={'Personalize Fund'}
-                onButtonClick={() => handleButtonClick(card.title)}
-              />
-            ))}
+          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
+                         {cashFundData.map((card, index) => (
+               <Card
+                 id={card.id}
+                 key={index}
+                 image={
+                   card.image && card.image.fileUrl
+                     ? card.image.fileUrl
+                     : undefined
+                 }
+                 title={card.name}
+                 amount={card.amount}
+                 buttonLabel={'Personalize Fund'}
+                 onButtonClick={() => handleButtonClick(card.title)}
+                 registryId={registryId}
+               />
+             ))}
           </div>
         </div>
 
@@ -356,34 +379,125 @@ const CashFunds = () => {
 
 export default CashFunds;
 
-const Card = ({title, amount, buttonLabel, onButtonClick, id, image}) => {
+const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId}) => {
+  const fetcher = useFetcher();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success');
+
+  // Show feedback on fetcher.data change
+  React.useEffect(() => {
+    if (fetcher.data?.success) {
+      setAlertMessage('Cash fund has been added to your registry!');
+      setAlertType('success');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    } else if (fetcher.data?.error) {
+      setAlertMessage('There was an error adding the cash fund.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    }
+  }, [fetcher.data]);
+
+  const handleAddToRegistry = () => {
+    const formData = new FormData();
+    formData.append('name', title);
+    formData.append('amount', amount);
+    formData.append('isAnyAmount', 'true');
+    formData.append('isFixedAmount', 'false');
+    formData.append('isAmountHide', 'false');
+    formData.append('registryId', registryId);
+    formData.append('note', 'Added from cash funds listing');
+
+    fetcher.submit(formData, {
+      method: 'post',
+      encType: 'multipart/form-data',
+    });
+  };
+
   return (
-    <div className="w-full bg-white shadow-md rounded-md overflow-hidden">
-      <div className="h-60 flex items-center justify-center">
-        {/* Placeholder for the image or icon */}
-        <div className="w-full h-full">
+    <div className="relative group h-[460px]">
+      {/* Product Image and Info */}
+      <div className="p-4 z-10 relative">
+        {image ? (
+          <img
+            src={image}
+            alt="Cash Fund"
+            className="w-full h-[300px] object-cover"
+          />
+        ) : (
+          <div className="w-full h-[300px] flex items-center justify-center bg-gray-200 text-gray-400">
+            No Image
+          </div>
+        )}
+        <h3 className="text-sm font-semibold uppercase mt-3">
+          {title}
+        </h3>
+        <p className="text-sm mt-1">${amount}</p>
+      </div>
+
+      {/* Expanding Overlay */}
+      <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div>
           {image ? (
             <img
               src={image}
               alt="Cash Fund"
-              className="w-full h-full object-cover"
+              className="w-full h-[220px] mx-auto object-cover mb-2"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+            <div className="w-full h-[220px] flex items-center justify-center bg-gray-200 text-gray-400 mb-2">
               No Image
             </div>
           )}
+          <h4 className="text-xs font-medium uppercase text-left mb-1">
+            CASH FUND
+          </h4>
+          <h3 className="text-sm font-bold uppercase text-left leading-snug">
+            {title}
+          </h3>
+          <p className="text-sm mt-2 text-left">${amount}</p>
+        </div>
+
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-col w-full items-center text-xs">
+            <Link to={`/dashboard/cashfunds/${id}`}>
+              <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+                personalize fund
+              </button>
+            </Link>
+            <button 
+              onClick={handleAddToRegistry}
+              disabled={fetcher.state === 'submitting'}
+              className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+            >
+              {fetcher.state === 'submitting' ? 'Adding...' : 'Add to registry'}
+            </button>
+          </div>
         </div>
       </div>
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="text-gray-600">$ {amount}</p>
-        <Link to={`/dashboard/cashfunds/${id}`}>
-          <div className="mt-4 w-full bg-black text-white py-2 rounded-md text-center">
-            {buttonLabel}
+
+      {/* Feedback Alert */}
+      {showAlert && (
+        <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
+          <div className="flex items-center">
+            {alertType === 'success' && (
+              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>
+            )}
+            {alertType === 'error' && (
+              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+            )}
+            <span>{alertMessage}</span>
           </div>
-        </Link>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -525,3 +639,4 @@ function ProductGrid({products}) {
     </div>
   );
 }
+

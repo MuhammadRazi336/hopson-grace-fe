@@ -19,7 +19,14 @@ export async function loader(args) {
 export async function action({request, context}) {
   const formData = await request.formData();
   
+  // Log form data for debugging
+  console.log('Form data entries:');
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+  
   try {
+    console.log('Making API call to registryProducts/cash-fund');
     const response = await context.ClientPost(
       formData,
       'registryProducts/cash-fund',
@@ -31,8 +38,10 @@ export async function action({request, context}) {
         },
       }
     );
+    console.log('API response:', response);
     return defer({response});
   } catch (e) {
+    console.error('API error:', e);
     return defer({e});
   }
 }
@@ -43,7 +52,7 @@ function NewCashFund() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cashFundName, setCashFundName] = useState(cashFundData?.name || '');
   const [allowAnyAmount, setAllowAnyAmount] = useState(!!cashFundData?.isAnyAmount);
-  const [allowFixedAmount, setAllowFixedAmount] = useState(!!cashFundData?.isFixedAmount);
+  const [allowFixedAmount, setAllowFixedAmount] = useState(!!cashFundData?.isFixedAmount || (!cashFundData?.isAnyAmount && !cashFundData?.isFixedAmount));
   const [totalGoal, setTotalGoal] = useState(cashFundData?.amount || '');
   const [hideFromGuests, setHideFromGuests] = useState(!!cashFundData?.isAmountHide);
   const [agreedToTerms, setAgreedToTerms] = useState(true);
@@ -92,6 +101,15 @@ function NewCashFund() {
   }, [fetcher.data]);
 
   const handleFormSubmit = (e) => {
+    console.log('Form submission - Current state:', {
+      cashFundName,
+      allowAnyAmount,
+      allowFixedAmount,
+      totalGoal,
+      agreedToTerms,
+      registryId: registry?.id
+    });
+
     if (!agreedToTerms) {
       e.preventDefault();
       setAlertMessage('You must agree to the terms and conditions.');
@@ -103,7 +121,10 @@ function NewCashFund() {
       }, 3000);
       return;
     }
-    if (!cashFundName || !totalGoal || !registry?.id) {
+    // Check if required fields are filled
+    const isMissingRequiredFields = !cashFundName || !registry?.id || (allowFixedAmount && !totalGoal);
+    
+    if (isMissingRequiredFields) {
       e.preventDefault();
       setAlertMessage('Please fill in all required fields.');
       setAlertType('error');
@@ -114,6 +135,7 @@ function NewCashFund() {
       }, 3000);
       return;
     }
+    console.log('Form validation passed, allowing submission');
     // Otherwise, allow form to submit
   };
 
@@ -204,6 +226,7 @@ function NewCashFund() {
                         onClick={() => {
                           setAllowAnyAmount(true);
                           setAllowFixedAmount(false);
+                          setTotalGoal(''); // Clear total goal when any amount is selected
                         }}
                         className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
                           allowAnyAmount
@@ -256,9 +279,10 @@ function NewCashFund() {
                           id="totalGoal"
                           name="amount"
                           value={totalGoal}
-                          className="bg-white w-full p-4"
+                          className={`bg-white w-full p-4 ${allowAnyAmount ? 'opacity-50 cursor-not-allowed' : ''}`}
                           placeholder="Total Goal*"
                           onChange={(e) => setTotalGoal(e.target.value)}
+                          disabled={allowAnyAmount}
                         />
                       </div>
 

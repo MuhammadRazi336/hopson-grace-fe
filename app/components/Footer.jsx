@@ -31,8 +31,10 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
             />
           </div>
 
+          <p className='prata mt-8 lg:mt-[80px] text-xl lg:text-2xl'>The Registry is a sister brand to <span className='underline'>Hopson Grace</span>, curators of modern tableware and timeless home furnishings.</p>
+
           {/* First Menu in Footer */}
-          <div className="mt-8 lg:mt-[90px]">
+          <div className="mt-8 lg:mt-[80px]">
             <div className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 gap-0 lg:gap-8">
               <div>
                 <h4
@@ -53,11 +55,6 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/our-services">
-                        OUR SERVICES
-                      </Link>
-                    </li>
-                    <li>
                       <Link className="text-white" to="/why-the-registry">
                       WHY THE REGISTRY?
                       </Link>
@@ -74,7 +71,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                     <li>
                       <Link className="text-white" to="/your-registry-advisor">
-                      YOUR REGISTRY ADVISOR
+                      YOUR REGISTRY CONCIERGE TEAM
                       </Link>
                     </li>
                     <li>
@@ -91,7 +88,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                   className="text-[14px] lg:text-lg font-[800] uppercase mt-[15px] mb-[15px] lg:mb-[30px] lg:mt-[8px] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
                   onClick={() => toggleNav(1)}
                 >
-                  Customer Care{' '}
+                  For Couples{' '}
                   <img src={dropdown} alt="" className="lg:hidden" />
                 </h4>
                 <nav
@@ -101,8 +98,28 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 >
                   <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em]">
                     <li>
-                      <Link className="text-white" to="/your-orders">
-                        YOUR ORDERS
+                      <Link className="text-white" to="/register">
+                        START A REGISTRY
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/virtual-appointment">
+                        BOOK A VIRTUAL APPOINTMENT
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/inspiration">
+                        FIND INSPIRATION
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/readymade-registries">
+                        READY MADE REGISTRIES
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/dashboard/shipgifts">
+                        SHIPPING
                       </Link>
                     </li>
                     <li>
@@ -111,13 +128,13 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/delivery">
-                        DELIVERY
+                      <Link className="text-white" to="/faq">
+                        FAQs
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/faq">
-                        FAQs
+                      <Link className="text-white" to="/submit-wedding">
+                        SUBMIT YOUR WEDDING
                       </Link>
                     </li>
                   </ul>
@@ -129,7 +146,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                   className="text-[14px] lg:text-lg font-[800] uppercase mt-[15px] mb-[15px] lg:mb-[30px] lg:mt-[8px] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
                   onClick={() => toggleNav(2)}
                 >
-                  Your Registry{' '}
+                  For Wedding Guests{' '}
                   <img src={dropdown} alt="" className="lg:hidden" />
                 </h4>
                 <nav
@@ -139,71 +156,23 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 >
                   <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em]">
                     <li>
-                      <Link className="text-white" to="/start-registry">
-                        START YOUR REGISTRY
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="text-white" to="/manage-registry">
-                        MANAGE YOUR REGISTRY
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="text-white" to="/book-showroom-appt">
-                        BOOK A SHOWROOM APPT
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="text-white" to="/find-inspiration">
-                        FIND INSPIRATION
+                      <Link className="text-white" to="/couple">
+                        FIND A COUPLE
                       </Link>
                     </li>
                   </ul>
                 </nav>
-              </div>
-
-              <div>
+                <br />
                 <h4
                   className="text-[14px] lg:text-lg font-[800] uppercase mt-[15px] mb-[15px] lg:mb-[30px] lg:mt-[8px] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
-                  onClick={() => toggleNav(3)}
+                  onClick={() => toggleNav(2)}
                 >
-                  For Wedding Guests{' '}
+                  Contact Us{' '}
                   <img src={dropdown} alt="" className="lg:hidden" />
                 </h4>
                 <nav
                   className={`transition-all duration-300 ${
-                    openNavIndex === 3 ? 'block' : 'hidden'
-                  } lg:block`}
-                >
-                  <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em]">
-                    <li>
-                      <Link className="text-white" to="/find-registry">
-                        FIND A REGISTRY
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="text-white" to="/guest-track">
-                        GUEST T&Cs
-                      </Link>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-0 lg:mt-[90px]">
-            <div className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 gap-8">
-              <div>
-                <h4
-                  className="text-[14px] lg:text-lg font-[800] uppercase mt-[15px] mb-[15px] lg:mb-[30px] lg:mt-[8px] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
-                  onClick={() => toggleNav(4)}
-                >
-                  Contact Us <img src={dropdown} alt="" className="lg:hidden" />
-                </h4>
-                <nav
-                  className={`transition-all duration-300 ${
-                    openNavIndex === 4 ? 'block' : 'hidden'
+                    openNavIndex === 2 ? 'block' : 'hidden'
                   } lg:block`}
                 >
                   <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em]">
@@ -258,27 +227,10 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                   </ul>
                 </nav>
-              </div>
 
-              <div>
-                <h4 className="text-[14px] lg:text-lg font-[800] uppercase mb-[30px] text-white tracking-[0.08em] hidden lg:block">
-                  Refer a Friend
-                </h4>
-                <p className="prata text-[22px] font-[400] leading-[26px] max-w-[295px]">
-                  Refer a friend for exclusive discounts & special offers
-                </p>
-                <nav>
-                  <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em] mt-3">
-                    <li>
-                      <Link className="text-white" to="/refer">
-                        GET STARTED
-                      </Link>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+                <br />
 
-              <div>
+                <div>
                 <h4 className="text-[14px] lg:text-lg font-[800] uppercase mb-[30px] text-white tracking-[0.08em]">
                   Stay in the Loop with Weekly Inspo
                 </h4>
@@ -302,6 +254,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                   </ul>
                 </nav>
+              </div>
               </div>
             </div>
           </div>

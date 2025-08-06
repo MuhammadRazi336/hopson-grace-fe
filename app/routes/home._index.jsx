@@ -22,8 +22,32 @@ import Marquee from '~/components/Marquee';
 import ProductSlider from '~/components/ProductSlider';
 import Testimonialslider from '~/components/Testimonialslider';
 import {Header} from '~/components/Header';
+import {useState, useEffect} from 'react';
+import arrowUp from '/assets/Images/arrowDown.png';
 
 const Home = () => {
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Handle scroll to show/hide back to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const threshold = 300; // Show button after scrolling 300px
+      setShowBackToTop(scrollY > threshold);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   const tabsData = [
     {
       label: 'REAL REGISTRIES',
@@ -186,6 +210,33 @@ const Home = () => {
         />
       </section>
       <Footer />
+      
+      {/* Back to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-8 p-2 right-8 z-50 w-[85px] h-[85px] bg-black hover:bg-[#272727] text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 ${
+          showBackToTop 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-10 pointer-events-none'
+        }`}
+        aria-label="Back to top"
+      >
+        {/* <svg 
+          className="w-6 h-6 mx-auto" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d="M5 10l7-7m0 0l7 7m-7-7v18" 
+          />
+        </svg> */}
+        <img src={arrowUp} className='text-white invert rotate-180 mx-auto w-[15px] h-[13px] mb-1' alt="arrowUp" />
+        <span className="text-white text-sm">Back to Top</span>
+      </button>
     </div>
   );
 };

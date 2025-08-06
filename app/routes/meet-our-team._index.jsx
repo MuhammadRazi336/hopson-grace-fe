@@ -7,6 +7,7 @@ import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import ShowroomImg from '/assets/Images/showroom.png';
+import lineImghead from '/assets/Images/line.png';
 
 const MeetOurTeam = () => {
   return (

@@ -1,4 +1,4 @@
-import {NavLink, useLoaderData} from '@remix-run/react';
+import {NavLink, useLoaderData, useNavigate} from '@remix-run/react';
 import registryLogo from '/assets/Images/registryLogo.png';
 import registryLogoScroll from '/assets/Images/copyrightLogo.png';
 import searchImg from '/assets/Images/search.png';
@@ -17,21 +17,133 @@ import {useLocation} from 'react-router-dom';
 
 export function Header() {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [registryData, setRegistryData] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFixed, setIsFixed] = useState(false);
   const [isMenuOpenBottom, setIsMenuOpenBottom] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const [status, setStatus] = useState('draft');
   const isDraft = status === 'draft';
+  const navigate = useNavigate();
 
   // Get token from localStorage only on client side
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('@Token') || localStorage.getItem('@token');
       setUser(token);
+      
+      // Decode and fetch user data
+      if (token) {
+        try {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            const payload = parts[1];
+            const paddedPayload = payload + '='.repeat((4 - payload.length % 4) % 4);
+            const decodedPayload = atob(paddedPayload.replace(/-/g, '+').replace(/_/g, '/'));
+            const tokenData = JSON.parse(decodedPayload);
+            const tokenId = Number(tokenData.id);
+            
+            // Fetch user data using the ID from token
+            if (tokenId) {
+              fetch(`https://dev-hopsongrace.codup.io/api/users/${tokenId}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              })
+              .then(res => res.json())
+              .then(data => {
+                if (data.code === 200 && data.data && data.data.user) {
+                  setUserData(data.data.user);
+                }
+              })
+              .catch(error => {
+                console.error('Error fetching user data:', error);
+              });
+
+              // Fetch registry data using the user ID
+              fetch(`https://dev-hopsongrace.codup.io/api/registries/by-userId/${tokenId}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              })
+              .then(res => res.json())
+              .then(registryData => {
+                console.log('Registry API response:', registryData);
+                if (registryData.code === 200 && registryData.data && registryData.data.length > 0) {
+                  setRegistryData(registryData.data[0]);
+                }
+              })
+              .catch(error => {
+                console.error('Error fetching registry data:', error);
+              });
+
+            }
+          }
+        } catch (error) {
+          console.error('Error decoding token:', error);
+        }
+      }
     }
   }, []);
+
+  // Generate user initials from fetched user data
+  const getUserInitials = () => {
+    if (!userData) {
+      return 'U'; // Default fallback
+    }
+    
+    const firstName = userData.firstName || userData.first_name || '';
+    const lastName = userData.lastName || userData.last_name || '';
+    
+    if (firstName && lastName) {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    } else if (firstName) {
+      return firstName.charAt(0).toUpperCase();
+    } else if (lastName) {
+      return lastName.charAt(0).toUpperCase();
+    }
+    
+    return 'U'; // Fallback
+  };
+
+  // Check if event has image
+  const hasEventImage = () => {
+    if (!registryData || !registryData.events || registryData.events.length === 0) {
+      return false;
+    }
+    const event = registryData.events[0];
+    // Check if image exists and has fileUrl property
+    if (event.image && event.image.fileUrl) {
+      return true;
+    }
+    // Fallback for different image structures
+    if (event.image && typeof event.image === 'string') {
+      return true;
+    }
+    return false;
+  };
+
+  // Get event image URL
+  const getEventImage = () => {
+    if (!registryData || !registryData.events || registryData.events.length === 0) {
+      return null;
+    }
+    const event = registryData.events[0];
+    // Check if image exists and has fileUrl property
+    if (event.image && event.image.fileUrl) {
+      return event.image.fileUrl;
+    }
+    // Fallback for different image structures
+    if (event.image && typeof event.image === 'string') {
+      return event.image;
+    }
+    return null;
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -59,6 +171,15 @@ export function Header() {
     setShowPopup(false);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to unified search page with search query
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(''); // Clear search input after navigation
+    }
+  };
+
   const handleToggle = async () => {
     const newStatus = isDraft ? 'published' : 'draft';
     const token = user;
@@ -69,7 +190,7 @@ export function Header() {
     }
     
     try {
-      await fetch(`http://localhost:3040/api/registries/status/1`, {
+      await fetch(`https://dev-hopsongrace.codup.io/api/registries/status/1`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -133,18 +254,20 @@ export function Header() {
 
           {/* Search Icon */}
           {!isFixed && (
-            <div className="flex items-center justify-center bg-[#F5F2ED] py-1 px-6 w-[380px] rounded-full">
-              <button className="text-xl hover:text-blue-500 max-[1024px]:hidden">
+            <form onSubmit={handleSearch} className="flex items-center justify-center bg-[#F5F2ED] py-1 px-6 w-[380px] rounded-full">
+              <button type="submit" className="text-xl hover:text-blue-500 max-[1024px]:hidden">
                 <span role="img" aria-label="Search Icon">
                   <img src={searchImg} alt="Search Icon" />
                 </span>
               </button>
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent outline-none border-none text-[#999898] flex items-center leading-normal text-xl"
                 placeholder="find products, brands, vendors...."
               />
-            </div>
+            </form>
           )}
           {isFixed && (
             <button className="text-xl pl-[44px] hover:text-blue-500 max-[1601px]:w-8">
@@ -235,14 +358,22 @@ export function Header() {
           {user && (
             <>
               <div className='flex items-start justify-end gap-7'>
-                <div className={`rounded-full p-2 w-[60px] h-[60px] flex items-center justify-center border-2 ${
+                <div className={`rounded-full p-0 w-[60px] h-[60px] flex items-center justify-center border-2 ${
                   isFixed 
                     ? 'bg-[#F5F2ED] border-white' 
                     : 'bg-[#F5F2ED] border-black'
                 }`}>
-                  <h2 className={`flex items-center justify-center m-0 ${
-                    isFixed ? 'text-white' : 'text-black'
-                  }`}>JP</h2>
+                  {hasEventImage() ? (
+                    <img
+                      src={getEventImage()}
+                      alt="Event"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <h2 className={`flex items-center justify-center m-0 ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>{getUserInitials()}</h2>
+                  )}
                 </div>
                 <div className="">
                   <span className="relative inline-block">

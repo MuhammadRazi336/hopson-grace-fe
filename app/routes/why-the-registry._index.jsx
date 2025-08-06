@@ -12,6 +12,10 @@ const WhyTheRegistry = () => {
     <section>
       <Header />
 
+      <div className="w-full h-[2px] bg-black"></div>
+
+      <div className='w-full h-fit bg-[#FAF9F6]'>
+
       <div className="container mx-auto py-16">
         <Heading
           text="why the registry?"
@@ -22,12 +26,14 @@ const WhyTheRegistry = () => {
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
         <p className="text-center text-2xl lg:text-3xl font-normal py-16">
-         A smarter, more stylish way to register—curated for how couples live now.
+         Your wedding isn’t ordinary. Your registry shouldn’t be either.
         </p>
       </div>
 
       <div className='mb-16'>
         <FeaturesGrid/>
+      </div>
+
       </div>
 
       <div className='w-full py-16'>

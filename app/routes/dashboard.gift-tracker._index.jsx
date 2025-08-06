@@ -7,51 +7,6 @@ import NotificationCard from '~/components/NotificationCard';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
 
 export default function DashboardHome() {
-  const orders = [
-    {
-      order: '011488',
-      name: 'Wendy and Roger Pearlman',
-      date: '03/04/2024',
-      amount: '$125.00',
-      thanked: false,
-    },
-    {
-      order: '011489',
-      name: 'Aunty Jess and Uncle Paul',
-      date: '03/29/2024',
-      amount: '$225.00',
-      thanked: false,
-    },
-    {
-      order: '011488',
-      name: 'Wendy and Roger Pearlman',
-      date: '03/04/2024',
-      amount: '$1,400.00',
-      thanked: false,
-    },
-    {
-      order: '011488',
-      name: 'Wendy and Roger Pearlman',
-      date: '03/04/2024',
-      amount: '$50.00',
-      thanked: true,
-    },
-    {
-      order: '011488',
-      name: 'Wendy and Roger Pearlman',
-      date: '03/04/2024',
-      amount: '$2,800.00',
-      thanked: false,
-    },
-    {
-      order: '011488',
-      name: 'Wendy and Roger Pearlman',
-      date: '03/04/2024',
-      amount: '$2,800.00',
-      thanked: true,
-    },
-  ];
-
   return (
     <div className="container mx-auto pt-[80px]">
       <CoupleProfileViewHeader />

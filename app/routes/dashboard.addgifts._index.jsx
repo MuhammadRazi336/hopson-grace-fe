@@ -1,7 +1,7 @@
 import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
-import {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {defer, json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
@@ -25,6 +25,7 @@ import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
 import {Footer} from '~/components/Footer';
 import {Navigation} from 'swiper/modules';
+import arrowDown from '/assets/Images/arrowDown.png';
 
 const tabsData = [
   {
@@ -255,6 +256,8 @@ export default function AddGifts() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const {products, collections, registry, user, userData} = useLoaderData();
   const fetcher = useFetcher();
@@ -367,6 +370,39 @@ export default function AddGifts() {
       setSelectedSwiperCollectionId(null);
     }
   }, [checkedCollectionIds]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Sort products based on price
+  const sortedProducts = React.useMemo(() => {
+    if (!priceSort || displayedProducts.length === 0) {
+      return displayedProducts;
+    }
+
+    return [...displayedProducts].sort((a, b) => {
+      const priceA = parseFloat(a?.variants?.edges?.[0]?.node?.priceV2?.amount || 0);
+      const priceB = parseFloat(b?.variants?.edges?.[0]?.node?.priceV2?.amount || 0);
+      
+      if (priceSort === 'low-to-high') {
+        return priceA - priceB;
+      } else if (priceSort === 'high-to-low') {
+        return priceB - priceA;
+      }
+      return 0;
+    });
+  }, [displayedProducts, priceSort]);
 
   const handleAddtoRegistry = (product) => {
     try {
@@ -595,12 +631,76 @@ export default function AddGifts() {
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
           />
-          <div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10 flex-1"
-            ref={productGridRef}
-          >
+          <div className="flex flex-col">
+            {/* Sort Filter */}
+            {displayedProducts.length > 0 && (
+              <div className="flex justify-between items-center p-4">
+                <div className="flex items-center gap-4 ml-auto">
+                  <span className="text-sm font-semibold">SORT BY:</span>
+                  <div className="relative" ref={dropdownRef}>
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="flex items-center gap-2 text-sm focus:outline-none"
+                    >
+                      <span className='pr-3'>
+                        {priceSort === '' && 'Default'}
+                        {priceSort === 'low-to-high' && 'Price: Low to High'}
+                        {priceSort === 'high-to-low' && 'Price: High to Low'}
+                      </span>
+                      <img 
+                        src={arrowDown} 
+                        alt="dropdown" 
+                        className={`w-3 h-3 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    {isDropdownOpen && (
+                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-10 min-w-[200px]">
+                        <button
+                          onClick={() => {
+                            setPriceSort('');
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                            priceSort === '' ? 'bg-gray-100' : ''
+                          }`}
+                        >
+                          Default
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPriceSort('low-to-high');
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                            priceSort === 'low-to-high' ? 'bg-gray-100' : ''
+                          }`}
+                        >
+                          Price: Low to High
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPriceSort('high-to-low');
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                            priceSort === 'high-to-low' ? 'bg-gray-100' : ''
+                          }`}
+                        >
+                          Price: High to Low
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10"
+              ref={productGridRef}
+            >
             {(() => {
-              if (displayedProducts.length === 0) {
+              if (sortedProducts.length === 0) {
                 return (
                   <div className="col-span-3 text-center text-gray-400">
                     Select a collection to view products.
@@ -608,7 +708,7 @@ export default function AddGifts() {
                 );
               }
               let anyRendered = false;
-              const productNodes = displayedProducts
+              const productNodes = sortedProducts
                 .slice(0, productsToShow)
                 .map((product) => {
                   const firstVariant = product?.variants?.edges?.[0]?.node;
@@ -626,9 +726,6 @@ export default function AddGifts() {
                       description={product.description}
                       onAddToRegistry={() => handleAddtoRegistry(product)}
                       onPersonalizeFund={() => navigate(`/dashboard/addgifts/${product.handle}`)}
-                      onGroupGiftTagChange={(isGroupGift) =>
-                        console.log(`Group Gift tag changed: ${isGroupGift}`)
-                      }
                     />
                   );
                 });
@@ -643,17 +740,18 @@ export default function AddGifts() {
             })()}
           </div>
         </div>
+        </div>
 
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">
-              LOADING {Math.min(productsToShow, displayedProducts.length)} of{' '}
-              {displayedProducts.length}
+            <p className="text-center text-md mb-10">
+              LOADING {Math.min(productsToShow, sortedProducts.length)} of{' '}
+              {sortedProducts.length}
             </p>
 
-            {displayedProducts.length > 12 &&
-              productsToShow < displayedProducts.length && (
+            {sortedProducts.length > 12 &&
+              productsToShow < sortedProducts.length && (
                 <WhiteThemeButton
                   Text="View more"
                   link="#"

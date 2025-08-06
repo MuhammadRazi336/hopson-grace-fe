@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
-import {Link} from '@remix-run/react';
+import {Link, useSearchParams} from '@remix-run/react';
 import Faqs from '~/components/Faqs';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
@@ -23,11 +23,30 @@ export default function FindCoupleForm() {
   const [firstName, setFirstName] = useState('');
   const [fianceFirstName, setFianceFirstName] = useState('');
   const {data} = useLoaderData();
+  const [searchParams] = useSearchParams();
+  
+  // Check if we have search parameters (from header search)
+  const hasSearchParams = searchParams.get('firstName') || searchParams.get('fianceFirstName');
+  
   return (
     <div>
       <Header />
-      {/* {data ? (
+      {data && data.length > 0 ? (
         <CoupleListing data={data} />
+      ) : hasSearchParams ? (
+        // Show no results when searching
+        <div className="container mx-auto py-16 text-center">
+          <h1 className="text-3xl font-semibold mb-4">No couples found</h1>
+          <p className="text-gray-600 mb-8">
+            No couples match your search. Try different names or browse all couples below.
+          </p>
+          <Link 
+            to="/couple/listing" 
+            className="bg-[#446184] text-white px-6 py-3 rounded hover:opacity-90"
+          >
+            Browse All Couples
+          </Link>
+        </div>
       ) : (
         <>
           <div
@@ -41,7 +60,7 @@ export default function FindCoupleForm() {
             <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
               <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
                 <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
-                  find a coupleaaa
+                  find a couple
                 </h1>
                 <img
                   src="/assets/Images/white-bdr.png"
@@ -72,10 +91,10 @@ export default function FindCoupleForm() {
                         name="lastName"
                         type="text"
                         placeholder="Last Name*"
-                        value={lastName}
+                        value={fianceFirstName}
                         className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
                         required
-                        onChange={(e) => setLastName(e.target.value)}
+                        onChange={(e) => setFianceFirstName(e.target.value)}
                       />
                     </div>
                   </div>
@@ -107,9 +126,7 @@ export default function FindCoupleForm() {
             />
           </section>
         </>
-      )} */}
-
-      <CoupleListing data={data} />
+      )}
 
       {/* {data ? 'ok' : 'not ok'} */}
     </div>
@@ -159,7 +176,7 @@ function CoupleListing({data}) {
                       type="text"
                       placeholder="First Name*"
                       value={firstName}
-                      className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                      className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
                       required
                       onChange={(e) => setFirstName(e.target.value)}
                     />
@@ -171,7 +188,7 @@ function CoupleListing({data}) {
                       type="text"
                       placeholder="Last Name*"
                       value={fianceFirstName}
-                      className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                      className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
                       required
                       onChange={(e) => setFianceFirstName(e.target.value)}
                     />
@@ -211,7 +228,7 @@ function CoupleListing({data}) {
               /> */}
 
               <h3 className="text-center prata uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto">
-                {couple.firstName + ' & ' + couple.fianceFirstName}
+                {couple.firstName + ' ' + couple.lastName + ' & ' + couple.fianceFirstName + ' ' + couple.fianceLastName}
               </h3>
 
               <p className="text-center text-lg text-[#1F1D1B]">
@@ -221,12 +238,17 @@ function CoupleListing({data}) {
                   year: 'numeric',
                 })}
               </p>
-
+              {couple.registry.status === "published" ? 
               <Link to={`/couple/single/${couple.id}`}>
                 <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center">
                   View Profile
                 </button>
               </Link>
+              :
+              <p className="text-center text-lg font-semibold  underline">
+                NOTIFY ME WHEN REGISTRY IS LIVE
+              </p>
+              }
             </div>
           ))}
         </div>

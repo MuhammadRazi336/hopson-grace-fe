@@ -1,19 +1,19 @@
 import copyrightLogo from '/assets/Images/copyrightLogo.png';
-import footercopyright from '/assets/Images/footercopyright.png';
+import HopsonGrace from '/assets/Images/HopsonGraceTitleWhite.png';
 
 const Copyright = () => {
   return (
-    <div className="flex flex-col-reverse items-center lg:flex-row gap-2 lg:gap-4 lg:items-end text-white tracking-[0.08em] mb-6 lg:mb-0">
+    <div className="flex items-center justify-center gap-3 text-white tracking-[0.08em] mb-6 lg:mb-0">
       <img
-        src={footercopyright}
-        alt="line"
-        className="block lg:hidden w-[180px]"
+        src={HopsonGrace}
+        alt="Hopson Grace"
+        className="w-[180px] lg:w-[250px]"
       />
-      <p className="text-[14px] lg:text-lg">THE REGISTRY. 2025</p>
+      <p className="text-2xl lg:text-7xl">/</p>
       <img
         src={copyrightLogo}
         alt="copyright logo"
-        className="mb-2 lg:mb-0 w-[80px] lg:w-[60px] "
+        className="w-[50px] lg:w-[60px] "
       />
     </div>
   );

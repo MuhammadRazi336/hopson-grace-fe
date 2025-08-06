@@ -3,10 +3,15 @@ import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import iconitem from '/assets/Images/collectionitems.png';
 import nextitem from '/assets/Images/next.png';
 import vectorImg from '/assets/Images/Vector 14.png';
 import Button from '~/components/Button.jsx';
+import iconitem from '/assets/Images/collectionitems.png';
+import WorldBestBrands from '/assets/Images/WORLDSBESTBRANDS.png';
+import CashTravel from '/assets/Images/CASHTRAVEL.png';
+import BespokeTravel from '/assets/Images/BESPOKETRAVEL.png';
+import TyNote from '/assets/Images/TYNOTE.png';
+import ReadyMadeRegistries from '/assets/Images/READYMADEICON.png';
 
 const CollectionItems = () => {
   return (
@@ -51,7 +56,7 @@ const CollectionItems = () => {
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
               <img
-                src={iconitem}
+                src={WorldBestBrands}
                 alt="icon collection item"
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
@@ -64,19 +69,19 @@ const CollectionItems = () => {
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
               <img
-                src={iconitem}
+                src={CashTravel}
                 alt="icon collection item"
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                CASH, GIFT CARDS & PERSONALIZED FUNDS
+                CASH FUNDS
               </h3>
             </div>
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
               <img
-                src={iconitem}
+                src={BespokeTravel}
                 alt="icon collection item"
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
@@ -88,24 +93,24 @@ const CollectionItems = () => {
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
               <img
-                src={iconitem}
+                src={TyNote}
                 alt="icon collection item"
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                PRIVATE DASHBOARD & GIFT TRACKER
+                THANK YOU NOTE TRACKER
               </h3>
             </div>
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
               <img
-                src={iconitem}
+                src={ReadyMadeRegistries}
                 alt="icon collection item"
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                READY MADE REGISTRIES
+                READY-MADE REGISTRIES
               </h3>
             </div>
           </SwiperSlide>

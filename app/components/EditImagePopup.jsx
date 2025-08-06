@@ -120,13 +120,6 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-            <button
-              className="mt-2 px-4 py-2 bg-[#446184] text-white rounded"
-              onClick={() => fileInputRef.current && fileInputRef.current.click()}
-              type="button"
-            >
-              Upload Image
-            </button>
           </div>
 
           {/* Image Picker */}
@@ -139,13 +132,17 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
                   className="object-cover w-[100px] h-[100px]"
                   onClick={() => setImageSrc(img)}
                 />
-                {index === images.length - 1 && (
-                  <p className="text-center text-sm mt-2 text-gray-600">
-                    Add Your Own
-                  </p>
-                )}
               </div>
             ))}
+            
+            {/* Add Your Own Button */}
+            <div 
+              className="cursor-pointer border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center w-[100px] h-[100px] hover:border-blue-400"
+              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+            >
+              <div className="text-3xl text-gray-400 mb-1">+</div>
+              <p className="text-xs text-gray-600 text-center">ADD YOUR OWN</p>
+            </div>
           </div>
         </div>
         <div className="flex justify-end gap-4 mt-4">

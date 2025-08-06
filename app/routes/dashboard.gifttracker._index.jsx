@@ -13,53 +13,9 @@ export async function loader(args) {
   return {giftTrackingData: data?.data || []};
 }
 
-const orders = [
-  {
-    order: '011488',
-    name: 'Wendy and Roger Pearlman',
-    date: '03/04/2024',
-    amount: '$125.00',
-    thanked: false,
-  },
-  {
-    order: '011489',
-    name: 'Aunty Jess and Uncle Paul',
-    date: '03/29/2024',
-    amount: '$225.00',
-    thanked: false,
-  },
-  {
-    order: '011488',
-    name: 'Wendy and Roger Pearlman',
-    date: '03/04/2024',
-    amount: '$1,400.00',
-    thanked: false,
-  },
-  {
-    order: '011488',
-    name: 'Wendy and Roger Pearlman',
-    date: '03/04/2024',
-    amount: '$50.00',
-    thanked: true,
-  },
-  {
-    order: '011488',
-    name: 'Wendy and Roger Pearlman',
-    date: '03/04/2024',
-    amount: '$2,800.00',
-    thanked: false,
-  },
-  {
-    order: '011488',
-    name: 'Wendy and Roger Pearlman',
-    date: '03/04/2024',
-    amount: '$2,800.00',
-    thanked: true,
-  },
-];
-
 const GiftTracker = () => {
   const {giftTrackingData} = useLoaderData();
+  console.log(giftTrackingData);
 
   return (
     <>
@@ -96,7 +52,7 @@ const GiftTracker = () => {
                 key={idx}
                 className="grid grid-cols-6 items-center  bg-white px-4 py-6 text-sm"
               >
-                <div>{item.order}</div>
+                <div>{item.checkoutNumber}</div>
                 <div>{item.name}</div>
                 <div>{new Date(item.purchaseDate).toLocaleDateString('en-US', {
                   month: 'long',

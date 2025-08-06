@@ -8,7 +8,6 @@ const ProductCard = ({
   description,
   onAddToRegistry,
   onPersonalizeFund,
-  onGroupGiftTagChange,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
@@ -23,9 +22,6 @@ const ProductCard = ({
   const handleGroupGiftChange = (e) => {
     const isChecked = e.target.checked;
     setIsGroupGift(isChecked);
-    if (onGroupGiftTagChange) {
-      onGroupGiftTagChange(isChecked);
-    }
   };
 
   return (
@@ -42,18 +38,6 @@ const ProductCard = ({
             {productName}
           </h3>
           <p className="text-sm mt-1">${price}</p>
-          <div className="mt-2 flex items-center">
-            <input
-              type="checkbox"
-              id="group-gift"
-              className="mr-2"
-              checked={isGroupGift}
-              onChange={handleGroupGiftChange}
-            />
-            <label htmlFor="group-gift" className="text-sm text-gray-600">
-              Tag as group gift?
-            </label>
-          </div>
         </div>
 
         {/* Expanding Overlay */}

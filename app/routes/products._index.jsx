@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -7,11 +7,12 @@ import ButtonComponent from '~/components/Button';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
 import ExploreCategories from '~/components/ExploreCategories';
-import {defer} from '@remix-run/server-runtime';
-import {useLoaderData, Link} from '@remix-run/react';
+import {defer, json} from '@remix-run/server-runtime';
+import {useLoaderData, Link, useSearchParams, useFetcher, useNavigate} from '@remix-run/react';
 import newArrivals from '/assets/Images/newArrivals.png';
 import bestSellers from '/assets/Images/bestSellers.png';
 import giftCards from '/assets/Images/giftCard.png';
+import {extractShopifyId} from '~/utils/helpers.js';
 
 const COLLECTION_QUERY = `#graphql
     query {
@@ -72,8 +73,36 @@ const COLLECTION_QUERY = `#graphql
 `;
 
 export async function loader({request, context}) {
+  const url = new URL(request.url);
+  const searchQuery = url.searchParams.get('search');
   const {collections} = await loadCollectionData({context});
-  return defer({collections});
+  const registry = await context?.session?.get('@Registry');
+  
+  // If there's a search query, filter collections by title/description
+  let filteredCollections = collections;
+  if (searchQuery) {
+    filteredCollections = collections.filter(collection => 
+      collection.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      collection.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+  
+  return defer({collections: filteredCollections, searchQuery, registry});
+}
+
+export async function action({request, context}) {
+  const body = await request.json();
+  const {payload} = body;
+  try {
+    const response = await context.ClientPost(
+      JSON.parse(payload),
+      'registryProducts',
+      context,
+    );
+    return json({success: true, response});
+  } catch (e) {
+    return json({success: false, error: e.message}, {status: 400});
+  }
 }
 
 async function loadCollectionData({context}) {
@@ -84,11 +113,98 @@ async function loadCollectionData({context}) {
 }
 
 const Products = () => {
-  const {collections} = useLoaderData();
+  const {collections, searchQuery, registry} = useLoaderData();
+  const [searchParams] = useSearchParams();
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success');
 
   const parentCollections = collections.filter(
     (col) => col.parentMetafield?.value === 'true',
   );
+
+  // Get all products from all collections for search results (only if not searching)
+  const allProducts = collections.flatMap(collection => 
+    collection.products?.edges?.map(edge => ({
+      ...edge.node,
+      collectionTitle: collection.title,
+      collectionHandle: collection.handle
+    })) || []
+  );
+
+  const handleAddtoRegistry = (product) => {
+    try {
+      // Check if user is logged in by looking for token in localStorage
+      const token = localStorage.getItem('@token') || localStorage.getItem('@Token');
+      
+      if (!token) {
+        // No token found, redirect to login
+        navigate('/login');
+        return;
+      }
+
+      // Check if registry exists and has an id
+      if (!registry || !registry.id) {
+        setAlertMessage('Registry not found. Please try again.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+
+      const firstVariant = product?.variants?.edges?.[0]?.node;
+      if (!firstVariant) {
+        setAlertMessage('Product variant not found.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+
+      const payload = {
+        productId: Number(extractShopifyId(product.id)),
+        amount: Number(firstVariant.priceV2.amount),
+        registryId: Number(registry.id),
+        productTypeId: 1,
+        quantity: 1,
+      };
+
+      fetcher.submit(
+        {payload: JSON.stringify(payload)},
+        {
+          method: 'post',
+          encType: 'application/json',
+        },
+      );
+
+      // Show success alert
+      setAlertMessage(`${product.title} has been added to your registry!`);
+      setAlertType('success');
+      setShowAlert(true);
+
+      // Hide alert after 3 seconds
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    } catch (error) {
+      setAlertMessage('Failed to add to registry. Please try again.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+    }
+  };
 
   return (
     <section>
@@ -98,50 +214,105 @@ const Products = () => {
 
       <div className="w-full h-fit pt-[100px]">
         <Heading
-          text="products"
+          text={searchQuery ? `Search Results for "${searchQuery}"` : "products"}
           classes={
             'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <p className="text-1xl lg:text-2xl font-normal text-center py-16 w-[40%] lg:w-[60%]  mx-auto">
-          From heritage brands to up-and-coming makers, our collection is
-          thoughtfully curated for how you actually live. Expect timeless
-          design, lasting quality, and modern pieces you’ll love now—and for
-          years to come. Nothing you don’t need, everything you’ll use.
+        {searchQuery && (
+          <p className="text-center my-5 text-lg">
+            Found {collections.length} collection{collections.length !== 1 ? 's' : ''} matching "{searchQuery}"
+          </p>
+        )}
+        {/* <img
+          src="/assets/Images/profile-view-page-bdr.png"
+          alt="Couple"
+          className="max-w-[630px] mt-5 h-auto mx-auto"
+        /> */}
+        <p className="max-w-xl mx-auto text-center my-5 font-normal leading-relaxed">
+          {searchQuery 
+            ? "Browse the search results below or use the filters to refine your search."
+            : "Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like."
+          }
         </p>
       </div>
 
-      <div className="pt-[20px] px-16 pb-[100px]">
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-6 mt-16 mx-10">
-          <div className="flex flex-col items-center justify-center">
-            <img src={newArrivals} alt="" className="w-full" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              NEW ARRIVALS
-            </h3>
+      {/* Search Results Section */}
+      {searchQuery && collections.length > 0 && (
+        <section className="container mx-auto py-16">
+          <h2 className="text-3xl font-semibold mb-8 text-center">Collections</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {collections.map((collection) => (
+              <Link 
+                to={`/products/${collection.handle}`} 
+                key={collection.id} 
+                className="group cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={collection.image?.url || '/assets/Images/placeholder.png'}
+                    alt={collection.title}
+                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold uppercase mb-2">
+                    {collection.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {collection.description || 'Browse this collection'}
+                  </p>
+                </div>
+              </Link>
+            ))}
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <img src={bestSellers} alt="" className="w-full" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              BESTSELLERS
-            </h3>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <img src={giftCards} alt="" className="w-full h-full bg-[#446184]" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-              GIFT CARDS
-            </h3>
-          </div>
-          {parentCollections.map((col) => (
-            <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
-              <img src={col.image.url} alt={col.title} className="w-full" />
-              <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                {col.title}
-              </h3>
-            </Link>
-          ))}
-        </div>
+        </section>
+      )}
+
+      {/* No Search Results */}
+      {searchQuery && collections.length === 0 && (
+        <section className="container mx-auto py-16 text-center">
+          <h3 className="text-2xl font-semibold mb-4">No collections found</h3>
+          <p className="text-gray-600 mb-8">
+            No collections match your search for "{searchQuery}". Try different keywords or browse our categories below.
+          </p>
+        </section>
+      )}
+
+      {/* Regular Products Page Content - Only show when no search query */}
+      {!searchQuery && (
+        <>
+          <div className="pt-[20px] px-16 pb-[100px]">
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-6 mt-16 mx-10">
+              <div className="flex flex-col items-center justify-center">
+                <img src={newArrivals} alt="" className="w-full" />
+                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  NEW ARRIVALS
+                </h3>
+              </div>
+              <div className="flex flex-col items-center justify-center">
+                <img src={bestSellers} alt="" className="w-full" />
+                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  BESTSELLERS
+                </h3>
+              </div>
+              <div className="flex flex-col items-center justify-center">
+                <img src={giftCards} alt="" className="w-full h-full bg-[#446184]" />
+                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  GIFT CARDS
+                </h3>
+              </div>
+              {parentCollections.map((col) => (
+                <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                  <img src={col.image.url} alt={col.title} className="w-full" />
+                  <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                    {col.title}
+                  </h3>
+                </Link>
+              ))}
+            </div>
       </div>
 
       <section className="py-[70px]  my-12 lg:my-[240px] container">
@@ -153,7 +324,7 @@ const Products = () => {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <ProductSlider />
+            <ProductSlider />
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"
@@ -162,7 +333,75 @@ const Products = () => {
         </div>
       </section>
 
+          <div className="py-[120px] px-12">
+            <ExploreCategories />
+          </div>
+        </>
+      )}
+
       <Footer />
+
+      {/* Alert Component */}
+      {showAlert && (
+        <div
+          className={`fixed top-4 right-4 ${
+            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+        >
+          <div className="flex items-center">
+            {alertType === 'success' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+            {alertType === 'error' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            )}
+            <span>{alertMessage}</span>
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 3s ease-in-out;
+        }
+      `}</style>
     </section>
   );
 };

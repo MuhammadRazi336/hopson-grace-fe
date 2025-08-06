@@ -4,12 +4,41 @@ import registrylogoSteps from "/assets/Images/registrylogoSteps.png"
 import StepLine from "/assets/Images/StepLine.png"
 import Steps from "/assets/Images/Steps.png"
 
+// Import different images for different steps
+import step1Image from "/assets/Images/CoupleBg.png"
+import step2Image from "/assets/Images/CakeBg.png"
+import step3Image from "/assets/Images/CakeBg.png"
+import step4Image from "/assets/Images/FigsBg.png"
+import step5Image from "/assets/Images/CourtyardBg.png"
+import step6Image from "/assets/Images/OrnamentsBg.png"
+import step7Image from "/assets/Images/CutleryBg.png"
+import step8Image from "/assets/Images/AlleyWayBg.png"
+import step9Image from "/assets/Images/BeachBg.png"
+import step10Image from "/assets/Images/BreadBg.png"
+
 const StepsAndImage = ({ content, title, stepNo, totalSteps, className }) => {
+    // Function to get the appropriate image based on step number
+    const getStepImage = (step) => {
+        switch(step) {
+            case 1: return step1Image;
+            case 2: return step2Image;
+            case 3: return step3Image;
+            case 4: return step4Image;
+            case 5: return step5Image;
+            case 6: return step6Image;
+            case 7: return step7Image;
+            case 8: return step8Image;
+            case 9: return step9Image;
+            case 10: return step10Image;
+            default: return step1Image; // fallback
+        }
+    };
+
     return ( 
         <div className={`flex py-32 max-[768px]:py-10 justify-center max-[768px]:flex-col max-[768px]:items-center max-[768px]:px-4 container`}>
             <div className="relative left-[37.5px] max-w-[50%] max-[768px]:max-w-[100%] max-[768px]:left-[initial]">
                 <div className="relative">
-                    <img src={Steps} alt="" />
+                    <img src={getStepImage(stepNo)} alt={`Step ${stepNo}`} className="w-full h-full object-contain" />
                     <img src={registrylogoSteps} alt="" className="absolute bottom-4 -left-[72px] max-[768px]:left-[initial] max-[768px]:-right-[7px] max-[768px]:w-[71px] max-[768px]:bottom-0 max-[768px]:top-0 max-[768px]:my-auto" />
                     <h5 className="absolute -bottom-16 max-[768px]:hidden">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>
                 </div>
