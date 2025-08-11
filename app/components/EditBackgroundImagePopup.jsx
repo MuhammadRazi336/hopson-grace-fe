@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, lazy, Suspense } from 'react';
+import React, { useState, useCallback, useRef, lazy, Suspense, useEffect } from 'react';
 
 const Cropper = typeof window !== 'undefined'
   ? lazy(() => import('react-easy-crop'))
@@ -42,12 +42,59 @@ const backgroundImages = [
   '/assets/Images/couple-profile-bg.png', // Current dining table setting
 ];
 
+// Helper functions for localStorage
+const getStoredBackgroundImages = () => {
+  try {
+    const stored = localStorage.getItem('editBackgroundImagePopup_uploadedImages');
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error reading from localStorage:', error);
+    return [];
+  }
+};
+
+const saveBackgroundImageToStorage = (imageData) => {
+  try {
+    const existingImages = getStoredBackgroundImages();
+    const newImage = {
+      id: Date.now(),
+      data: imageData,
+      timestamp: new Date().toISOString()
+    };
+    const updatedImages = [...existingImages, newImage];
+    localStorage.setItem('editBackgroundImagePopup_uploadedImages', JSON.stringify(updatedImages));
+    return newImage;
+  } catch (error) {
+    console.error('Error saving to localStorage:', error);
+    return null;
+  }
+};
+
+const removeBackgroundImageFromStorage = (imageId) => {
+  try {
+    const existingImages = getStoredBackgroundImages();
+    const updatedImages = existingImages.filter(img => img.id !== imageId);
+    localStorage.setItem('editBackgroundImagePopup_uploadedImages', JSON.stringify(updatedImages));
+  } catch (error) {
+    console.error('Error removing from localStorage:', error);
+  }
+};
+
 export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
   const [imageSrc, setImageSrc] = useState('/assets/Images/couple-profile-bg.png');
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
   const fileInputRef = useRef();
+
+  // Load stored images when component mounts
+  useEffect(() => {
+    if (isOpen) {
+      const storedImages = getStoredBackgroundImages();
+      setUploadedImages(storedImages);
+    }
+  }, [isOpen]);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -58,7 +105,14 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
       const file = e.target.files[0];
       const reader = new FileReader();
       reader.addEventListener('load', () => {
-        setImageSrc(reader.result);
+        const imageData = reader.result;
+        setImageSrc(imageData);
+        
+        // Save the uploaded image to storage
+        const savedImage = saveBackgroundImageToStorage(imageData);
+        if (savedImage) {
+          setUploadedImages(prev => [...prev, savedImage]);
+        }
       });
       reader.readAsDataURL(file);
     }
@@ -73,6 +127,16 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
 
   const handleThumbnailClick = (imagePath) => {
     setImageSrc(imagePath);
+  };
+
+  const handleRemoveImage = (imageId) => {
+    removeBackgroundImageFromStorage(imageId);
+    setUploadedImages(prev => prev.filter(img => img.id !== imageId));
+    
+    // If the removed image was currently selected, reset to default
+    if (imageSrc && uploadedImages.find(img => img.id === imageId)?.data === imageSrc) {
+      setImageSrc('/assets/Images/couple-profile-bg.png');
+    }
   };
 
   if (!isOpen) return null;
@@ -105,7 +169,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
                   onZoomChange={setZoom}
                   onCropComplete={onCropComplete}
                   showGrid={false}
-                  cropSize={{ width: 400, height: 225 }}
+                  cropSize={{ width: 600, height: 230 }}
                 />
               </Suspense>
             </div>
@@ -116,10 +180,11 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
 
           {/* Right: Thumbnail Options */}
           <div className="w-1/3">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 max-h-[400px] overflow-y-auto">
+              {/* Predefined background images */}
               {backgroundImages.map((img, index) => (
                 <div 
-                  key={index} 
+                  key={`predefined-${index}`} 
                   className="cursor-pointer"
                   onClick={() => handleThumbnailClick(img)}
                 >
@@ -128,6 +193,31 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
                     alt={`Background option ${index + 1}`}
                     className="w-full h-24 object-cover rounded border-2 hover:border-blue-400"
                   />
+                </div>
+              ))}
+              
+              {/* Uploaded images */}
+              {uploadedImages.map((uploadedImg) => (
+                <div 
+                  key={uploadedImg.id} 
+                  className="cursor-pointer relative group"
+                  onClick={() => handleThumbnailClick(uploadedImg.data)}
+                >
+                  <img
+                    src={uploadedImg.data}
+                    alt="Uploaded background"
+                    className="w-full h-24 object-cover rounded border-2 hover:border-blue-400"
+                  />
+                  {/* Remove button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveImage(uploadedImg.id);
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    ×
+                  </button>
                 </div>
               ))}
               

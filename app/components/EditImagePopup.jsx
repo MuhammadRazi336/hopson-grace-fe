@@ -1,13 +1,8 @@
-import React, { useState, useCallback, useRef, lazy, Suspense } from 'react';
+import React, { useState, useCallback, useRef, lazy, Suspense, useEffect } from 'react';
 
 const images = [
   '/assets/Images/registry-logo.png',
-  '/assets/Images/product2.png',
-  '/assets/Images/tea.png',
   '/assets/Images/couple-picture.png',
-  '/assets/Images/product-image.png',
-  '/assets/Images/product-image.png',
-  // '/assets/Images/placeholder-add-your-own.png',
 ];
 
 const Cropper = typeof window !== 'undefined'
@@ -44,12 +39,59 @@ function getCroppedImg(imageSrc, crop, zoom, aspect, croppedAreaPixels) {
   });
 }
 
+// Helper functions for localStorage
+const getStoredImages = () => {
+  try {
+    const stored = localStorage.getItem('editImagePopup_uploadedImages');
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error reading from localStorage:', error);
+    return [];
+  }
+};
+
+const saveImageToStorage = (imageData) => {
+  try {
+    const existingImages = getStoredImages();
+    const newImage = {
+      id: Date.now(),
+      data: imageData,
+      timestamp: new Date().toISOString()
+    };
+    const updatedImages = [...existingImages, newImage];
+    localStorage.setItem('editImagePopup_uploadedImages', JSON.stringify(updatedImages));
+    return newImage;
+  } catch (error) {
+    console.error('Error saving to localStorage:', error);
+    return null;
+  }
+};
+
+const removeImageFromStorage = (imageId) => {
+  try {
+    const existingImages = getStoredImages();
+    const updatedImages = existingImages.filter(img => img.id !== imageId);
+    localStorage.setItem('editImagePopup_uploadedImages', JSON.stringify(updatedImages));
+  } catch (error) {
+    console.error('Error removing from localStorage:', error);
+  }
+};
+
 export default function EditImagePopup({ isOpen, onClose, onSave }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
   const fileInputRef = useRef();
+
+  // Load stored images when component mounts
+  useEffect(() => {
+    if (isOpen) {
+      const storedImages = getStoredImages();
+      setUploadedImages(storedImages);
+    }
+  }, [isOpen]);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -60,7 +102,14 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
       const file = e.target.files[0];
       const reader = new FileReader();
       reader.addEventListener('load', () => {
-        setImageSrc(reader.result);
+        const imageData = reader.result;
+        setImageSrc(imageData);
+        
+        // Save the uploaded image to storage
+        const savedImage = saveImageToStorage(imageData);
+        if (savedImage) {
+          setUploadedImages(prev => [...prev, savedImage]);
+        }
       });
       reader.readAsDataURL(file);
     }
@@ -71,6 +120,20 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
     const croppedBlob = await getCroppedImg(imageSrc, crop, zoom, 1, croppedAreaPixels);
     if (onSave) onSave(croppedBlob);
     onClose();
+  };
+
+  const handleImageSelect = (imageData) => {
+    setImageSrc(imageData);
+  };
+
+  const handleRemoveImage = (imageId) => {
+    removeImageFromStorage(imageId);
+    setUploadedImages(prev => prev.filter(img => img.id !== imageId));
+    
+    // If the removed image was currently selected, clear the selection
+    if (imageSrc && uploadedImages.find(img => img.id === imageId)?.data === imageSrc) {
+      setImageSrc(null);
+    }
   };
 
   if (!isOpen) return null;
@@ -92,15 +155,20 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
             {imageSrc ? (
               <div className="relative w-full h-[360px] bg-gray-100">
                 <Suspense fallback={<div>Loading cropper...</div>}>
-                  <Cropper
-                    image={imageSrc}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={1}
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                  />
+                  <div className="relative w-[360px] h-[360px] mx-auto">
+                    <Cropper
+                      image={imageSrc}
+                      crop={crop}
+                      zoom={zoom}
+                      aspect={1}
+                      onCropChange={setCrop}
+                      onZoomChange={setZoom}
+                      onCropComplete={onCropComplete}
+                      cropShape="round"
+                      showGrid={false}
+                      cropSize={{ width: 300, height: 300 }}
+                    />
+                  </div>
                 </Suspense>
               </div>
             ) : (
@@ -123,15 +191,38 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
           </div>
 
           {/* Image Picker */}
-          <div className="w-1/2 flex flex-wrap h-[220px] gap-x-4 gap-y-2 justify-start items-start">
+          <div className="w-1/2 flex flex-wrap h-[220px] gap-x-4 gap-y-2 justify-start items-start overflow-y-auto">
+            {/* Predefined images */}
             {images.map((img, index) => (
-              <div key={index} className="cursor-pointer">
+              <div key={`predefined-${index}`} className="cursor-pointer relative">
                 <img
                   src={img}
                   alt={`thumb-${index}`}
                   className="object-cover w-[100px] h-[100px]"
                   onClick={() => setImageSrc(img)}
                 />
+              </div>
+            ))}
+            
+            {/* Uploaded images */}
+            {uploadedImages.map((uploadedImg) => (
+              <div key={uploadedImg.id} className="cursor-pointer relative group">
+                <img
+                  src={uploadedImg.data}
+                  alt="Uploaded"
+                  className="object-cover w-[100px] h-[100px]"
+                  onClick={() => handleImageSelect(uploadedImg.data)}
+                />
+                {/* Remove button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveImage(uploadedImg.id);
+                  }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  ×
+                </button>
               </div>
             ))}
             

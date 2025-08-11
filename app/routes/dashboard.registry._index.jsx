@@ -460,53 +460,36 @@ const index = () => {
           <FundPage data={cashfundData} />
         </div>
       </div>
-      <div className="container pt-12 md:flex-nowrap flex-wrap mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
-        <div className="py-10 px-6 md:py-12 md:px-[6rem] lg:px-[8rem] bg-[#446184] relative flex items-center justify-center flex-col  lg:w-[65%] w-full max-[768px]:p-10 lg:mt-20 mt-6">
+      <div className="py-12 w-full flex justify-center items-center">
+        <div className="py-10 md:py-12 bg-[#446184] flex items-center justify-around flex-row lg:w-[70%] w-full max-[768px]:p-10 lg:mt-20 mt-6 gap-x-16">
+          <div>
+            <img src="/assets/Images/giftCard.png" alt="gift" className="w-full h-full object-cover" />
+          </div>
+          <div>
           <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
-            gift any amount
+            add a gift card
           </h3>
           <img
             src="/assets/Images/white-bdr.png"
             alt="couple"
-            className="max-w-[315px] mb-4 mt-4"
+            className="max-w-[315px] mb-4 mt-4 mx-auto"
           />
-          <h5 className="text-white text-xl font-normal">
+          <h5 className="text-white text-xl text-center font-normal">
             CONTRIBUTE TO OUR JOURNEY!
           </h5>
-          <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-4 font-normal text-center">
+          <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-7 font-normal text-center">
             Help us create our dream wedding, honeymoon or life experience.
             We're so grateful.
           </p>
-          <div>
-            <div className="flex justify-center items-center gap-x-6">
+          <Link to="/dashboard/giftcards">
               <button
                 type="button"
-                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
+                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
-                $100
+                ADD GIFT CARDS
               </button>
-              <button
-                type="button"
-                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
-              >
-                $500
-              </button>
-              <button
-                type="button"
-                className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
-              >
-                None
-              </button>
-            </div>
+              </Link>
           </div>
-        </div>
-        <div className="lg:w-[35%] w-full  ">
-          {' '}
-          <img
-            src="/assets/Images/gift.png"
-            alt="Image Banner"
-            className="max-[1024px]:h-full object-cover object-[80%]"
-          />
         </div>
       </div>
 

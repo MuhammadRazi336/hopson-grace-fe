@@ -19,10 +19,14 @@ export async function loader(args) {
       throw new Error('User ID not found in session');
     }
 
+    console.log('User found:', user.user.id);
+
     const registriesResponse = await context.ClientGet(
       `registries/by-userId/${user.user.id}`,
       context,
     );
+
+    console.log('Registries response:', registriesResponse);
 
     if (!registriesResponse?.data) {
       throw new Error('Invalid API response structure');
@@ -34,7 +38,11 @@ export async function loader(args) {
       label: registry.name
     }));
 
+    console.log('Processed registries:', registries);
+
     const registry = registries.find((registry) => registry.isSelected);
+    
+    console.log('Selected registry:', registry);
     
     if (!registry) {
       throw new Error('No selected registry found');
@@ -45,16 +53,21 @@ export async function loader(args) {
       context,
     );
 
+    console.log('Detail response:', detailResponse);
+
     context.session.set('@Registry', {
       ...registry,
       ...detailResponse.data,
     });
     await context.session.commit();
 
+    const finalRegistry = {...registry, ...detailResponse.data};
+    console.log('Final registry object:', finalRegistry);
+
     return json(
       {
         registries,
-        registry: {...registry, ...detailResponse.data},
+        registry: finalRegistry,
         user,
       },
       {
@@ -65,6 +78,7 @@ export async function loader(args) {
     );
     
   } catch (e) {
+    console.error('Loader error:', e);
     return {
       error: true,
       message: e.message,
@@ -92,11 +106,33 @@ export async function action({request, context}) {
 }
 
 const index = () => {
-  const {registries, registry, user} = useLoaderData();
+  const loaderData = useLoaderData();
+  console.log('Full loader data:', loaderData);
+  
+  const {registries, registry, user} = loaderData;
+
+  console.log('Registry from loader:', registry);
+  console.log('Registry type:', typeof registry);
+  console.log('Registry keys:', registry ? Object.keys(registry) : 'null');
 
   const fetcher = useFetcher();
 
   const [selected, setSelected] = useState(registry);
+
+  // Handle case where registry is null
+  if (!registry) {
+    return (
+      <div className="pt-[80px] flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Registry Not Found</h2>
+          <p className="text-gray-600">Unable to load registry data. Please try refreshing the page.</p>
+          {loaderData.error && (
+            <p className="text-red-500 mt-2">Error: {loaderData.message}</p>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   const eventDateStr = registry?.events?.eventDate;
   let daysLeft = '...';
@@ -111,23 +147,28 @@ const index = () => {
     }
   }
 
-  const cardData = [
-    {
-      value: ` ${registry?.giftAvailable || 0}`,
-      label: 'Gifts Available',
-      selectable: true,
-    },
-    {
-      value: `${registry?.giftsPurchased || 0}`,
-      label: 'Gifts Purchased',
-      selectable: false,
-    },
-    {
-      value: `$ ${registry?.registryFundBalance || 0}`,
-      label: 'Registry Fund Balance',
-      selectable: false,
-    },
-  ];
+  // const cardData = [
+  //   {
+  //     value: ` ${registry?.giftAvailable || 0}`,
+  //     label: 'Gifts Available',
+  //     selectable: true,
+  //   },
+  //   {
+  //     value: `${registry?.giftsPurchased || 0}`,
+  //     label: 'Gifts Purchased',
+  //     selectable: false,
+  //   },
+  //   {
+  //     value: `$ ${registry?.registryFundBalance || 0}`,
+  //     label: 'Registry Fund Balance',
+  //     selectable: false,
+  //   },
+  //   {
+  //     value: `$ ${registry?.giftBalance || 0}`,
+  //     label: 'Gift Balance',
+  //     selectable: false,
+  //   },
+  // ];
 
   const REGISTRY_CARDS = [
     {
@@ -139,17 +180,9 @@ const index = () => {
       total: '95',
       label: 'GIFTS ADDED',
       showIcon: true,
+      icon: '/assets/Images/WORLDSBESTBRANDS.png',
       buttonText: 'ADD GIFTS',
       link: '/dashboard/addgifts',
-    },
-    {
-      id: 'account',
-      title: 'ACCOUNT',
-      description:
-        'Gifts convert to cash, giving you the flexibility to finalize your registry after the wedding.',
-      value: registry?.registryFundBalance || 0,
-      label: 'CASH AVAILABLE',
-      showIcon: true,
     },
     {
       id: 'gifts-purchased',
@@ -160,9 +193,33 @@ const index = () => {
       total: registry?.giftAvailable || 0,
       label: 'GIFTS PURCHASED',
       showIcon: true,
+      icon: '/assets/Images/GIFTPURCHASED.png',
       buttonText: 'VIEW PURCHASES',
       link: '/dashboard/gifttracker',
     },
+    {
+      id: 'funds',
+      title: 'CASH & TRAVEL FUNDS',
+      description:
+        'Gifts convert to cash, giving you the flexibility to finalize your registry after the wedding.',
+      value: registry?.registryFundBalance || 0,
+      label: 'FUNDS ADDED',
+      showIcon: true,
+      icon: '/assets/Images/BESPOKETRAVEL.png',
+      buttonText: 'ADD FUNDS',
+      link: '/dashboard/cashfunds',
+    },
+    {
+      id: 'gift-balance',
+      title: 'GIFT BALANCE',
+      description: 'Gifts convert to cash, giving you the flexibility to finalize your registry after the wedding.',
+      value: registry?.giftBalance || 0,
+      label: 'GIFT BALANCE',
+      showIcon: true,
+      icon: '/assets/Images/CASHTRAVEL.png',
+      buttonText: 'VIEW FUNDS',
+      link: '/dashboard/cashfunds',
+    }
   ];
 
   const handleToggleChange = (id) => {
@@ -218,35 +275,35 @@ const index = () => {
         </div>
       </div>
 
-      <div className="grid xl:gap-y-0 gap-y-24 xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8 w-full mt-16 xl:px-12 px-6 pb-[100px]">
+      <div className="grid xl:gap-y-[150px] gap-y-24 xl:grid-cols-2 md:grid-cols-1 grid-cols-1 w-full mt-[100px] xl:px-12 px-6 pb-[100px]">
         {REGISTRY_CARDS.map((card) => (
           <div
             key={card.id}
-            className="bg-[#446184] text-white pb-6 px-[50px] max-h-[700px] flex flex-col items-center"
+            className="bg-[#446184] text-white pb-6 px-[50px] mx-[100px] max-h-[800px] flex flex-col items-center"
           >
-            {card.showIcon && (
-              <div className="flex bg-[#F6F5ED] rounded-full -mt-24 mb-6 w-40 h-40 items-center justify-center">
+             {card.showIcon && (
+              <div className='flex bg-[#F6F5ED] rounded-full -mt-24 mb-6 w-40 h-40 items-center justify-center'>
                 <img
-                  src="/assets/Images/gift-icon.png"
+                  src={card.icon}
                   alt="Gift Icon"
                   className="w-24 h-24 mb-4"
                 />
               </div>
-            )}
-            <h3 className="text-2xl font-semibold mb-6 mt-[50px]">
+             )}
+            <h3 className="text-3xl font-semibold mb-16 mt-[50px]">
               {card.title}
             </h3>
-            <p className="text-xl min-h-[240px]  text-center mb-6">
+            <p className="text-2xl min-h-[240px]  text-center mb-6">
               {card.description}
             </p>
             <div className="text-5xl prata flex items-baseline">
-              {card.id === 'account' && (
-                <span className="text-2xl mr-1 self-start">$</span>
+              {card.id === 'funds' && (
+                <span className="text-7xl mr-1 self-start">$</span>
               )}
-              <span>{card.value}</span>
+              <span className="text-7xl">{card.value}</span>
               {card.total && (
-                <span className="ml-1 text-5xl">
-                  /<span className="text-3xl">{card.total}</span>
+                <span className="ml-1 text-6xl">
+                  /<span className="text-4xl">{card.total}</span>
                 </span>
               )}
             </div>

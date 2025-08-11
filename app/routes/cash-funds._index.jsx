@@ -16,11 +16,23 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link, useLoaderData, useFetcher, redirect } from '@remix-run/react';
 
 export async function loader({request, context}) {
     const url = new URL(request.url);
     const searchQuery = url.searchParams.get('search');
+    const user = context?.session?.get('@User');
+    const registry = context?.session?.get('@Registry');
+
+    // Check for user/token authentication
+    if (!user || !user.accessToken) {
+        return redirect('/login');
+    }
+
+    if (!registry || !registry.id) {
+        throw new Response('Registry not found in session', {status: 404});
+    }
+
     const cashFunds = await loadCashFunds({context});
     
     // If there's a search query, filter cash funds
@@ -36,7 +48,38 @@ export async function loader({request, context}) {
         );
     }
     
-    return {cashFunds: filteredCashFunds, searchQuery};
+    return {
+        cashFunds: filteredCashFunds, 
+        searchQuery,
+        registryId: registry?.id,
+        user
+    };
+}
+
+export async function action({request, context}) {
+    const formData = await request.formData();
+    
+    try {
+        const response = await context.ClientPost(
+            formData,
+            'registryProducts/cash-fund',
+            context,
+            {
+                headers: {
+                    // Don't set Content-Type header, it will be automatically set with boundary
+                    // when sending FormData
+                },
+            }
+        );
+        
+        if (response && response.data) {
+            return {response: response.data, success: true};
+        } else {
+            return {response: response, success: true};
+        }
+    } catch (e) {
+        return {error: e.message || 'Failed to add cash fund to registry', success: false};
+    }
 }
 
 async function loadCashFunds({context}) {
@@ -50,21 +93,17 @@ async function loadCashFunds({context}) {
             collection.metafield?.value === 'true'
         ) || [];
         
-        console.log("All collections:", collections?.nodes);
-        console.log("Cash fund collections:", cashFundCollections);
-        
         return cashFundCollections;
     } catch (error) {
-        console.error("Error loading cash funds:", error);
         throw error;
     }
 }
 
 const CashFund = () => {
-    const {cashFunds, searchQuery} = useLoaderData();
-    console.log("cashFunds", cashFunds);
-    console.log("cashFunds type:", typeof cashFunds);
-    console.log("cashFunds is array:", Array.isArray(cashFunds));
+    const {cashFunds, searchQuery, registryId} = useLoaderData();
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
     
     // Ensure cashFunds is an array
     const safeCashFunds = Array.isArray(cashFunds) ? cashFunds : [];
@@ -77,7 +116,140 @@ const CashFund = () => {
             collectionHandle: collection.handle
         })) || []
     );
-    
+
+    // Alert handlers
+    const handleSuccess = (message) => {
+        setAlertMessage(message);
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+            setAlertMessage('');
+        }, 3000);
+    };
+
+    const handleError = (message) => {
+        setAlertMessage(message);
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+            setAlertMessage('');
+        }, 3000);
+    };
+
+  // ProductCard component with Add to Registry functionality
+  const ProductCard = ({product, collection, registryId, onSuccess, onError}) => {
+    const fetcher = useFetcher();
+
+    const firstImage = product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
+    const firstVariant = product.variants?.edges?.[0]?.node;
+    const price = firstVariant?.priceV2?.amount || 'N/A';
+
+    // Show feedback on fetcher.data change
+    React.useEffect(() => {
+      if (fetcher.data?.success) {
+        onSuccess(`${product.title} has been added to your registry!`);
+      } else if (fetcher.data?.error) {
+        onError('There was an error adding the cash fund.');
+      }
+    }, [fetcher.data, product.title, onSuccess, onError]);
+
+    const handleAddToRegistry = async () => {      
+      try {
+        // Fetch the image from the URL and convert it to a blob
+        const imageResponse = await fetch(firstImage);
+        const imageBlob = await imageResponse.blob();
+        
+        const formData = new FormData();
+        formData.append('name', product.title);
+        formData.append('amount', price);
+        formData.append('isAnyAmount', 'false');
+        formData.append('isFixedAmount', 'true');
+        formData.append('isAmountHide', 'false');
+        formData.append('registryId', registryId);
+        formData.append('note', 'Added from Shopify cash funds');
+        formData.append('file', imageBlob, 'product-image.jpg'); // Add the image file
+
+        fetcher.submit(formData, {
+          method: 'post',
+          encType: 'multipart/form-data',
+        });
+      } catch (error) {
+        // Fallback: submit without image if image fetch fails
+        const formData = new FormData();
+        formData.append('name', product.title);
+        formData.append('amount', price);
+        formData.append('isAnyAmount', 'false');
+        formData.append('isFixedAmount', 'true');
+        formData.append('isAmountHide', 'false');
+        formData.append('registryId', registryId);
+        formData.append('note', 'Added from Shopify cash funds');
+        
+        fetcher.submit(formData, {
+          method: 'post',
+          encType: 'multipart/form-data',
+        });
+      }
+    };
+
+    return (
+      <div key={product.id} className="relative group h-[460px]">
+        {/* Product Image and Info */}
+        <div className="p-4 z-10 relative">
+          <img
+            src={firstImage}
+            alt={product.title}
+            className="w-full h-[300px] object-cover"
+          />
+          <h3 className="text-sm font-semibold uppercase mt-3">
+            {product.title}
+          </h3>
+          <p className="text-sm mt-1">${price}</p>
+        </div>
+
+
+
+        {/* Expanding Overlay */}
+        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+          <div>
+            <img
+              src={firstImage}
+              alt={product.title}
+              className="w-full h-[220px] mx-auto object-cover mb-2"
+            />
+            <h4 className="text-xs font-medium uppercase text-left mb-1">
+              {collection.title || 'BRAND NAME'}
+            </h4>
+            <h3 className="text-sm font-bold uppercase text-left leading-snug">
+              {product.title}
+            </h3>
+            <p className="text-sm mt-2 text-left">${price}</p>
+          </div>
+
+          <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col w-full items-center text-xs">
+              <Link to={`/dashboard/cashfunds/${product.id}`}>
+                <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+                  personalize fund
+                </button>
+              </Link>
+              <button 
+                onClick={handleAddToRegistry}
+                disabled={fetcher.state === 'submitting'}
+                className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+              >
+                {fetcher.state === 'submitting' ? 'Adding...' : 'Add to registry'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    );
+  };
+  
   return (
     <section>
       <Header />
@@ -151,57 +323,15 @@ const CashFund = () => {
             {safeCashFunds.flatMap(collection => 
               collection.products?.edges?.map(edge => {
                 const product = edge.node;
-                const firstImage = product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
-                const firstVariant = product.variants?.edges?.[0]?.node;
-                const price = firstVariant?.priceV2?.amount || 'N/A';
-                
                 return (
-                  <div key={product.id} className="relative group h-[460px]">
-                    {/* Product Image and Info */}
-                    <div className="p-4 z-10 relative">
-                      <img
-                        src={firstImage}
-                        alt={product.title}
-                        className="w-full h-[300px] object-cover"
-                      />
-                      <h3 className="text-sm font-semibold uppercase mt-3">
-                        {product.title}
-                      </h3>
-                      <p className="text-sm mt-1">${price}</p>
-                    </div>
-
-                    {/* Expanding Overlay */}
-                    <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
-                      <div>
-                        <img
-                          src={firstImage}
-                          alt={product.title}
-                          className="w-full h-[220px] mx-auto object-cover mb-2"
-                        />
-                        <h4 className="text-xs font-medium uppercase text-left mb-1">
-                          {collection.title || 'BRAND NAME'}
-                        </h4>
-                        <h3 className="text-sm font-bold uppercase text-left leading-snug">
-                          {product.title}
-                        </h3>
-                        <p className="text-sm mt-2 text-left">${price}</p>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-4">
-                        {/* Quantity Controls */}
-                        <div className="flex flex-col w-full items-center text-xs">
-                          {/* Add to Registry Button */}
-                          <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
-                            personalize fund
-                          </button>
-                          {/* Add to Registry Button */}
-                          <button className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8">
-                            Add to registry
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                                     <ProductCard 
+                     key={product.id}
+                     product={product}
+                     collection={collection}
+                     registryId={registryId}
+                     onSuccess={handleSuccess}
+                     onError={handleError}
+                   />
                 );
               }) || []
             )}
@@ -322,13 +452,75 @@ const CashFund = () => {
               <img src={nextitem} className="" alt="" />
             </div>
           </div>
-        </div>
-      </section>
+                 </div>
+       </section>
 
-      <Footer />
-    </section>
-  );
-};
+       {/* Alert Component */}
+       {showAlert && (
+         <div
+           className={`fixed top-4 right-4 ${
+             alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+           } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+         >
+           <div className="flex items-center">
+             {alertType === 'success' && (
+               <svg
+                 className="w-5 h-5 mr-2"
+                 fill="none"
+                 strokeLinecap="round"
+                 strokeLinejoin="round"
+                 strokeWidth="2"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+               >
+                 <path d="M5 13l4 4L19 7"></path>
+               </svg>
+             )}
+             {alertType === 'error' && (
+               <svg
+                 className="w-5 h-5 mr-2"
+                 fill="none"
+                 strokeLinecap="round"
+                 strokeLinejoin="round"
+                 strokeWidth="2"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+               >
+                 <path d="M6 18L18 6M6 6l12 12"></path>
+               </svg>
+             )}
+             <span>{alertMessage}</span>
+           </div>
+         </div>
+       )}
+       <style jsx>{`
+         @keyframes fadeInOut {
+           0% {
+             opacity: 0;
+             transform: translateY(-20px);
+           }
+           10% {
+             opacity: 1;
+             transform: translateY(0);
+           }
+           90% {
+             opacity: 1;
+             transform: translateY(0);
+           }
+           100% {
+             opacity: 0;
+             transform: translateY(-20px);
+           }
+         }
+         .animate-fade-in-out {
+           animation: fadeInOut 3s ease-in-out;
+         }
+       `}</style>
+
+       <Footer />
+     </section>
+   );
+ };
 
 export default CashFund;
 
