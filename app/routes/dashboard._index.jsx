@@ -190,7 +190,7 @@ const index = () => {
       description:
         "Gifts have started to arrive. Click to see what's been purchased.",
       value: registry?.giftsPurchased || 0,
-      total: registry?.giftAvailable || 0,
+      total: registry?.giftAvailable || '',
       label: 'GIFTS PURCHASED',
       showIcon: true,
       icon: '/assets/Images/GIFTPURCHASED.png',
@@ -240,11 +240,8 @@ const index = () => {
     <div className="pt-[80px]">
       <div className="flex xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-16">
         <div className="w-full xl:w-9/12 flex flex-col gap-y-4 items-center pb-8">
-          <div className="w-64 h-32 bg-gray-300 flex items-center justify-center">
-            <h2 className="flex justify-center items-center font-normal text-center">FPO - 
-              <br />
-              GIF/ILLUSTRATION
-            </h2>
+          <div className="w-64 h-32 flex items-center justify-center">
+            <img src="/assets/Images/heart.png" alt="" />
           </div>
 
           <h2 className="md:text-[42px] text-center xl:mt-0 mt-16 font-normal ivyora">
