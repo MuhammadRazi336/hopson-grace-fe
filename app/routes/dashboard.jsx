@@ -261,19 +261,27 @@ const Dashboard_index = () => {
             </path>
           </marker>
         </defs>
-        <path
-          id="drawArrow"
-          d={`M${coords.x1},${coords.y1} Q${coords.controlX},${coords.controlY} ${coords.x2},${coords.y2}`}
-          stroke="#222"
-          strokeWidth="3"
-          fill="none"
-          markerEnd="url(#arrowhead)"
-          style={{
-            strokeDasharray: "1000",
-            strokeDashoffset: "1000",
-            animation: show ? "drawArrow 1.5s ease-out forwards" : "none"
-          }}
-        />
+                 <path
+           id="drawArrow"
+           d={`M${coords.x1},${coords.y1} Q${coords.controlX},${coords.controlY} ${coords.x2},${coords.y2}`}
+           stroke="#222"
+           strokeWidth="3"
+           fill="none"
+           markerEnd="url(#arrowhead)"
+           style={{
+             strokeDasharray: "1000",
+             strokeDashoffset: "1000",
+             animation: show ? "drawArrow 1.5s ease-out forwards" : "none"
+           }}
+         />
+         {/* Fallback arrow body in case animation fails */}
+         <path
+           d={`M${coords.x1},${coords.y1} Q${coords.controlX},${coords.controlY} ${coords.x2},${coords.y2}`}
+           stroke="#222"
+           strokeWidth="2"
+           fill="none"
+          //  opacity="0.3"
+         />
       </svg>
     );
   };
