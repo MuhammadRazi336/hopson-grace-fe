@@ -106,9 +106,16 @@ const RegisterIndex = () => {
 
   const handleInputChange = (e) => {
     const {name, value} = e.target;
+    
+    // Auto-capitalize first letter for name fields
+    let processedValue = value;
+    if (['firstName', 'lastName', 'fianceFirstName', 'fianceLastName'].includes(name)) {
+      processedValue = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+    }
+    
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: processedValue,
     }));
     setErrors((prev) => ({...prev, [name]: undefined}));
   };

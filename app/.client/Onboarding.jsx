@@ -417,62 +417,76 @@ const OnboardingClient = ({onStepChange}) => {
         setStep3Error('');
       }
       await handleNoOfGuest();
-    } else if (step === 4) {
-      // Step 4 validation
-      const errors = {};
-      if (!addressData.phoneNumber || addressData.phoneNumber.trim() === '') {
-        errors.phoneNumber = 'Phone number is required';
-      }
-      if (!addressData.address || addressData.address.trim() === '') {
-        errors.address = 'Address is required';
-      }
-      if (!addressData.postalCode || addressData.postalCode.trim() === '') {
-        errors.postalCode = 'Postal code is required';
-      }
-      if (!addressData.city || addressData.city.trim() === '') {
-        errors.city = 'City is required';
-      }
-      if (!addressData.province || addressData.province.trim() === '') {
-        errors.province = 'Province/State is required';
-      }
-      if (!addressData.country || addressData.country.trim() === '') {
-        errors.country = 'Country is required';
-      }
-      setStep4Errors(errors);
-      if (Object.keys(errors).length > 0) return;
-      await handleShipping();
+         } else if (step === 4) {
+       // Step 4 validation
+       const errors = {};
+       if (!addressData.phoneNumber || addressData.phoneNumber.trim() === '') {
+         errors.phoneNumber = 'Phone number is required';
+       } else if (addressData.phoneNumber.length > 15) {
+         errors.phoneNumber = 'Phone number must be 15 characters or less';
+       }
+       if (!addressData.address || addressData.address.trim() === '') {
+         errors.address = 'Address is required';
+       }
+       if (!addressData.postalCode || addressData.postalCode.trim() === '') {
+         errors.postalCode = 'Postal code is required';
+       }
+       if (!addressData.city || addressData.city.trim() === '') {
+         errors.city = 'City is required';
+       }
+       if (!addressData.province || addressData.province.trim() === '') {
+         errors.province = 'Province/State is required';
+       }
+       if (!addressData.country || addressData.country.trim() === '') {
+         errors.country = 'Country is required';
+       }
+       setStep4Errors(errors);
+       if (Object.keys(errors).length > 0) return;
+       await handleShipping();
     } else if (step === 5) {
       setStep(step + 1);
-    } else if (step === 6) {
-      // Call API to update preferred categories when finishing Step 6
-      if (user && user.user && user.user.id) {
-        const preferredCategoryTitles = selectedCollections.map((col) => col.title);
-        const token = user.accessToken;
-        Registry_Services.updatePreferredCategories(
-          user.user.id,
-          {
-            preferredCategory: preferredCategoryTitles,
-            preferredSubCategory: selectedSubCollections.map((col) => col.title),
-          },
-          token
-        );
-      }
-      setStep(step + 1);
-    } else if (step === 7) {
-      // Call API to update preferred subcategories when finishing Step 7
-      if (user && user.user && user.user.id) {
-        const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
-        const token = user.accessToken;
-        Registry_Services.updatePreferredCategories(
-          user.user.id,
-          {
-            preferredCategory: selectedCollections.map((col) => col.title),
-            preferredSubCategory: preferredSubCategoryTitles,
-          },
-          token
-        );
-      }
-      setStep(step + 1);
+         } else if (step === 6) {
+       // Validate that at least one collection is selected
+       if (!selectedCollections || selectedCollections.length === 0) {
+         alert('Please select at least one collection to continue.');
+         return;
+       }
+       
+       // Call API to update preferred categories when finishing Step 6
+       if (user && user.user && user.user.id) {
+         const preferredCategoryTitles = selectedCollections.map((col) => col.title);
+         const token = user.accessToken;
+         Registry_Services.updatePreferredCategories(
+           user.user.id,
+           {
+             preferredCategory: preferredCategoryTitles,
+             preferredSubCategory: selectedSubCollections.map((col) => col.title),
+           },
+           token
+         );
+       }
+       setStep(step + 1);
+         } else if (step === 7) {
+       // Validate that at least one sub-collection is selected
+       if (!selectedSubCollections || selectedSubCollections.length === 0) {
+         alert('Please select at least one sub-collection to continue.');
+         return;
+       }
+       
+       // Call API to update preferred subcategories when finishing Step 7
+       if (user && user.user && user.user.id) {
+         const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
+         const token = user.accessToken;
+         Registry_Services.updatePreferredCategories(
+           user.user.id,
+           {
+             preferredCategory: selectedCollections.map((col) => col.title),
+             preferredSubCategory: preferredSubCategoryTitles,
+           },
+           token
+         );
+       }
+       setStep(step + 1);
     } else if (step === 8) {
       await handleOnboard();
     }
@@ -634,6 +648,14 @@ const OnboardingClient = ({onStepChange}) => {
 };
 
 const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
+  // Create disabled dates array - disable all dates before today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day
+  
+  const disabledDates = [
+    { from: new Date(1900, 0, 1), to: new Date(today.getTime() - 24 * 60 * 60 * 1000) }
+  ];
+
   return (
     <div className="text-center">
       <div className="p-4 w-[300px] mx-auto customdatepicker">
@@ -646,6 +668,7 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
+          disabledDates={disabledDates}
         />
       </div>
       <button className="border-b-2 border-b-white text-center mt-10" type="button" onClick={onSkip}>
@@ -667,6 +690,14 @@ const Step2 = ({
   step2Errors,
   onSkip,
 }) => {
+  // Create disabled dates array - disable all dates before today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day
+  
+  const disabledDates = [
+    { from: new Date(1900, 0, 1), to: new Date(today.getTime() - 24 * 60 * 60 * 1000) }
+  ];
+
   return (
     <div>
       <div className="text-center">
@@ -709,6 +740,7 @@ const Step2 = ({
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black h-[68px] customDatePicker',
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
+          disabledDates={disabledDates}
         />
         {step2Errors?.selectedDate && (
           <div className="input-error-message">{step2Errors.selectedDate}</div>
@@ -869,9 +901,6 @@ const Step5 = () => {
     <div className="flex flex-col items-center">
       {/* <Heading text={'What is your preferred gift?'} /> */}
       <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto text-center">
-        Most guests prefer to give a gift that you can keep forever.
-      </h2>
-      <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </h2>
       {/* Grid */}
@@ -948,10 +977,6 @@ const Step6 = ({collections, onCollectionsSelect}) => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="font-normal mb-10 mt-4 w-[80%] text-2xl mx-auto text-center">
-        Pick a style, and we'll make gift recommendations tailored to your
-        taste.
-      </p>
       <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>

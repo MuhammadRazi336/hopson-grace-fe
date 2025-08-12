@@ -18,6 +18,7 @@ const DatePicker = ({
   inputProps = {},
   className = '',
   buttonLabels = {clear: 'Clear', apply: 'Apply'},
+  disabledDates = [],
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -57,6 +58,7 @@ const DatePicker = ({
             selected={selectedDate}
             onSelect={(date) => onDateChange(date)}
             showOutsideDays
+            disabled={disabledDates}
             styles={{
               caption: {textAlign: 'center', marginBottom: '1rem'},
               nav: {display: 'flex', justifyContent: 'space-between'},
