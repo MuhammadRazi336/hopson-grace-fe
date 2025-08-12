@@ -223,7 +223,7 @@ const NavBarLinks = (mobileClasses) => {
           </li>
           <li className="py-2.5">
             <NavLink
-              to="/about-us"
+              to="/aboutus"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
             >
               ABOUT US

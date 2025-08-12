@@ -12,6 +12,7 @@ import CashTravel from '/assets/Images/CASHTRAVEL.png';
 import BespokeTravel from '/assets/Images/BESPOKETRAVEL.png';
 import TyNote from '/assets/Images/TYNOTE.png';
 import ReadyMadeRegistries from '/assets/Images/READYMADEICON.png';
+import { Link } from '@remix-run/react';
 
 const CollectionItems = () => {
   return (
@@ -23,8 +24,11 @@ const CollectionItems = () => {
         <img
           src={vectorImg}
           alt=""
-          className="min-[1024px]:hidden w-[310px] m-auto"
+          className="w-[350px] lg:w-[500px] m-auto mb-12"
         />
+        <p className="text-center md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+        A smarter, more stylish way to register—curated for how couples live now.
+      </p>
         <Swiper
           className="my-16"
           modules={[Navigation]}
@@ -173,10 +177,12 @@ const CollectionItems = () => {
         <img src={nextitem} alt="" />
       </div>
       <div className="flex justify-center items-center">
+        <Link to="/why-the-registry">
         <Button
           text="IT’S ALL IN THE DETAILS"
           className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[18px] lg:py-[30px] lg:w-[320px] w-[280px] rounded-none max-[768px]:text-lg"
         />
+        </Link>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import HeroSlider from '~/components/HeroSlider';
 import Textandbutton from '~/components/Textandbutton';
 import SliderItems from '~/components/SliderItems';
 import ImageAndText from '~/components/ImageAndText';
-import dogImg from '/assets/Images/dog.png';
+import flowerImg from '/assets/Images/flower.png';
 import showroomImg from '/assets/Images/showroom.png';
 import cupImg from '/assets/Images/cups.png';
 import teaImg from '/assets/Images/tea.png';
@@ -24,6 +24,7 @@ import Testimonialslider from '~/components/Testimonialslider';
 import {Header} from '~/components/Header';
 import {useState, useEffect} from 'react';
 import arrowUp from '/assets/Images/arrowDown.png';
+import { Link } from '@remix-run/react';
 
 const Home = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -94,18 +95,21 @@ const Home = () => {
 
       <section>
         <Heading
-          text="Ready-Made Registries"
+          text="ready-made registries"
           classes={
             'prata text-3xl lg:text-5xl font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] mb-10'}
         />
+        <p className="text-center md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+        From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
+      </p>
         <CustomTab tabsData={tabsData} />
         <div className="text-center">
           <ButtonComponent
-            text="EXPLORE SAMPLE REGISTRIES"
-            className="button-cs text-[#446184] border-3 border-[#446184] py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
+            text="EXPLORE"
+            className="button-cs text-black border-3 w-[350px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
           />
         </div>
       </section>
@@ -121,10 +125,12 @@ const Home = () => {
         />
         <Marquee />
         <div className="text-center">
+          <Link to="/our-brands">
           <ButtonComponent
-            text="BROWSE BESTSELLERS"
+            text="EXPLORE ALL BRANDS"
             className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-4 lg:py-[30px] bg-transparent rounded-none mt-2 lg:mt-11"
           />
+          </Link>
         </div>
       </section>
 
@@ -140,13 +146,13 @@ const Home = () => {
         <ProductSlider />
         <div className="text-center">
           <ButtonComponent
-            text="EXPLORE ALL BRANDS"
+            text="BROWSE BESTSELLERS"
             className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
           />
         </div>
       </section>
 
-      <section className="mb-[70px]">
+      <section className="mb-[70px] mt-12">
         <Heading
           text="inspiration"
           classes={
@@ -164,20 +170,18 @@ const Home = () => {
       <section className=" my-12 lg:my-[240px]">
         <ImageAndText
           direction={'left'}
-          imgBanner={dogImg}
+          imgBanner={flowerImg}
           lineimg={lineImg}
           title="At Your Service"
           description={
             <>
               There's no question too small or request too big for our Registry
-              advisors.
-              <br />
-              <br />
-              We're always at your service.
+              advisors.We're always at your service.
             </>
           }
           buttontext={'CONTACT US'}
           buttontype={'link'}
+          buttonLink={'/contact-us'}
         />
       </section>
 
@@ -190,8 +194,8 @@ const Home = () => {
           direction={'left'}
           imgBanner={showroomImg}
           lineimg={lineImg2}
-          title="Visit Our Toronto Showroom"
-          description="Not in Toronto? We offer the same level of exceptional service in one of our virtual gift registry appointments."
+          title="book a virtual appointment"
+          description="Our virtual appointments offer the  same personalized guidance — without leaving home. "
           buttontext={'BOOK NOW'}
           buttontype={'link'}
         />
@@ -202,8 +206,14 @@ const Home = () => {
           direction={'right'}
           imgBanner={teaImg}
           lineimg={lineImg3}
-          title="Your Ultimate Registry"
-          description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
+          title="are you ready?"
+          description={
+            <>
+              TIMELESS GIFTS.<br />
+              THOUGHTFULLY CURATED.<br />
+              EXCEPTIONAL SERVICE.
+            </>
+          }
           buttontext={'GET STARTED'}
           buttontype={'Color'}
           buttonLink={'/register'}

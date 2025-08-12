@@ -6,7 +6,7 @@ const TopHeader = () => {
             <div className="container">
                 REGISTRY, REDEFINED 
                 <span className="lg:px-2 px-1">|</span> 
-                <Link to="#" className="text-white px-1 lg:tracking-[1px] tracking-[0] font-bold">
+                <Link to="/register" className="text-white px-1 lg:tracking-[1px] tracking-[0] font-bold">
                     START YOUR JOURNEY <span className="lg:text-[16px] tracking-[1px] text-[14px]">▶</span>
                 </Link> 
             </div>

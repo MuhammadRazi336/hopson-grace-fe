@@ -3,6 +3,7 @@ import faqline from '/assets/Images/faqline.png';
 import moreImg from '/assets/Images/more.png';
 import {useState} from 'react';
 import ButtonComponent from './Button';
+import { Link } from '@remix-run/react';
 
 const Faqs = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -109,10 +110,12 @@ const Faqs = () => {
         </div>
         {isExpanded && (
           <div className="w-full text-center">
+            <Link to="/faq">
             <ButtonComponent
               className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-[15px] bg-transparent rounded-none mt-2 lg:mt-11 w-80 max-[1024px]:w-40 max-[1024px]:mt-8"
               text={'SEE ALL FAQS'}
             />
+            </Link>
           </div>
         )}
       </div>
