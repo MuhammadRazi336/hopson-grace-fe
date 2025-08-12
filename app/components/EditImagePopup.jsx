@@ -140,7 +140,7 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
-      <div className="bg-white w-[90%] max-w-5xl p-8 relative flex flex-col gap-6">
+      <div className="bg-[#F5F2ED] w-[90%] max-w-5xl p-8 relative flex flex-col gap-6 shadow-2xl">
         {/* Close Button */}
         <button
           onClick={onClose}

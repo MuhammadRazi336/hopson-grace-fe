@@ -8,8 +8,8 @@ import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
 import {CoupleFooter} from '~/components/CoupleFooter';
 import {useState} from 'react';
-import NotificationCard from '~/components/NotificationCard';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
+import PreviewRegistry from '~/components/PreviewRegistry';
 
 export async function loader({request, context}) {
   const registry = context?.session?.get('@Registry');
@@ -38,7 +38,10 @@ export async function loader({request, context}) {
   }
 
   // Defensive: parse backgroundImage if it's a string
-  if (eventGet?.data?.backgroundImage && typeof eventGet.data.backgroundImage === 'string') {
+  if (
+    eventGet?.data?.backgroundImage &&
+    typeof eventGet.data.backgroundImage === 'string'
+  ) {
     try {
       eventGet.data.backgroundImage = JSON.parse(eventGet.data.backgroundImage);
     } catch {
@@ -131,15 +134,21 @@ const index = () => {
     useLoaderData();
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
-  const [isBackgroundEditPopupOpen, setIsBackgroundEditPopupOpen] = useState(false);
+  const [isBackgroundEditPopupOpen, setIsBackgroundEditPopupOpen] =
+    useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isBackgroundUploading, setIsBackgroundUploading] = useState(false);
-  const [eventImage, setEventImage] = useState(eventGet?.data?.image?.fileUrl || null);
+  const [eventImage, setEventImage] = useState(
+    eventGet?.data?.image?.fileUrl || null,
+  );
   const [backgroundImage, setBackgroundImage] = useState(
-    eventGet?.data?.backgroundImage?.fileUrl || 
-    (eventGet?.data?.backgroundImage && typeof eventGet.data.backgroundImage === 'string' ? eventGet.data.backgroundImage : null) ||
-    '/assets/Images/couple-profile-bg.png'
+    eventGet?.data?.backgroundImage?.fileUrl ||
+      (eventGet?.data?.backgroundImage &&
+      typeof eventGet.data.backgroundImage === 'string'
+        ? eventGet.data.backgroundImage
+        : null) ||
+      '/assets/Images/couple-profile-bg.png',
   );
 
   // Add state for the note textarea
@@ -151,13 +160,16 @@ const index = () => {
         id: registry.events.id,
         welcomeMessage: note,
       };
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${payload.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `https://dev-hopsongrace.codup.io/api/events/${payload.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         },
-        body: JSON.stringify(payload),
-      });
+      );
       if (response.ok) {
         alert('Message updated!');
       } else {
@@ -174,22 +186,25 @@ const index = () => {
       alert('No image to upload');
       return;
     }
-    
+
     setIsUploading(true);
     try {
       const formData = new FormData();
       formData.append('file', croppedBlob, 'profile.jpg');
       formData.append('id', registry.events.id);
-      
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${registry.events.id}`, {
-        method: 'PUT',
-        body: formData,
-      });
-      
+
+      const response = await fetch(
+        `https://dev-hopsongrace.codup.io/api/events/${registry.events.id}`,
+        {
+          method: 'PUT',
+          body: formData,
+        },
+      );
+
       if (response.ok) {
         const data = await response.json();
         console.log('Upload response:', data);
-        
+
         // Update the event image state
         if (data.data && data.data.image) {
           const newImageUrl = data.data.image.fileUrl || data.data.image;
@@ -220,21 +235,24 @@ const index = () => {
       alert('No background image to upload');
       return;
     }
-    
+
     setIsBackgroundUploading(true);
     try {
       const formData = new FormData();
       formData.append('file', croppedBlob, 'background.jpg');
-      
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/events/${registry.events.id}/background-image`, {
-        method: 'POST',
-        body: formData,
-      });
-      
+
+      const response = await fetch(
+        `https://dev-hopsongrace.codup.io/api/events/${registry.events.id}/background-image`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
+
       if (response.ok) {
         const data = await response.json();
         console.log('Background upload response:', data);
-        
+
         // Update the background image state
         if (data.data && data.data.data && data.data.data.backgroundImage) {
           const newBackgroundUrl = data.data.data.backgroundImage.fileUrl;
@@ -283,14 +301,23 @@ const index = () => {
 
         <div className="w-[300px] flex flex-col gap-y-4">
           <div>
-            <NotificationCard />
-          </div>
-          <div>
             <RegistryStatusCard
               status={registry?.status}
               registryId={registry?.id}
               token={user?.accessToken}
             />
+          </div>
+          <div className="w-[260px] min-h-[100px] bg-[#F5F2ED] z-10">
+            <div className="container mx-auto pt-3">
+              <img
+                src="/assets/Images/share-icon.png"
+                alt="preview"
+                className="w-10 mx-auto filter brightness-0"
+              />
+              <h2 className="text-black text-sm text-center font-bold mt-2">
+                PREVIEW PAGE
+              </h2>
+            </div>
           </div>
         </div>
       </div>
@@ -307,20 +334,24 @@ const index = () => {
       />
       <div className="text-center pt-[80px] container mx-auto font-sans">
         <div className="relative">
-                     <img
-             src={backgroundImage}
-             alt="Couple Background"
-             className="w-full h-[400px] lg:h-[600px] object-cover"
-           />
+          <img
+            src={backgroundImage}
+            alt="Couple Background"
+            className="w-full h-[400px] lg:h-[600px] object-cover"
+          />
           <div
             className="absolute top-4 right-4 cursor-pointer"
-            onClick={() => !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)}
+            onClick={() =>
+              !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
+            }
           >
             <div className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-50">
               <img
                 src="/assets/Images/edit-icon.png"
                 alt="Edit Background"
-                className={`w-auto h-auto ${isBackgroundUploading ? 'opacity-50' : ''}`}
+                className={`w-auto h-auto ${
+                  isBackgroundUploading ? 'opacity-50' : ''
+                }`}
               />
               {isBackgroundUploading && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -351,7 +382,7 @@ const index = () => {
           <div className="xl:w-4/12 w-full">
             <div className="relative">
               <img
-                src={eventImage || "/assets/Images/couple-placeholder.png"}
+                src={eventImage || '/assets/Images/couple-placeholder.png'}
                 alt="Couple"
                 className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto object-cover"
               />
@@ -362,7 +393,9 @@ const index = () => {
                 <img
                   src="/assets/Images/edit-icon.png"
                   alt="Edit"
-                  className={`w-auto h-auto rounded-full cursor-pointer ${isUploading ? 'opacity-50' : ''}`}
+                  className={`w-auto h-auto rounded-full cursor-pointer ${
+                    isUploading ? 'opacity-50' : ''
+                  }`}
                 />
                 {isUploading && (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -463,32 +496,36 @@ const index = () => {
       <div className="py-12 w-full flex justify-center items-center">
         <div className="py-10 md:py-12 bg-[#446184] flex items-center justify-around flex-row lg:w-[70%] w-full max-[768px]:p-10 lg:mt-20 mt-6 gap-x-16">
           <div>
-            <img src="/assets/Images/giftCard.png" alt="gift" className="w-full h-full object-cover" />
+            <img
+              src="/assets/Images/giftCard.png"
+              alt="gift"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
-          <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
-            add a gift card
-          </h3>
-          <img
-            src="/assets/Images/white-bdr.png"
-            alt="couple"
-            className="max-w-[315px] mb-4 mt-4 mx-auto"
-          />
-          <h5 className="text-white text-xl text-center font-normal">
-            CONTRIBUTE TO OUR JOURNEY!
-          </h5>
-          <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-7 font-normal text-center">
-            Help us create our dream wedding, honeymoon or life experience.
-            We're so grateful.
-          </p>
-          <Link to="/dashboard/giftcards">
+            <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
+              add a gift card
+            </h3>
+            <img
+              src="/assets/Images/white-bdr.png"
+              alt="couple"
+              className="max-w-[315px] mb-4 mt-4 mx-auto"
+            />
+            <h5 className="text-white text-xl text-center font-normal">
+              CONTRIBUTE TO OUR JOURNEY!
+            </h5>
+            <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-7 font-normal text-center">
+              Help us create our dream wedding, honeymoon or life experience.
+              We're so grateful.
+            </p>
+            <Link to="/dashboard/giftcards">
               <button
                 type="button"
                 className="text-black font-bold py-4 px-8 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
                 ADD GIFT CARDS
               </button>
-              </Link>
+            </Link>
           </div>
         </div>
       </div>
@@ -603,7 +640,13 @@ const FundPage = ({data}) => {
               key={fund.productId || Math.random()}
               image={fund.cashFund.image?.fileUrl}
               title={fund.cashFund?.name || 'No Fund Name'}
-              totalAmount={Number(fund.amount) === 0 ? "" : Number(fund.amount) ? fund.amount : 0}
+              totalAmount={
+                Number(fund.amount) === 0
+                  ? ''
+                  : Number(fund.amount)
+                  ? fund.amount
+                  : 0
+              }
               collectedAmount={
                 Number(fund.collectedAmount) ? fund.collectedAmount : 0
               }

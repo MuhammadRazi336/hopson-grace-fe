@@ -143,7 +143,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
-      <div className="bg-white w-[95%] max-w-6xl p-8 relative">
+      <div className="bg-[#F5F2ED] w-[95%] max-w-6xl p-8 relative">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">ADD YOUR BACKGROUND IMAGE</h2>
