@@ -74,28 +74,36 @@ export default function FindCoupleForm() {
                 <form method="GET" className="w-full">
                   <div className="flex gap-8 mb-4">
                     <div className="w-full">
-                      <input
-                        id="firstName"
-                        name="firstName"
-                        type="text"
-                        placeholder="First Name*"
-                        value={firstName}
-                        className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
-                        required
-                        onChange={(e) => setFirstName(e.target.value)}
-                      />
-                    </div>
-                    <div className="w-full">
-                      <input
-                        id="lastName"
-                        name="lastName"
-                        type="text"
-                        placeholder="Last Name*"
-                        value={fianceFirstName}
-                        className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
-                        required
-                        onChange={(e) => setFianceFirstName(e.target.value)}
-                      />
+                                             <input
+                         id="firstName"
+                         name="firstName"
+                         type="text"
+                         placeholder="First Name*"
+                         value={firstName}
+                         className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                         required
+                         onChange={(e) => {
+                           const value = e.target.value;
+                           const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                           setFirstName(capitalized);
+                         }}
+                       />
+                     </div>
+                     <div className="w-full">
+                       <input
+                         id="lastName"
+                         name="lastName"
+                         type="text"
+                         placeholder="Last Name*"
+                         value={fianceFirstName}
+                         className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                         required
+                         onChange={(e) => {
+                           const value = e.target.value;
+                           const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                           setFianceFirstName(capitalized);
+                         }}
+                       />
                     </div>
                   </div>
                   <div className="flex justify-center items-center">
@@ -170,28 +178,36 @@ function CoupleListing({data}) {
               <form method="GET" className="w-full" onSubmit={handleSearch}>
                 <div className="flex gap-8 mb-4">
                   <div className="w-full">
-                    <input
-                      id="firstName"
-                      name="firstName"
-                      type="text"
-                      placeholder="First Name*"
-                      value={firstName}
-                      className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
-                      required
-                      onChange={(e) => setFirstName(e.target.value)}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <input
-                      id="fianceFirstName"
-                      name="fianceFirstName"
-                      type="text"
-                      placeholder="Last Name*"
-                      value={fianceFirstName}
-                      className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
-                      required
-                      onChange={(e) => setFianceFirstName(e.target.value)}
-                    />
+                                         <input
+                       id="firstName"
+                       name="firstName"
+                       type="text"
+                       placeholder="First Name*"
+                       value={firstName}
+                       className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                       required
+                       onChange={(e) => {
+                         const value = e.target.value;
+                         const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                         setFirstName(capitalized);
+                       }}
+                     />
+                   </div>
+                   <div className="w-full">
+                     <input
+                       id="fianceFirstName"
+                       name="fianceFirstName"
+                       type="text"
+                       placeholder="Last Name*"
+                       value={fianceFirstName}
+                       className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                       required
+                       onChange={(e) => {
+                         const value = e.target.value;
+                         const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                         setFianceFirstName(capitalized);
+                       }}
+                     />
                   </div>
                 </div>
                 <div className="flex justify-center items-center">
@@ -208,7 +224,7 @@ function CoupleListing({data}) {
         </div>
 
         <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
-          we found {data.length} registries
+          we found {data.filter(couple => couple.registry).length} registries
         </h2>
 
         <img
@@ -219,8 +235,10 @@ function CoupleListing({data}) {
 
         <div className="">
           {console.log(data)}
-          {data.map((couple) => (
-            <div className="flex justify-center items-center flex-col gap-y-4 pb-4">
+          {data
+            .filter(couple => couple.registry) // Only show couples with registries
+            .map((couple) => (
+            <div key={couple.id} className="flex justify-center items-center flex-col gap-y-4 pb-4">
               {/* <img
                 src={couple.event.image.fileUrl ? couple.event.image.fileUrl : `/assets/Images/couple-logo.png`}
                 alt="Couple"
@@ -238,7 +256,7 @@ function CoupleListing({data}) {
                   year: 'numeric',
                 })}
               </p>
-              {couple.registry.status === "published" ? 
+              {couple.registry && couple.registry.status === "published" ? 
               <Link to={`/couple/single/${couple.id}`}>
                 <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center">
                   View Profile
