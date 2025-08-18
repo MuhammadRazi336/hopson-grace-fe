@@ -2,7 +2,7 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import Card from '~/components/Card.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import {useState} from 'react';
-import {Link, useFetcher, useLoaderData} from '@remix-run/react';
+import {Link, useFetcher, useLoaderData, useNavigate, Form} from '@remix-run/react';
 import RegistryChecklist from '~/components/RegistryChecklist';
 import {json, redirect} from '@shopify/remix-oxygen';
 import FooterBottom from '~/components/FooterBottom';
@@ -235,6 +235,28 @@ const index = () => {
       },
     );
   };
+
+  const handleLogout = () => {
+    // Clear all localStorage
+    localStorage.clear();
+    
+    // Clear all sessionStorage
+    sessionStorage.clear();
+    
+    // Clear specific items to be sure
+    localStorage.removeItem('@token');
+    localStorage.removeItem('@Token');
+    localStorage.removeItem('@User');
+    localStorage.removeItem('@Registry');
+    
+    // Submit form to logout route to clear server-side session
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/logout';
+    document.body.appendChild(form);
+    form.submit();
+  };
+
   return (
     <>
     <div className="pt-[80px]">
@@ -319,6 +341,30 @@ const index = () => {
       <Footer />
       </div>
           {/* <RegistryChecklist registry={registry} /> */}
+      
+                    {/* Floating Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="fixed bottom-6 right-6 bg-[#446184] hover:bg-[#2c4a6b] text-white rounded-full p-4 shadow-lg transition-all duration-300 z-50 group"
+          title="Logout"
+        >
+        <svg 
+          className="w-6 h-6" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+          />
+        </svg>
+        <span className="absolute right-full mr-3 bg-black text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+          Logout
+        </span>
+      </button>
     </>
   );
 };
