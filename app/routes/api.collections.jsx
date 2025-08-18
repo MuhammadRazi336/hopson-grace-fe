@@ -11,35 +11,35 @@ export async function action({ request, context }) {
 
     // Log the IDs we're querying for
 
-    // Make the query
-    const { nodes } = await context.storefront.query(
-      `query GetSubCollections($ids: [ID!]!) {
-        nodes(ids: $ids) {
-          ... on Collection {
-            id
-            title
-            handle
-            description
-            image {
+    // Make the query using the storefront client directly
+    const result = await context.storefront.query(
+      `#graphql
+        query GetSubCollections($ids: [ID!]!) {
+          nodes(ids: $ids) {
+            ... on Collection {
               id
-              url
-              altText
-              width
-              height
+              title
+              handle
+              description
+              image {
+                id
+                url
+                altText
+                width
+                height
+              }
             }
           }
         }
-      }`,
+      `,
       {
         variables: {
           ids: body.ids
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN,
-        },
+        }
       }
     );
+
+    const { nodes } = result;
 
     // Log the response
 
