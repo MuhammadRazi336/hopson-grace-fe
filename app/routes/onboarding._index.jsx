@@ -6,6 +6,35 @@ import { useLoaderData } from '@remix-run/react';
 import StepsAndImage from '~/components/StepsAndImage';
 import { useState } from 'react';
 
+// GraphQL query for collections
+const COLLECTIONS_QUERY = `#graphql
+  query Collections {
+    collections(first: 20) {
+      nodes {
+        id
+        title
+        description
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        metafield(namespace: "parent", key: "collection") {
+          key
+          value
+          namespace
+          type
+        }
+        subCollections: metafield(namespace: "sub", key: "collection") {
+          value
+        }
+      }
+    }
+  }
+`;
+
 // Define step titles
 const STEP_TITLES = {
   1: "the countdown is on. mark your date.",
@@ -22,23 +51,14 @@ export async function loader({ request, context }) {
   try {
     const user = await requireAuth(context);
     
-    // Add proper headers for the Storefront API
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN,
-    };
-
-    // Query collections with proper error handling
-    let collections;
+    // Query collections using the storefront client directly
+    let collections = { nodes: [] };
     try {
-      const result = await context.storefront.query(COLLECTION_QUERY, {
-        headers,
-        cache: context.storefront.CacheLong(),
-      });
+      const result = await context.storefront.query(COLLECTIONS_QUERY);
       collections = result.collections;
     } catch (error) {
       console.error('Error fetching collections:', error);
-      collections = { nodes: [] };
+      // Continue without collections - don't fail the entire loader
     }
 
     if (user) {
