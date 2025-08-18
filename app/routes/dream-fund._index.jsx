@@ -346,7 +346,7 @@ function SidebarFilter() {
 
 
 const CASH_FUND_QUERY = `#graphql
-query getCashFunds {
+query getCashFundsForDreamFund {
   collections(first: 50) {
     nodes {
       id

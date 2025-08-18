@@ -102,7 +102,7 @@ const COLLECTIONS_QUERY = `#graphql
 `;
 
 const CASH_FUND_QUERY = `#graphql
-query getCashFunds {
+query getCashFundsForSearch {
   collections(first: 100) {
     nodes {
     id
@@ -159,7 +159,7 @@ query getCashFunds {
 `;
 
 const BLOGS_QUERY = `#graphql
-  query GetAllBlogsAndArticles {
+  query GetAllBlogsAndArticlesForSearch {
     blogs(first: 20) {
       nodes {
     title

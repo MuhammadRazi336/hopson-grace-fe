@@ -664,7 +664,7 @@ function SidebarFilter() {
 //   }
 
   const CASH_FUND_QUERY = `#graphql
-query getCashFunds {
+query getCashFundsForCashFunds {
   collections(first: 50) {
     nodes {
       id

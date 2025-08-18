@@ -17,7 +17,7 @@ import readMoreIcon from '/assets/Images/readMoreIcon.png';
 import arrowDown from '/assets/Images/arrowDown.png';
 
 const BLOGS_QUERY = `#graphql
-query GetAllBlogsAndArticles {
+query GetAllBlogsAndArticlesForInspiration {
   blogs(first: 10) {
     nodes {
       title
