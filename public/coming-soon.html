@@ -31,6 +31,34 @@
       href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"
     />
     <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=Z7s48gu_eVyJ83JK0XuTqhHlqsYtKQgfh7gZBrPa7NsL-b8AtVJvjVxe8HEaJaZnm01xX8IgerUot5Nnlo7h3Q" charset="UTF-8"></script><style>
+      @font-face {
+        font-family: 'bastardogrotesk';
+        src: url('./assets/fonts/bastardogrotesk-regular.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: 'bastardogrotesk';
+        src: url('./assets/fonts/bastardogrotesk-black.ttf') format('truetype');
+        font-weight: 800;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: 'ivyora';
+        src: url('./assets/fonts/ivyora-text.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: 'prata';
+        src: url('./assets/fonts/Prata-Regular.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -45,28 +73,43 @@
       }
 
       .container {
-        max-width: 1200px;
+        max-width: 100%;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 0 8.333vw;
       }
 
       /* Header */
       .header {
         text-align: center;
-        padding: 60px 0 40px;
+        padding: 0px 0 4.583vw;
+      }
+
+      .header-topbar{
+        height: 3.333vw;
+        background-color: #1F1D1B;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2.76vw;
+      }
+
+      .header-topbar div{
+        font-family: 'bastardogrotesk';
+        font-size: 1.042vw;
+        font-weight: 400;
+        line-height: 1.875vw;
+        color: #FFFFFF;
+        letter-spacing: 18%;
       }
 
       .logo {
-        font-family: "Playfair Display", serif;
-        font-size: 4rem;
-        font-weight: 400;
-        letter-spacing: 2px;
-        margin-bottom: 10px;
-        color: #2c2c2c;
+          width: 22.188vw;
+          height: 9.896vw;
+          object-fit: contain;
       }
 
       .brand-name {
-        font-family: "Playfair Display", serif;
+        font-family: 'prata'
         font-size: 1.5rem;
         font-weight: 400;
         letter-spacing: 8px;
@@ -84,50 +127,51 @@
       }
 
       .tagline {
-        font-family: "Playfair Display", serif;
-        font-size: 2.2rem;
+        font-family: 'prata';
+        font-size: 2.5vw;
         font-weight: 400;
-        margin-bottom: 20px;
-        line-height: 1.3;
+        margin-bottom: 1.563vw;
+        line-height: 2.917vw;
       }
 
       .tagline .italic {
         font-style: italic;
+        font-family: 'ivyora';
       }
 
       .subtitle {
-        font-size: 0.9rem;
+        font-size: 1.146vw;
+        line-height: 1.875vw;
         font-weight: 500;
-        letter-spacing: 2px;
         text-transform: uppercase;
         color: #000;
-        margin-bottom: 60px;
+        margin-bottom: 5.469vw;
       }
 
       /* Hero Section */
       .hero-section {
         position: relative;
-        margin-bottom: 80px;
+        margin-bottom: 10.417vw;
       }
 
       .hero-container {
         display: flex;
         align-items: center;
         gap: 0;
-        max-width: 1280px;
+        max-width: 100%;
         margin: 0 auto;
         position: relative;
       }
 
       .hero-image {
-        flex: 1;
+        width: 51.823vw;
         position: relative;
       }
 
       .hero-image > img {
         width: 100%;
-        height: 600px;
-        object-fit: cover;
+        height: auto;
+        object-fit: contain;
         border-radius: 8px;
       }
 
@@ -135,7 +179,7 @@
         position: absolute;
         bottom: 10px;
         left: -80px;
-        font-family: "Playfair Display", serif;
+        font-family: 'prata';
         font-size: 3rem;
         color: #2c2c2c;
         font-weight: 400;
@@ -144,70 +188,60 @@
       .signup-form {
         background-color: #4a6b8a;
         color: white;
-        padding: 100px 50px;
-        flex: 0 0 500px;
+        padding: 4.635vw 5.677vw;
+        width: 38.594vw;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        min-height: 400px;
-        margin-left: -90px;
+        margin-left: -7.813vw;
         position: relative;
         z-index: 9;
       }
 
       .coming-soon {
-        font-size: 0.8rem;
+        font-size: 1.146vw;
+        line-height: 1.146vw;
+        text-align: center;
         font-weight: 600;
-        letter-spacing: 2px;
+        letter-spacing: 8%;
         text-transform: uppercase;
-        margin-bottom: 20px;
-        opacity: 0.9;
+        margin-bottom: 1.302vw;
+        color: #FFFFFF;
       }
 
       .signup-title {
-        font-family: "Playfair Display", serif;
-        font-size: 2.2rem;
+        font-family: 'prata';
+        font-size: 2.708vw;
         font-weight: 400;
-        margin-bottom: 10px;
-        line-height: 1.2;
+        margin-bottom: 0.5vw;
+        line-height: 2.917vw;
+        text-align: center;
       }
 
-      .signup-underline {
-        width: 60px;
-        height: 2px;
-        background-color: white;
-        margin-bottom: 40px;
+      .signup-underline svg {
+          width: 100%;
+      }
+
+      .signup-underline{
+        margin-bottom: 3.542vw;
       }
 
       .email-input {
         width: 100%;
-        padding: 15px;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        margin-bottom: 20px;
+        padding: 0px 1.354vw;
+        border-radius: 0px;
+        font-size: 1.042vw;
+        line-height: 2.083vw;
+        margin-bottom: 2.76vw;
         background-color: white;
         color: #2c2c2c;
+        height: 4.167vw;
+        border: none;
+        font-family: 'bastardogrotesk';
       }
 
       .email-input::placeholder {
         color: #999;
-      }
-
-      .signup-btn {
-        width: 100%;
-        padding: 15px;
-        background-color: white;
-        color: #4a6b8a;
-        border: none;
-        border-radius: 4px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        cursor: pointer;
-        margin-bottom: 30px;
-        transition: all 0.3s ease;
       }
 
       .signup-btn:hover {
@@ -216,15 +250,33 @@
       }
 
       .disclaimer {
-        font-size: 0.75rem;
-        opacity: 0.8;
+        font-size: 0.833vw;
+        color: #FFFFFF;
         font-style: italic;
-        line-height: 1.4;
+        line-height: 2.083vw;
+        text-align: center;
+      }
+
+      .signup-btn {
+          height: 4.167vw;
+          width: 18.75vw;
+          margin: 0 auto;
+          display: block;
+          background-color: #F5F2ED;
+          border: none;
+          font-size: 0.938vw;
+          line-height: 0.938vw;
+          font-family: 'bastardogrotesk';
+          color: #1F1D1B;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.1vw;
+          margin-bottom: 2.917vw;
       }
 
       /* Features Section */
       .features-section {
-        margin-bottom: 100px;
+        margin-bottom: 8.229vw;
         padding: 0;
         width: 100%;
       }
@@ -241,25 +293,32 @@
       }
 
       .feature-icon {
-        width: 140px;
-        height: 140px;
+        width: 9.375vw;
+        height: 9.375vw;
         background-color: #4a6b8a;
         border-radius: 50%;
-        margin: 0 auto 20px;
+        margin: 0 auto 2.656vw;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-size: 1.5rem;
         transition: all 0.3s ease;
+        padding: 1.25vw;
       }
 
+      .feature-icon img{
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
       .feature-title {
-        font-size: 0.8rem;
-        font-weight: 600;
+        font-size: 1.042vw;
+        font-family: 'bastardogrotesk';
+        font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
-        line-height: 1.3;
+        line-height: 1.354vw;
         height: 40px;
         display: flex;
         align-items: center;
@@ -298,33 +357,48 @@
       }
 
       .slick-dots {
-        bottom: -40px;
+          margin-top: 4.677vw;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          gap: 0px 1.771vw;
       }
 
       .slick-dots li button:before {
-        font-size: 12px;
-        color: #4a6b8a;
-        opacity: 0.5;
+        font-size: 1.042vw;
+        color: #D9D9D9;
+        opacity: 1;
+      }
+
+      .slick-dots li button,
+      .slick-dots li{
+        padding: 0px;
+        width: 1.042vw;
+        height: 1.042vw;
+      }
+
+      .slick-dots li{
+        margin: 0px;
       }
 
       .slick-dots li.slick-active button:before {
         opacity: 1;
-        color: #2c2c2c;
+        color: #999898;
       }
 
       /* Footer */
       .footer {
         background-color: #1e1d1b;
-        color: white;
-        padding: 70px 0 40px;
+        color: #ffffff;
+        padding: 3.281vw 0 4.115vw;
       }
 
       .footer-content {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-        margin-bottom: 40px;
-        gap: 40px;
+        margin-bottom: 4.427vw;
+        gap: 2.083vw;
       }
 
       .footer-left {
@@ -332,23 +406,25 @@
       }
 
       img.footer-logo {
-        width: 26%;
-        margin-bottom: 40px;
+        width: 13.646vw;
+        margin-bottom: 3.958vw;
       }
 
       .footer-section h3 {
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 15px;
+          font-size: 0.938vw;
+          line-height: 0.938vw;
+          font-weight: 800;
+          text-transform: uppercase;
+          margin-bottom: 1.771vw;
+          text-align: left;
+          font-family: 'bastardogrotesk';
+          letter-spacing: 1px;
       }
 
       .footer-text {
-        font-size: 1.2rem;
-        line-height: 1.6;
-        opacity: 0.9;
-        font-family: "Playfair Display", serif;
+        font-size: 1.25vw;
+        line-height: 1.354vw;
+        font-family: 'prata';
       }
 
       .footer-text a {
@@ -362,13 +438,14 @@
 
       .social-links {
         display: flex;
-        gap: 20px;
+        gap: 22px;
+        padding-left: 2px;
         justify-content: flex-end;
       }
 
       .social-link {
-        width: 30px;
-        height: 30px;
+        width: 1.875vw;
+        height: 1.875vw;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -387,9 +464,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-top: 30px;
-        font-size: 0.8rem;
-        opacity: 0.7;
+        font-size: 0.729vw;
+        line-height: 0.938vw;
+        color: #ffffff;
       }
 
       .footer-brand {
@@ -415,44 +492,127 @@
       }
       .footer-links {
         display: flex;
-        gap: 30px;
+        gap: 1.979vw;
       }
 
       .footer-links a {
         color: white;
         text-decoration: none;
-        opacity: 0.7;
-        transition: opacity 0.3s ease;
       }
 
-      .footer-links a:hover {
-        opacity: 1;
+      .footer-links span {
+          font-size: 0.938vw;
+          line-height: 0.938vw;
+      }
+      .tag-on-desktop{
+        display: block;
+      }
+      .tag-on-mobile{
+        display: none;
       }
 
       /* Responsive Design */
       @media (max-width: 768px) {
-        .logo {
-          font-size: 3rem;
+        .header-topbar {
+            height: 42px;
+            margin-bottom: 19px;
         }
-        .feature-title {
-          height: 70px;
+        .tag-on-mobile{
+          display: block;
+        }
+        .tag-on-desktop{
+          display: none;
+        }
+        .logo {
+          width: 176px;
+          height: 78.5px;
+        }
+        .header-topbar div{
+          font-size: 11px;
+          line-height: 14px;
+          letter-spacing: 1.8px;
+        }
+        .header{
+          padding-bottom: 27.5px;
+        }
+        .container{
+          padding: 0px 37px;
         }
 
         .tagline {
-          font-size: 1.8rem;
+          font-size: 30px;
+          line-height: 36px;
+          letter-spacing: -2px;
+          margin-bottom: 29px;
+        }
+
+        .taglines-spacing {
+            margin-top: 29px;
         }
 
         .hero-container {
           flex-direction: column;
         }
 
+        .subtitle {
+            font-size: 12px;
+            line-height: 18px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            width: 307px;
+            margin: 0 auto;
+        }
+
+        .main-content{
+          margin-bottom: 36px;
+        }
+
+        .hero-image{
+          width: 100%;
+          left: -20px;
+        }
+
         .signup-form {
           flex: none;
           width: 100%;
+          margin-left: unset;
+          left: 20px;
+          bottom: 60px;
+          padding: 45px 24px;
+        }
+
+        .logo-overlay {
+            right: -30px;
+            left: unset;
+            width: 59px;
+            bottom: 60px;
+            padding: 0px;
+        }
+
+        .logo-overlay img {
+            width: 100% !important;
+        }
+
+        .coming-soon {
+            font-size: 12px;
+            line-height: 18px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .signup-underline {
+            width: 215px;
+            margin: 0 auto 19px;
         }
 
         .features-section {
           padding: 0;
+        }
+
+        .signup-title {
+            font-size: 26px;
+            line-height: 30px;
+            letter-spacing: -0.3px;
         }
 
         .footer-content {
@@ -464,63 +624,190 @@
           text-align: center;
         }
 
+        .email-input {
+            width: 298px;
+            max-width: 100%;
+            height: 47px;
+            margin: 0 auto 26px;
+            display: block;
+            padding: 0px 21px;
+            font-size: 12px;
+            line-height: 40px;
+        }
+
+        .signup-btn {
+            width: 220px;
+            max-width: 100%;
+            height: 44px;
+            font-size: 14px;
+            line-height: 18px;
+            letter-spacing: 0.8px;
+            margin-bottom: 32px;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            line-height: 14px;
+            font-family: 'ivyora';
+            letter-spacing: 0.6px;
+            width: 214px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        .hero-section{
+          margin-bottom: 14px;
+        }
+
+        .feature-icon {
+            width: 140px;
+            height: 140px;
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            line-height: 24px;
+            font-weight: 600;
+            letter-spacing: .1px;
+        }
+
         .social-links {
           justify-content: center;
         }
 
+        .slick-dots li button, .slick-dots li,
+        .slick-dots li button:before {
+            width: 10px;
+            height: 10px;
+            font-size: 8px;
+        }
+
+        .slick-dots {
+            gap: 0px 10px;
+            margin-top: 0px;
+        }
+
+        .features-section{
+          margin-bottom: 60px;
+        }
+
+        .footer{
+          padding: 35px 0px;
+        }
+
+        .footer-left {
+            flex: unset;
+            width: 100%;
+        }
+
+        img.footer-logo {
+            width: 171.26px;
+            margin-bottom: 32px;
+            margin-right: auto !important;
+            display: block;
+        }
+
+        .footer-section h3 {
+            font-size: 11px;
+            line-height: 20px;
+            margin-bottom: 20px;
+            letter-spacing: 0.8px;
+        }
+
+        .footer-text {
+            font-size: 16px;
+            line-height: 26px;
+            text-align: left;
+        }
         .footer-bottom {
           flex-direction: column;
           gap: 20px;
           text-align: center;
         }
 
-        .footer-links {
-          flex-direction: column;
-          gap: 15px;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .container {
-          padding: 0 15px;
+        .footer-right h3 {
+            display: none;
         }
 
-        .signup-form {
-          padding: 40px 30px;
-          margin-left: 0;
-          margin-top: 20px;
+        .footer-brand img {
+            width: 192.92px;
+            height: auto;
         }
 
-        .tagline {
-          font-size: 1.5rem;
+        .footer-brand {
+            display: block;
+            margin-right: auto;
+            position: relative;
+            top: -20px;
+            margin-bottom: 103px;
         }
 
-        .features-section {
-          padding: 0;
+        .social-links {
+            position: absolute;
+            top: 120px;
+            left: -55.5vw;
+            gap: 0px 17px;
         }
-        img.logo {
-          width: 70%;
+
+        .footer-right{
+          position: relative;
         }
-        .logo-overlay {
-          left: 0;
-          bottom: 0;
+
+        .footer-links span {
+            font-size: 10px;
+            line-height: 18px;
+            letter-spacing: 0.8px;
+            order: 1;
+            margin: 30px 0px;
+            width: 100%;
         }
+
+        .footer-links{
+          flex-wrap: wrap;
+          gap: 0px;
+          justify-content: center;
+        }
+
+        .social-link {
+            width: 29px;
+            height: 29px;
+        }
+
+        .footer-links a {
+            font-size: 9px;
+            line-height: 18px;
+            letter-spacing: 0.8px;
+            order: 2;  
+            margin: 0px 7.5px;
+        }
+
       }
     </style>
   </head>
   <body>
     <header class="header">
+      <div class="header-topbar">
+        <div>A PREMIUM REGISTRY PLATFORM FOR MODERN COUPLES</div>
+      </div>
       <div class="container">
-        <img src="/assets/Images/registryLogoold.png" class="logo" alt="Logo" />
+        <img src="/assets/Images/TR_Logo_Lockup.png" class="logo" alt="Logo" />
       </div>
     </header>
 
     <main>
       <section class="main-content">
         <div class="container">
-          <h1 class="tagline">
+          <h1 class="tagline tag-on-desktop">
             your wedding <span class="italic">shouldn't be</span> ordinary.
             <span class="italic">nor should</span> your registry.
+          </h1>
+
+          <h1 class="tagline tag-on-mobile">
+            your wedding <span class="italic">isn’t</span> <br>ordinary.
+            <div class="taglines-spacing">
+              your registry <br><span class="italic">shouldn’t be either.</span>
+            </div>
           </h1>
           <p class="subtitle">
             Iconic Brands, Cash Funds, Travel & Everything In-Between
@@ -548,7 +835,11 @@
             <div class="signup-form">
               <div class="coming-soon">Coming Soon</div>
               <h2 class="signup-title">be the first to know.</h2>
-              <div class="signup-underline"></div>
+              <div class="signup-underline">
+                <svg width="519" height="11" viewBox="0 0 519 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 9C131.906 9 261.812 9 391.719 9C431.203 9 470.774 7.25 510.13 7.25C523.598 7.25 514.179 6.67781 507.918 2" stroke="#F5F2ED" stroke-width="4" stroke-linecap="round"/>
+                </svg>
+              </div>
               <form>
                 <input
                   type="email"
@@ -570,13 +861,13 @@
         <div class="features-slider">
           <div class="feature">
             <div class="feature-icon">
-              <img width="80%" src="/assets/Images/WORLDSBESTBRANDSW.png">
+              <img width="1000" src="/assets/Images/WORLDSBESTBRANDSW.png">
             </div>
             <div class="feature-title">The World's<br />Best Brands</div>
           </div>
           <div class="feature">
             <div class="feature-icon">
-              <img width="80%" src="/assets/Images/CASHTRAVELW.png">
+              <img width="1000" src="/assets/Images/CASHTRAVELW.png">
             </div>
             <div class="feature-title">
               Cash, Gift Cards &<br />Personalized Funds
@@ -584,13 +875,13 @@
           </div>
           <div class="feature">
             <div class="feature-icon">
-              <img width="80%" src="/assets/Images/BESPOKETRAVELW.png">
+              <img width="1000" src="/assets/Images/BESPOKETRAVELW.png">
             </div>
             <div class="feature-title">Bespoke<br />Travel</div>
           </div>
           <div class="feature">
             <div class="feature-icon">
-              <img width="80%" src="/assets/Images/TYNOTEW.png">
+              <img width="1000" src="/assets/Images/TYNOTEW.png">
             </div>
             <div class="feature-title">
               Thank You Note<br />Tracker
@@ -598,19 +889,19 @@
           </div>
           <div class="feature">
             <div class="feature-icon">
-              <img width="80%" src="/assets/Images/READYMADEICONW.png">
+              <img width="1000" src="/assets/Images/READYMADEICONW.png">
             </div>
             <div class="feature-title">Ready Made<br />Registries</div>
           </div>
           <div class="feature">
             <div class="feature-icon">
-              <img width="80%" src="/assets/Images/GROUPGIFT.png">
+              <img width="1000" src="/assets/Images/GROUPGIFT.png">
             </div>
             <div class="feature-title">Group<br />Gifts</div>
           </div>
           <div class="feature">
             <div class="feature-icon">
-              <img width="80%" src="/assets/Images/NEWLYWED.png">
+              <img width="1000" src="/assets/Images/NEWLYWED.png">
             </div>
             <div class="feature-title">
               Newlywed<br />Discount
@@ -618,25 +909,25 @@
           </div>
             <div class="feature">
                 <div class="feature-icon">
-                <img width="80%" src="/assets/Images/FREESHIPPING.png">
+                <img width="1000" src="/assets/Images/FREESHIPPING.png">
                 </div>
                 <div class="feature-title">Free<br />Shipping</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">
-                <img width="80%" src="/assets/Images/FEWERBETTER.png">
+                <img width="1000" src="/assets/Images/FEWERBETTER.png">
                 </div>
                 <div class="feature-title">Fewer<br />Better Things</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">
-                <img width="80%" src="/assets/Images/PERSONALIZE.png">
+                <img width="1000" src="/assets/Images/PERSONALIZE.png">
                 </div>
                 <div class="feature-title">Personalized<br />Registry Page</div>
             </div>
             <div class="feature">
                 <div class="feature-icon">
-                <img width="80%" src="/assets/Images/STYLEADVICE.png">
+                <img width="1000" src="/assets/Images/STYLEADVICE.png">
                 </div>
                 <div class="feature-title">Style Advice &<br />Guided Tools</div>
             </div>
@@ -656,7 +947,7 @@
             <div class="footer-section">
               <h3>About Us</h3>
               <p class="footer-text">
-                The Registry is a sister brand to <a href="#">Hopson Grace</a>,
+                The Registry is a sister brand to <a href="http://www.hopsongrace.com/" target="_blank">Hopson Grace</a>,
                 curators of modern tableware and timeless home furnishings.
               </p>
             </div>
@@ -680,16 +971,12 @@
         </div>
         <div class="footer-bottom">
           <div class="footer-brand">
-            <span class="hopson-foot">HOPSON GRACE</span>
-
-            <span>
-              <img src="/assets/Images/reglogo.png" width="28%" />
-            </span>
+            <img src="./assets/Images/footer-brand-logo.png" width="345" />
           </div>
           <div class="footer-links">
             <a href="#">Terms & Conditions</a>
             <a href="#">Privacy & Cookie Policy</a>
-            <span>THE REGISTRY, 2025</span>
+            <span>© THE REGISTRY, 2025</span>
           </div>
         </div>
       </div>
@@ -709,7 +996,7 @@
           dots: true,
           infinite: true,
           speed: 300,
-          slidesToShow: 5,
+          slidesToShow: 4,
           slidesToScroll: 3,
           centerMode: true,
           centerPadding: "8%",
