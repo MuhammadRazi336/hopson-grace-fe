@@ -671,9 +671,7 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
           disabledDates={disabledDates}
         />
       </div>
-      <button className="border-b-2 border-b-white text-center mt-10" type="button" onClick={onSkip}>
-        I'LL ADD THIS LATER
-      </button>
+
     </div>
   );
 };
@@ -749,9 +747,7 @@ const Step2 = ({
           <div className="input-error-message">{eventDateError}</div>
         )}
       </div>
-      {/* <button className="border-b-2 border-b-white text-center mt-10" type="button" onClick={onSkip}>
-        I'LL ADD THIS LATER
-      </button> */}
+
     </div>
   );
 };
@@ -782,11 +778,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
       {step3Error && <div className="input-error-message">{step3Error}</div>}
-      <div className="text-center">
-        <button type="button" className="mt-10 border-b-2 border-b-white" onClick={onSkip}>
-          I'LL ADD THIS LATER
-        </button>
-      </div>
+
     </div>
   );
 };
@@ -863,11 +855,7 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           error={step4Errors?.country}
         />
       </div>
-      <div className="text-center">
-        <button className="mt-10 border-b-2 border-b-white" type="button" onClick={onSkip}>
-          I'LL ADD THIS LATER
-        </button>
-      </div>
+
     </div>
   );
 };

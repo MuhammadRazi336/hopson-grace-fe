@@ -1,18 +1,10 @@
-import { Link, useLoaderData } from "@remix-run/react";
-
-export async function loader({context}) {
-  const user = await context.session.get('@User');
-  return {
-    user,
-  }
-}
+import { Link } from "@remix-run/react";
 
 function PreviewRegistry() {
-  const {user} = useLoaderData();
-  const userId = user.user.id;
-  console.log(user.user.id);
+  // Remove the loader and useLoaderData since this component is used in public routes
+  // where user data might not be available
+  
   return (
-    <Link to={`/couple/single/${userId}`}>
     <div className="absolute top-0 right-12 max-w-[200px] w-[20%] min-h-[100px] bg-[#446184] z-10">
       <div className="container mx-auto pt-3">
         <img
@@ -25,7 +17,6 @@ function PreviewRegistry() {
         </h2>
       </div>
     </div>
-    </Link>
   );
 }
 

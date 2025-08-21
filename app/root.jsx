@@ -87,10 +87,6 @@ async function loadCriticalData({context}) {
         variables: {
           headerMenuHandle: 'main-menu',
         },
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN,
-        },
       }).catch(error => {
         console.error('Header query error:', error);
         return null;
@@ -118,6 +114,7 @@ function loadDeferredData({context}) {
       cart: null,
       isLoggedIn: false,
       footer: Promise.resolve(null),
+      collections: Promise.resolve({ nodes: [] }),
     };
   }
 
@@ -128,20 +125,53 @@ function loadDeferredData({context}) {
       variables: {
         footerMenuHandle: 'footer',
       },
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': process.env.PUBLIC_STOREFRONT_API_TOKEN || context.env?.PUBLIC_STOREFRONT_API_TOKEN,
-      },
     })
     .catch((error) => {
       console.error('Footer query error:', error);
       return null;
     });
 
+  // defer the collections query for navigation menu
+  const collections = storefront
+    .query(`#graphql
+      query getCollectionsForNav {
+        collections(first: 50) {
+          nodes {
+            id
+            title
+            handle
+            description
+            image {
+              id
+              url
+              altText
+              width
+              height
+            }
+            parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {
+              id
+              value
+            }
+            readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+              id
+              value
+            }
+          }
+        }
+      }
+    `, {
+      cache: storefront.CacheLong(),
+    })
+    .catch((error) => {
+      console.error('Collections query error:', error);
+      return { collections: { nodes: [] } };
+    });
+
   return {
     cart: cart?.get() || null,
     isLoggedIn: customerAccount?.isLoggedIn() || false,
     footer,
+    collections,
   };
 }
 

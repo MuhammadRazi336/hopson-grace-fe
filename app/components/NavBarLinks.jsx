@@ -1,10 +1,46 @@
 import {NavLink} from '@remix-run/react';
+import {useState, useEffect} from 'react';
 import brandImg from '/assets/Images/menu-our-brand.png';
 import productImg from '/assets/Images/menu-product.png';
 import lineImg from '/assets/Images/line.png';
 import arrowImg from '/assets/Images/arrow.png';
 
 const NavBarLinks = (mobileClasses) => {
+  const [collections, setCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch collections on component mount
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        // Make the request to our API endpoint
+        const response = await fetch('/api/navigation-collections', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Navigation collections data:', data);
+          setCollections(data.collections || []);
+        } else {
+          console.error('Failed to fetch collections');
+          setCollections([]);
+        }
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+        setCollections([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
   return (
     <div className={`navbar container-menu ${mobileClasses}`}>
       {/* Navigation Menu */}
@@ -104,6 +140,7 @@ const NavBarLinks = (mobileClasses) => {
               <div className="flex mx-auto">
                 <div className="mr-[90px]">
                   <ul className="">
+                    {/* Static items - keep these as is */}
                     <li>
                       <NavLink
                         to="/products/new-arrivals"
@@ -120,57 +157,28 @@ const NavBarLinks = (mobileClasses) => {
                         BESTSELLERS
                       </NavLink>
                     </li>
+                    
+                    {/* Dynamic collections */}
+                    {loading ? (
+                      <li className="block mb-[26px] text-gray-500">Loading collections...</li>
+                    ) : collections.length > 0 ? (
+                      collections.map((collection) => (
+                        <li key={collection.id}>
+                          <NavLink
+                            to={`/collections/${collection.handle}`}
+                            className="block mb-[26px] text-black hover:bg-gray-200"
+                          >
+                            {collection.title.toUpperCase()}
+                          </NavLink>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="block mb-[26px] text-gray-500">No collections available</li>
+                    )}
+                    
                     <li>
                       <NavLink
-                        to="/products/kitchen-essentials"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
-                      >
-                        KITCHEN ESSENTIALS
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/products/tableware-entertaining"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
-                      >
-                        TABLEWARE & ENTERTAINING
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/products/decor-furniture"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
-                      >
-                        DECOR & FURNITURE
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/products/bed-bath"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
-                      >
-                        BED & BATH
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/products/travel-outdoors"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
-                      >
-                        TRAVEL & OUTDOORS
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/products/music-tech"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
-                      >
-                        MUSIC & TECH
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/products/gift-cards"
+                        to="/dashboard/giftcards"
                         className="block mb-[26px] text-black hover:bg-gray-200"
                       >
                         GIFT CARDS
@@ -178,7 +186,7 @@ const NavBarLinks = (mobileClasses) => {
                     </li>
                     <li className='flex items-center gap-2'>
                       <NavLink
-                        to="/products/gift-cards"
+                        to="/dashboard/giftcards"
                         className="mb-[26px] text-black font-semibold underline hover:bg-gray-200 flex items-center gap-2"
                       >
                         SHOP ALL

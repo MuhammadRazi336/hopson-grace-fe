@@ -5,8 +5,34 @@ import lineImghead from '/assets/Images/line.png';
 import Heading from '~/components/Heading';
 import BrandImages from '~/components/BrandImages';
 import BrandNames from '~/components/BrandNames';
+import { useLoaderData } from '@remix-run/react';
+import { json } from '@shopify/remix-oxygen';
+
+export async function loader({context}) {
+    const brandCollections = await loadBrand({context});
+    return json({ brandCollections });
+}
+
+async function loadBrand({context}) {
+    try{
+        const [{collections}] = await Promise.all([
+            context.storefront.query(BRAND_QUERY),
+        ]);
+        const brandCollections = collections?.nodes?.filter(collections =>
+            collections.metafield?.value === 'true'
+        ) || [];
+
+        return brandCollections;
+    } catch (error) {
+        console.error("Error loading brands:", error);
+        return [];
+    }
+}
 
 const OurBrands = () => {
+  const { brandCollections } = useLoaderData();
+  console.log("brandCollections from route:", brandCollections);
+  
   return (
     <section>
       <Header />
@@ -35,7 +61,7 @@ const OurBrands = () => {
                 <BrandImages/>
            </div>
            <div className='w-[30%] h-fit px-16'>
-                <BrandNames/>
+                <BrandNames brandCollections={brandCollections}/>
            </div>
         </div>
       </div>
@@ -46,3 +72,60 @@ const OurBrands = () => {
 };
 
 export default OurBrands;
+
+const BRAND_QUERY = `#graphql
+query getBrands {
+  collections(first: 50) {
+    nodes {
+      id
+      title
+      handle
+      description
+      image {
+        id
+        url
+        altText
+        width
+        height
+      }
+      metafield(namespace: "custom", key: "brand") {
+        id
+        value
+      }
+      products(first: 10) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            images(first: 10) {
+              edges {
+                node {
+                  id
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;

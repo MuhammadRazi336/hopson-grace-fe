@@ -2,7 +2,7 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import {useState, useEffect, useRef} from 'react';
-import {useFetcher, useLoaderData, useNavigate, useParams} from '@remix-run/react';
+import {Link, useFetcher, useLoaderData, useNavigate, useParams} from '@remix-run/react';
 import {defer, json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {extractShopifyId} from '~/utils/helpers.js';
@@ -49,7 +49,7 @@ export async function loader({request, context, params}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const registry = await context?.session?.get('@Registry');
-  const userData = null; // No user data for public pages
+  const userData = await context?.session?.get('@User'); // No user data for public pages
 
   return defer({products, collections, registry, userData});
 }
@@ -256,10 +256,12 @@ export default function ProductCollection() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
 
-  const {products, collections, registry} = useLoaderData();
+  const {products, collections, registry, userData} = useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const params = useParams();
+
+  const userId = userData?.user?.id;
 
   // Get the collection from URL parameter
   const currentCollection = collections.find(col => col.handle === params.handle);
@@ -463,7 +465,9 @@ export default function ProductCollection() {
           edits. Add, update, or switch things up whenever you like.
         </p>
 
-        <PreviewRegistry />
+        <Link to={`/couple/single/${userId}`}>
+          <PreviewRegistry />
+        </Link>
       </div>
 
       <section className=" ">

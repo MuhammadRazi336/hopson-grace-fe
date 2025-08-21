@@ -162,7 +162,7 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink to="/products/gift-cards" className="block mb-4 text-black hover:bg-gray-200">
+                      <NavLink to="/dashboard/giftcards" className="block mb-4 text-black hover:bg-gray-200">
                         GIFT CARDS
                       </NavLink>
                     </li>
