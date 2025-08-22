@@ -4,7 +4,7 @@ import { Header } from '~/components/Header'
 import Heading from '~/components/Heading'
 import lineImghead from '/assets/Images/line.png'
 import { useLoaderData, json, useFetcher, Link } from '@remix-run/react'
-import { notFound } from '@shopify/remix-oxygen'
+
 import WhiteThemeButton from '~/components/WhiteThemeButton'
 import { extractShopifyId } from '~/utils/helpers.js'
 import Marquee from '~/components/Marquee'
@@ -15,7 +15,7 @@ export async function loader({params, context}) {
   const {handle} = params;
   
   if (!handle) {
-    throw notFound();
+    throw new Response('Not Found', { status: 404 });
   }
 
   try {
@@ -24,7 +24,7 @@ export async function loader({params, context}) {
     });
 
     if (!collection) {
-      throw notFound();
+      throw new Response('Not Found', { status: 404 });
     }
 
     // Get registry data from session
@@ -33,7 +33,7 @@ export async function loader({params, context}) {
     return json({ collection, registry });
   } catch (error) {
     console.error('Error loading brand:', error);
-    throw notFound();
+    throw new Response('Not Found', { status: 404 });
   }
 }
 
@@ -403,10 +403,10 @@ const Brand = () => {
 
          <Footer/>
      </section>
-  )
-}
+  );
+};
 
-export default Brand
+export default Brand;
 
 function SidebarFilter() {
   const [openSections, setOpenSections] = useState({

@@ -46,6 +46,8 @@ export async function loader({params, context}) {
     }
   });
 
+  const apiBaseUrl = context.env?.API_BASE_URL;
+
   return {
     viewGifts: giftsWithShopify,
     user: user,
@@ -65,7 +67,7 @@ export async function action({request, params, context}) {
       
       const token = context?.session?.get('@Token');
       
-      const response = await fetch(`https://dev-hopsongrace.codup.io/api/greetings/${greetingId}`, {
+      const response = await fetch(`${apiBaseUrl}/api/greetings/${greetingId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

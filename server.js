@@ -65,9 +65,12 @@ export default {
           "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.shopify.com",
           "style-src 'self' 'unsafe-inline' https://cdn.shopify.com",
           "font-src 'self' data: https://cdn.shopify.com",
-          "frame-src 'self' https://www.youtube.com https://cdn.shopify.com https://*.shopify.com https://js.stripe.com",
-          "connect-src 'self' http://localhost:3040 https://cdn.shopify.com https://monorail-edge.shopifysvc.com https://dev-hopsongrace.codup.io/api/forms/upload https://dev-hopsongrace.codup.io",
-          "img-src 'self' blob: https://www.dummyimage.co.uk https://cdn.shopify.com https://hopsongrace.s3.us-west-2.amazonaws.com",
+          "frame-src 'self' https://www.youtube.com https://cdn.shopify.com https://*.shopify.com https://js.stripe.com https://www.google.com https://maps.google.com https://www.google.com/maps",
+          "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://cdn.shopify.com https://monorail-edge.shopifysvc.com https://dev-hopsongrace.codup.io/api/forms/upload https://dev-hopsongrace.codup.io https://www.google.com/",
+          "img-src 'self' blob: data: https://www.dummyimage.co.uk https://cdn.shopify.com https://hopsongrace.s3.us-west-2.amazonaws.com https://gc.kis.v2.scr.kaspersky-labs.com",
+          "media-src 'self' blob: data:",
+          "object-src 'none'",
+          "base-uri 'self'",
         ].join('; '),
       );
 

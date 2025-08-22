@@ -45,7 +45,7 @@ const Registry_Services = {
       },
     }),
   updatePreferredCategories: (userId, payload, token) =>
-    axiosInstance.put(`users/preferred-categories/${userId}`, payload, {
+    axiosInstance.post(`users/preferred-categories/${userId}`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

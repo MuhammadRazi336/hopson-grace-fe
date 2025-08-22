@@ -104,6 +104,8 @@ export async function loader({request, context}) {
     });
   }
 
+  const apiBaseUrl = context.env?.API_BASE_URL;
+
   return defer({
     data: mergedArray,
     cashfundData: cashRes?.data || [],
@@ -161,7 +163,7 @@ const index = () => {
         welcomeMessage: note,
       };
       const response = await fetch(
-        `https://dev-hopsongrace.codup.io/api/events/${payload.id}`,
+        `${apiBaseUrl}/api/events/${payload.id}`,
         {
           method: 'PUT',
           headers: {
@@ -194,7 +196,7 @@ const index = () => {
       formData.append('id', registry.events.id);
 
       const response = await fetch(
-        `https://dev-hopsongrace.codup.io/api/events/${registry.events.id}`,
+        `${apiBaseUrl}/api/events/${registry.events.id}`,
         {
           method: 'PUT',
           body: formData,
@@ -242,7 +244,7 @@ const index = () => {
       formData.append('file', croppedBlob, 'background.jpg');
 
       const response = await fetch(
-        `https://dev-hopsongrace.codup.io/api/events/${registry.events.id}/background-image`,
+        `${apiBaseUrl}/api/events/${registry.events.id}/background-image`,
         {
           method: 'POST',
           body: formData,

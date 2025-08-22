@@ -44,6 +44,10 @@ export async function createAppLoadContext(request, env, executionContext) {
     ClientGet,
     ClientPost,
     ClientPut,
+    // Expose environment variables to the client
+    env: {
+      API_BASE_URL: env.API_BASE_URL || process.env.API_BASE_URL,
+    },
     // declare additional Remix loader context
   };
 }
