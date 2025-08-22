@@ -11,7 +11,7 @@ import TopHeader from './TopHeader';
 import {Navbar} from '@material-tailwind/react';
 import NavBarLinks from './NavBarLinks';
 import HeaderMobileMenu from './HeaderMobileMenu';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import Popup from './Popup';
 import {useLocation} from 'react-router-dom';
 
@@ -28,6 +28,17 @@ export function Header() {
   const [status, setStatus] = useState('draft');
   const isDraft = status === 'draft';
   const navigate = useNavigate();
+  
+  // Get API base URL from loader data
+  const { env } = useLoaderData() || {};
+  const apiBaseUrl = env?.API_BASE_URL || process.env.API_BASE_URL;
+
+  // Notification system state
+  const [notifications, setNotifications] = useState([]);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notificationRef = useRef(null);
+  const socketRef = useRef(null);
 
   // Get token from localStorage only on client side
   useEffect(() => {
@@ -48,7 +59,7 @@ export function Header() {
             
             // Fetch user data using the ID from token
             if (tokenId) {
-              fetch(`https://dev-hopsongrace.codup.io/api/users/${tokenId}`, {
+              fetch(`${apiBaseUrl}/api/users/${tokenId}`, {
                 headers: {
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'
@@ -65,7 +76,7 @@ export function Header() {
               });
 
               // Fetch registry data using the user ID
-              fetch(`https://dev-hopsongrace.codup.io/api/registries/by-userId/${tokenId}`, {
+              fetch(`${apiBaseUrl}/api/registries/by-userId/${tokenId}`, {
                 headers: {
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'
@@ -89,6 +100,173 @@ export function Header() {
         }
       }
     }
+  }, []);
+
+  // Socket connection for real-time notifications
+  useEffect(() => {
+    if (user && userData && userData.id) {
+      console.log('Setting up WebSocket for user:', userData.id);
+      
+      // Initialize socket connection with error handling
+      try {
+        const socket = new WebSocket(`ws://${apiBaseUrl.replace('http://', '').replace('https://', '')}/notifications`);
+        
+        socket.onopen = () => {
+          console.log('WebSocket connected for notifications');
+          // Send user authentication
+          socket.send(JSON.stringify({
+            type: 'auth',
+            userId: userData.id,
+            token: user
+          }));
+        };
+
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.log('WebSocket message received:', data);
+            
+            if (data.type === 'notification') {
+              // Add new notification to the list
+              console.log('New notification received:', data.notification);
+              setNotifications(prev => [data.notification, ...prev]);
+              setUnreadCount(prev => prev + 1);
+            } else if (data.type === 'notification_list') {
+              // Initial notification list
+              console.log('Initial notifications received:', data.notifications);
+              setNotifications(data.notifications || []);
+              setUnreadCount(data.notifications?.filter(n => !n.read).length || 0);
+            }
+          } catch (error) {
+            console.error('Error parsing notification message:', error);
+          }
+        };
+
+        socket.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          console.log('WebSocket connection failed - notifications will work via API only');
+        };
+
+        socket.onclose = () => {
+          console.log('WebSocket disconnected');
+        };
+
+        socketRef.current = socket;
+
+        // Cleanup on unmount
+        return () => {
+          if (socketRef.current) {
+            socketRef.current.close();
+          }
+        };
+      } catch (error) {
+        console.error('Failed to create WebSocket:', error);
+        console.log('Notifications will work via API only');
+      }
+    }
+  }, [user, userData]);
+
+  // Fetch existing notifications on component mount
+  useEffect(() => {
+    if (user && userData && userData.id) {
+      console.log('Fetching notifications for user:', userData.id);
+      fetchNotifications();
+    }
+  }, [user, userData]);
+
+  // Fetch notifications from backend
+  const fetchNotifications = async () => {
+    try {
+      console.log('Fetching notifications from API...');
+      const response = await fetch(`${apiBaseUrl}/api/notifications/user/${userData.id}`, {
+        headers: {
+          'Authorization': `Bearer ${user}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('Notifications API response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Notifications API response data:', data);
+        
+        if (data.code === 200) {
+          const notifications = data.data || [];
+          console.log('Setting notifications:', notifications);
+          setNotifications(notifications);
+          
+          const unreadCount = notifications.filter(n => !n.read).length;
+          console.log('Setting unread count:', unreadCount);
+          setUnreadCount(unreadCount);
+        } else {
+          console.log('API returned non-200 code:', data.code);
+        }
+      } else if (response.status === 404) {
+        console.log('Notifications API endpoint not found - backend may not be ready yet');
+        console.log('Setting empty notifications array as fallback');
+        setNotifications([]);
+        setUnreadCount(0);
+      } else {
+        console.error('Notifications API error:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      console.log('Setting empty notifications array as fallback');
+      setNotifications([]);
+      setUnreadCount(0);
+    }
+  };
+
+  // Mark notification as read
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/notifications/${notificationId}/read`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${user}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        // Update local state
+        setNotifications(prev => 
+          prev.map(n => 
+            n.id === notificationId ? { ...n, read: true } : n
+          )
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // Toggle notification dropdown
+  const toggleNotificationDropdown = () => {
+    const newState = !showNotificationDropdown;
+    setShowNotificationDropdown(newState);
+    
+    // If opening dropdown, refresh notifications
+    if (newState && userData?.id) {
+      console.log('Refreshing notifications when opening dropdown');
+      fetchNotifications();
+    }
+  };
+
+  // Close notification dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotificationDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   // Generate user initials from fetched user data
@@ -190,7 +368,7 @@ export function Header() {
     }
     
     try {
-      await fetch(`https://dev-hopsongrace.codup.io/api/registries/status/1`, {
+      await fetch(`${apiBaseUrl}/api/registries/status/1`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -378,23 +556,123 @@ export function Header() {
                 <div className="">
                   <span className="relative inline-block">
                     {/* Bell Icon (SVG) */}
-                    <svg
-                      width="50"
-                      height="50"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      className={`inline-block align-middle ${
-                        isFixed ? 'text-white' : 'text-black'
-                      }`}
+                    <button
+                      onClick={toggleNotificationDropdown}
+                      className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
                     >
-                      <path
-                        d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
-                    </svg>
-                    {/* Red Dot */}
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#f5f2ed]"></span>
+                      <svg
+                        width="50"
+                        height="50"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        className={`inline-block align-middle ${
+                          isFixed ? 'text-white' : 'text-black'
+                        }`}
+                      >
+                        <path
+                          d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        />
+                      </svg>
+                      {/* Red Dot - only show if there are unread notifications */}
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#f5f2ed] flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </span>
+                        </span>
+                      )}
+                    </button>
+
+                                         {/* Notification Dropdown */}
+                     {showNotificationDropdown && (
+                       <div 
+                         ref={notificationRef}
+                         className="absolute right-0 mt-2 w-80 bg-[#F5F2ED] rounded-lg shadow-xl border border-gray-200 z-[9999] max-h-96 overflow-y-auto"
+                       >
+                                                 <div className="p-4 border-b border-gray-200">
+                           <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+                           {unreadCount > 0 && (
+                             <p className="text-sm text-gray-600 mt-1">
+                               {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+                             </p>
+                           )}
+                           {/* System Status */}
+                           <div className="mt-2 text-xs text-gray-500">
+                             <span className={`inline-block w-2 h-2 rounded-full mr-2 ${
+                               socketRef.current?.readyState === WebSocket.OPEN ? 'bg-green-500' : 'bg-yellow-500'
+                             }`}></span>
+                             {socketRef.current?.readyState === WebSocket.OPEN ? 'Real-time connected' : 'API mode'}
+                           </div>
+                           {/* Debug button - remove after testing */}
+                           <button
+                             onClick={() => {
+                               console.log('Current notifications:', notifications);
+                               console.log('Current unread count:', unreadCount);
+                               console.log('WebSocket status:', socketRef.current?.readyState);
+                               fetchNotifications();
+                             }}
+                             className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                           >
+                             Debug: Refresh Notifications
+                           </button>
+                         </div>
+                        
+                                                 <div className="max-h-64 overflow-y-auto">
+                           {notifications.length === 0 ? (
+                             <div className="p-4 text-center text-gray-500">
+                               <p>No notifications yet</p>
+                               <p className="text-xs mt-2 text-gray-400">
+                                 Backend notification system is being set up
+                               </p>
+                             </div>
+                           ) : (
+                            notifications.map((notification) => (
+                              <div
+                                key={notification.id}
+                                className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                  !notification.read ? 'bg-blue-50' : ''
+                                }`}
+                                onClick={() => markNotificationAsRead(notification.id)}
+                              >
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <p className={`text-sm font-medium ${
+                                      !notification.read ? 'text-blue-900' : 'text-gray-900'
+                                    }`}>
+                                      {notification.title}
+                                    </p>
+                                    <p className={`text-xs mt-1 ${
+                                      !notification.read ? 'text-blue-700' : 'text-gray-600'
+                                    }`}>
+                                      {notification.message}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                      {new Date(notification.createdAt).toLocaleDateString()}
+                                    </p>
+                                  </div>
+                                  {!notification.read && (
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                        
+                        {notifications.length > 0 && (
+                          <div className="p-3 border-t border-gray-200">
+                            <button
+                              onClick={() => setShowNotificationDropdown(false)}
+                              className="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </span>
                 </div>
                 <div className='pt-1'>
@@ -441,6 +719,97 @@ export function Header() {
       >
         <NavBarLinks />
       </div>
+
+      {/* Dashboard Tabs Navigation - Only show when user is logged in */}
+      {user && (
+        <div className="w-full">
+          <div className="w-full">
+            <div className="w-full">
+              <div className="w-full shadow-md flex justify-between bg-[#F5F2ED]">
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-bold text-black" data-discover="true" href="/dashboard">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">MY DETAILS<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-black w-full" style={{width: '100%', minWidth: '24px'}}></span></span>
+                    </div>
+                    <div className="absolute inset-0 z-10 h-full bg-white rounded-md shadow" style={{opacity: 1}}></div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/registry">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">MY REGISTRY HOMEPAGE<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/addgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">ADD OR EDIT GIFTS<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/cashfunds">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">ADD A CASH OR TRAVEL FUND<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/gifttracker">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">GIFTS + THANK YOU TRACKER<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/shipgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">SHIP MY GIFTS<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/support">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">SUPPORT<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <button 
+                  className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" 
+                  onClick={() => {
+                    // Clear all localStorage
+                    localStorage.clear();
+                    
+                    // Clear all sessionStorage
+                    sessionStorage.clear();
+                    
+                    // Clear specific items to be sure
+                    localStorage.removeItem('@token');
+                    localStorage.removeItem('@Token');
+                    localStorage.removeItem('@User');
+                    localStorage.removeItem('@Registry');
+                    
+                    // Submit form to logout route to clear server-side session
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/logout';
+                    document.body.appendChild(form);
+                    form.submit();
+                  }}
+                >
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="LOGOUT">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">LOGOUT<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div
         className={`hidden max-[768px]:block bg-white fixed top-0 left-0 w-full h-full ease-in-out duration-[700ms] transition-all overflow-auto z-30 ${
