@@ -293,7 +293,7 @@ export function Header() {
               className={`transition-all duration-600 ease-in-out ${
                 isFixed
                   ? 'max-[1024px]:w-[60px]'
-                  : 'max-[1024px]:w-[21.667vw] max-md:w-[133px]'
+                  : 'lg:w-[21.667vw] max-md:w-[133px]'
               }`}
             />
           </NavLink>
