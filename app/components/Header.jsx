@@ -28,6 +28,17 @@ export function Header() {
   const [status, setStatus] = useState('draft');
   const isDraft = status === 'draft';
   const navigate = useNavigate();
+  
+  // Get API base URL from loader data
+  const { env } = useLoaderData() || {};
+  const apiBaseUrl = env?.API_BASE_URL || 'http://localhost:3040' || 'https://dev-hopsongrace.codup.io';
+
+  // Notification system state
+  const [notifications, setNotifications] = useState([]);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notificationRef = useRef(null);
+  const socketRef = useRef(null);
 
   // Get token from localStorage only on client side
   useEffect(() => {
