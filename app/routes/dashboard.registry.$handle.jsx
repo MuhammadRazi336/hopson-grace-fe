@@ -18,6 +18,7 @@ export async function loader({request, context, params}) {
   const user = context.session.get('@User');
   const registry = context.session.get('@Registry');
 
+  const apiBaseUrl = context.env?.API_BASE_URL;
 
   const eventRes = await context.ClientGet(`events/${params.handle}`, context);
   const userRes = await context.ClientGet(`users/${user.user.id}`, context);
@@ -328,14 +329,14 @@ export default function Index() {
           );
         }
         apiCalls.push(
-          fetch(`https://dev-hopsongrace.codup.io/api/events/${formState.eventId}`, {
+          fetch(`${apiBaseUrl}/api/events/${formState.eventId}`, {
             method: 'PUT',
             body: eventFormData,
           }),
         );
       } else {
         apiCalls.push(
-          fetch(`https://dev-hopsongrace.codup.io/api/events/${formState.eventId}`, {
+          fetch(`${apiBaseUrl}/api/events/${formState.eventId}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(eventPayload),
@@ -345,7 +346,7 @@ export default function Index() {
 
       // API Call for User Data
       apiCalls.push(
-        fetch(`https://dev-hopsongrace.codup.io/api/users/${formState.userId}`, {
+        fetch(`${apiBaseUrl}/api/users/${formState.userId}`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(userPayload),
@@ -355,7 +356,7 @@ export default function Index() {
       // API Call for Shipping Data
       if (!shippingData.id || isNaN(Number(shippingData.id))) {
         // No address exists, so create it
-        await fetch('https://dev-hopsongrace.codup.io/api/users/shippingAddress', {
+        await fetch(`${apiBaseUrl}/api/users/shippingAddress`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -367,7 +368,7 @@ export default function Index() {
           }),
         });
         // Fetch the new address and update shippingData.id for future updates
-        const res = await fetch(`https://dev-hopsongrace.codup.io/api/users/shippingAddress/${formState.userId}`, {
+        const res = await fetch(`${apiBaseUrl}/api/users/shippingAddress/${formState.userId}`, {
           headers: {
             'Authorization': `Bearer ${user?.accessToken || ''}`
           }
@@ -376,11 +377,11 @@ export default function Index() {
         shippingData.id = data?.id;
       } else {
         // Address exists, so update it
-        apiCalls.push(
-          fetch(
-            `https://dev-hopsongrace.codup.io/api/users/shippingAddress/${shippingData.id}`,
-            {
-              method: 'PUT',
+      apiCalls.push(
+        fetch(
+          `${apiBaseUrl}/api/users/shippingAddress/${shippingData.id}`,
+          {
+            method: 'PUT',
               headers: {
                 'Content-Type': 'application/json'
                 // No Authorization header needed
@@ -388,9 +389,9 @@ export default function Index() {
               body: JSON.stringify({
                 ...shippingPayload,
               }),
-            },
-          ),
-        );
+          },
+        ),
+      );
       }
 
       const responses = await Promise.all(apiCalls);

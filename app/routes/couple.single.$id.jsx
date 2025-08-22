@@ -39,6 +39,9 @@ export async function loader({params, context}) {
     context.storefront.query(COLLECTION_QUERY),
   ]);
 
+  // Get API base URL from environment
+  const apiBaseUrl = context.env?.API_BASE_URL;
+
   const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
   );
@@ -81,6 +84,7 @@ export async function loader({params, context}) {
     response,
     registryId,
     collections: shopifyCollections.collections.nodes,
+    apiBaseUrl,
   });
 }
 
@@ -250,11 +254,10 @@ async function hashCartId(cartId) {
 }
 
 export default function CoupleProfile() {
-  const {data, cashfundData, response, registryId, collections} =
+  const {data, cashfundData, response, registryId, collections, apiBaseUrl} =
     useLoaderData() || [];
   const fetcher = useFetcher();
 
-  console.log('CoupleProfile: data from loader:', response);
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [availability, setAvailability] = useState('');
@@ -282,7 +285,7 @@ export default function CoupleProfile() {
     
     setCartLoading(true);
     try {
-      const res = await fetch(`https://dev-hopsongrace.codup.io/api/cart/get-cart/${registryId}/${email}`);
+      const res = await fetch(`${apiBaseUrl}/api/cart/get-cart/${registryId}/${email}`);
       const apiData = await res.json();
       
       if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
@@ -418,7 +421,7 @@ export default function CoupleProfile() {
   const callCartApi = async (email) => {
     setIsApiLoading(true);
     try {
-      const res = await fetch('https://dev-hopsongrace.codup.io/api/cart', {
+      const res = await fetch(`${apiBaseUrl}/api/cart`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: email, registryId: Number(registryId) }),
@@ -449,7 +452,7 @@ export default function CoupleProfile() {
       };
       console.log('Sending to Cart API:', payload);
       
-      const res = await fetch(`https://dev-hopsongrace.codup.io/api/cart/add-to-cart/${registryId}/${email}`, {
+      const res = await fetch(`${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -473,7 +476,7 @@ export default function CoupleProfile() {
     try {
       console.log('Sending to Cart API with quantity:', payload);
       
-      const res = await fetch(`https://dev-hopsongrace.codup.io/api/cart/add-to-cart/${registryId}/${email}`, {
+      const res = await fetch(`${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -669,7 +672,7 @@ export default function CoupleProfile() {
     // If updatedItem is provided, this is a quantity update
     if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
       // Update quantity in cart
-      fetch(`https://dev-hopsongrace.codup.io/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`, {
+      fetch(`${apiBaseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantity: updatedItem.quantity }),
@@ -699,7 +702,7 @@ export default function CoupleProfile() {
       });
     } else {
       // Remove item from cart
-      fetch(`https://dev-hopsongrace.codup.io/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
+      fetch(`${apiBaseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       })

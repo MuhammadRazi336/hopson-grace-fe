@@ -1,11 +1,12 @@
 // import { Link } from "remix";
-import {Outlet} from '@remix-run/react';
-import CustomTabs from '~/components/Tabs.jsx';
+import {Outlet, useLoaderData} from '@remix-run/react';
+
 import {useEffect, useRef, useState} from 'react';
 import NotificationCard from '~/components/NotificationCard';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
 import { Footer } from '~/components/Footer';
 import lineImg3 from '/assets/Images/line.png';
+import { Header } from '~/components/Header';
 
 const introSteps = [
   {
@@ -118,16 +119,21 @@ const introSteps = [
   }
 ];
 
-const Dashboard_index = () => {
+export async function loader({context}) {
+  const apiBaseUrl = context.env.API_BASE_URL;
+  return {apiBaseUrl};
+}
+
+const Dashboard_index = ({context}) => {
   const [showIntro, setShowIntro] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [tabNode, setTabNode] = useState(null);
+
   const [notificationNode, setNotificationNode] = useState(null);
   const [statusNode, setStatusNode] = useState(null);
   const introCardRef = useRef(null);
   const overlayRef = useRef(null);
   const [coupleName, setCoupleName] = useState('');
-
+  const {apiBaseUrl} = useLoaderData();
   // On mount, check localStorage for token and intro flag
   useEffect(() => {
     const token = localStorage.getItem('@Token');
@@ -141,7 +147,7 @@ const Dashboard_index = () => {
       const fetchUserData = async () => {
         try {
           const userId = JSON.parse(atob(token.split('.')[1])).id; // Extract user ID from token
-          const response = await fetch(`https://dev-hopsongrace.codup.io/api/users/${userId}`, {
+          const response = await fetch(`${apiBaseUrl}/api/users/${userId}`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -163,43 +169,7 @@ const Dashboard_index = () => {
     localStorage.setItem('showDashboardIntro', 'false');
   };
 
-  const tabData = [
-    {
-      label: 'MY DETAILS',
-      value: 1,
-      route: '',
-    },
-    {
-      label: 'MY REGISTRY HOMEPAGE',
-      value: 2,
-      route: 'registry',
-    },
-    {
-      label: 'ADD OR EDIT GIFTS',
-      value: 3,
-      route: 'addgifts',
-    },
-    {
-      label: 'ADD A CASH OR TRAVEL FUND',
-      value: 4,
-      route: 'cashfunds',
-    },
-    {
-      label: 'GIFTS + THANK YOU TRACKER',
-      value: 5,
-      route: 'gifttracker',
-    },
-    {
-      label: 'SHIP MY GIFTS',
-      value: 6,
-      route: 'shipgifts',
-    },
-    {
-      label: 'SUPPORT',
-      value: 7,
-      route: 'support',
-    },
-  ];
+
 
   // Animated Arrow (relative to overlay container, with per-step config)
   const AnimatedArrow = ({ fromRef, toRef, show, containerRef, arrowConfig }) => {
@@ -300,20 +270,12 @@ const Dashboard_index = () => {
     const currentStepData = introSteps[currentStep];
     if (currentStepData.type === 'notification') return notificationNode;
     if (currentStepData.type === 'status') return statusNode;
-    return tabNode;
+    return null; // tabNode is no longer available since tabs are now in Header
   };
 
   return (
     <div className="w-full min-h-screen">
-      <div className="w-full">
-        <CustomTabs
-          tabsData={tabData}
-          defaultActive={currentStep < introSteps.length - 2 ? tabData.find(tab => tab.label === introSteps[currentStep].tab)?.value : null}
-          headerClassName="bg-[#F5F2ED]"
-          onTabRef={setTabNode}
-          activeTab={currentStep < introSteps.length - 2 ? introSteps[currentStep].tab : null}
-        />
-      </div>
+      <Header />
       <div className="">
         {showIntro ? (
           <><div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative min-h-[70vh]">

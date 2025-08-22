@@ -6,7 +6,7 @@ import lineImghead from '/assets/Images/line.png'
 import { useLoaderData, useFetcher, Link } from '@remix-run/react'
 import { json } from '@shopify/remix-oxygen'
 import WhiteThemeButton from '~/components/WhiteThemeButton'
-import { notFound } from '@shopify/remix-oxygen'
+
 import { extractShopifyId } from '~/utils/helpers.js'
 import Marquee from '~/components/Marquee'
 import ButtonComponent from '~/components/Button'
@@ -16,7 +16,7 @@ export async function loader({params, context}) {
   const {handle} = params;
   
   if (!handle) {
-    throw notFound();
+    throw new Response('Not Found', { status: 404 });
   }
 
   try {
@@ -25,7 +25,7 @@ export async function loader({params, context}) {
     });
 
     if (!collection) {
-      throw notFound();
+      throw new Response('Not Found', { status: 404 });
     }
 
     // Get registry data from session
@@ -43,7 +43,7 @@ export async function loader({params, context}) {
     return json({ collection, registry, otherRegistries });
   } catch (error) {
     console.error('Error loading registry:', error);
-    throw notFound();
+    throw new Response('Not Found', { status: 404 });
   }
 }
 
@@ -421,7 +421,7 @@ const Registry = () => {
 
          <Footer/>
      </section>
-  )
+  );
 };
 
 export default Registry;

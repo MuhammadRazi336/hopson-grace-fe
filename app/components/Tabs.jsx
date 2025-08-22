@@ -18,6 +18,28 @@ const CustomTabs = ({
   onTabRef,
   activeTab: externalActiveTab,
 }) => {
+  
+  // Handle logout functionality
+  const handleLogout = () => {
+    // Clear all localStorage
+    localStorage.clear();
+    
+    // Clear all sessionStorage
+    sessionStorage.clear();
+    
+    // Clear specific items to be sure
+    localStorage.removeItem('@token');
+    localStorage.removeItem('@Token');
+    localStorage.removeItem('@User');
+    localStorage.removeItem('@Registry');
+    
+    // Submit form to logout route to clear server-side session
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/logout';
+    document.body.appendChild(form);
+    form.submit();
+  };
   // Use label as the unique identifier for activeTab
   const [activeTab, setActiveTab] = useState(tabsData[defaultActive - 1]?.label || tabsData[0]?.label);
   const tabRefs = useRef({});
@@ -98,29 +120,53 @@ const CustomTabs = ({
       <div className="w-full">
         <Tabs value={activeTab} className={`w-full ${className}`}>
           <TabsHeader className={`w-full shadow-md flex justify-between bg-transparent ${headerClassName}`}>
-            {tabsData.map(({label, route}) => (
-              <Link
-                key={label}
-                ref={el => { tabRefs.current[label] = el; }}
-                className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${activeTab === label ? 'font-bold text-black' : 'font-normal text-gray-600'}`}
-                to={route}
-                onClick={() => setActiveTab(label)}
-              >
-                <Tab 
-                  value={label} 
-                  className="w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent"
-                  style={{backgroundColor: 'transparent'}}
+            {tabsData.map(({label, route, isLogout}) => {
+              if (isLogout) {
+                // Handle logout tab differently - use button instead of Link
+                return (
+                  <button
+                    key={label}
+                    ref={el => { tabRefs.current[label] = el; }}
+                    className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600`}
+                    onClick={handleLogout}
+                  >
+                    <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent">
+                      <div className="z-20 text-inherit">
+                        <span className="relative inline-block">
+                          {label}
+                          <span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}} />
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              }
+              
+              // Regular tab with Link
+              return (
+                <Link
+                  key={label}
+                  ref={el => { tabRefs.current[label] = el; }}
+                  className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${activeTab === label ? 'font-bold text-black' : 'font-normal text-gray-600'}`}
+                  to={route}
+                  onClick={() => setActiveTab(label)}
                 >
-                  <span className="relative inline-block">
-                    {label}
-                    <span
-                      className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${activeTab === label ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full'}`}
-                      style={{width: activeTab === label ? '100%' : '0%', minWidth: '24px'}}
-                    />
-                  </span>
-                </Tab>
-              </Link>
-            ))}
+                  <Tab 
+                    value={label} 
+                    className="w-full shadow-none p-0 min-w-0 !bg-transparent"
+                    style={{backgroundColor: 'transparent'}}
+                  >
+                    <span className="relative inline-block">
+                      {label}
+                      <span
+                        className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${activeTab === label ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full'}`}
+                        style={{width: activeTab === label ? '100%' : '0%', minWidth: '24px'}}
+                      />
+                    </span>
+                  </Tab>
+                </Link>
+              );
+            })}
           </TabsHeader>
 
           {/* Tabs Body */}
