@@ -2,7 +2,7 @@ import Accordiance from '~/components/Accordiance.jsx';
 import ProductCard from '~/components/Product.jsx';
 import FundCard from '~/components/FundCard.jsx';
 import {defer} from '@remix-run/server-runtime';
-import {Link, useLoaderData} from '@remix-run/react';
+import {Link, useLoaderData, json} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
@@ -133,8 +133,16 @@ export async function action({request, context}) {
 }
 
 const index = () => {
-  const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
-    useLoaderData();
+  const loaderData = useLoaderData();
+const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} = loaderData;
+
+// Debug logging to see what we're getting from the loader
+console.log('Loader data:', loaderData);
+console.log('API Base URL:', apiBaseUrl);
+
+// Fallback for apiBaseUrl if it's not available from loader
+const finalApiBaseUrl = apiBaseUrl || 'http://localhost:3040' || 'https://dev-hopsongrace.codup.io';
+console.log('Final API Base URL:', finalApiBaseUrl);
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isBackgroundEditPopupOpen, setIsBackgroundEditPopupOpen] =
@@ -164,7 +172,7 @@ const index = () => {
         welcomeMessage: note,
       };
       const response = await fetch(
-        `${apiBaseUrl}/api/events/${payload.id}`,
+        `${finalApiBaseUrl}/api/events/${payload.id}`,
         {
           method: 'PUT',
           headers: {
@@ -197,7 +205,7 @@ const index = () => {
       formData.append('id', registry.events.id);
 
       const response = await fetch(
-        `${apiBaseUrl}/api/events/${registry.events.id}`,
+        `${finalApiBaseUrl}/api/events/${registry.events.id}`,
         {
           method: 'PUT',
           body: formData,
@@ -245,7 +253,7 @@ const index = () => {
       formData.append('file', croppedBlob, 'background.jpg');
 
       const response = await fetch(
-        `${apiBaseUrl}/api/events/${registry.events.id}/background-image`,
+        `${finalApiBaseUrl}/api/events/${registry.events.id}/background-image`,
         {
           method: 'POST',
           body: formData,
