@@ -228,15 +228,15 @@ export function Header() {
       <TopHeader />
 
       <header
-        className={`header-animated flex justify-between px-4 lg:px-[74px] max-[1024px]:flex-row-reverse max-[1024px]:items-center transition-all duration-200 ease-in-out ${
+        className={`header-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out ${
           isFixed
-            ? 'fixed top-0 left-0 w-full z-50 bg-black py-4 pt-6 shadow-lg h-[100px]'
-            : 'relative bg-white pt-4 lg:pt-11 h-[160px]'
+            ? 'fixed top-0 left-0 w-full z-50 bg-black shadow-lg h-[100px]'
+            : 'relative bg-white h-[160px] max-md:h-[80px]'
         }`}
       >
         {/* User Icon */}
         <div
-          className={`flex lg:w-[33%] ${
+          className={`flex lg:w-[33%] mt-[-0.625vw] max-md:hidden ${
             isFixed ? 'items-center' : 'items-start'
           }`}
         >
@@ -254,17 +254,17 @@ export function Header() {
 
           {/* Search Icon */}
           {!isFixed && (
-            <form onSubmit={handleSearch} className="flex items-center justify-center bg-[#F5F2ED] py-1 px-6 w-[380px] rounded-full">
+            <form onSubmit={handleSearch} className="flex items-center justify-center bg-[#F5F2ED] py-1 px-[1.563vw] w-[22.448vw] h-[3.281vw] rounded-full">
               <button type="submit" className="text-xl hover:text-blue-500 max-[1024px]:hidden">
                 <span role="img" aria-label="Search Icon">
-                  <img src={searchImg} alt="Search Icon" />
+                  <img src={searchImg} class="w-[1.979vw] h-[1.979vw] min-w-[1.979vw] min-h-[1.979vw]" alt="Search Icon" />
                 </span>
               </button>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent outline-none border-none text-[#999898] flex items-center leading-normal text-xl"
+                className="w-full bg-transparent outline-none border-none text-[#999898] px-[15px] py-0 m-0 text-[18px] flex items-center leading-normal text-xl"
                 placeholder="find products, brands, vendors...."
               />
             </form>
@@ -285,7 +285,7 @@ export function Header() {
         </div>
 
         {/* Logo */}
-        <div className="font-bold text-xl lg:w-[34%] flex items-center justify-center">
+        <div className="font-bold text-xl lg:w-[34%] flex max-md:order-2 items-center justify-center">
           <NavLink to="/Home" className="text-black flex justify-center">
             <img
               src={isFixed ? registryLogoScroll : registryLogo}
@@ -293,32 +293,32 @@ export function Header() {
               className={`transition-all duration-600 ease-in-out ${
                 isFixed
                   ? 'max-[1024px]:w-[60px]'
-                  : 'max-[1024px]:w-[200px] w-[90%]'
+                  : 'max-[1024px]:w-[21.667vw] max-md:w-[133px]'
               }`}
             />
           </NavLink>
         </div>
 
-        <div className="min-[768px]:hidden hamburger" onClick={toggleMenu}>
+        <div className="min-[768px]:hidden max-md:order-1 hamburger" onClick={toggleMenu}>
           <img
             src={isFixed ? hamburgerscroll : hamburger}
             alt=""
-            className={`w-8`}
+            className={`w-8 max-md:w-[20px] ${isFixed ? 'brightness-unset' : 'brightness-0'}`}
           />
         </div>
 
         {/* Icons and CTA */}
-        <div className="flex items-start justify-end max-[1024px]:hidden lg:w-[33%]">
+        <div className={`flex max-md:order-3 justify-end lg:w-[33%] ${isFixed ? 'mt-[0] items-center' : 'mt-[-0.625vw] items-start'}`}>
           {!user && (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-[0.573vw]">
                 {!isFixed && (
-                  <div className="bg-[#F5F2ED] rounded-full p-2 w-[60px] h-[60px] flex items-center justify-center">
+                  <div className="bg-[#F5F2ED] rounded-full p-2 w-[2.917vw] h-[2.917vw] max-md:h-[40px] max-md:w-[40px] flex items-center justify-center">
                     <NavLink
                       to="/login"
                       className="text-xl hover:text-blue-500"
                     >
                       <span role="img" aria-label="User Icon">
-                        <img src={userImg} alt="User Icon" />
+                        <img className='w-[1.25vw] h-[1.25vw] max-md:w-[18px] max-md:h-[17px]' src={userImg} alt="User Icon" />
                       </span>
                     </NavLink>
                   </div>
@@ -335,11 +335,11 @@ export function Header() {
                   </NavLink>
                 )}
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 max-md:hidden">
                   {/* link Button */}
                   <NavLink
                     to="/couple"
-                    className={`px-4 py-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 font-[800] uppercase text-center tracking-[2px] max-[1601px]:w-[200px] ${
+                    className={`text-center text-[0.833vw] leading-[0.938vw] max-[1601px]:text-[15px] font-[800] uppercase tracking-[2px] max-[1601px]:w-[200px] ${
                       isFixed ? 'text-white' : 'text-[#1F1D1B]'
                     }`}
                   >
@@ -348,7 +348,7 @@ export function Header() {
                   {/* CTA Button */}
                   <button
                     onClick={handleOpenPopup}
-                    className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center"
+                    className="text-[0.833vw] leading-[0.938vw] h-[3.095vw] bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[11.719vw] text-center"
                   >
                     CREATE A REGISTRY
                   </button>
@@ -357,8 +357,8 @@ export function Header() {
           )}
           {user && (
             <>
-              <div className='flex items-start justify-end gap-7'>
-                <div className={`rounded-full p-0 w-[60px] h-[60px] flex items-center justify-center border-2 ${
+              <div className='flex items-start justify-end gap-[1.042vw]'>
+                <div className={`rounded-full p-0 w-[2.917vw] h-[2.917vw] flex items-center justify-center border-2 ${
                   isFixed 
                     ? 'bg-[#F5F2ED] border-white' 
                     : 'bg-[#F5F2ED] border-black'
@@ -370,7 +370,7 @@ export function Header() {
                       className="w-full h-full object-cover rounded-full"
                     />
                   ) : (
-                    <h2 className={`flex items-center justify-center m-0 ${
+                    <h2 className={`flex items-center font-prata justify-center m-0 text-[1.25vw] leading-[0.938vw] ${
                       isFixed ? 'text-white' : 'text-black'
                     }`}>{getUserInitials()}</h2>
                   )}
@@ -378,23 +378,12 @@ export function Header() {
                 <div className="">
                   <span className="relative inline-block">
                     {/* Bell Icon (SVG) */}
-                    <svg
-                      width="50"
-                      height="50"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      className={`inline-block align-middle ${
-                        isFixed ? 'text-white' : 'text-black'
-                      }`}
-                    >
-                      <path
-                        d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      />
-                    </svg>
+                    <svg width="60" height="60" class="w-[3.125vw] h-[3.125vw]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/></svg>
+
                     {/* Red Dot */}
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#f5f2ed]"></span>
+                    {/* <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#f5f2ed]"></span> */}
                   </span>
                 </div>
                 <div className='pt-1'>
@@ -402,21 +391,21 @@ export function Header() {
                     type="button"
                     aria-pressed={!isDraft}
                     onClick={handleToggle}
-                    className={`mx-auto w-16 h-8 flex items-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${
+                    className={`mx-auto w-16 h-8 flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none ${
                       isDraft
                         ? 'bg-white border-black'
                         : 'bg-white border-black'
                     }`}
                   >
                     <span
-                      className={`w-7 h-7 rounded-full shadow-md transform transition-transform duration-200 ${
+                      className={`w-7 h-7 rounded-full shadow-md transform w-[2.031vw] h-[1.1vw] transition-transform duration-200 ${
                         isDraft
                           ? 'translate-x-0 bg-gray-300'
                           : 'translate-x-8 bg-[#FF6F61]'
                       }`}
                     />
                   </button>
-                  <div className={`uppercase text-lg font-bold tracking-wide ${
+                  <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] ${
                     isFixed ? 'text-white' : 'text-black'
                   }`}>
                     {isDraft ? 'Draft' : 'Published'}
@@ -434,7 +423,7 @@ export function Header() {
         className={`mt-6 max-[1024px]:hidden  ${
           isFixed
             ? `fixed transition-all ${
-                isMenuOpenBottom ? 'top-[70px] bg-white' : 'top-0'
+                isMenuOpenBottom ? 'top-[70px] bg-white' : 'top-[-50px]'
               } left-0 w-full z-10`
             : ''
         }`}

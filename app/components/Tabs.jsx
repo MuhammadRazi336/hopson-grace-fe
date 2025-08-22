@@ -97,12 +97,12 @@ const CustomTabs = ({
       }} />
       <div className="w-full">
         <Tabs value={activeTab} className={`w-full ${className}`}>
-          <TabsHeader className={`w-full shadow-md flex justify-between bg-transparent ${headerClassName}`}>
+          <TabsHeader className={`w-full shadow-md flex justify-between bg-[#F5F2ED] h-[3.646vw] ${headerClassName}`}>
             {tabsData.map(({label, route}) => (
               <Link
                 key={label}
                 ref={el => { tabRefs.current[label] = el; }}
-                className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${activeTab === label ? 'font-bold text-black' : 'font-normal text-gray-600'}`}
+                className={`text-center px-4 py-1 text-[0.833vw] leading-[1.875vw] transition-all ease-in-out relative hover:font-bold group ${activeTab === label ? 'font-bold text-black' : 'font-normal text-gray-600'}`}
                 to={route}
                 onClick={() => setActiveTab(label)}
               >

@@ -3,17 +3,17 @@ import HopsonGrace from '/assets/Images/HopsonGraceTitleWhite.png';
 
 const Copyright = () => {
   return (
-    <div className="flex items-center justify-center gap-3 text-white tracking-[0.08em] mb-6 lg:mb-0">
+    <div className="flex items-center justify-center gap-[0.677vw] text-white tracking-[0.08em] max-md:mb-[15px]">
       <img
         src={HopsonGrace}
         alt="Hopson Grace"
-        className="w-[180px] lg:w-[250px]"
+        className="w-[12.135vw] max-md:w-[123px]"
       />
-      <p className="text-2xl lg:text-7xl">/</p>
+      <p className="text-[3.646vw] leading-[3.646vw] max-md:text-[37.43px]">/</p>
       <img
         src={copyrightLogo}
         alt="copyright logo"
-        className="w-[50px] lg:w-[60px] "
+        className="w-[2.795vw] max-md:w-[35.39px]"
       />
     </div>
   );
