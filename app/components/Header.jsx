@@ -31,7 +31,7 @@ export function Header() {
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = env?.API_BASE_URL || process.env.API_BASE_URL;
+  const apiBaseUrl = env?.API_BASE_URL || 'http://localhost:3040' || 'https://dev-hopsongrace.codup.io';
 
   // Notification system state
   const [notifications, setNotifications] = useState([]);
