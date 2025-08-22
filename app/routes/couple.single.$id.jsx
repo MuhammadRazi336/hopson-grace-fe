@@ -107,34 +107,19 @@ export async function action({request, context}) {
       );
     }
 
-    // Get the current cart
-    const cartItems = JSON.parse(context.session.get('cart') || '[]');
+    // Cart operations are now handled by database
+    const cartItems = [];
 
     // Handle cart operations
     if (clearCart === 'true') {
-      context.session.set('cart', '[]');
       return json(
-        {success: true, action: 'clear'},
-        {
-          headers: {
-            'Set-Cookie': await context.session.commit(),
-          },
-        },
+        {success: true, action: 'clear'}
       );
     }
 
     if (itemId && !productData) {
-      const updatedCart = cartItems.filter(
-        (item) => item.id !== Number(itemId),
-      );
-      context.session.set('cart', JSON.stringify(updatedCart));
       return json(
-        {success: true, action: 'remove', itemId},
-        {
-          headers: {
-            'Set-Cookie': await context.session.commit(),
-          },
-        },
+        {success: true, action: 'remove', itemId}
       );
     }
 
@@ -212,22 +197,13 @@ export async function action({request, context}) {
     };
 
 
-    // Update cart in session
-    const updatedCart = [...cartItems, cartItem];
-    context.session.set('cart', JSON.stringify(updatedCart));
-
     return json(
       {
         success: true,
         action: 'add',
         item: cartItem,
         message: `${cartItem.title} added to cart`,
-      },
-      {
-        headers: {
-          'Set-Cookie': await context.session.commit(),
-        },
-      },
+      }
     );
   } catch (error) {
     return json(
@@ -275,11 +251,30 @@ export default function CoupleProfile() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [modalQuantity, setModalQuantity] = useState(1); // Add quantity state for modal
   
+  // Move guestEmail state to the top, before useEffect hooks
+  const [guestEmail, setGuestEmail] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('guestEmail') || '';
+    }
+    return '';
+  });
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [pendingCartAction, setPendingCartAction] = useState(null); // { type: 'add'|'contribute', productId, amount }
+  const [isApiLoading, setIsApiLoading] = useState(false);
+  const emailInputRef = useRef();
+  
+  // Add a ref to track cart items for immediate access
+  const cartItemsRef = useRef([]);
+  
+  // Add a state variable to force re-renders
+  const [forceRender, setForceRender] = useState(0);
   // Function to fetch cart items from API
   const fetchCartItems = async () => {
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    console.log('fetchCartItems called with email:', email, 'registryId:', registryId);
     
     if (!email || !registryId) {
+      console.log('fetchCartItems: Missing email or registryId, returning early');
       return;
     }
     
@@ -323,8 +318,11 @@ export default function CoupleProfile() {
         });
         console.log('Transformed Items:', transformedItems);
         setCartItems(transformedItems);
+        // Also update the ref for immediate access
+        cartItemsRef.current = transformedItems;
       } else {
         setCartItems([]);
+        cartItemsRef.current = [];
       }
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -336,15 +334,34 @@ export default function CoupleProfile() {
 
   // Fetch cart items on component mount and when email changes
   useEffect(() => {
+    console.log('useEffect triggered - guestEmail:', guestEmail, 'registryId:', registryId);
+    if (guestEmail && registryId) {
+      console.log('Calling fetchCartItems from useEffect');
     fetchCartItems();
-  }, [registryId]);
+    }
+  }, [guestEmail, registryId]);
 
-  // Fetch cart items whenever sidecart is opened
+  // Fetch cart items whenever sidecart is opened, but only if we don't already have items
   useEffect(() => {
-    if (sideCartOpen) {
+    if (sideCartOpen && cartItems.length === 0) {
       fetchCartItems();
     }
-  }, [sideCartOpen]);
+  }, [sideCartOpen, cartItems.length]);
+
+  // Force re-render when cart items change and sidecart is open
+  useEffect(() => {
+    console.log('Cart items state changed:', cartItems);
+    console.log('Cart items ref:', cartItemsRef.current);
+    if (sideCartOpen && cartItems.length > 0) {
+      // This will force a re-render when cart items are updated
+      console.log('Cart items updated, forcing re-render for sidecart');
+    }
+  }, [cartItems, sideCartOpen]);
+
+  // Watch for force render changes
+  useEffect(() => {
+    console.log('Force render triggered:', forceRender);
+  }, [forceRender]);
 
   // Handle fetcher responses
   useEffect(() => {
@@ -364,6 +381,29 @@ export default function CoupleProfile() {
   }, [fetcher.data]);
 
   const onClose = () => setSideCartOpen(false);
+
+  // Handle cart click from header - ensure we have email and cart items
+  const handleCartClick = () => {
+    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    if (!email) {
+      setAlertMessage('Please enter your email first');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
+    // If we don't have cart items loaded, fetch them first
+    if (cartItems.length === 0) {
+      console.log('handleCartClick: No cart items, fetching before opening sidecart');
+      fetchCartItems().then(() => {
+        setSideCartOpen(true);
+      });
+    } else {
+      console.log('handleCartClick: Cart items already loaded, opening sidecart');
+      setSideCartOpen(true);
+    }
+  };
 
   // Add popup functions
   const handleTitleClick = (product) => {
@@ -398,17 +438,6 @@ export default function CoupleProfile() {
       setModalQuantity(modalQuantity - 1);
     }
   };
-
-  const [guestEmail, setGuestEmail] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('guestEmail') || '';
-    }
-    return '';
-  });
-  const [showEmailModal, setShowEmailModal] = useState(false);
-  const [pendingCartAction, setPendingCartAction] = useState(null); // { type: 'add'|'contribute', productId, amount }
-  const [isApiLoading, setIsApiLoading] = useState(false);
-  const emailInputRef = useRef();
 
   // Fetch cart items when email changes
   useEffect(() => {
@@ -502,10 +531,11 @@ export default function CoupleProfile() {
       setShowEmailModal(true);
       return;
     }
+    
     const product = data.find((item) => item.id === productId);
     if (!product) return;
 
-    // Check if product is already in cart
+    // Check if product is already in cart - prevent duplication
     const isAlreadyInCart = cartItems.some(item => item.productId === (product.productId || product.id));
     if (isAlreadyInCart) {
       setAlertMessage('This item is already in your cart');
@@ -563,7 +593,7 @@ export default function CoupleProfile() {
     const product = data.find((item) => item.id === productId);
     if (!product) return;
 
-    // Check if product is already in cart
+    // Check if product is already in cart - prevent duplication
     const isAlreadyInCart = cartItems.some(item => item.productId === (product.productId || product.id));
     if (isAlreadyInCart) {
       setAlertMessage('This item is already in your cart');
@@ -578,7 +608,6 @@ export default function CoupleProfile() {
       localStorage.setItem('registryId', product.registryId);
       console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
     }
-    
     // Use the correct product ID for registryProductId
     const registryProductId = product.productId || product.id;
     callAddToCartApi(email, registryProductId, amount, product).then((result) => {
@@ -598,17 +627,108 @@ export default function CoupleProfile() {
     });
   };
 
-  // Modal submit handler
+  // Modal submit handler - handles email submission and adds pending products to cart
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     const email = guestEmail.trim();
+    console.log('handleEmailSubmit: Starting with email:', email);
     if (!email) return;
     if (typeof window !== 'undefined') {
       localStorage.setItem('guestEmail', email);
+      console.log('handleEmailSubmit: Stored email in localStorage:', email);
     }
     // First call the initial cart API
+    console.log('handleEmailSubmit: Calling callCartApi with email:', email);
     await callCartApi(email);
     setShowEmailModal(false);
+    
+    // Update guest email state first to trigger useEffect
+    console.log('handleEmailSubmit: Setting guestEmail state to:', email);
+    setGuestEmail(email);
+    
+    // Fetch cart items directly with the email before opening sidecart
+    // This ensures we have the cart data before the sidecart opens
+    const emailForCart = email; // Use the email we just set
+    console.log('handleEmailSubmit: Fetching cart items with email:', emailForCart, 'registryId:', registryId);
+    if (emailForCart && registryId) {
+      setCartLoading(true);
+      try {
+        const res = await fetch(`${apiBaseUrl}/api/cart/get-cart/${registryId}/${emailForCart}`);
+        const apiData = await res.json();
+        
+        if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
+          // Extract registryProducts from the first cart
+          const cartData = apiData.data[0];
+          console.log('Cart API Response:', cartData);
+          console.log('Cart Items:', cartData.cartItemProducts);
+          
+          // Transform the API data to match SideCart expectations
+          const transformedItems = (cartData.cartItemProducts || []).map(cartItem => {
+            const registryProduct = cartItem.registryProduct;
+            console.log('Cart Item:', cartItem);
+            console.log('Registry Product:', registryProduct);
+            console.log('CartItem quantity:', cartItem.quantity);
+            console.log('RegistryProduct quantity:', registryProduct.quantity);
+            
+            // Try to find the product in our loaded data to get title and image
+            const productFromData = data.find(p => 
+              (p.productId && p.productId === registryProduct.productId) || 
+              (p.id && p.id === registryProduct.productId)
+            );
+            
+            return {
+              id: cartItem.id,
+              price: Number(cartItem.price), // Use the price from cartItem
+              quantity: Number(cartItem.quantity || cartItem.purchasedQuantity || 1), // Use cartItem.quantity for purchased quantity
+              title: cartItem.title || productFromData?.title || productFromData?.cashFund?.name || `Product ${registryProduct.productId}`,
+              image: cartItem.image || productFromData?.images?.edges?.[0]?.node?.url || productFromData?.cashFund?.image?.fileUrl || '/placeholder.svg',
+              isCashFund: registryProduct.productTypeId === 2,
+              productId: registryProduct.productId,
+              amount: Number(registryProduct.amount), // Keep original amount for reference
+              registryProductId: registryProduct.id, // Keep registry product ID for reference
+              requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
+            };
+          });
+          console.log('Transformed Items:', transformedItems);
+          
+          // Set cart items and wait for state update to complete
+          console.log('About to set cart items:', transformedItems);
+          
+          // Use a Promise to ensure the state update is complete
+          await new Promise((resolve) => {
+            setCartItems(transformedItems);
+            // Also update the ref immediately
+            cartItemsRef.current = transformedItems;
+            
+            // Use a longer delay to ensure React processes the state update
+            setTimeout(() => {
+              console.log('State update delay completed');
+              resolve();
+            }, 300);
+          });
+      
+          // Store the items locally to ensure they're available when opening sidecart
+          const localCartItems = transformedItems;
+          
+          console.log('handleEmailSubmit: Cart items set, now opening sidecart');
+          console.log('Local cart items:', localCartItems);
+          console.log('Cart items ref:', cartItemsRef.current);
+          
+          // Force a re-render to ensure the component updates
+          setForceRender(prev => prev + 1);
+        } else {
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.error('Error fetching cart:', error);
+        setCartItems([]);
+      } finally {
+        setCartLoading(false);
+      }
+    }
+    
+    // Handle pending cart action first (add product to cart)
+    // This ensures the product is added to cart when email is submitted
     if (pendingCartAction) {
       if (pendingCartAction.type === 'add') {
         const product = data.find((item) => item.id === pendingCartAction.productId);
@@ -618,6 +738,7 @@ export default function CoupleProfile() {
             localStorage.setItem('registryId', product.registryId);
             console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
           }
+          
           const registryProductId = product.productId || product.id;
           const price = product.amount || 0;
           const quantity = pendingCartAction.quantity || 1;
@@ -632,7 +753,22 @@ export default function CoupleProfile() {
             quantity: Number(quantity)
           };
           
-          await callAddToCartApiWithQuantity(email, payload);
+          console.log('Adding pending product to cart:', payload);
+          const result = await callAddToCartApiWithQuantity(email, payload);
+          
+          if (result.success) {
+            // Show success alert
+            setAlertMessage(`${product.title || 'Item'} (${quantity}) added to cart successfully`);
+            setAlertType('success');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          } else {
+            // Show error alert
+            setAlertMessage('Failed to add item to cart');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          }
         }
       } else if (pendingCartAction.type === 'contribute') {
         const product = data.find((item) => item.id === pendingCartAction.productId);
@@ -642,12 +778,34 @@ export default function CoupleProfile() {
             localStorage.setItem('registryId', product.registryId);
             console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
           }
+          
           const registryProductId = product.productId || product.id;
-          await callAddToCartApi(email, registryProductId, pendingCartAction.amount, product);
+          const result = await callAddToCartApi(email, registryProductId, pendingCartAction.amount, product);
+          
+          if (result.success) {
+            // Show success alert
+            setAlertMessage(`$${pendingCartAction.amount} contributed to ${product.title || 'fund'} successfully`);
+            setAlertType('success');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          } else {
+            // Show error alert
+            setAlertMessage('Failed to contribute to fund');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          }
         }
       }
+      
+      // Clear the pending action
       setPendingCartAction(null);
     }
+    
+    console.log('handleEmailSubmit: Opening sidecart, current cartItems:', cartItems);
+    
+    // Now open the sidecart - cart items should already be loaded
+    setSideCartOpen(true);
   };
 
   // Re-add handleRemoveFromCart for SideCart
@@ -841,7 +999,7 @@ export default function CoupleProfile() {
           </div>
         </div>
       )}
-      <CoupleProfileViewHeader onCartClick={() => setSideCartOpen(true)} />
+      <CoupleProfileViewHeader onCartClick={handleCartClick} />
       <div className="text-center pt-[80px] container mx-auto font-sans">
         <img
           src={response?.data[0]?.events[0]?.backgroundImage?.fileUrl || "/assets/Images/couple-profile-bg.png"}
@@ -1058,7 +1216,9 @@ export default function CoupleProfile() {
           onClick={onClose}
         />
       )}
+      {console.log('Rendering SideCart with cartItems:', cartItems, 'sideCartOpen:', sideCartOpen)}
       <SideCart
+        key={`cart-${cartItems.length}-${JSON.stringify(cartItems.map(item => item.id))}-${forceRender}`}
         open={sideCartOpen}
         onClose={onClose}
         cartItems={cartItems}

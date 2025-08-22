@@ -4,14 +4,12 @@ import React, {useEffect, useState} from 'react';
 import ButtonComponent from '~/components/Button';
 
 export async function loader({context, params}) {
-  const cartItems = context?.session?.get('cart') || '[]';
-  const cart = JSON.parse(cartItems);
-  const total = cart.reduce((sum, item) => sum + Number(item.price), 0);
+  // Cart is now handled by database, return empty cart
+  const cartItems = '[]';
+  const cart = [];
+  const total = 0;
 
-  return json(
-    {cartItems, total},
-    {headers: {'Set-Cookie': await context.session.commit()}},
-  );
+  return json({cartItems, total});
 }
 
 export async function action({request, context}) {
@@ -20,25 +18,15 @@ export async function action({request, context}) {
     const itemId = formData.get('itemId');
     const productData = formData.get('productData');
 
-    // Get current cart
+    // Cart is now handled by database
     let cart = [];
-    try {
-      cart = JSON.parse(context?.session?.get('cart') || '[]');
-      if (!Array.isArray(cart)) cart = [];
-    } catch (e) {
-      console.error('Error parsing cart:', e);
-      cart = [];
-    }
 
     // Handle delete action
     if (itemId && !productData) {
       console.log('Deleting item:', itemId);
       cart = cart.filter(item => item.id !== Number(itemId));
-      context.session.set('cart', JSON.stringify(cart));
-      
       return json(
-        { success: true, message: 'Item removed from cart' },
-        { headers: { 'Set-Cookie': await context.session.commit() } }
+        { success: true, message: 'Item removed from cart' }
       );
     }
 
@@ -71,15 +59,13 @@ export async function action({request, context}) {
       };
 
       cart.push(newItem);
-      context.session.set('cart', JSON.stringify(cart));
 
       return json(
         {
           success: true,
           message: `${newItem.title} added to cart`,
           cartItems: JSON.stringify(cart)
-        },
-        { headers: { 'Set-Cookie': await context.session.commit() } }
+        }
       );
     }
 

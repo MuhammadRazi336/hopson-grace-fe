@@ -13,18 +13,12 @@ export async function loader({ context }) {
     // Get existing message and couples name from session
     const message = context.session.get('message') || '';
     const couplesName = context.session.get('couplesName') || '';
-    const cart = context.session.get('cart');
-
-    console.log('Loading session data:', { message, couplesName, cart });
-
     return json({
       message,
-      couplesName,
-      cart
+      couplesName
     });
   } catch (error) {
-    console.error('Error loading message data:', error);
-    return json({ message: '', couplesName: '', cart: null });
+    return json({ message: '', couplesName: '' });
   }
 }
 
@@ -54,11 +48,7 @@ export async function action({request, context}) {
     context.session.set('message', trimmedMessage);
     context.session.set('couplesName', trimmedCouplesName);
 
-    // Preserve existing cart data
-    const existingCart = context.session.get('cart');
-    if (existingCart) {
-      context.session.set('cart', existingCart);
-    }
+
 
     // If action is preview, return success response
     if (action === 'preview') {
