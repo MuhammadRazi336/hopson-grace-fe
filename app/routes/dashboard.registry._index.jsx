@@ -104,7 +104,7 @@ export async function loader({request, context}) {
     });
   }
 
-  const apiBaseUrl = context.env?.API_BASE_URL;
+  const apiBaseUrl = context.env?.API_BASE_URL || 'http://localhost:3040';
 
   return defer({
     data: mergedArray,
@@ -113,6 +113,7 @@ export async function loader({request, context}) {
     userGet,
     registry,
     user,
+    apiBaseUrl,
   });
 }
 
@@ -132,7 +133,7 @@ export async function action({request, context}) {
 }
 
 const index = () => {
-  const {data, cashfundData, eventGet, registry, userGet, user} =
+  const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
     useLoaderData();
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);

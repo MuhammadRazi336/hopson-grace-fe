@@ -411,6 +411,16 @@ export default function CoupleProfile() {
     setSelectedImageIndex(0); // Reset selected image for the new item
     setIsPopupOpen(true);
   };
+  
+  // Validate selectedImageIndex when product data changes
+  useEffect(() => {
+    if (selectedGiftData && selectedGiftData.images?.edges) {
+      const maxIndex = selectedGiftData.images.edges.length - 1;
+      if (selectedImageIndex > maxIndex) {
+        setSelectedImageIndex(0);
+      }
+    }
+  }, [selectedGiftData, selectedImageIndex]);
 
   const closePopup = () => {
     setIsPopupOpen(false);
@@ -1251,7 +1261,7 @@ export default function CoupleProfile() {
               <div className="relative py-8 pl-8 md:pr-0 pr-8">
                 <img
                   src={
-                    selectedGiftData.images?.edges?.[0]?.node?.url ||
+                    selectedGiftData.images?.edges?.[selectedImageIndex]?.node?.url ||
                     selectedGiftData.cashFund?.image?.fileUrl ||
                     '/placeholder.svg'
                   }
@@ -1262,43 +1272,41 @@ export default function CoupleProfile() {
                   }
                   className="w-full h-auto object-cover md:rounded-l-lg"
                 />
-                {/* Simplified Thumbnail Display - shows current image as a non-interactive thumbnail */}
+                {/* Interactive Thumbnail Display - clicking changes main image */}
                 <div className="flex gap-2 mt-4 px-4 md:px-0">
-                  <div
-                    className={`border p-1 w-20 h-20 border-[#3d5a80] border-2`}
-                  >
-                    <img
-                      src={
-                        selectedGiftData.images?.edges?.[0]?.node?.url ||
-                        selectedGiftData.cashFund?.image?.fileUrl ||
-                        '/placeholder.svg'
-                      }
-                      alt={`Thumbnail 1`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className={` p-1 w-20 h-20 border-[#3d5a80] border-2`}>
-                    <img
-                      src={
-                        selectedGiftData.images?.edges?.[0]?.node?.url ||
-                        selectedGiftData.cashFund?.image?.fileUrl ||
-                        '/placeholder.svg'
-                      }
-                      alt={`Thumbnail 1`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className={` p-1 w-20 h-20 border-[#3d5a80] border-2`}>
-                    <img
-                      src={
-                        selectedGiftData.images?.edges?.[0]?.node?.url ||
-                        selectedGiftData.cashFund?.image?.fileUrl ||
-                        '/placeholder.svg'
-                      }
-                      alt={`Thumbnail 1`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                  {/* Only show thumbnails if there are multiple images */}
+                  {selectedGiftData.images?.edges && selectedGiftData.images.edges.length > 1 ? (
+                    <>
+                      {selectedGiftData.images.edges.map((imageEdge, index) => (
+                        <div
+                          key={index}
+                          className={`border p-1 w-20 h-20 border-[#3d5a80] border-2 cursor-pointer transition-all hover:border-[#2c425e] ${
+                            selectedImageIndex === index ? 'border-[#2c425e] border-4' : ''
+                          }`}
+                          onClick={() => setSelectedImageIndex(index)}
+                        >
+                          <img
+                            src={imageEdge.node?.url || '/placeholder.svg'}
+                            alt={`Thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    // Fallback: show single thumbnail for cash funds or single images
+                    <div className="border p-1 w-20 h-20 border-[#3d5a80] border-2">
+                      <img
+                        src={
+                          selectedGiftData.images?.edges?.[0]?.node?.url ||
+                          selectedGiftData.cashFund?.image?.fileUrl ||
+                          '/placeholder.svg'
+                        }
+                        alt="Product"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1420,7 +1428,7 @@ export default function CoupleProfile() {
                     "Keep your butter spreadable and fresh in this butter keeper, a French invention when refrigeration didn't exist. Marble naturally keeps butter cool, and the French naturally know their way around the kitchen. Need we say more?"}
                 </p>
 
-                <div className="mb-6">
+                {/* <div className="mb-6">
                   <h2 className="font-medium uppercase text-xs tracking-wider mb-1 text-gray-500">
                     HOW IT WORKS:
                   </h2>
@@ -1428,14 +1436,14 @@ export default function CoupleProfile() {
                     Fill your butter keeper with 1/4" cold water to keep butter
                     soft. Change water every 3-5 days to keep butter fresh.
                   </p>
-                </div>
+                </div> */}
 
-                <div>
+                {/* <div>
                   <h2 className="font-medium uppercase text-xs tracking-wider mb-1 text-gray-500">
                     DETAILS:
                   </h2>
                   <p className="text-gray-700 text-sm">H 4.25" | 4" DIA</p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
