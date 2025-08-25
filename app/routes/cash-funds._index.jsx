@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
@@ -99,61 +99,57 @@ async function loadCashFunds({context}) {
     }
 }
 
-const CashFund = () => {
-    const {cashFunds, searchQuery, registryId} = useLoaderData();
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMessage, setAlertMessage] = useState('');
-    const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
-    
-    // Ensure cashFunds is an array
-    const safeCashFunds = Array.isArray(cashFunds) ? cashFunds : [];
-    
-    // Get all products from all collections for search results
-    const allProducts = safeCashFunds.flatMap(collection => 
-        collection.products?.edges?.map(edge => ({
-            ...edge.node,
-            collectionTitle: collection.title,
-            collectionHandle: collection.handle
-        })) || []
-    );
-
-    // Alert handlers
-    const handleSuccess = (message) => {
-        setAlertMessage(message);
-        setAlertType('success');
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-            setAlertMessage('');
-        }, 3000);
-    };
-
-    const handleError = (message) => {
-        setAlertMessage(message);
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-            setShowAlert(false);
-            setAlertMessage('');
-        }, 3000);
-    };
-
-  // ProductCard component with Add to Registry functionality
-  const ProductCard = ({product, collection, registryId, onSuccess, onError}) => {
+// ProductCard component with Add to Registry functionality - moved outside to prevent recreation
+  const ProductCard = React.memo(({product, collection, registryId, onSuccess, onError}) => {
     const fetcher = useFetcher();
+    const hasShownFeedback = React.useRef(false);
+    const previousFetcherData = React.useRef(null);
 
     const firstImage = product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
     const firstVariant = product.variants?.edges?.[0]?.node;
     const price = firstVariant?.priceV2?.amount || 'N/A';
 
-    // Show feedback on fetcher.data change
+        // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
-      if (fetcher.data?.success) {
-        onSuccess(`${product.title} has been added to your registry!`);
-      } else if (fetcher.data?.error) {
-        onError('There was an error adding the cash fund.');
+      // Only run if we have meaningful fetcher data and haven't shown feedback yet
+      if (fetcher.data && 
+          fetcher.data !== previousFetcherData.current &&
+          !hasShownFeedback.current &&
+          (fetcher.data.success === true || fetcher.data.error === true)) {
+        
+        // Debug logging only when we actually process data
+        console.log('ProductCard processing fetcher data:', {
+          productTitle: product.title,
+          fetcherData: fetcher.data,
+          fetcherState: fetcher.state,
+          hasShownFeedback: hasShownFeedback.current
+        });
+        
+        if (fetcher.data.success === true) {
+          onSuccess(`${product.title} has been added to your registry!`);
+          hasShownFeedback.current = true;
+        } else if (fetcher.data.error === true) {
+          onError('There was an error adding the cash fund.');
+          hasShownFeedback.current = true;
+        }
+        
+        // Update the previous data reference AFTER processing
+        previousFetcherData.current = fetcher.data;
       }
-    }, [fetcher.data, product.title, onSuccess, onError]);
+
+      // Cleanup function to prevent stale closures
+      return () => {
+        // Reset feedback flag on cleanup
+        hasShownFeedback.current = false;
+      };
+    }, [fetcher.data]); // Only depend on fetcher.data
+
+    // Reset feedback flag when fetcher state changes to idle (allowing new submissions)
+    React.useEffect(() => {
+      if (fetcher.state === 'idle') {
+        hasShownFeedback.current = false;
+      }
+    }, [fetcher.state]);
 
     const handleAddToRegistry = async () => {      
       try {
@@ -246,11 +242,50 @@ const CashFund = () => {
         </div>
 
 
-      </div>
+             </div>
+     );
+   });
+
+const CashFund = () => {
+    const {cashFunds, searchQuery, registryId} = useLoaderData();
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
+    
+    // Ensure cashFunds is an array
+    const safeCashFunds = Array.isArray(cashFunds) ? cashFunds : [];
+    
+    // Get all products from all collections for search results
+    const allProducts = safeCashFunds.flatMap(collection => 
+        collection.products?.edges?.map(edge => ({
+            ...edge.node,
+            collectionTitle: collection.title,
+            collectionHandle: collection.handle
+        })) || []
     );
-  };
-  
-  return (
+
+    // Alert handlers
+    const handleSuccess = useCallback((message) => {
+        setAlertMessage(message);
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+            setAlertMessage('');
+        }, 3000);
+    }, []);
+
+    const handleError = useCallback((message) => {
+        setAlertMessage(message);
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+            setShowAlert(false);
+            setAlertMessage('');
+        }, 3000);
+    }, []);
+   
+   return (
     <section>
       <Header />
 
@@ -325,7 +360,7 @@ const CashFund = () => {
                 const product = edge.node;
                 return (
                                      <ProductCard 
-                     key={product.id}
+                     key={`${product.id}-${collection.id}`}
                      product={product}
                      collection={collection}
                      registryId={registryId}

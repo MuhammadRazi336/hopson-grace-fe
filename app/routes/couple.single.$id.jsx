@@ -234,7 +234,6 @@ export default function CoupleProfile() {
     useLoaderData() || [];
   const fetcher = useFetcher();
 
-
   const [selectedCategory, setSelectedCategory] = useState('');
   const [availability, setAvailability] = useState('');
   const [priceSort, setPriceSort] = useState('');
@@ -1019,7 +1018,7 @@ export default function CoupleProfile() {
         <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
           <div className="xl:w-4/12 w-full">
             <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
-              {response?.data[0]?.events[0]?.coupleName}
+              {response?.data[0]?.user?.firstName} & {response?.data[0]?.user?.fianceFirstName}
             </h1>
           </div>
           <div className="xl:w-4/12 w-full">
@@ -1284,28 +1283,28 @@ export default function CoupleProfile() {
                             selectedImageIndex === index ? 'border-[#2c425e] border-4' : ''
                           }`}
                           onClick={() => setSelectedImageIndex(index)}
-                        >
-                          <img
+                  >
+                    <img
                             src={imageEdge.node?.url || '/placeholder.svg'}
                             alt={`Thumbnail ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                       ))}
                     </>
                   ) : (
                     // Fallback: show single thumbnail for cash funds or single images
                     <div className="border p-1 w-20 h-20 border-[#3d5a80] border-2">
-                      <img
-                        src={
-                          selectedGiftData.images?.edges?.[0]?.node?.url ||
-                          selectedGiftData.cashFund?.image?.fileUrl ||
-                          '/placeholder.svg'
-                        }
+                    <img
+                      src={
+                        selectedGiftData.images?.edges?.[0]?.node?.url ||
+                        selectedGiftData.cashFund?.image?.fileUrl ||
+                        '/placeholder.svg'
+                      }
                         alt="Product"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   )}
                 </div>
               </div>
