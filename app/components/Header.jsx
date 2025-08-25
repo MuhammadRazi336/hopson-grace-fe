@@ -34,7 +34,7 @@ export function Header() {
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io' || 'http://localhost:3040';
+  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'http://localhost:3040';
 
   // Notification system state
   const [notifications, setNotifications] = useState([]);
@@ -504,6 +504,97 @@ export function Header() {
       >
         <NavBarLinks />
       </div>
+
+      {/* Dashboard Tabs Navigation - Only show when user is logged in */}
+      {user && (
+        <div className="w-full">
+          <div className="w-full">
+            <div className="w-full">
+              <div className="w-full shadow-md flex justify-between bg-[#F5F2ED]">
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-bold text-black" data-discover="true" href="/dashboard">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">MY DETAILS<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-black w-full" style={{width: '100%', minWidth: '24px'}}></span></span>
+                    </div>
+                    <div className="absolute inset-0 z-10 h-full bg-white rounded-md shadow" style={{opacity: 1}}></div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/registry">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">MY REGISTRY HOMEPAGE<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/addgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">ADD OR EDIT GIFTS<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/cashfunds">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">ADD A CASH OR TRAVEL FUND<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/gifttracker">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">GIFTS + THANK YOU TRACKER<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/shipgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">SHIP MY GIFTS<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <a className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" data-discover="true" href="/dashboard/support">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">SUPPORT<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
+                <button 
+                  className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" 
+                  onClick={() => {
+                    // Clear all localStorage
+                    localStorage.clear();
+                    
+                    // Clear all sessionStorage
+                    sessionStorage.clear();
+                    
+                    // Clear specific items to be sure
+                    localStorage.removeItem('@token');
+                    localStorage.removeItem('@Token');
+                    localStorage.removeItem('@User');
+                    localStorage.removeItem('@Registry');
+                    
+                    // Submit form to logout route to clear server-side session
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/logout';
+                    document.body.appendChild(form);
+                    form.submit();
+                  }}
+                >
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="LOGOUT">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block">LOGOUT<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div
         className={`hidden max-[768px]:block bg-white fixed top-0 left-0 w-full h-full ease-in-out duration-[700ms] transition-all overflow-auto z-30 ${

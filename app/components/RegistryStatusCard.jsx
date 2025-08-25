@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token, className }) => {
   const [status, setStatus] = useState(initialStatus);
   const isDraft = status === 'draft';
-  const apiBaseUrl = window.apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'http://localhost:3040';
+  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'http://localhost:3040';
   // Toggle handler
   const handleToggle = async () => {
     const newStatus = isDraft ? 'published' : 'draft';
