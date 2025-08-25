@@ -45,8 +45,8 @@ const NavBarLinks = (mobileClasses) => {
     <div className={`navbar container-menu ${mobileClasses}`}>
       {/* Navigation Menu */}
       <nav className="flex-1">
-        <ul className="flex justify-between py-8">
-          <li className="group py-2.5">
+        <ul className="flex justify-between pt-[4.219vw] pb-[1.615vw] gap-[3.854vw]">
+          <li className="group">
             <NavLink
               to="/our-brands"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
@@ -129,7 +129,7 @@ const NavBarLinks = (mobileClasses) => {
               </div>
             </div>
           </li>
-          <li className="group p-2.5">
+          <li className="group">
             <NavLink
               to="/products"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
@@ -205,7 +205,7 @@ const NavBarLinks = (mobileClasses) => {
               </div>
             </div>
           </li>
-          <li className="py-2.5">
+          <li className="">
             <NavLink
               to="/cash-funds"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
@@ -213,7 +213,7 @@ const NavBarLinks = (mobileClasses) => {
               CASH FUNDS
             </NavLink>
           </li>
-          <li className="py-2.5">
+          <li className="">
             <NavLink
               to="/ready-made-registries"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
@@ -221,7 +221,7 @@ const NavBarLinks = (mobileClasses) => {
               READY-MADE REGISTRIES
             </NavLink>
           </li>
-          <li className="py-2.5">
+          <li className="">
             <NavLink
               to="/inspiration"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
@@ -229,7 +229,7 @@ const NavBarLinks = (mobileClasses) => {
               INSPIRATION
             </NavLink>
           </li>
-          <li className="py-2.5">
+          <li className="">
             <NavLink
               to="/aboutus"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
@@ -237,7 +237,7 @@ const NavBarLinks = (mobileClasses) => {
               ABOUT US
             </NavLink>
           </li>
-          <li className="py-2.5">
+          <li className="">
             <NavLink
               to="/contact-us"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
