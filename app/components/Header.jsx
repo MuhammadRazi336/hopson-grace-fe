@@ -40,8 +40,8 @@ export function Header() {
   const [notifications, setNotifications] = useState([]);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const notificationRef = useRef(null);
-  const socketRef = useRef(null);
+  // const notificationRef = useRef(null);
+  // const socketRef = useRef(null);
 
   // Update status when registry data changes
   useEffect(() => {
@@ -74,7 +74,7 @@ export function Header() {
             
             // Fetch user data using the ID from token
             if (tokenId) {
-              fetch(`https://dev-hopsongrace.codup.io/api/users/${tokenId}`, {
+              fetch(`${apiBaseUrl}/api/users/${tokenId}`, {
                 headers: {
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'
@@ -91,7 +91,7 @@ export function Header() {
               });
 
               // Fetch registry data using the user ID
-              fetch(`https://dev-hopsongrace.codup.io/api/registries/by-userId/${tokenId}`, {
+              fetch(`${apiBaseUrl}/api/registries/by-userId/${tokenId}`, {
                 headers: {
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'
