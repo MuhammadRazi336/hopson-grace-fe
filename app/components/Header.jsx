@@ -25,13 +25,16 @@ export function Header() {
   const [showPopup, setShowPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
-  const [status, setStatus] = useState('draft');
+  const [status, setStatus] = useState(registryData?.status || 'draft');
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [showStatusFeedback, setShowStatusFeedback] = useState(false);
+  const [isLoadingRegistry, setIsLoadingRegistry] = useState(true);
   const isDraft = status === 'draft';
   const navigate = useNavigate();
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = env?.API_BASE_URL || 'http://localhost:3040' || 'https://dev-hopsongrace.codup.io';
+  const apiBaseUrl = env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io' || 'http://localhost:3040';
 
   // Notification system state
   const [notifications, setNotifications] = useState([]);
@@ -40,11 +43,23 @@ export function Header() {
   const notificationRef = useRef(null);
   const socketRef = useRef(null);
 
+  // Update status when registry data changes
+  useEffect(() => {
+    if (registryData?.status) {
+      setStatus(registryData.status);
+    }
+  }, [registryData]);
+
   // Get token from localStorage only on client side
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('@Token') || localStorage.getItem('@token');
       setUser(token);
+      
+      // If no token, set loading to false immediately
+      if (!token) {
+        setIsLoadingRegistry(false);
+      }
       
       // Decode and fetch user data
       if (token) {
@@ -86,11 +101,15 @@ export function Header() {
               .then(registryData => {
                 console.log('Registry API response:', registryData);
                 if (registryData.code === 200 && registryData.data && registryData.data.length > 0) {
-                  setRegistryData(registryData.data[0]);
+                  const registry = registryData.data[0];
+                  setRegistryData(registry);
+                  setStatus(registry.status || 'draft');
                 }
+                setIsLoadingRegistry(false);
               })
               .catch(error => {
                 console.error('Error fetching registry data:', error);
+                setIsLoadingRegistry(false);
               });
 
             }
@@ -195,13 +214,15 @@ export function Header() {
     const newStatus = isDraft ? 'published' : 'draft';
     const token = user;
     
-    if (!token) {
-      console.error('No token available');
+    if (!token || !registryData?.id) {
+      console.error('No token or registry ID available');
       return;
     }
     
+    setIsUpdatingStatus(true);
+    
     try {
-      await fetch(`https://dev-hopsongrace.codup.io/api/registries/status/1`, {
+      const response = await fetch(`${apiBaseUrl}/api/registries/status/${registryData.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -209,9 +230,21 @@ export function Header() {
         },
         body: JSON.stringify({status: newStatus}),
       });
-      setStatus(newStatus);
+      
+      if (response.ok) {
+        setStatus(newStatus);
+        // Update the registry data locally
+        setRegistryData(prev => prev ? {...prev, status: newStatus} : prev);
+        // Show success feedback
+        setShowStatusFeedback(true);
+        setTimeout(() => setShowStatusFeedback(false), 2000);
+      } else {
+        console.error('Failed to update registry status');
+      }
     } catch (error) {
       console.error('Error updating registry status:', error);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
@@ -397,31 +430,61 @@ export function Header() {
                     {/* <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#f5f2ed]"></span> */}
                   </span>
                 </div>
-                <div className='pt-1'>
-                  <button
-                    type="button"
-                    aria-pressed={!isDraft}
-                    onClick={handleToggle}
-                    className={`mx-auto w-16 h-8 flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none ${
-                      isDraft
-                        ? 'bg-white border-black'
-                        : 'bg-white border-black'
-                    }`}
-                  >
-                    <span
+                {isLoadingRegistry ? (
+                  <div className='pt-1'>
+                    <div className={`text-xs font-medium tracking-wide text-center mb-2 ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>
+                      Registry Status
+                    </div>
+                    <div className={`text-xs text-center ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>
+                      Loading...
+                    </div>
+                  </div>
+                ) : registryData?.id ? (
+                  <div className='pt-1'>
+                    <button
+                      type="button"
+                      aria-pressed={!isDraft}
+                      aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
+                      onClick={handleToggle}
+                      disabled={isUpdatingStatus}
+                      className={`mx-auto w-16 h-8 flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none ${
+                        isDraft
+                          ? 'bg-white border-black'
+                          : 'bg-white border-black'
+                      }`}
+                    >
+                                          <span
                       className={`w-7 h-7 rounded-full shadow-md transform w-[2.031vw] h-[1.1vw] transition-transform duration-200 ${
                         isDraft
                           ? 'translate-x-0 bg-gray-300'
                           : 'translate-x-8 bg-[#FF6F61]'
                       }`}
                     />
-                  </button>
-                  <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] ${
-                    isFixed ? 'text-white' : 'text-black'
-                  }`}>
-                    {isDraft ? 'Draft' : 'Published'}
+                    </button>
+                    <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>
+                      {isUpdatingStatus ? 'Updating...' : (isDraft ? 'Draft' : 'Published')}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className='pt-1'>
+                    <div className={`text-xs font-medium tracking-wide text-center mb-2 ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>
+                      Registry Status
+                    </div>
+                    <div className={`text-xs text-center ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>
+                      No registry found
+                    </div>
+                  </div>
+                )}
                 </div>
               </>
             )}
