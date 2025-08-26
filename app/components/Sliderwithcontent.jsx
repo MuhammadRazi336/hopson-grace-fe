@@ -7,11 +7,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
 
-const Sliderwithcontent = () => {
+const Sliderwithcontent = ({ featuredRegistryData }) => {
   return (
     <div>
       <Heading
-        text="Kyle & Erik"
+        text={featuredRegistryData?.parentCollection?.title || "Real Registries"}
         classes={`text-xl lg:text-3xl font-bold uppercase tracking-[0.1em] mt-16 mb-4 lg:mb-[40px]`}
       />
 
@@ -28,12 +28,23 @@ const Sliderwithcontent = () => {
           slidesPerGroup={1}
           pagination={{clickable: true}}
         >
-          <SwiperSlide>
-            <Items />
-          </SwiperSlide>
-          <SwiperSlide>
-            <Items />
-          </SwiperSlide>
+          {featuredRegistryData?.subCollections?.map((subCollection, index) => (
+            <SwiperSlide key={subCollection.id || index}>
+              <Items 
+                featuredRegistryData={{
+                  parentCollection: featuredRegistryData.parentCollection,
+                  subCollection: subCollection
+                }} 
+              />
+            </SwiperSlide>
+          ))}
+          
+          {/* Fallback if no sub-collections */}
+          {(!featuredRegistryData?.subCollections || featuredRegistryData.subCollections.length === 0) && (
+            <SwiperSlide>
+              <Items featuredRegistryData={featuredRegistryData} />
+            </SwiperSlide>
+          )}
         </Swiper>
         <div className="max-[1024px]:hidden swiper-button-prev-tab absolute left-[-80px] top-1/2.5 transform -translate-y-full z-10 cursor-pointer text-black uppercase flex">
           <img src={nextitem} alt="" className="rotate-180" />

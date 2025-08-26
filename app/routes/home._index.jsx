@@ -24,9 +24,130 @@ import Testimonialslider from '~/components/Testimonialslider';
 import {Header} from '~/components/Header';
 import {useState, useEffect} from 'react';
 import arrowUp from '/assets/Images/arrowDown.png';
-import { Link } from '@remix-run/react';
+import { Link, useLoaderData, json } from '@remix-run/react';
+
+export async function loader({ context }) {
+  try {
+    const { collections } = await context.storefront.query(REAL_REGISTRIES_QUERY);
+    
+    // Filter collections where both ready_made AND parent_collection metafields are true
+    const realRegistries = collections?.nodes?.filter(collection => {
+      const readyMadeMetafield = collection.readyMadeMetafield?.value === 'true';
+      const parentCollectionMetafield = collection.parentCollectionMetafield?.value === 'true';
+      return readyMadeMetafield && parentCollectionMetafield;
+    }) || [];
+    
+    console.log('All collections:', collections?.nodes);
+    console.log('Real registries (parent collections):', realRegistries);
+    
+    // Log each collection with its title and metafields for debugging
+    realRegistries.forEach((collection, index) => {
+      console.log(`Collection ${index + 1}:`, {
+        title: collection.title,
+        readyMade: collection.readyMadeMetafield?.value,
+        parentCollection: collection.parentCollectionMetafield?.value,
+        subCollection: collection.subCollectionMetafield?.value
+      });
+    });
+    
+    // Fetch sub-collections and their products for the "Real Registries" specifically
+    let featuredRegistryData = null;
+    if (realRegistries.length > 0) {
+      // Find the "Real Registries" collection specifically (not just the first one)
+      // Priority order: 1. "Real" in title, 2. "Authentic" in title, 3. "Couple" in title, 4. Not "Themed"/"Minimalist"
+      let realRegistriesCollection = null;
+      
+      // First priority: collections with "real" in the title
+      realRegistriesCollection = realRegistries.find(collection => 
+        collection.title.toLowerCase().includes('real')
+      );
+      
+      // Second priority: collections with "authentic" in the title
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries.find(collection => 
+          collection.title.toLowerCase().includes('authentic')
+        );
+      }
+      
+      // Third priority: collections with "couple" or "wedding" in the title
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries.find(collection => 
+          collection.title.toLowerCase().includes('couple') ||
+          collection.title.toLowerCase().includes('wedding')
+        );
+      }
+      
+      // Fourth priority: any collection that's NOT "Themed" or "Minimalist"
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries.find(collection => 
+          !collection.title.toLowerCase().includes('themed') && 
+          !collection.title.toLowerCase().includes('minimalist') &&
+          !collection.title.toLowerCase().includes('style') &&
+          !collection.title.toLowerCase().includes('curated')
+        );
+      }
+      
+      // Final fallback: first collection
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries[0];
+        console.log('Using fallback: first collection');
+      }
+      
+      console.log('Selected registry collection:', realRegistriesCollection);
+      console.log('Selection reason: Priority-based selection for Real Registries');
+      
+      if (realRegistriesCollection.subCollectionMetafield?.value) {
+        try {
+          const subCollectionIds = JSON.parse(realRegistriesCollection.subCollectionMetafield.value);
+          
+          // Fetch ALL sub-collections for display (not just the first one)
+          if (subCollectionIds.length > 0) {
+            console.log('Sub-collection IDs:', subCollectionIds);
+            
+            // Fetch all sub-collections
+            const subCollectionsData = [];
+            for (const subCollectionId of subCollectionIds) {
+              console.log('Fetching sub-collection:', subCollectionId);
+              
+              const subCollectionData = await context.storefront.query(SUB_COLLECTION_QUERY, {
+                variables: { id: subCollectionId }
+              });
+              
+              if (subCollectionData.collection) {
+                subCollectionsData.push(subCollectionData.collection);
+              }
+            }
+            
+            console.log('All sub-collections data:', subCollectionsData);
+            
+            if (subCollectionsData.length > 0) {
+              // Return all sub-collections data
+              featuredRegistryData = {
+                parentCollection: realRegistriesCollection,
+                subCollections: subCollectionsData
+              };
+              console.log(`Successfully fetched ${subCollectionsData.length} sub-collections`);
+            } else {
+              console.log('No sub-collections found');
+            }
+          }
+        } catch (e) {
+          console.log('Error parsing subCollectionMetafield:', e);
+        }
+      }
+    }
+    
+    console.log('Featured registry data:', featuredRegistryData);
+    
+    return json({ realRegistries, featuredRegistryData });
+  } catch (error) {
+    console.error('Error loading real registries:', error);
+    return json({ realRegistries: [], featuredRegistryData: null });
+  }
+}
 
 const Home = () => {
+  const { realRegistries, featuredRegistryData } = useLoaderData();
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Handle scroll to show/hide back to top button
@@ -105,12 +226,14 @@ const Home = () => {
         <p className="text-center md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
         From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
       </p>
-        <CustomTab tabsData={tabsData} />
+        <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} />
         <div className="text-center">
+        <Link to="/ready-made-registries">
           <ButtonComponent
             text="EXPLORE"
             className="button-cs text-black border-3 w-[350px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
           />
+          </Link>
         </div>
       </section>
 
@@ -252,3 +375,82 @@ const Home = () => {
 };
 
 export default Home;
+
+const REAL_REGISTRIES_QUERY = `#graphql
+query getRealRegistries {
+  collections(first: 50) {
+    nodes {
+      id
+      title
+      handle
+      description
+      image {
+        id
+        url
+        altText
+        width
+        height
+      }
+       readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+        id
+        value
+      }
+       parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {
+        id
+        value
+      }
+       subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+        id
+        value
+      }
+     }
+   }
+ }
+`;
+
+const SUB_COLLECTION_QUERY = `#graphql
+ query getSubCollection($id: ID!) {
+   collection(id: $id) {
+     id
+     title
+     handle
+     description
+     image {
+       id
+       url
+       altText
+       width
+       height
+     }
+     products(first: 10) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            images(first: 1) {
+              edges {
+                node {
+                  id
+                  url
+                }
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}`;

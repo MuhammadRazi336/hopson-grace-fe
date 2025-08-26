@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Sliderwithcontent from './Sliderwithcontent';
 
-const CustomTab = () => {
+const CustomTab = ({ featuredRegistryData }) => {
   // Define an array of tabs
   // const tabs = [
   //     { id: 1, label: 'REAL REGISTRIES', content: <Sliderwithcontent /> },
@@ -14,7 +14,7 @@ const CustomTab = () => {
 
   return (
     <div className="container">
-      <Sliderwithcontent />
+      <Sliderwithcontent featuredRegistryData={featuredRegistryData} />
     </div>
   );
 };

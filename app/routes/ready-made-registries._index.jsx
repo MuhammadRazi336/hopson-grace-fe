@@ -13,34 +13,14 @@ export async function loader({context}) {
    try {
      const {collections} = await context.storefront.query(READY_MADE_REGISTRIES_QUERY);
      
-     // Debug: Log all collections and their metafields
-     console.log('All collections from Shopify:', collections?.nodes);
-     
      // Filter collections where both ready_made AND parent_collection metafields are true
      const readyMadeRegistries = collections?.nodes?.filter(collection => {
        // Check if both metafields are true
        const readyMadeMetafield = collection.readyMadeMetafield?.value === 'true';
        const parentCollectionMetafield = collection.parentCollectionMetafield?.value === 'true';
        
-              // Debug logging for each collection
-        console.log('Processing collection:', collection.title, {
-           readyMade: readyMadeMetafield,
-           parentCollection: parentCollectionMetafield,
-           readyMadeMetafield: collection.readyMadeMetafield,
-           parentCollectionMetafield: collection.parentCollectionMetafield,
-           hasReadyMadeMetafield: !!collection.readyMadeMetafield,
-           hasParentCollectionMetafield: !!collection.parentCollectionMetafield,
-           readyMadeValue: collection.readyMadeMetafield?.value,
-           parentCollectionValue: collection.parentCollectionMetafield?.value
-         });
-       
             return readyMadeMetafield && parentCollectionMetafield;
     }) || [];
-    
-    // Debug: Log the final filtered results
-    console.log('Final filtered ready-made registries:', readyMadeRegistries);
-    console.log('Total collections found:', collections?.nodes?.length || 0);
-    console.log('Total ready-made registries found:', readyMadeRegistries.length);
     
     // Fetch sub-collections and their products
     const subCollectionsWithProducts = [];
@@ -83,11 +63,6 @@ export async function loader({context}) {
 
 const ReadyMade = () => {
    const { readyMadeRegistries, subCollectionsWithProducts } = useLoaderData();
-   
-   // Debug logging
-   console.log('Ready Made Registries:', readyMadeRegistries);
-   console.log('Sub Collections with Products:', subCollectionsWithProducts);
-   
    // State to track which parent collection is selected
    const [selectedParentCollection, setSelectedParentCollection] = React.useState(null);
    
