@@ -253,7 +253,27 @@ const OnboardingClient = ({onStepChange}) => {
       localStorage.setItem('@ShippingData', JSON.stringify(shippingData));
       setAddressData(shippingData);
       setStep(step + 1);
-    } catch (e) {}
+    } catch (e) {
+      // Handle Shopify validation errors
+      if (e?.response?.data?.shopifyError) {
+        const shopifyError = e.response.data.shopifyError;
+        if (shopifyError.includes('Invalid province/state')) {
+          setStep4Errors({
+            province: shopifyError
+          });
+        } else {
+          // For other Shopify errors, show a general message
+          setStep4Errors({
+            general: 'Address validation failed. Please check your address details.'
+          });
+        }
+      } else {
+        // For other errors, show a general message
+        setStep4Errors({
+          general: 'Failed to save address. Please try again.'
+        });
+      }
+    }
   };
 
   const handleNoOfGuest = async () => {
@@ -418,29 +438,53 @@ const OnboardingClient = ({onStepChange}) => {
       }
       await handleNoOfGuest();
          } else if (step === 4) {
-               // Step 4 validation
+               // Step 4 validation - Simple validation
         const errors = {};
+        
+        // Phone Number validation
         if (!addressData.phoneNumber || addressData.phoneNumber.trim() === '') {
           errors.phoneNumber = 'Phone number is required';
         } else if (addressData.phoneNumber.length > 15) {
           errors.phoneNumber = 'Phone number must be 15 characters or less';
+        } else if (addressData.phoneNumber.length < 10) {
+          errors.phoneNumber = 'Phone number must be at least 10 characters long';
         }
+        
+        // Address validation
         if (!addressData.address || addressData.address.trim() === '') {
           errors.address = 'Address is required';
+        } else if (addressData.address.trim().length < 5) {
+          errors.address = 'Address must be at least 5 characters long';
         }
+        
+        // Postal Code validation
         if (!addressData.postalCode || addressData.postalCode.trim() === '') {
           errors.postalCode = 'Postal code is required';
         } else if (addressData.postalCode.length > 10) {
           errors.postalCode = 'Postal code must be 10 characters or less';
+        } else if (addressData.postalCode.trim().length < 3) {
+          errors.postalCode = 'Postal code must be at least 3 characters long';
         }
+        
+        // City validation
         if (!addressData.city || addressData.city.trim() === '') {
           errors.city = 'City is required';
+        } else if (addressData.city.trim().length < 2) {
+          errors.city = 'City must be at least 2 characters long';
         }
+        
+        // Province/State validation
         if (!addressData.province || addressData.province.trim() === '') {
           errors.province = 'Province/State is required';
+        } else if (addressData.province.trim().length < 2) {
+          errors.province = 'Province/State must be at least 2 characters long';
         }
+        
+        // Country validation
         if (!addressData.country || addressData.country.trim() === '') {
           errors.country = 'Country is required';
+        } else if (addressData.country.trim().length < 2) {
+          errors.country = 'Country must be at least 2 characters long';
         }
        setStep4Errors(errors);
        if (Object.keys(errors).length > 0) return;
@@ -796,6 +840,14 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           You can update your address at any time.
         </h2>
       </div>
+      
+      {/* General error message */}
+      {step4Errors?.general && (
+        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          {step4Errors.general}
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
         {/* Phone Number */}
         <Input
