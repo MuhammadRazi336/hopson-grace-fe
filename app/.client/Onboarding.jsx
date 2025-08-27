@@ -418,28 +418,30 @@ const OnboardingClient = ({onStepChange}) => {
       }
       await handleNoOfGuest();
          } else if (step === 4) {
-       // Step 4 validation
-       const errors = {};
-       if (!addressData.phoneNumber || addressData.phoneNumber.trim() === '') {
-         errors.phoneNumber = 'Phone number is required';
-       } else if (addressData.phoneNumber.length > 15) {
-         errors.phoneNumber = 'Phone number must be 15 characters or less';
-       }
-       if (!addressData.address || addressData.address.trim() === '') {
-         errors.address = 'Address is required';
-       }
-       if (!addressData.postalCode || addressData.postalCode.trim() === '') {
-         errors.postalCode = 'Postal code is required';
-       }
-       if (!addressData.city || addressData.city.trim() === '') {
-         errors.city = 'City is required';
-       }
-       if (!addressData.province || addressData.province.trim() === '') {
-         errors.province = 'Province/State is required';
-       }
-       if (!addressData.country || addressData.country.trim() === '') {
-         errors.country = 'Country is required';
-       }
+               // Step 4 validation
+        const errors = {};
+        if (!addressData.phoneNumber || addressData.phoneNumber.trim() === '') {
+          errors.phoneNumber = 'Phone number is required';
+        } else if (addressData.phoneNumber.length > 15) {
+          errors.phoneNumber = 'Phone number must be 15 characters or less';
+        }
+        if (!addressData.address || addressData.address.trim() === '') {
+          errors.address = 'Address is required';
+        }
+        if (!addressData.postalCode || addressData.postalCode.trim() === '') {
+          errors.postalCode = 'Postal code is required';
+        } else if (addressData.postalCode.length > 10) {
+          errors.postalCode = 'Postal code must be 10 characters or less';
+        }
+        if (!addressData.city || addressData.city.trim() === '') {
+          errors.city = 'City is required';
+        }
+        if (!addressData.province || addressData.province.trim() === '') {
+          errors.province = 'Province/State is required';
+        }
+        if (!addressData.country || addressData.country.trim() === '') {
+          errors.country = 'Country is required';
+        }
        setStep4Errors(errors);
        if (Object.keys(errors).length > 0) return;
        await handleShipping();
