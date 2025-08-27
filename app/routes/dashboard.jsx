@@ -130,6 +130,7 @@ const Dashboard_index = ({context}) => {
 
   const [notificationNode, setNotificationNode] = useState(null);
   const [statusNode, setStatusNode] = useState(null);
+  const [tabNodes, setTabNodes] = useState({});
   const introCardRef = useRef(null);
   const overlayRef = useRef(null);
   const [coupleName, setCoupleName] = useState('');
@@ -169,6 +170,34 @@ const Dashboard_index = ({context}) => {
     localStorage.setItem('showDashboardIntro', 'false');
   };
 
+  // Function to find tab elements by their data-value attribute
+  const findTabElements = () => {
+    const tabElements = {};
+    introSteps.forEach((step, index) => {
+      if (index < 7) { // Only first 7 steps have tabs
+        const element = document.querySelector(`[data-value="${step.tab}"]`);
+        if (element) {
+          tabElements[step.tab] = element;
+          console.log(`Found tab for ${step.tab}:`, element);
+        } else {
+          console.log(`Tab not found for ${step.tab}`);
+        }
+      }
+    });
+    console.log('All tab elements found:', tabElements);
+    setTabNodes(tabElements);
+  };
+
+  // Find tab elements when component mounts and when showIntro changes
+  useEffect(() => {
+    if (showIntro) {
+      // Try to find tabs immediately, then retry with delays
+      findTabElements();
+      setTimeout(findTabElements, 100);
+      setTimeout(findTabElements, 500);
+      setTimeout(findTabElements, 1000);
+    }
+  }, [showIntro]);
 
 
   // Animated Arrow (relative to overlay container, with per-step config)
@@ -181,6 +210,7 @@ const Dashboard_index = ({context}) => {
     }, [show]);
 
     useEffect(() => {
+      console.log('AnimatedArrow useEffect triggered:', { fromRef: fromRef.current, toRef, containerRef: containerRef.current, show });
       if (fromRef.current && toRef && containerRef.current) {
         const fromRect = fromRef.current.getBoundingClientRect();
         const toRect = toRef.getBoundingClientRect();
@@ -270,11 +300,20 @@ const Dashboard_index = ({context}) => {
     const currentStepData = introSteps[currentStep];
     if (currentStepData.type === 'notification') return notificationNode;
     if (currentStepData.type === 'status') return statusNode;
-    return null; // tabNode is no longer available since tabs are now in Header
+    
+    // For steps 0-6, return the corresponding tab node
+    if (currentStep < 7) {
+      const tabNode = tabNodes[currentStepData.tab];
+      console.log(`Step ${currentStep}: Looking for tab "${currentStepData.tab}", found:`, tabNode);
+      return tabNode;
+    }
+    
+    return null;
   };
 
   return (
     <div className="w-full min-h-screen">
+      <style>{animationStyle}</style>
       <Header />
       <div className="">
         {showIntro ? (
@@ -346,14 +385,18 @@ const Dashboard_index = ({context}) => {
             </div>
 
             {/* Animated Arrow */}
-            {getCurrentStepNode() && (
-              <AnimatedArrow
-                fromRef={introCardRef}
-                toRef={getCurrentStepNode()}
-                show={showIntro}
-                containerRef={overlayRef}
-                arrowConfig={introSteps[currentStep].arrow} />
-            )}
+            {(() => {
+              const targetNode = getCurrentStepNode();
+              console.log(`Rendering arrow for step ${currentStep}:`, { targetNode, showIntro });
+              return targetNode && (
+                <AnimatedArrow
+                  fromRef={introCardRef}
+                  toRef={targetNode}
+                  show={showIntro}
+                  containerRef={overlayRef}
+                  arrowConfig={introSteps[currentStep].arrow} />
+              );
+            })()}
           </div>
           <Footer />
           </>

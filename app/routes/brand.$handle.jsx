@@ -19,9 +19,12 @@ export async function loader({params, context}) {
   }
 
   try {
-    const {collection} = await context.storefront.query(BRAND_QUERY, {
-      variables: { handle }
-    });
+    const [{collection}, {collections: brandCollections}] = await Promise.all([
+      context.storefront.query(BRAND_QUERY, {
+        variables: { handle }
+      }),
+      context.storefront.query(BRANDS_FOR_MARQUEE_QUERY)
+    ]);
 
     if (!collection) {
       throw new Response('Not Found', { status: 404 });
@@ -30,7 +33,12 @@ export async function loader({params, context}) {
     // Get registry data from session
     const registry = await context?.session?.get('@Registry');
 
-    return json({ collection, registry });
+    // Filter brand collections for the marquee
+    const brands = brandCollections?.nodes?.filter(collection =>
+      collection.metafield?.value === 'true'
+    ) || [];
+
+    return json({ collection, registry, brands });
   } catch (error) {
     console.error('Error loading brand:', error);
     throw new Response('Not Found', { status: 404 });
@@ -56,7 +64,7 @@ export async function action({request, context}) {
 }
 
 const Brand = () => {
-  const { collection, registry } = useLoaderData();
+  const { collection, registry, brands } = useLoaderData();
   const [quantities, setQuantities] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -327,7 +335,7 @@ const Brand = () => {
           image={lineImg4}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <Marquee />
+        <Marquee brands={brands} />
         <div className="text-center">
           <Link to="/our-brands">
           <ButtonComponent
@@ -545,3 +553,26 @@ const BRAND_QUERY = `#graphql
     }
   }
 `;
+
+const BRANDS_FOR_MARQUEE_QUERY = `#graphql
+query getBrandsForMarquee {
+  collections(first: 50) {
+    nodes {
+      id
+      title
+      handle
+      description
+      image {
+        id
+        url
+        altText
+        width
+        height
+      }
+      metafield(namespace: "custom", key: "brand") {
+        id
+        value
+      }
+    }
+  }
+}`;

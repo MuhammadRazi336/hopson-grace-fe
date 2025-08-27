@@ -152,7 +152,7 @@ const GiftDetailHandle = () => {
     )}
     <div className="flex container flex-col lg:flex-row max-w-screen-xl mx-auto px-4 py-12 gap-8">
           {/* Images Grid */}
-          <div className=" grid grid-cols-2  gap-4 flex-1">
+          <div className=" grid grid-cols-1  gap-4 flex-1">
           <GiftDetail
         productTitle={product.title}
         productPrice={product.variants.edges[0].node.price}

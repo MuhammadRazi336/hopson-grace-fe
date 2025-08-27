@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NotificationCard = ({ count = 2, onView, className }) => (
+const NotificationCard = ({ count = 0, onView, className }) => (
   <div className={`bg-[#f5f2ed] rounded-sm p-6 w-64 text-center relative shadow-sm ${className}`}>
     {/* Notification Bell with Red Dot */}
     <div className="absolute top-4 right-4">

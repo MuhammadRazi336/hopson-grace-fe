@@ -177,7 +177,7 @@ const index = () => {
       description:
         "Based on the number of people attending your wedding, we recommend you add at least 95 gifts. When over 25% of your gifts are purchased, we'll advise you to consider adding more.",
       value: registry?.giftAvailable || 0,
-      total: '95',
+      total: Math.ceil(registry?.events?.noOfGuest * 1.5),
       label: 'GIFTS ADDED',
       showIcon: true,
       icon: '/assets/Images/WORLDSBESTBRANDS.png',

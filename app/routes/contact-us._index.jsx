@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -7,6 +7,86 @@ import RegistryLogo from '/assets/Images/registry-monogram.png';
 import HopsonGrace from '/assets/Images/HopsonGraceTitle.png';
 
 const ContactUs = () => {
+  const [chatScriptLoaded, setChatScriptLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStartLiveChat = () => {
+    if (chatScriptLoaded) {
+      // If script is already loaded, just open the chat widget
+      if (window.Tawk_API && window.Tawk_API.maximize) {
+        window.Tawk_API.maximize();
+      }
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Create and inject the Tawk.to script
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = 'https://embed.tawk.to/68ad8a78891afb1924e06aee/1j3iu9q6i';
+    script.charset = 'UTF-8';
+    script.setAttribute('crossorigin', '*');
+
+    // Set up Tawk_API before script loads
+    window.Tawk_API = window.Tawk_API || {};
+    window.Tawk_LoadStart = new Date();
+
+    // Handle script load completion
+    script.onload = () => {
+      setChatScriptLoaded(true);
+      setIsLoading(false);
+      console.log('Tawk.to chat script loaded successfully');
+      
+      // Open the chat widget immediately after script loads
+      if (window.Tawk_API && window.Tawk_API.maximize) {
+        setTimeout(() => {
+          window.Tawk_API.maximize();
+        }, 500); // Reduced delay to open chat faster
+      }
+    };
+
+    // Handle script load errors
+    script.onerror = () => {
+      setIsLoading(false);
+      console.error('Failed to load Tawk.to chat script');
+      alert('Failed to load chat. Please try again or contact us via email/phone.');
+    };
+
+    // Insert the script into the document
+    try {
+      const firstScript = document.getElementsByTagName('script')[0];
+      if (firstScript && firstScript.parentNode) {
+        firstScript.parentNode.insertBefore(script, firstScript);
+      } else {
+        // Fallback: append to head if no script tags found
+        document.head.appendChild(script);
+      }
+    } catch (error) {
+      console.error('Error inserting Tawk.to script:', error);
+      setIsLoading(false);
+      alert('Failed to initialize chat. Please try again or contact us via email/phone.');
+    }
+  };
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      // Cleanup when component unmounts
+      if (window.Tawk_API && window.Tawk_API.hideWidget) {
+        window.Tawk_API.hideWidget();
+      }
+    };
+  }, []);
+
+  // Check if Tawk.to is already loaded from elsewhere
+  useEffect(() => {
+    if (window.Tawk_API && window.Tawk_API.maximize) {
+      setChatScriptLoaded(true);
+    }
+  }, []);
+
   return (
     <section>
       <Header />
@@ -86,8 +166,16 @@ const ContactUs = () => {
                   <br /> Offline? Leave a message—we’ll reply by email.
                 </p>
                 <div>
-                  <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
-                    START LIVE CHAT
+                  <button 
+                    className={`font-bold px-6 mt-3 py-4 text-sm transition-colors duration-200 ${
+                      isLoading 
+                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed' 
+                        : 'bg-white text-black hover:bg-gray-100'
+                    }`}
+                    onClick={handleStartLiveChat}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'LOADING...' : 'START LIVE CHAT'}
                   </button>
                 </div>
               </div>

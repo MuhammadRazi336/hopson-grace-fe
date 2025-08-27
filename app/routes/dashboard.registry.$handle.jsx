@@ -18,8 +18,6 @@ export async function loader({request, context, params}) {
   const user = context.session.get('@User');
   const registry = context.session.get('@Registry');
 
-  const apiBaseUrl = context.env?.API_BASE_URL;
-
   const eventRes = await context.ClientGet(`events/${params.handle}`, context);
   const userRes = await context.ClientGet(`users/${user.user.id}`, context);
 
@@ -81,64 +79,89 @@ export async function loader({request, context, params}) {
   return {data: eventRes?.data || {}, userData: userData || {}, shippingData: shippingData || {}, registry: registry || {}, user};
 }
 export async function action({request, context}) {
-  const contentType = request.headers.get('content-type') || '';
-  let body, file;
+  try {
+    const body = await request.json();
+    console.log('Action received payload:', body);
 
-  if (contentType.includes('multipart/form-data')) {
-    const formData = await request.formData();
-    body = {};
-    for (let [key, value] of formData.entries()) {
-      if (key === 'file') {
-        file = value;
-      } else if (key === 'hashtags') {
-        try {
-          body.hashtags = JSON.parse(value);
-        } catch {
-          body.hashtags = String(value)
-            .split(',')
-            .map((tag) => tag.trim());
-        }
-      } else if (!isNaN(Number(value)) && value !== '') {
-        body[key] = Number(value);
-      } else {
-        body[key] = value;
-      }
-    }
-    // Add file to body for backend compatibility
-    if (file) {
-      body.file = file;
-    }
-    try {
-      const response = await context.ClientPut(
-        body,
-        `events/${body.id}`,
-        context,
+    const apiCalls = [];
+    const apiBaseUrl = context.env?.API_BASE_URL;
+
+    // 1. Update Event Data
+    const eventPayload = {
+      id: body.id,
+      coupleName: body.coupleName,
+      hashtags: body.hashtags,
+      eventDate: body.eventDate,
+      weddingTime: body.weddingTime,
+      location: body.location,
+      city: body.city,
+      noOfGuest: body.noOfGuest,
+      welcomeMessage: body.welcomeMessage,
+      name: body.coupleName,
+    };
+
+    apiCalls.push(
+      context.ClientPut(eventPayload, `events/${body.id}`, context)
+    );
+
+    // 2. Update User Data
+    const userPayload = {
+      id: body.userId,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      fianceFirstName: body.fianceFirstName,
+      fianceLastName: body.fianceLastName,
+    };
+
+    apiCalls.push(
+      context.ClientPut(userPayload, `users/${body.userId}`, context)
+    );
+
+    // 3. Update/Create Shipping Address
+    const shippingPayload = {
+      address: body.shippingAddress,
+      phoneNumber: body.shippingPhone,
+      postalCode: body.shippingPostalCode,
+      city: body.shippingCity,
+      province: body.shippingProvince,
+      country: body.shippingCountry,
+    };
+
+    if (!body.shippingId || isNaN(Number(body.shippingId))) {
+      // Create new shipping address
+      const createPayload = {
+        userId: body.userId,
+        ...shippingPayload,
+      };
+      apiCalls.push(
+        context.ClientPost(createPayload, 'users/shippingAddress', context)
       );
-      if (response?.code === 200) {
-        return redirect(`/dashboard/registry`);
-      } else {
-        return {error: response?.message || 'Failed to update profile'};
-      }
-    } catch (error) {
-      return {error: error.message};
-    }
-  } else {
-    // Handle JSON as before
-    const {payload} = await request.json();
-    try {
-      const response = await context.ClientPut(
-        payload,
-        `events/${payload.id}`,
-        context,
+    } else {
+      // Update existing shipping address
+      apiCalls.push(
+        context.ClientPut(shippingPayload, `users/shippingAddress/${body.shippingId}`, context)
       );
-      if (response?.code === 200) {
-        return redirect(`/dashboard/registry`);
-      } else {
-        return {error: response?.message || 'Failed to update profile'};
-      }
-    } catch (error) {
-      return {error: error.message};
     }
+
+    // Execute all API calls
+    const responses = await Promise.all(apiCalls);
+    console.log('API responses:', responses);
+
+    // Check for errors
+    const hasError = responses.some(response => !response?.code || response.code !== 200);
+    
+    if (hasError) {
+      const errorResponse = responses.find(response => !response?.code || response.code !== 200);
+      console.error('API error:', errorResponse);
+      return { error: errorResponse?.message || 'Failed to update profile' };
+    }
+
+    console.log('All updates successful');
+    return redirect('/dashboard/registry');
+    
+  } catch (error) {
+    console.error('Action error:', error);
+    return { error: error.message || 'An unexpected error occurred' };
   }
 }
 
@@ -146,6 +169,8 @@ export default function Index() {
   const {data, userData, shippingData, registry, user} = useLoaderData();
   const [editForm, setEditForm] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const submit = useSubmit();
+  const actionData = useActionData();
 
   // Consolidated state for the entire form
   const [formState, setFormState] = useState({
@@ -176,9 +201,28 @@ export default function Index() {
     eventId: data.id,
     userId: userData.user.id,
     image: data.image,
+    // Additional fields needed for submission
+    shippingId: shippingData.id,
   });
 
-  const [newImageFile, setNewImageFile] = useState(null);
+
+
+  // Handle action responses
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.error) {
+        console.error('Form submission error:', actionData.error);
+        // You can show an error message to the user here
+        alert(`Error: ${actionData.error}`);
+      } else {
+        console.log('Form submitted successfully');
+        setEditForm(false);
+        setValidationErrors({});
+        // Optionally refresh the page or show success message
+        window.location.reload();
+      }
+    }
+  }, [actionData]);
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -278,12 +322,11 @@ export default function Index() {
 
     // Validate form before submission
     if (!validateForm()) {
-      // alert('Please fix the validation errors before submitting.');
       return;
     }
 
-    // 1. Event Payload
-    const eventPayload = {
+    // Prepare the payload for submission
+    const payload = {
       id: formState.eventId,
       coupleName: formState.coupleName,
       hashtags: formState.hashtag.split(',').map((s) => s.trim()),
@@ -294,127 +337,29 @@ export default function Index() {
       noOfGuest: Number(formState.noOfGuests),
       welcomeMessage: formState.welcomeMessage,
       name: formState.coupleName,
-    };
-
-    // 2. User Payload
-    const userPayload = {
-      id: formState.userId,
+      // User data
+      userId: formState.userId,
       firstName: formState.yourFirstName,
       lastName: formState.yourLastName,
       fianceFirstName: formState.fianceFirstName,
       fianceLastName: formState.fianceLastName,
+      // Shipping data
+      shippingAddress: formState.shippingAddress,
+      shippingPhone: formState.shippingPhone,
+      shippingPostalCode: formState.shippingPostalCode,
+      shippingCity: formState.shippingCity,
+      shippingProvince: formState.shippingProvince,
+      shippingCountry: formState.shippingCountry,
+      shippingId: formState.shippingId
     };
 
-    // 3. Shipping Payload (without id for POST)
-    const shippingPayload = {
-      address: formState.shippingAddress,
-      phoneNumber: formState.shippingPhone,
-      postalCode: formState.shippingPostalCode,
-      city: formState.shippingCity,
-      province: formState.shippingProvince,
-      country: formState.shippingCountry,
-    };
-
-    try {
-      const apiCalls = [];
-
-      // API Call for Event Data
-      if (newImageFile) {
-        const eventFormData = new FormData();
-        eventFormData.append('file', newImageFile);
-        for (const [key, value] of Object.entries(eventPayload)) {
-          eventFormData.append(
-            key,
-            Array.isArray(value) ? JSON.stringify(value) : value,
-          );
-        }
-        apiCalls.push(
-          fetch(`${apiBaseUrl}/api/events/${formState.eventId}`, {
-            method: 'PUT',
-            body: eventFormData,
-          }),
-        );
-      } else {
-        apiCalls.push(
-          fetch(`${apiBaseUrl}/api/events/${formState.eventId}`, {
-            method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(eventPayload),
-          }),
-        );
-      }
-
-      // API Call for User Data
-      apiCalls.push(
-        fetch(`${apiBaseUrl}/api/users/${formState.userId}`, {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(userPayload),
-        }),
-      );
-
-      // API Call for Shipping Data
-      if (!shippingData.id || isNaN(Number(shippingData.id))) {
-        // No address exists, so create it
-        await fetch(`${apiBaseUrl}/api/users/shippingAddress`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user?.accessToken || ''}`
-          },
-          body: JSON.stringify({
-            userId: formState.userId,
-            ...shippingPayload,
-          }),
-        });
-        // Fetch the new address and update shippingData.id for future updates
-        const res = await fetch(`${apiBaseUrl}/api/users/shippingAddress/${formState.userId}`, {
-          headers: {
-            'Authorization': `Bearer ${user?.accessToken || ''}`
-          }
-        });
-        const data = await res.json();
-        shippingData.id = data?.id;
-      } else {
-        // Address exists, so update it
-      apiCalls.push(
-        fetch(
-          `${apiBaseUrl}/api/users/shippingAddress/${shippingData.id}`,
-          {
-            method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-                // No Authorization header needed
-              },
-              body: JSON.stringify({
-                ...shippingPayload,
-              }),
-          },
-        ),
-      );
-      }
-
-      const responses = await Promise.all(apiCalls);
-
-      const hasError = responses.some((res) => !res.ok);
-
-      if (hasError) {
-        // Find the first error to display
-        const errorResponse = responses.find((res) => !res.ok);
-        const errorData = await errorResponse.json().catch(() => ({}));
-        throw new Error(
-          errorData.message || `Failed to update with status ${errorResponse.status}`,
-        );
-      }
-
-      // alert('All details updated successfully!');
-      setEditForm(false); // Switch back to view mode
-      setValidationErrors({}); // Clear validation errors
-      // Optionally, you can redirect or refresh data here.
-      // window.location.reload();
-    } catch (error) {
-      // alert(`An error occurred: ${error.message}`);
-    }
+    console.log('Submitting payload:', payload);
+    
+    // Submit the form data as JSON
+    submit(payload, { 
+      method: 'post',
+      encType: 'application/json'
+    });
   };
 
   return (
@@ -480,27 +425,6 @@ export default function Index() {
 function EditForm({state, onStateChange, onImageChange, validationErrors}) {
   return (
     <form className="grid grid-cols-2 gap-x-8 gap-y-4 p-8 bg-[#375a7f] text-white">
-      {/* Image Upload */}
-      <div className="col-span-2 flex flex-col items-center border border-gray-400 p-4 rounded-md">
-        <div className="w-full h-48 bg-gray-200 rounded flex items-center justify-center overflow-hidden mb-4">
-          {state.image?.fileUrl ? (
-            <img
-              src={state.image.fileUrl}
-              alt="Preview"
-              className="max-h-48 object-contain"
-            />
-          ) : (
-            <span className="text-gray-500">Upload New Photo</span>
-          )}
-        </div>
-        <input
-          type="file"
-          accept="image/*"
-          className="text-sm"
-          onChange={(e) => onImageChange(e.target.files[0])}
-        />
-      </div>
-
       {/* User and Fiancé Details */}
       <div>
         <label className="block font-medium mb-1 text-base" htmlFor="yourFirstName">

@@ -51,8 +51,22 @@ export async function loader({request, context}) {
   const user = await requireAuth(context);
   const registry = await context?.session?.get('@Registry');
   const userData = await context?.ClientGet(`users/${user?.user?.id}`, context);
+  
+  // Fetch preferred gifts data
+  let preferredGifts = null;
+  try {
+    const preferredGiftsResponse = await context?.ClientGet(`users/preferred-gifts/${user?.user?.id}`, context);
+    console.log('Loader - preferredGiftsResponse:', preferredGiftsResponse);
+    if (preferredGiftsResponse?.code === 200) {
+      preferredGifts = preferredGiftsResponse.data;
+      console.log('Loader - preferredGifts data:', preferredGifts);
+    }
+  } catch (error) {
+    console.error('Error fetching preferred gifts:', error);
+  }
 
-  return defer({products, collections, user, registry, userData});
+  console.log('Loader - returning preferredGifts:', preferredGifts);
+  return defer({products, collections, user, registry, userData, preferredGifts});
 }
 
 export async function action({request, context}) {
@@ -103,6 +117,7 @@ function SidebarFilter({
   collections,
   checkedCollectionIds,
   setCheckedCollectionIds,
+  preferredGifts,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
@@ -111,11 +126,11 @@ function SidebarFilter({
   });
 
   const parentCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'true',
+    (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
   );
 
   const subCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'false',
+    (col) => col.parentMetafield?.value === 'false' && col.readyMadeMetafield?.value !== 'true',
   );
 
   const toggleSection = (section) => {
@@ -133,6 +148,23 @@ function SidebarFilter({
       newChecked = [...checkedCollectionIds, colId];
     }
     setCheckedCollectionIds(newChecked);
+  };
+
+  // Helper function to check if a collection should be checked based on preferred gifts
+  const isCollectionPreferred = (collectionTitle) => {
+    if (!preferredGifts) return false;
+    
+    const title = collectionTitle?.trim().toLowerCase();
+    const preferredCategories = (preferredGifts?.category || []).map(c => c.trim().toLowerCase());
+    const preferredSubCategories = (preferredGifts?.subCategory || []).map(c => c.trim().toLowerCase());
+    
+    const isPreferred = preferredCategories.includes(title) || preferredSubCategories.includes(title);
+    
+    if (isPreferred) {
+      console.log(`Collection "${collectionTitle}" is preferred`);
+    }
+    
+    return isPreferred;
   };
 
   return (
@@ -167,7 +199,11 @@ function SidebarFilter({
                   <input
                     type="checkbox"
                     className="mr-2"
-                    checked={checkedCollectionIds.includes(col.id)}
+                    checked={(() => {
+                      const isChecked = checkedCollectionIds.includes(col.id) || isCollectionPreferred(col.title);
+                      console.log(`Categories checkbox for "${col.title}": checked=${isChecked}, checkedCollectionIds=${checkedCollectionIds.includes(col.id)}, isPreferred=${isCollectionPreferred(col.title)}`);
+                      return isChecked;
+                    })()}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
                   {col.title}
@@ -235,7 +271,11 @@ function SidebarFilter({
                   <input
                     type="checkbox"
                     className="mr-2"
-                    checked={checkedCollectionIds.includes(col.id)}
+                    checked={(() => {
+                      const isChecked = checkedCollectionIds.includes(col.id) || isCollectionPreferred(col.title);
+                      console.log(`Styles checkbox for "${col.title}": checked=${isChecked}, checkedCollectionIds=${checkedCollectionIds.includes(col.id)}, isPreferred=${isCollectionPreferred(col.title)}`);
+                      return isChecked;
+                    })()}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
                   {col.title}
@@ -259,7 +299,11 @@ export default function AddGifts() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const {products, collections, registry, user, userData} = useLoaderData();
+  const {products, collections, registry, user, userData, preferredGifts} = useLoaderData();
+  
+  // Debug logging
+  console.log('Loader data - preferredGifts:', preferredGifts);
+  console.log('Loader data - collections:', collections);
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
@@ -274,16 +318,22 @@ export default function AddGifts() {
   useEffect(() => {
     if (
       !initialPreferencesApplied.current &&
-      userData &&
+      preferredGifts &&
       collections &&
       collections.length > 0
     ) {
+      console.log('Initial preferences effect - Preferred gifts:', preferredGifts);
+      console.log('Initial preferences effect - Collections:', collections);
+      
       const preferredCategories = (
-        userData.data?.user?.preferredCategory || []
+        preferredGifts?.category || []
       ).map((s) => s.trim().toLowerCase());
       const preferredSubCategories = (
-        userData.data?.user?.preferredSubCategory || []
+        preferredGifts?.subCategory || []
       ).map((s) => s.trim().toLowerCase());
+
+      console.log('Initial preferences effect - Preferred categories:', preferredCategories);
+      console.log('Initial preferences effect - Preferred sub-categories:', preferredSubCategories);
 
       // Only check parent collections for preferredCategory, sub-collections for preferredSubCategory
       const checkedIds = [
@@ -291,6 +341,7 @@ export default function AddGifts() {
           .filter(
             (col) =>
               col.parentMetafield?.value === 'true' &&
+              col.readyMadeMetafield?.value !== 'true' &&
               preferredCategories.includes(
                 (col.title || '').trim().toLowerCase(),
               ),
@@ -300,6 +351,7 @@ export default function AddGifts() {
           .filter(
             (col) =>
               col.parentMetafield?.value === 'false' &&
+              col.readyMadeMetafield?.value !== 'true' &&
               preferredSubCategories.includes(
                 (col.title || '').trim().toLowerCase(),
               ),
@@ -307,16 +359,73 @@ export default function AddGifts() {
           .map((col) => col.id),
       ];
 
+      console.log('Initial preferences effect - Checked IDs:', checkedIds);
+
+      // Set the checked collection IDs and also update the displayed products
       setCheckedCollectionIds(checkedIds);
       initialPreferencesApplied.current = true;
     }
-  }, [userData, collections]);
+  }, [preferredGifts, collections]);
+
+  // Additional effect to handle when preferredGifts data becomes available after initial render
+  useEffect(() => {
+    if (
+      preferredGifts &&
+      collections &&
+      collections.length > 0 &&
+      checkedCollectionIds.length === 0
+    ) {
+      console.log('Preferred gifts data:', preferredGifts);
+      console.log('Available collections:', collections);
+      
+      const preferredCategories = (
+        preferredGifts?.category || []
+      ).map((s) => s.trim().toLowerCase());
+      const preferredSubCategories = (
+        preferredGifts?.subCategory || []
+      ).map((s) => s.trim().toLowerCase());
+
+      console.log('Preferred categories:', preferredCategories);
+      console.log('Preferred sub-categories:', preferredSubCategories);
+
+      const checkedIds = [
+        ...collections
+          .filter(
+            (col) =>
+              col.parentMetafield?.value === 'true' &&
+              col.readyMadeMetafield?.value !== 'true' &&
+              preferredCategories.includes(
+                (col.title || '').trim().toLowerCase(),
+              ),
+          )
+          .map((col) => col.id),
+        ...collections
+          .filter(
+            (col) =>
+              col.parentMetafield?.value === 'false' &&
+              col.readyMadeMetafield?.value !== 'true' &&
+              preferredSubCategories.includes(
+                (col.title || '').trim().toLowerCase(),
+              ),
+          )
+          .map((col) => col.id),
+      ];
+
+      console.log('Checked collection IDs:', checkedIds);
+
+      if (checkedIds.length > 0) {
+        setCheckedCollectionIds(checkedIds);
+      }
+    }
+  }, [preferredGifts, collections, checkedCollectionIds.length]);
 
   // Helper to get all products for checked collections
   const getProductsForCheckedCollections = (checkedIds) => {
     const checkedParents = collections.filter(
       (col) =>
-        col.parentMetafield?.value === 'true' && checkedIds.includes(col.id),
+        col.parentMetafield?.value === 'true' && 
+        col.readyMadeMetafield?.value !== 'true' && 
+        checkedIds.includes(col.id),
     );
     const checkedSubs = collections.filter(
       (col) =>
@@ -335,6 +444,7 @@ export default function AddGifts() {
       const subCols = collections.filter(
         (col) =>
           col.parentMetafield?.value === 'false' &&
+          col.readyMadeMetafield?.value !== 'true' &&
           subCollectionGids.includes(col.id),
       );
       parentProducts = parentProducts.concat(
@@ -498,7 +608,7 @@ export default function AddGifts() {
     });
 
   const parentCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'true',
+    (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
   );
 
   return (
@@ -583,7 +693,7 @@ export default function AddGifts() {
                 >
                   {/* Dynamic slides from Shopify collections */}
                   {collections
-                    .filter((col) => col.parentMetafield?.value === 'true')
+                    .filter((col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true')
                     .map((col) => (
                       <SwiperSlide
                         key={col.id}
@@ -630,7 +740,9 @@ export default function AddGifts() {
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
+            preferredGifts={preferredGifts}
           />
+          {console.log('SidebarFilter preferredGifts prop:', preferredGifts)}
           <div className="flex flex-col">
             {/* Sort Filter */}
             {displayedProducts.length > 0 && (
@@ -1042,6 +1154,10 @@ const COLLECTION_QUERY = `#graphql
           value
         }
         subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
           id
           value
         }

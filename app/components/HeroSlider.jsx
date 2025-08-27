@@ -4,7 +4,6 @@ import {Navigation, Pagination, Autoplay} from 'swiper/modules';
 import 'swiper/swiper-bundle.css'; // Import Swiper styles
 import heroImg from '/assets/Images/heroImg.png';
 import vectorImg from '/assets/Images/Vector 22.png';
-import sampleVideo from '/assets/Images/sample.webm';
 import 'swiper/css/pagination';
 import Button from '~/components/Button.jsx';
 import { NavLink } from '@remix-run/react';
@@ -19,22 +18,142 @@ const HeroSlider = () => {
         'A modern registry for gifts, travel & everything in between.',
       image: heroImg,
     },
-    {id: 2, type: 'video', videoSrc: sampleVideo},
+    {
+      id: 2, 
+      type: 'video', 
+      // Provide multiple video sources for better compatibility
+      videoSources: [
+        // Try public path first (works better in deployment)
+        { src: '/assets/Images/sample.webm', type: 'video/webm' },
+        // Fallback to app assets path
+        { src: '/assets/Images/sample.webm', type: 'video/webm' }
+      ],
+      // Fallback image if video fails
+      fallbackImage: heroImg
+    },
   ];
 
   const videoRef = useRef(null);
+  const [videoError, setVideoError] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [errorDetails, setErrorDetails] = useState('');
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play();
+    if (videoRef.current && videoLoaded) {
+      // Try to play the video, but handle errors gracefully
+      const playVideo = async () => {
+        try {
+          await videoRef.current.play();
+        } catch (error) {
+          console.warn('Video autoplay failed:', error);
+          // Don't set error state for autoplay failures
+        }
+      };
+      playVideo();
     }
+  }, [videoLoaded]);
+
+  const handleVideoError = (e) => {
+    const error = e.target.error;
+    const details = error ? `Code: ${error.code}, Message: ${error.message}` : 'Unknown error';
+    console.error('Video loading error:', e);
+    console.log('Current video source:', slides[1].videoSources[currentVideoIndex]);
+    console.log('Error details:', details);
+    
+    setErrorDetails(details);
+    
+    // Try next video source if available
+    if (currentVideoIndex < slides[1].videoSources.length - 1) {
+      console.log('Trying next video source...');
+      setCurrentVideoIndex(prev => prev + 1);
+      setVideoError(false);
+    } else {
+      console.log('All video sources failed, showing fallback');
+      setVideoError(true);
+    }
+  };
+
+  const handleVideoLoad = () => {
+    console.log('Video loaded successfully');
+    setVideoLoaded(true);
+    setVideoError(false);
+  };
+
+  const handleVideoCanPlay = () => {
+    console.log('Video can play');
+    setVideoLoaded(true);
+  };
+
+  // Reset video state when changing sources
+  useEffect(() => {
+    setVideoLoaded(false);
+    setVideoError(false);
+  }, [currentVideoIndex]);
+
+  // Log current environment for debugging
+  useEffect(() => {
+    console.log('HeroSlider mounted');
+    console.log('Current environment:', process.env.NODE_ENV);
+    console.log('Video sources:', slides[1].videoSources);
+    
+    // Check browser video support
+    checkBrowserVideoSupport();
+    
+    // Test video accessibility
+    testVideoAccessibility();
   }, []);
+
+  // Function to check browser video support
+  const checkBrowserVideoSupport = () => {
+    const video = document.createElement('video');
+    console.log('Browser video support:');
+    console.log('- WebM:', video.canPlayType('video/webm'));
+    console.log('- MP4:', video.canPlayType('video/mp4'));
+    console.log('- OGV:', video.canPlayType('video/ogg'));
+    console.log('- User Agent:', navigator.userAgent);
+  };
+
+  // Function to test if video files are accessible
+  const testVideoAccessibility = async () => {
+    for (let i = 0; i < slides[1].videoSources.length; i++) {
+      const source = slides[1].videoSources[i];
+      try {
+        const response = await fetch(source.src, { method: 'HEAD' });
+        console.log(`Video source ${i} (${source.src}): ${response.ok ? 'OK' : 'Failed'} - Status: ${response.status}`);
+        
+        if (response.ok) {
+          // Try to actually load the video
+          testVideoLoadability(source.src, i);
+        }
+      } catch (error) {
+        console.error(`Video source ${i} (${source.src}): Error -`, error);
+      }
+    }
+  };
+
+  // Function to test if video can actually be loaded
+  const testVideoLoadability = (src, index) => {
+    const testVideo = document.createElement('video');
+    testVideo.muted = true;
+    testVideo.preload = 'metadata';
+    
+    testVideo.onloadedmetadata = () => {
+      console.log(`Video source ${index} (${src}): Successfully loaded metadata`);
+    };
+    
+    testVideo.onerror = (e) => {
+      console.error(`Video source ${index} (${src}): Failed to load metadata`, e);
+    };
+    
+    testVideo.src = src;
+  };
 
   return (
     <Swiper
       modules={[Pagination, Autoplay]}
       slidesPerView={1}
-      autoplay={{delay: 14000}} // Autoplay every 10 seconds
+      autoplay={{delay: 14000}} // Autoplay every 14 seconds
       pagination={{clickable: true}} // Show dots
     >
       {slides.map((slide) => (
@@ -71,22 +190,59 @@ const HeroSlider = () => {
               </div>
             </div>
           ) : (
-            <video
-              ref={videoRef}
-              width="100%"
-              height="1000px"
-              objectFit="cover"
-              muted
-              loop
-              className="w-full h-[510px] lg:h-[1000px] object-cover"
-            >
-              <source
-                src={slide.videoSrc}
-                type="video/mp4"
-                style={{height: '1000px'}}
-              />
-              Your browser does not support the video tag.
-            </video>
+            <div className="relative w-full h-[510px] lg:h-[1000px]">
+              {videoError ? (
+                // Fallback to image if video fails to load
+                <div className="w-full h-full">
+                  <img
+                    src={slide.fallbackImage}
+                    alt="Hero"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-white bg-black/70 px-6 py-4 rounded max-w-md">
+                      <p className="text-lg mb-2">Video unavailable</p>
+                      <p className="text-sm mb-4 text-gray-300">{errorDetails}</p>
+                      <button
+                        onClick={() => {
+                          setCurrentVideoIndex(0);
+                          setVideoError(false);
+                          setVideoLoaded(false);
+                          testVideoAccessibility();
+                        }}
+                        className="bg-white text-black px-4 py-2 rounded text-sm hover:bg-gray-200 transition-colors"
+                      >
+                        Retry Video
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <video
+                  ref={videoRef}
+                  width="100%"
+                  height="100%"
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  onError={handleVideoError}
+                  onLoadedData={handleVideoLoad}
+                  onCanPlay={handleVideoCanPlay}
+                  onLoadStart={() => console.log('Video load started')}
+                  onProgress={() => console.log('Video loading progress')}
+                  onAbort={() => console.log('Video loading aborted')}
+                  onSuspend={() => console.log('Video loading suspended')}
+                  className="w-full h-full object-cover"
+                >
+                  <source
+                    src={slides[1].videoSources[currentVideoIndex].src}
+                    type={slides[1].videoSources[currentVideoIndex].type}
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+            </div>
           )}
         </SwiperSlide>
       ))}

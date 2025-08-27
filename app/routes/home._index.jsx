@@ -28,7 +28,10 @@ import { Link, useLoaderData, json } from '@remix-run/react';
 
 export async function loader({ context }) {
   try {
-    const { collections } = await context.storefront.query(REAL_REGISTRIES_QUERY);
+    const [{ collections }, { collections: brandCollections }] = await Promise.all([
+      context.storefront.query(REAL_REGISTRIES_QUERY),
+      context.storefront.query(BRAND_QUERY)
+    ]);
     
     // Filter collections where both ready_made AND parent_collection metafields are true
     const realRegistries = collections?.nodes?.filter(collection => {
@@ -36,9 +39,15 @@ export async function loader({ context }) {
       const parentCollectionMetafield = collection.parentCollectionMetafield?.value === 'true';
       return readyMadeMetafield && parentCollectionMetafield;
     }) || [];
+
+    // Filter brand collections for the marquee
+    const brands = brandCollections?.nodes?.filter(collection =>
+      collection.metafield?.value === 'true'
+    ) || [];
     
     console.log('All collections:', collections?.nodes);
     console.log('Real registries (parent collections):', realRegistries);
+    console.log('Brands for marquee:', brands);
     
     // Log each collection with its title and metafields for debugging
     realRegistries.forEach((collection, index) => {
@@ -139,7 +148,7 @@ export async function loader({ context }) {
     
     console.log('Featured registry data:', featuredRegistryData);
     
-    return json({ realRegistries, featuredRegistryData });
+    return json({ realRegistries, featuredRegistryData, brands });
   } catch (error) {
     console.error('Error loading real registries:', error);
     return json({ realRegistries: [], featuredRegistryData: null });
@@ -147,8 +156,15 @@ export async function loader({ context }) {
 }
 
 const Home = () => {
-  const { realRegistries, featuredRegistryData } = useLoaderData();
+  const { realRegistries, featuredRegistryData, brands } = useLoaderData();
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  // Debug logging for brands
+  console.log('Home page received brands:', brands);
+  console.log('Brands length:', brands?.length || 0);
+  if (brands && brands.length > 0) {
+    console.log('First brand sample:', brands[0]);
+  }
 
   // Handle scroll to show/hide back to top button
   useEffect(() => {
@@ -246,7 +262,7 @@ const Home = () => {
           image={lineImg4}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <Marquee />
+        <Marquee brands={brands} />
         <div className="text-center">
           <Link to="/our-brands">
           <ButtonComponent
@@ -445,11 +461,35 @@ const SUB_COLLECTION_QUERY = `#graphql
                   priceV2 {
                     amount
                     currencyCode
+                  }
                 }
               }
             }
           }
         }
+      }
+    }
+  }
+}`;
+
+const BRAND_QUERY = `#graphql
+query getBrands {
+  collections(first: 50) {
+    nodes {
+      id
+      title
+      handle
+      description
+      image {
+        id
+        url
+        altText
+        width
+        height
+      }
+      metafield(namespace: "custom", key: "brand") {
+        id
+        value
       }
     }
   }

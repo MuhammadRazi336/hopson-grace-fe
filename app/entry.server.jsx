@@ -22,6 +22,14 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    // Add Calendly domains to the CSP
+    frameSrc: ["'self'", "https://*.calendly.com"],
+    childSrc: ["'self'", "https://*.calendly.com"],
+    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://assets.calendly.com", "https://*.calendly.com"],
+    connectSrc: ["'self'", "https://*.calendly.com"],
+    imgSrc: ["'self'", "blob:", "data:", "https://*.calendly.com"],
+    styleSrc: ["'self'", "'unsafe-inline'", "https://*.calendly.com"],
+    fontSrc: ["'self'", "data:", "https://*.calendly.com"],
   });
 
   const body = await renderToReadableStream(
@@ -48,7 +56,7 @@ export default async function handleRequest(
 
   responseHeaders.set('Content-Type', 'text/html');
   responseHeaders.set('Content-Security-Policy', header);
-  const additionalDomains = ['https://dev-hopsongrace.codup.io'];
+  const additionalDomains = ['http://localhost:3040'];
   const existingCSP = responseHeaders.get('Content-Security-Policy') || ''; // Get the current CSP header
 
   // Join additional domains into a space-separated string
@@ -66,8 +74,31 @@ export default async function handleRequest(
   const imgSrcPolicy = `img-src 'self' blob: ${additionalDomainsString};`;
   const baseUriPolicy = 'base-uri; ' + "'self'";
 
-  // Update the Content-Security-Policy header with both `img-src` and `connect-src` directives
-  responseHeaders.set('Content-Security-Policy', `${updatedCSP} `);
+  // Add Calendly domains to the CSP
+  let finalCSP = updatedCSP;
+  
+  // Add frame-src for Calendly iframes
+  if (!finalCSP.includes('frame-src')) {
+    finalCSP += " frame-src 'self' https://*.calendly.com;";
+  } else {
+    finalCSP = finalCSP.replace(
+      /frame-src([^;]*)/,
+      (match, group) => `frame-src${group} https://*.calendly.com`
+    );
+  }
+  
+  // Add child-src for Calendly iframes
+  if (!finalCSP.includes('child-src')) {
+    finalCSP += " child-src 'self' https://*.calendly.com;";
+  } else {
+    finalCSP = finalCSP.replace(
+      /child-src([^;]*)/,
+      (match, group) => `child-src${group} https://*.calendly.com`
+    );
+  }
+
+  // Update the Content-Security-Policy header with Calendly domains
+  responseHeaders.set('Content-Security-Policy', finalCSP);
 
   return new Response(body, {
     headers: responseHeaders,

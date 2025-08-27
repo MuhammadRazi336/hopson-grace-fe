@@ -86,9 +86,9 @@ const ProductCard = React.memo(({product, collection, registryId, onSuccess, onE
   const hasShownFeedback = React.useRef(false);
   const previousFetcherData = React.useRef(null);
 
-  const firstImage = product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
-  const firstVariant = product.variants?.edges?.[0]?.node;
-  const price = firstVariant?.priceV2?.amount || 'N/A';
+                const firstImage = product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
+                const firstVariant = product.variants?.edges?.[0]?.node;
+                const price = firstVariant?.priceV2?.amount || 'N/A';
 
   // Show feedback on fetcher.data change - only when we have meaningful data
   React.useEffect(() => {
@@ -169,45 +169,45 @@ const ProductCard = React.memo(({product, collection, registryId, onSuccess, onE
       });
     }
   };
+                
+                return (
+                  <div key={product.id} className="relative group h-[460px]">
+                    {/* Product Image and Info */}
+                    <div className="p-4 z-10 relative">
+                      <img
+                        src={firstImage}
+                        alt={product.title}
+                        className="w-full h-[300px] object-cover"
+                      />
+                      <h3 className="text-sm font-semibold uppercase mt-3">
+                        {product.title}
+                      </h3>
+                      <p className="text-sm mt-1">${price}</p>
+                    </div>
 
-  return (
-    <div key={product.id} className="relative group h-[460px]">
-      {/* Product Image and Info */}
-      <div className="p-4 z-10 relative">
-        <img
-          src={firstImage}
-          alt={product.title}
-          className="w-full h-[300px] object-cover"
-        />
-        <h3 className="text-sm font-semibold uppercase mt-3">
-          {product.title}
-        </h3>
-        <p className="text-sm mt-1">${price}</p>
-      </div>
+                    {/* Expanding Overlay */}
+                    <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+                      <div>
+                        <img
+                          src={firstImage}
+                          alt={product.title}
+                          className="w-full h-[220px] mx-auto object-cover mb-2"
+                        />
+                        <h4 className="text-xs font-medium uppercase text-left mb-1">
+                          {collection.title || 'BRAND NAME'}
+                        </h4>
+                        <h3 className="text-sm font-bold uppercase text-left leading-snug">
+                          {product.title}
+                        </h3>
+                        <p className="text-sm mt-2 text-left">${price}</p>
+                      </div>
 
-      {/* Expanding Overlay */}
-      <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
-        <div>
-          <img
-            src={firstImage}
-            alt={product.title}
-            className="w-full h-[220px] mx-auto object-cover mb-2"
-          />
-          <h4 className="text-xs font-medium uppercase text-left mb-1">
-            {collection.title || 'BRAND NAME'}
-          </h4>
-          <h3 className="text-sm font-bold uppercase text-left leading-snug">
-            {product.title}
-          </h3>
-          <p className="text-sm mt-2 text-left">${price}</p>
-        </div>
-
-        <div className="flex items-center justify-between mt-4">
-          <div className="flex flex-col w-full items-center text-xs">
+                      <div className="flex items-center justify-between mt-4">
+                        <div className="flex flex-col w-full items-center text-xs">
             <Link to={`/dashboard/cashfunds/${product.id}`}>
-              <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
-                personalize fund
-              </button>
+                          <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+                            personalize fund
+                          </button>
             </Link>
             <button 
               onClick={handleAddToRegistry}
@@ -215,11 +215,11 @@ const ProductCard = React.memo(({product, collection, registryId, onSuccess, onE
               className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
             >
               {fetcher.state === 'submitting' ? 'Adding...' : 'Add to registry'}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
   );
 });
 
@@ -301,128 +301,128 @@ const DreamFund = () => {
                       onSuccess={handleSuccess}
                       onError={handleError}
                     />
-                  );
-                }) || []
-              )}
-            </div>
+                );
+              }) || []
+            )}
           </div>
+        </div>
 
-          <div className="flex justify-center items-center">
-            <div className="w-full xl:w-1/4 "> </div>
-            <div className="w-full xl:w-3/4 flex flex-col items-center">
-              <p className="text-center text-md my-10">LOADING 12 of 427</p>
+        <div className="flex justify-center items-center">
+          <div className="w-full xl:w-1/4 "> </div>
+          <div className="w-full xl:w-3/4 flex flex-col items-center">
+            <p className="text-center text-md my-10">LOADING 12 of 427</p>
 
-              <WhiteThemeButton Text="View more" link="/quick-start-guide" />
+            <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-              <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
-                Back to Top
-              </button>
-            </div>
+            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
+              Back to Top
+            </button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
-          <Heading
+      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+        <Heading
             text="we think you'll love"
-            classes={
-              'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
-            }
-            image={lineImghead}
-            imageClasses={'max-[1024px]:max-w-[330px]'}
-          />
+          classes={
+            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+          }
+          image={lineImghead}
+          imageClasses={'max-[1024px]:max-w-[330px]'}
+        />
 
-          <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-            <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-              <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-                <img src={nextitem} alt="" className="rotate-180 " />
-                <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                  more
-                </span>
-              </div>
+        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
+            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <img src={nextitem} alt="" className="rotate-180 " />
+              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+            </div>
 
-              <Swiper
-                spaceBetween={15}
-                slidesPerView={3}
-                loop={true}
-                modules={[Navigation]}
-                navigation={{
-                  nextEl: '.swiper-button-next-prod',
-                  prevEl: '.swiper-button-prev-prod',
-                }}
-                className="px-[178px]"
-                breakpoints={{
-                  345: {
-                    spaceBetween: 10,
-                    centeredSlides: true,
-                  },
-                  475: {
-                    spaceBetween: 15,
-                    centeredSlides: true,
-                  },
-                  768: {
-                    spaceBetween: 20,
-                    centeredSlides: true,
-                  },
-                  1024: {
-                    spaceBetween: 30,
-                    centeredSlides: true,
-                  },
-                  1366: {
-                    spaceBetween: 39,
-                    centeredSlides: true,
-                  },
-                  1600: {
-                    spaceBetween: 39,
-                    centeredSlides: true,
-                  },
-                }}
-              >
-                {/* slides here */}
-                <SwiperSlide>
-                  <img src={youll1} alt="New Arrival" className="w-full" />
-                  <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                    ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                  </h3>
-                  <p className="lg:text-2xl text-sm">$95</p>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src={youll2} alt="Tableware" className="w-full" />
-                  <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                    SMEG TOASTER, 2 SLICE
-                  </h3>
-                  <p className="lg:text-2xl text-sm">$95</p>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                  <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-                    THE BARISTA TOUCH ESPRESSO MAKER
-                  </h3>
-                  <p className="lg:text-2xl text-sm">$95</p>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src={youll1} alt="New arrivals" className="w-full" />
-                  <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                    ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                  </h3>
-                  <p className="lg:text-2xl text-sm">$95</p>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
-                  <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-                    THE BARISTA TOUCH ESPRESSO MAKER
-                  </h3>
-                  <p className="lg:text-2xl text-sm">$95</p>
-                </SwiperSlide>
-              </Swiper>
-              <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-                <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                  more
-                </span>
-                <img src={nextitem} className="" alt="" />
-              </div>
+            <Swiper
+              spaceBetween={15}
+              slidesPerView={3}
+              loop={true}
+              modules={[Navigation]}
+              navigation={{
+                nextEl: '.swiper-button-next-prod',
+                prevEl: '.swiper-button-prev-prod',
+              }}
+              className="px-[178px]"
+              breakpoints={{
+                345: {
+                  spaceBetween: 10,
+                  centeredSlides: true,
+                },
+                475: {
+                  spaceBetween: 15,
+                  centeredSlides: true,
+                },
+                768: {
+                  spaceBetween: 20,
+                  centeredSlides: true,
+                },
+                1024: {
+                  spaceBetween: 30,
+                  centeredSlides: true,
+                },
+                1366: {
+                  spaceBetween: 39,
+                  centeredSlides: true,
+                },
+                1600: {
+                  spaceBetween: 39,
+                  centeredSlides: true,
+                },
+              }}
+            >
+              {/* slides here */}
+              <SwiperSlide>
+                <img src={youll1} alt="New Arrival" className="w-full" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  ARKE GLASS BOTTLE FOR CARBONATOR PRO
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll2} alt="Tableware" className="w-full" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  SMEG TOASTER, 2 SLICE
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
+                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                  THE BARISTA TOUCH ESPRESSO MAKER
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll1} alt="New arrivals" className="w-full" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  ARKE GLASS BOTTLE FOR CARBONATOR PRO
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+              <SwiperSlide>
+                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
+                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                  THE BARISTA TOUCH ESPRESSO MAKER
+                </h3>
+                <p className="lg:text-2xl text-sm">$95</p>
+              </SwiperSlide>
+            </Swiper>
+            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+              <img src={nextitem} className="" alt="" />
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* Alert Component */}
         {showAlert && (
@@ -486,10 +486,10 @@ const DreamFund = () => {
           }
         `}</style>
 
-        <Footer />
-      </section>
-    );
-  };
+      <Footer />
+    </section>
+  );
+};
 
 export default DreamFund;
 

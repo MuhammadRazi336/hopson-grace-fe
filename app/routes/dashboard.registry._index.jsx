@@ -590,7 +590,7 @@ const ProductPage = ({data}) => {
         ) : (
           <>
             <div className="flex justify-center items-center h-full">
-              <Link to="dashboard/addgifts">
+              <Link to="/dashboard/addgifts">
                 <img
                   src="/assets/Images/add-gift-placeholder.png"
                   alt="No funds"
@@ -599,7 +599,7 @@ const ProductPage = ({data}) => {
               </Link>
             </div>
             <div className="flex justify-center items-center h-full">
-              <Link to="dashboard/addgifts">
+              <Link to="/dashboard/addgifts">
                 <img
                   src="/assets/Images/add-gift-placeholder.png"
                   alt="No funds"
@@ -608,7 +608,7 @@ const ProductPage = ({data}) => {
               </Link>
             </div>
             <div className="flex justify-center items-center h-full">
-              <Link to="dashboard/addgifts">
+              <Link to="/dashboard/addgifts">
                 <img
                   src="/assets/Images/add-gift-placeholder.png"
                   alt="No funds"
@@ -617,7 +617,7 @@ const ProductPage = ({data}) => {
               </Link>
             </div>
             <div className="flex justify-center items-center h-full">
-              <Link to="dashboard/addgifts">
+              <Link to="/dashboard/addgifts">
                 <img
                   src="/assets/Images/add-gift-placeholder.png"
                   alt="No funds"

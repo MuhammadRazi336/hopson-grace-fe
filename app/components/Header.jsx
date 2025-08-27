@@ -232,7 +232,7 @@ export function Header() {
       });
       
       if (response.ok) {
-        setStatus(newStatus);
+      setStatus(newStatus);
         // Update the registry data locally
         setRegistryData(prev => prev ? {...prev, status: newStatus} : prev);
         // Show success feedback
@@ -444,30 +444,30 @@ export function Header() {
                     </div>
                   </div>
                 ) : registryData?.id ? (
-                  <div className='pt-1'>
-                    <button
-                      type="button"
-                      aria-pressed={!isDraft}
+                <div className='pt-1'>
+                  <button
+                    type="button"
+                    aria-pressed={!isDraft}
                       aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
-                      onClick={handleToggle}
+                    onClick={handleToggle}
                       disabled={isUpdatingStatus}
                       className={`mx-auto w-16 h-8 flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none ${
-                        isDraft
-                          ? 'bg-white border-black'
-                          : 'bg-white border-black'
-                      }`}
-                    >
-                                          <span
+                      isDraft
+                        ? 'bg-white border-black'
+                        : 'bg-white border-black'
+                    }`}
+                  >
+                    <span
                       className={`w-7 h-7 rounded-full shadow-md transform w-[2.031vw] h-[1.1vw] transition-transform duration-200 ${
                         isDraft
                           ? 'translate-x-0 bg-gray-300'
                           : 'translate-x-8 bg-[#FF6F61]'
                       }`}
                     />
-                    </button>
+                  </button>
                     <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] ${
-                      isFixed ? 'text-white' : 'text-black'
-                    }`}>
+                    isFixed ? 'text-white' : 'text-black'
+                  }`}>
                       {isUpdatingStatus ? 'Updating...' : (isDraft ? 'Draft' : 'Published')}
                     </div>
                   </div>
@@ -482,8 +482,8 @@ export function Header() {
                       isFixed ? 'text-white' : 'text-black'
                     }`}>
                       No registry found
-                    </div>
                   </div>
+                </div>
                 )}
                 </div>
               </>

@@ -126,10 +126,10 @@ async function loadCashFunds({context}) {
         });
         
         if (fetcher.data.success === true) {
-          onSuccess(`${product.title} has been added to your registry!`);
+        onSuccess(`${product.title} has been added to your registry!`);
           hasShownFeedback.current = true;
         } else if (fetcher.data.error === true) {
-          onError('There was an error adding the cash fund.');
+        onError('There was an error adding the cash fund.');
           hasShownFeedback.current = true;
         }
         
@@ -242,8 +242,8 @@ async function loadCashFunds({context}) {
         </div>
 
 
-             </div>
-     );
+      </div>
+    );
    });
 
 const CashFund = () => {
@@ -284,8 +284,8 @@ const CashFund = () => {
             setAlertMessage('');
         }, 3000);
     }, []);
-   
-   return (
+  
+  return (
     <section>
       <Header />
 
