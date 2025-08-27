@@ -425,43 +425,42 @@ query getRealRegistries {
 `;
 
 const SUB_COLLECTION_QUERY = `#graphql
- query getSubCollection($id: ID!) {
-   collection(id: $id) {
-     id
-     title
-     handle
-     description
-     image {
-       id
-       url
-       altText
-       width
-       height
-     }
-     products(first: 10) {
-        edges {
-          node {
-            id
-            title
-            handle
-            description
-            images(first: 1) {
-              edges {
-                node {
-                  id
-                  url
-                }
+query getSubCollection($id: ID!) {
+  collection(id: $id) {
+    id
+    title
+    handle
+    description
+    image {
+      id
+      url
+      altText
+      width
+      height
+    }
+    products(first: 10) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
               }
             }
-            variants(first: 1) {
-              edges {
-                node {
-                  id
-                  availableForSale
-                  priceV2 {
-                    amount
-                    currencyCode
-                  }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                availableForSale
+                priceV2 {
+                  amount
+                  currencyCode
                 }
               }
             }
