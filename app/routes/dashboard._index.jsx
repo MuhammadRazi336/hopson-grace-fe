@@ -297,7 +297,7 @@ const index = () => {
               {card.description}
             </p>
             <div className="text-5xl prata flex items-baseline">
-              {card.id === 'funds' && (
+              {(card.id === 'funds' || card.id === 'gift-balance') && (
                 <span className="text-7xl mr-1 self-start">$</span>
               )}
               <span className="text-7xl">{card.value}</span>

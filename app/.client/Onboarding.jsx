@@ -929,10 +929,13 @@ const Step5 = () => {
 const Step6 = ({collections, onCollectionsSelect}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
 
-  // Filter collections to only show parent collections
+  // Filter collections to only show parent collections (excluding ready-made collections)
   const parentCollections =
     collections?.nodes?.filter((collection) => {
-      return collection?.metafield?.value === 'true';
+      // The metafield is directly accessible as metafield.value from the GraphQL query
+      const isParentCollection = collection?.metafield?.value === 'true';
+      const isReadyMade = collection?.readyMadeMetafield?.value === 'true';
+      return isParentCollection && !isReadyMade;
     }) || [];
 
   // Mapping function to assign icons to collections based on title
@@ -946,10 +949,9 @@ const Step6 = ({collections, onCollectionsSelect}) => {
     if (title.includes('bed') || title.includes('bath') || title.includes('bedroom') || title.includes('bathroom') || title.includes('linen')) return BedBath;
     if (title.includes('travel') || title.includes('outdoor') || title.includes('adventure') || title.includes('luggage')) return TravelOutdoors;
     if (title.includes('music') || title.includes('audio') || title.includes('sound') || title.includes('instrument')) return Music;
-    if (title.includes('gift') || title.includes('present')) return GiftIcon;
+    if (title.includes('gift') || title.includes('present'));
     
     // Default fallback icon
-    return GiftIcon;
   };
 
   const handleOptionClick = (collection) => {

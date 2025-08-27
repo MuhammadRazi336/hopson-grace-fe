@@ -30,6 +30,10 @@ const COLLECTIONS_QUERY = `#graphql
         subCollections: metafield(namespace: "sub", key: "collection") {
           value
         }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
       }
     }
   }
