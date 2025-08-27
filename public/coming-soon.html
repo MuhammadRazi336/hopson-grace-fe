@@ -1031,14 +1031,16 @@
     <script>
       $(document).ready(function () {
         $(".features-slider").slick({
-          dots: true,
+          dots: false,
           infinite: true,
-          speed: 300,
+          speed: 4000,
           slidesToShow: 4,
-          slidesToScroll: 3,
+          slidesToScroll: 1,
           centerMode: true,
           centerPadding: "8%",
+          cssEase: 'linear',
           autoplay: true,
+          autoplaySpeed: 0,
           arrows: false,
           pauseOnHover: true,
           responsive: [
