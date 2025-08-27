@@ -24,68 +24,150 @@ query {
 }`;
 
 export async function loader({params, context}) {
-  const coupleId = params.id;
+  try {
+    const coupleId = params.id;
+    console.log('Loader: Starting with coupleId:', coupleId);
 
-  const response = await context.ClientGet(
-    `registries/by-userId/${coupleId}`,
-    context,
-  );
-  const registryId = response.data[0]?.id;
-  if (!response.data) throw new Response('Not Found', {status: 404});
+    // Safety check: Ensure coupleId exists
+    if (!coupleId) {
+      console.log('Loader: No couple ID provided');
+      throw new Response('Couple ID is required', {status: 400});
+    }
 
-  const [res, cashRes, shopifyCollections] = await Promise.all([
-    context.ClientGet(`registryProducts/${registryId}?type=gift`, context),
-    context.ClientGet(`registryProducts/${registryId}?type=cash`, context),
-    context.storefront.query(COLLECTION_QUERY),
-  ]);
+    const response = await context.ClientGet(
+      `registries/by-userId/${coupleId}`,
+      context,
+    );
+    console.log('Loader: Registry response:', response);
+    
+    // Check if registry exists
+    if (!response.data || response.data.length === 0) {
+      console.log('Loader: No registry data found');
+      throw new Response('Registry not found', {status: 404});
+    }
+    
+    const registryId = response.data[0]?.id;
+    if (!registryId) {
+      console.log('Loader: Invalid registry ID');
+      throw new Response('Invalid registry', {status: 400});
+    }
+    console.log('Loader: Registry ID:', registryId);
 
-  // Get API base URL from environment
-  const apiBaseUrl = context.env?.API_BASE_URL;
+    // Safety check: Ensure context has required methods
+    if (!context.ClientGet || typeof context.ClientGet !== 'function') {
+      console.log('Loader: ClientGet method not available');
+      throw new Response('Service unavailable', {status: 503});
+    }
 
-  const ids = res?.data?.map(
-    (product) => `gid://shopify/Product/${product.productId}`,
-  );
-  const products = await fetchProducts(context.storefront, ids);
+    const [res, cashRes, shopifyCollections] = await Promise.all([
+      context.ClientGet(`registryProducts/${registryId}?type=gift`, context).catch(error => {
+        console.warn('Loader: Gift products query failed, using empty array:', error);
+        return { data: [] };
+      }),
+      context.ClientGet(`registryProducts/${registryId}?type=cash`, context).catch(error => {
+        console.warn('Loader: Cash fund query failed, using empty array:', error);
+        return { data: [] };
+      }),
+      context.storefront?.query?.(COLLECTION_QUERY).catch(error => {
+        console.warn('Loader: Collections query failed, using empty array:', error);
+        return { collections: { nodes: [] } };
+      }),
+    ]);
 
-  let mergedArray = [];
-  if (res?.data?.length) {
-    mergedArray = res.data.map((item1) => {
-      const product = products?.nodes?.find(
-        (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
-      );
-      let status = item1.isPurchased
-        ? 'purchased'
-        : item1.productTypeId === 2
-        ? 'cashFund'
-        : 'addToCart';
-      return {
-        status,
-        isCashFund:
-          item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
-        availableForSale: product?.availableForSale ?? true,
-        ...item1,
-        ...(product || {}),
-      };
+    console.log('Loader: Gift products response:', res);
+    console.log('Loader: Cash fund response:', cashRes);
+
+    // Get API base URL from environment
+    const apiBaseUrl = context.env?.API_BASE_URL || '';
+
+    // Handle case where there are no gift products
+    let mergedArray = [];
+    if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+      console.log('Loader: Processing gift products, count:', res.data.length);
+      const ids = res.data.map(
+        (product) => `gid://shopify/Product/${product.productId}`,
+      ).filter(Boolean); // Filter out any undefined/null IDs
+      
+      if (ids.length > 0) {
+        try {
+          console.log('Loader: Fetching Shopify products for IDs:', ids);
+          const products = await fetchProducts(context.storefront, ids);
+          console.log('Loader: Shopify products response:', products);
+          
+          mergedArray = res.data.map((item1) => {
+            const product = products?.nodes?.find(
+              (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
+            );
+            let status = item1.isPurchased
+              ? 'purchased'
+              : item1.productTypeId === 2
+              ? 'cashFund'
+              : 'addToCart';
+            return {
+              status,
+              isCashFund:
+                item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
+              availableForSale: product?.availableForSale ?? true,
+              ...item1,
+              ...(product || {}),
+            };
+          });
+        } catch (shopifyError) {
+          console.warn('Loader: Shopify API failed, using fallback data:', shopifyError);
+          // Fallback: use the registry data without Shopify enrichment
+          mergedArray = res.data.map((item1) => ({
+            status: item1.isPurchased ? 'purchased' : 'addToCart',
+            isCashFund: item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
+            availableForSale: true,
+            ...item1,
+          }));
+        }
+        console.log('Loader: Merged gift products:', mergedArray);
+      }
+    } else {
+      console.log('Loader: No gift products found');
+    }
+
+    // Handle case where there are no cash fund products
+    const cashFundProducts = Array.isArray(cashRes?.data) && cashRes.data.length > 0
+      ? cashRes.data.map((item) => ({
+          ...item,
+          status: 'cashFund',
+          isCashFund: true,
+          availableForSale: true,
+        }))
+      : [];
+    console.log('Loader: Cash fund products:', cashFundProducts);
+
+    // Combine all products
+    const allProducts = [...mergedArray, ...cashFundProducts];
+    console.log('Loader: All products combined:', allProducts);
+    console.log('Loader: Total product count:', allProducts.length);
+
+    // Safety check: Ensure we have valid data structure
+    const safeResponse = response || {};
+    const safeCollections = shopifyCollections?.collections?.nodes || [];
+    const hasProducts = allProducts.length > 0;
+
+    return defer({
+      data: allProducts,
+      cashfundData: cashFundProducts,
+      response: safeResponse,
+      registryId,
+      collections: safeCollections,
+      apiBaseUrl,
+      hasProducts,
+      coupleId, // Add coupleId for reference
     });
+  } catch (error) {
+    console.error('Loader: Error occurred:', error);
+    // If it's already a Response object, re-throw it
+    if (error instanceof Response) {
+      throw error;
+    }
+    // Otherwise, throw a generic error
+    throw new Response(`Internal server error: ${error.message}`, {status: 500});
   }
-
-  const cashFundProducts = Array.isArray(cashRes?.data)
-    ? cashRes.data.map((item) => ({
-        ...item,
-        status: 'cashFund',
-        isCashFund: true,
-        availableForSale: true,
-      }))
-    : [];
-
-  return defer({
-    data: [...mergedArray, ...cashFundProducts],
-    cashfundData: cashFundProducts,
-    response,
-    registryId,
-    collections: shopifyCollections.collections.nodes,
-    apiBaseUrl,
-  });
 }
 
 export async function action({request, context}) {
@@ -95,7 +177,6 @@ export async function action({request, context}) {
     const itemId = formData.get('itemId');
     const productData = formData.get('productData');
 
-
     // Ensure we have access to session
     if (!context.session) {
       return json(
@@ -104,6 +185,17 @@ export async function action({request, context}) {
           error: 'Session not available',
         },
         {status: 500},
+      );
+    }
+
+    // Safety check: Ensure context has required methods
+    if (!context.ClientGet || typeof context.ClientGet !== 'function') {
+      return json(
+        {
+          success: false,
+          error: 'Service unavailable',
+        },
+        {status: 503},
       );
     }
 
@@ -127,7 +219,17 @@ export async function action({request, context}) {
       return json({success: false, error: 'Product data is required'});
     }
 
-    const product = JSON.parse(productData);
+    let product;
+    try {
+      product = JSON.parse(productData);
+    } catch (parseError) {
+      return json({success: false, error: 'Invalid product data format'});
+    }
+
+    // Safety check: Ensure product has required properties
+    if (!product || (!product.id && !product.productId)) {
+      return json({success: false, error: 'Invalid product data'});
+    }
 
     const amount = parseFloat(formData.get('amount') || product.amount || 0);
     const productTypeId = product.productTypeId || 1;
@@ -188,14 +290,13 @@ export async function action({request, context}) {
       image:
         product.images?.edges?.[0]?.node?.url ||
         product.cashFund?.image?.fileUrl ||
-        '',
+        '/assets/Images/placeholder.png',
       productTypeId: productTypeId,
-      registryId: Number(product.registryId || response?.data[0]?.id),
+      registryId: Number(product.registryId || 0),
       quantity: 1,
       originalId: product.id,
       isCashFund: productTypeId === 2 ? true : false,
     };
-
 
     return json(
       {
@@ -206,6 +307,7 @@ export async function action({request, context}) {
       }
     );
   } catch (error) {
+    console.error('Action error:', error);
     return json(
       {
         success: false,
@@ -230,9 +332,62 @@ async function hashCartId(cartId) {
 }
 
 export default function CoupleProfile() {
-  const {data, cashfundData, response, registryId, collections, apiBaseUrl} =
-    useLoaderData() || [];
+  const loaderData = useLoaderData();
+  console.log('Component: Loader data received:', loaderData);
+  
+  // If no loader data, show loading or error state
+  if (!loaderData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold text-gray-700 mb-4">Loading...</h1>
+          <p className="text-gray-600">Please wait while we load the registry information.</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Ensure we have valid data with fallbacks
+  const {
+    data = [],
+    cashfundData = [],
+    response = {},
+    registryId = null,
+    collections = [],
+    apiBaseUrl = '',
+    hasProducts = false,
+    coupleId = null
+  } = loaderData || {};
+  
+  // Safety check: If we don't have a registry ID, show an error
+  if (!registryId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold text-red-600 mb-4">Registry Not Found</h1>
+          <p className="text-gray-600 mb-4">We couldn't find the registry you're looking for.</p>
+          <p className="text-sm text-gray-500">Please check the URL and try again.</p>
+        </div>
+      </div>
+    );
+  }
+  
   const fetcher = useFetcher();
+
+  // Ensure data is always an array
+  const safeData = Array.isArray(data) ? data : [];
+  const safeCashfundData = Array.isArray(cashfundData) ? cashfundData : [];
+  const safeCollections = Array.isArray(collections) ? collections : [];
+  const safeResponse = response || {};
+  
+  console.log('Component: Safe data:', {
+    safeData: safeData.length,
+    safeCashfundData: safeCashfundData.length,
+    safeCollections: safeCollections.length,
+    hasProducts,
+    registryId,
+    coupleId
+  });
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [availability, setAvailability] = useState('');
@@ -269,6 +424,14 @@ export default function CoupleProfile() {
   const [forceRender, setForceRender] = useState(0);
   // Function to fetch cart items from API
   const fetchCartItems = async () => {
+    // Don't try to fetch cart items if there are no products or no registry ID
+    if (!hasProducts || !registryId) {
+      console.log('fetchCartItems: Skipping - no products or registry ID');
+      setCartItems([]);
+      cartItemsRef.current = [];
+      return;
+    }
+    
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     console.log('fetchCartItems called with email:', email, 'registryId:', registryId);
     
@@ -297,20 +460,20 @@ export default function CoupleProfile() {
           console.log('RegistryProduct quantity:', registryProduct.quantity);
           
           // Try to find the product in our loaded data to get title and image
-          const productFromData = data.find(p => 
+          const productFromData = safeData.find(p => 
             (p.productId && p.productId === registryProduct.productId) || 
             (p.id && p.id === registryProduct.productId)
           );
           
           return {
             id: cartItem.id,
-            price: Number(cartItem.price), // Use the price from cartItem
+            price: Number(cartItem.price) || 0, // Use the price from cartItem with fallback
             quantity: Number(cartItem.quantity || cartItem.purchasedQuantity || 1), // Use cartItem.quantity for purchased quantity
             title: cartItem.title || productFromData?.title || productFromData?.cashFund?.name || `Product ${registryProduct.productId}`,
-            image: cartItem.image || productFromData?.images?.edges?.[0]?.node?.url || productFromData?.cashFund?.image?.fileUrl || '/placeholder.svg',
+            image: cartItem.image || productFromData?.images?.edges?.[0]?.node?.url || productFromData?.cashFund?.image?.fileUrl || '/assets/Images/placeholder.png',
             isCashFund: registryProduct.productTypeId === 2,
             productId: registryProduct.productId,
-            amount: Number(registryProduct.amount), // Keep original amount for reference
+            amount: Number(registryProduct.amount) || 0, // Keep original amount for reference
             registryProductId: registryProduct.id, // Keep registry product ID for reference
             requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
           };
@@ -326,6 +489,7 @@ export default function CoupleProfile() {
     } catch (error) {
       console.error('Error fetching cart:', error);
       setCartItems([]);
+      cartItemsRef.current = [];
     } finally {
       setCartLoading(false);
     }
@@ -333,19 +497,23 @@ export default function CoupleProfile() {
 
   // Fetch cart items on component mount and when email changes
   useEffect(() => {
-    console.log('useEffect triggered - guestEmail:', guestEmail, 'registryId:', registryId);
-    if (guestEmail && registryId) {
+    console.log('useEffect triggered - guestEmail:', guestEmail, 'registryId:', registryId, 'hasProducts:', hasProducts);
+    if (guestEmail && registryId && hasProducts) {
       console.log('Calling fetchCartItems from useEffect');
-    fetchCartItems();
+      fetchCartItems();
+    } else {
+      console.log('useEffect: Skipping fetchCartItems - missing requirements');
+      setCartItems([]);
+      cartItemsRef.current = [];
     }
-  }, [guestEmail, registryId]);
+  }, [guestEmail, registryId, hasProducts]);
 
   // Fetch cart items whenever sidecart is opened, but only if we don't already have items
   useEffect(() => {
-    if (sideCartOpen && cartItems.length === 0) {
+    if (sideCartOpen && cartItems.length === 0 && hasProducts && registryId) {
       fetchCartItems();
     }
-  }, [sideCartOpen, cartItems.length]);
+  }, [sideCartOpen, cartItems.length, hasProducts, registryId]);
 
   // Force re-render when cart items change and sidecart is open
   useEffect(() => {
@@ -383,6 +551,15 @@ export default function CoupleProfile() {
 
   // Handle cart click from header - ensure we have email and cart items
   const handleCartClick = () => {
+    // Don't allow cart to open if there are no products
+    if (!hasProducts || !registryId) {
+      setAlertMessage('No products available in this registry');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
       setAlertMessage('Please enter your email first');
@@ -406,6 +583,15 @@ export default function CoupleProfile() {
 
   // Add popup functions
   const handleTitleClick = (product) => {
+    // Don't allow popup to open if there are no products
+    if (!hasProducts || !registryId) {
+      setAlertMessage('No products available in this registry');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
     setSelectedGiftData(product);
     setSelectedImageIndex(0); // Reset selected image for the new item
     setIsPopupOpen(true);
@@ -450,13 +636,21 @@ export default function CoupleProfile() {
 
   // Fetch cart items when email changes
   useEffect(() => {
-    if (guestEmail && registryId) {
+    if (guestEmail && registryId && hasProducts) {
       fetchCartItems();
+    } else {
+      setCartItems([]);
+      cartItemsRef.current = [];
     }
-  }, [guestEmail, registryId]);
+  }, [guestEmail, registryId, hasProducts]);
 
   // Helper to call /api/cart
   const callCartApi = async (email) => {
+    if (!hasProducts || !registryId) {
+      console.log('callCartApi: Skipping - no products or registry ID');
+      return { success: false, error: 'No products available' };
+    }
+    
     setIsApiLoading(true);
     try {
       const res = await fetch(`${apiBaseUrl}/api/cart`, {
@@ -479,6 +673,11 @@ export default function CoupleProfile() {
 
   // Helper to call /api/cart/add-to-cart/{registryId}/{userEmail}
   const callAddToCartApi = async (email, registryProductId, price, productData) => {
+    if (!hasProducts || !registryId) {
+      console.log('callAddToCartApi: Skipping - no products or registry ID');
+      return { success: false, error: 'No products available' };
+    }
+    
     setIsApiLoading(true);
     try {
       const payload = { 
@@ -510,6 +709,11 @@ export default function CoupleProfile() {
 
   // Helper to call /api/cart/add-to-cart/{registryId}/{userEmail} with quantity
   const callAddToCartApiWithQuantity = async (email, payload) => {
+    if (!hasProducts || !registryId) {
+      console.log('callAddToCartApiWithQuantity: Skipping - no products or registry ID');
+      return { success: false, error: 'No products available' };
+    }
+    
     setIsApiLoading(true);
     try {
       console.log('Sending to Cart API with quantity:', payload);
@@ -534,6 +738,15 @@ export default function CoupleProfile() {
 
   // Modified Add to Cart
   const handleAddToCart = (productId, quantity = 1) => {
+    // Don't allow adding to cart if there are no products
+    if (!hasProducts || !registryId) {
+      setAlertMessage('No products available in this registry');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
       setPendingCartAction({ type: 'add', productId, quantity });
@@ -541,7 +754,7 @@ export default function CoupleProfile() {
       return;
     }
     
-    const product = data.find((item) => item.id === productId);
+    const product = safeData.find((item) => item.id === productId);
     if (!product) return;
 
     // Check if product is already in cart - prevent duplication
@@ -593,13 +806,22 @@ export default function CoupleProfile() {
 
     // Modified Contribute
   const handleContribute = (productId, amount) => {
+    // Don't allow contributing if there are no products
+    if (!hasProducts || !registryId) {
+      setAlertMessage('No products available in this registry');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+    
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
       setPendingCartAction({ type: 'contribute', productId, amount });
       setShowEmailModal(true);
       return;
     }
-    const product = data.find((item) => item.id === productId);
+    const product = safeData.find((item) => item.id === productId);
     if (!product) return;
 
     // Check if product is already in cart - prevent duplication
@@ -680,7 +902,7 @@ export default function CoupleProfile() {
             console.log('RegistryProduct quantity:', registryProduct.quantity);
             
             // Try to find the product in our loaded data to get title and image
-            const productFromData = data.find(p => 
+            const productFromData = safeData.find(p => 
               (p.productId && p.productId === registryProduct.productId) || 
               (p.id && p.id === registryProduct.productId)
             );
@@ -740,7 +962,7 @@ export default function CoupleProfile() {
     // This ensures the product is added to cart when email is submitted
     if (pendingCartAction) {
       if (pendingCartAction.type === 'add') {
-        const product = data.find((item) => item.id === pendingCartAction.productId);
+        const product = safeData.find((item) => item.id === pendingCartAction.productId);
         if (product) {
           // Store registryId in localStorage when first item is added to cart
           if (typeof window !== 'undefined' && product.registryId) {
@@ -780,7 +1002,7 @@ export default function CoupleProfile() {
           }
         }
       } else if (pendingCartAction.type === 'contribute') {
-        const product = data.find((item) => item.id === pendingCartAction.productId);
+        const product = safeData.find((item) => item.id === pendingCartAction.productId);
         if (product) {
           // Store registryId in localStorage when first item is added to cart
           if (typeof window !== 'undefined' && product.registryId) {
@@ -819,6 +1041,11 @@ export default function CoupleProfile() {
 
   // Re-add handleRemoveFromCart for SideCart
   const handleRemoveFromCart = (itemId, updatedItem = null) => {
+    if (!hasProducts || !registryId) {
+      console.log('handleRemoveFromCart: Skipping - no products or registry ID');
+      return;
+    }
+    
     const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email || !registryId || !itemId) return;
     
@@ -901,14 +1128,24 @@ export default function CoupleProfile() {
 
   // Re-add handleClearCart for SideCart
   const handleClearCart = () => {
+    if (!hasProducts || !registryId) {
+      console.log('handleClearCart: Skipping - no products or registry ID');
+      return;
+    }
+    
     // TODO: Implement clear cart API call
     // For now, just refresh the cart
     fetchCartItems();
   };
 
   // Filter products
-  const filteredData = data
+  const filteredData = safeData && safeData.length > 0 && hasProducts && registryId ? safeData
     .filter((product) => {
+      // Safety check: Ensure product exists and has required properties
+      if (!product || !product.id) {
+        return false;
+      }
+      
       if (selectedCategory) {
         const collectionTitles =
           product.collections?.nodes?.map((c) => c.title) || [];
@@ -938,38 +1175,58 @@ export default function CoupleProfile() {
         return (b.amount ?? 0) - (a.amount ?? 0);
       }
       return 0;
-    });
+    }) : [];
 
   // Calculate cart totals from API data
   const cartTotal = cartItems.reduce(
-    (sum, item) => sum + Number(item.price) * (Number(item.quantity) || 1),
+    (sum, item) => {
+      // Safety check: Ensure item has valid price and quantity
+      if (!item || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+        return sum;
+      }
+      return sum + (Number(item.price) || 0) * (Number(item.quantity) || 1);
+    },
     0,
   );
 
   // Get recommended products (unpurchased products from the same couple, excluding cash funds)
-  const recommendedProducts = data
-    .filter(product => 
-      !product.isCashFund && 
-      product.status !== 'purchased' && 
-      !cartItems.some(cartItem => cartItem.productId === product.productId)
-    )
+  const recommendedProducts = safeData && safeData.length > 0 && hasProducts && registryId ? safeData
+    .filter(product => {
+      // Safety check: Ensure product exists and has required properties
+      if (!product || !product.id) {
+        return false;
+      }
+      
+      return !product.isCashFund && 
+        product.status !== 'purchased' && 
+        !cartItems.some(cartItem => cartItem.productId === product.productId);
+    })
     .slice(0, 4)
     .map(product => ({
       id: product.id,
-      title: product.title || product.cashFund?.name || '',
-      price: product.amount,
-      image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '/placeholder.svg',
-      productId: product.productId
-    }));
+      title: product.title || product.cashFund?.name || 'Unnamed Product',
+      price: product.amount || 0,
+      image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '/assets/Images/placeholder.png',
+      productId: product.productId || product.id
+    })) : [];
 
   // Handle adding recommended product to cart
   const handleAddRecommendedProduct = (product) => {
     handleAddToCart(product.id);
   };
 
-  const childCollections = collections.filter(
-    (collection) => collection.metafield?.value === 'true',
+  const childCollections = safeCollections.filter(
+    (collection) => {
+      // Safety check: Ensure collection exists and has required properties
+      if (!collection || !collection.metafield) {
+        return false;
+      }
+      return collection.metafield?.value === 'true';
+    }
   );
+  
+  // Only process child collections if we have products and registry
+  const validChildCollections = hasProducts && registryId ? childCollections : [];
   return (
     <>
       {showAlert && (
@@ -1008,23 +1265,23 @@ export default function CoupleProfile() {
           </div>
         </div>
       )}
-      <CoupleProfileViewHeader onCartClick={handleCartClick} />
+      <CoupleProfileViewHeader onCartClick={handleCartClick} showCart={hasProducts && registryId} />
       <div className="text-center pt-[80px] container mx-auto font-sans">
         <img
-          src={response?.data[0]?.events[0]?.backgroundImage?.fileUrl || "/assets/Images/couple-profile-bg.png"}
+          src={safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl || "/assets/Images/couple-profile-bg.png"}
           alt="Couple"
           className="w-full h-[400px] lg:h-[600px] object-cover"
         />
         <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
           <div className="xl:w-4/12 w-full">
             <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
-              {response?.data[0]?.user?.firstName} & {response?.data[0]?.user?.fianceFirstName}
+              {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} & {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
             </h1>
           </div>
           <div className="xl:w-4/12 w-full">
-            {response?.data[0]?.events[0]?.image?.fileUrl ? (
+            {safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl ? (
               <img
-                src={response.data[0].events[0].image.fileUrl}
+                src={safeResponse.data[0].events[0].image.fileUrl}
                 alt="Couple's Image"
                 className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto"
               />
@@ -1035,7 +1292,7 @@ export default function CoupleProfile() {
           <div className="xl:w-4/12 w-full">
             <div className="mr-16">
               <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
-                {response?.data[0]?.events[0]?.eventDate}
+                {safeResponse?.data?.[0]?.events?.[0]?.eventDate || 'Date TBD'}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
@@ -1044,14 +1301,14 @@ export default function CoupleProfile() {
               />
               <div className="text-right ">
                 <p className="text-lg my-1 uppercase">
-                  {response?.data[0]?.events[0]?.location}
+                  {safeResponse?.data?.[0]?.events?.[0]?.location || 'Location TBD'}
                 </p>
                 <p className="text-lg my-1 uppercase">
-                  {response?.data[0]?.events[0]?.city},{' '}
-                  {response?.data[0]?.events[0]?.province}
+                  {safeResponse?.data?.[0]?.events?.[0]?.city || 'City'},{' '}
+                  {safeResponse?.data?.[0]?.events?.[0]?.province || 'Province'}
                 </p>
                 <p className="text-lg my-1 uppercase">
-                  {response?.data[0]?.events[0]?.weddingTime}
+                  {safeResponse?.data?.[0]?.events?.[0]?.weddingTime || 'Time TBD'}
                 </p>
               </div>
             </div>
@@ -1063,7 +1320,7 @@ export default function CoupleProfile() {
         </h2>
 
         <p className="max-w-2xl mx-auto my-5 leading-relaxed">
-          {response?.data[0]?.events[0]?.welcomeMessage}
+          {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage || 'Thank you for being part of our special day!'}
         </p>
       </div>
 
@@ -1077,97 +1334,133 @@ export default function CoupleProfile() {
           className="max-w-[630px] h-auto mx-auto"
         />
 
-        <div className="filters">
-          <div className="filter-item flex gap-x-12 mt-12 justify-center">
-            <div
-              className="relative"
-              onClick={() => {
-                const nextCategory =
-                  selectedCategory === ''
-                    ? childCollections[0]?.title || ''
-                    : selectedCategory ===
-                      childCollections[childCollections.length - 1]?.title
-                    ? ''
-                    : childCollections[
-                        childCollections.findIndex(
-                          (c) => c.title === selectedCategory,
-                        ) + 1
-                      ]?.title || '';
-                setSelectedCategory(nextCategory);
-              }}
-            >
-              <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                <strong>Categories</strong> {selectedCategory || 'All'}
-              </h3>
-            </div>
+        {/* Only show filters if there are products and collections */}
+        {hasProducts && validChildCollections.length > 0 && registryId && (
+          <div className="filters">
+            <div className="filter-item flex gap-x-12 mt-12 justify-center">
+                              <div
+                  className="relative"
+                  onClick={() => {
+                    const nextCategory =
+                      selectedCategory === ''
+                        ? validChildCollections[0]?.title || ''
+                        : selectedCategory ===
+                          validChildCollections[validChildCollections.length - 1]?.title
+                        ? ''
+                        : validChildCollections[
+                            validChildCollections.findIndex(
+                              (c) => c.title === selectedCategory,
+                            ) + 1
+                          ]?.title || '';
+                    setSelectedCategory(nextCategory);
+                  }}
+                >
+                <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
+                  <strong>Categories</strong> {selectedCategory || 'All'}
+                </h3>
+              </div>
 
-            <div
-              className="relative"
-              onClick={() => {
-                const options = ['', 'low-to-high', 'high-to-low'];
-                const currentIndex = options.indexOf(priceSort);
-                const nextIndex = (currentIndex + 1) % options.length;
-                setPriceSort(options[nextIndex]);
-              }}
-            >
-              <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                <strong>price</strong>{' '}
-                {priceSort === 'low-to-high'
-                  ? 'low to high'
-                  : priceSort === 'high-to-low'
-                  ? 'high to low'
-                  : 'All'}
-              </h3>
-            </div>
+              <div
+                className="relative"
+                onClick={() => {
+                  const options = ['', 'low-to-high', 'high-to-low'];
+                  const currentIndex = options.indexOf(priceSort);
+                  const nextIndex = (currentIndex + 1) % options.length;
+                  setPriceSort(options[nextIndex]);
+                }}
+              >
+                <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
+                  <strong>price</strong>{' '}
+                  {priceSort === 'low-to-high'
+                    ? 'low to high'
+                    : priceSort === 'high-to-low'
+                    ? 'high to low'
+                    : 'All'}
+                </h3>
+              </div>
 
-            <div
-              className="relative"
-              onClick={() => {
-                const options = ['', 'in-stock', 'out-of-stock'];
-                const currentIndex = options.indexOf(availability);
-                const nextIndex = (currentIndex + 1) % options.length;
-                setAvailability(options[nextIndex]);
-              }}
-            >
-              <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                <strong>status</strong>{' '}
-                {availability === 'in-stock'
-                  ? 'Available'
-                  : availability === 'out-of-stock'
-                  ? 'Purchased'
-                  : 'All'}
-              </h3>
+              <div
+                className="relative"
+                onClick={() => {
+                  const options = ['', 'in-stock', 'out-of-stock'];
+                  const currentIndex = options.indexOf(availability);
+                  const nextIndex = (currentIndex + 1) % options.length;
+                  setAvailability(options[nextIndex]);
+                }}
+              >
+                <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
+                  <strong>status</strong>{' '}
+                  {availability === 'in-stock'
+                    ? 'Available'
+                    : availability === 'out-of-stock'
+                    ? 'Purchased'
+                    : 'All'}
+                </h3>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
-          {filteredData.map((product, index) => (
-            console.log('product', product),
-            <CoupleProductCard
-              key={product.id}
-              name={product.title || product.cashFund?.name || ''}
-              image={
-                product.images?.edges[0]?.node?.url ||
-                product.cashFund?.image?.fileUrl ||
-                ''
+        {/* Show products if they exist, otherwise show no products message */}
+        {hasProducts && registryId && safeData.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
+            {filteredData.map((product, index) => {
+              // Safety check: Ensure product has required properties
+              if (!product || !product.id) {
+                console.warn('Skipping invalid product:', product);
+                return null;
               }
-              price={product.amount}
-              description={product.description || product.cashFund?.note || ''}
-              quantity={product.quantity}
-              isGroupGift={product.isGroupPayment}
-              isCashFund={product.isCashFund}
-              status={product.status}
-              contributedAmount={Number(product.collectedAmount) || 0}
-              maxContribution={Number(product.amount) || 0}
-              purchasedQuantity={Number(product.purchasedQuantity) || 0}
-              isAnyAmount={product.cashFund?.isAnyAmount || false}
-              onAddToCart={() => handleAddToCart(product.id)}
-              onContribute={(amount) => handleContribute(product.id, amount)}
-              onTitleClick={() => handleTitleClick(product)}
-            />
-          ))}
-        </div>
+              
+              return (
+                <CoupleProductCard
+                  key={product.id || index}
+                  name={product.title || product.cashFund?.name || 'Unnamed Product'}
+                  image={
+                    product.images?.edges?.[0]?.node?.url ||
+                    product.cashFund?.image?.fileUrl ||
+                    '/assets/Images/placeholder.png'
+                  }
+                  price={product.amount || 0}
+                  description={product.description || product.cashFund?.note || 'No description available'}
+                  quantity={product.quantity || 1}
+                  isGroupGift={product.isGroupPayment || false}
+                  isCashFund={product.isCashFund || false}
+                  status={product.status || 'addToCart'}
+                  contributedAmount={Number(product.collectedAmount) || 0}
+                  maxContribution={Number(product.amount) || 0}
+                  purchasedQuantity={Number(product.purchasedQuantity) || 0}
+                  isAnyAmount={product.cashFund?.isAnyAmount || false}
+                  onAddToCart={() => handleAddToCart(product.id)}
+                  onContribute={(amount) => handleContribute(product.id, amount)}
+                  onTitleClick={() => handleTitleClick(product)}
+                />
+              );
+            }).filter(Boolean)} {/* Filter out null products */}
+          </div>
+        ) : (
+          <div className="text-center py-16 px-6 mt-12">
+            <div className="max-w-md mx-auto">
+              <img
+                src="/assets/Images/gift.png"
+                alt="No Products"
+                className="w-24 h-24 mx-auto mb-6 opacity-50"
+              />
+              <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
+                No Products Found
+              </h3>
+              <p className="text-gray-600 mb-6">
+                This registry doesn't have any products or cash funds added yet. 
+                Check back later or contact the couple for more information.
+              </p>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm text-gray-500">
+                  <strong>Tip:</strong> You can still contribute to their journey using the 
+                  "Gift Any Amount" section below.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div className="container pt-12 md:flex-nowrap flex-wrap mx-auto flex lg:gap-8 gap-2 items-stretch flex-row-reverse">
         <div className="py-10 px-6 md:py-12 md:px-[6rem] lg:px-[8rem] bg-[#446184] relative flex items-center justify-center flex-col  lg:w-[65%] w-full max-[768px]:p-10 lg:mt-20 mt-6">
@@ -1219,27 +1512,29 @@ export default function CoupleProfile() {
         </div>
       </div>
 
-      {sideCartOpen && (
+      {sideCartOpen && hasProducts && registryId && (
         <div
           className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
           onClick={onClose}
         />
       )}
       {console.log('Rendering SideCart with cartItems:', cartItems, 'sideCartOpen:', sideCartOpen)}
-      <SideCart
-        key={`cart-${cartItems.length}-${JSON.stringify(cartItems.map(item => item.id))}-${forceRender}`}
-        open={sideCartOpen}
-        onClose={onClose}
-        cartItems={cartItems}
-        total={cartTotal}
-        subtotal={cartTotal}
-        onCartChange={handleRemoveFromCart}
-        onClearCart={handleClearCart}
-        recommendedProducts={recommendedProducts}
-        onAddRecommendedProduct={handleAddRecommendedProduct}
-      />
+      {hasProducts && registryId && (
+        <SideCart
+          key={`cart-${cartItems.length}-${JSON.stringify(cartItems.map(item => item.id))}-${forceRender}`}
+          open={sideCartOpen}
+          onClose={onClose}
+          cartItems={cartItems}
+          total={cartTotal}
+          subtotal={cartTotal}
+          onCartChange={handleRemoveFromCart}
+          onClearCart={handleClearCart}
+          recommendedProducts={recommendedProducts}
+          onAddRecommendedProduct={handleAddRecommendedProduct}
+        />
+      )}
 
-      {isPopupOpen && selectedGiftData && (
+      {isPopupOpen && selectedGiftData && hasProducts && registryId && (
         <div
           className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
           onClick={closePopup}
@@ -1262,7 +1557,7 @@ export default function CoupleProfile() {
                   src={
                     selectedGiftData.images?.edges?.[selectedImageIndex]?.node?.url ||
                     selectedGiftData.cashFund?.image?.fileUrl ||
-                    '/placeholder.svg'
+                    '/assets/Images/placeholder.png'
                   }
                   alt={
                     selectedGiftData.title ||
@@ -1285,7 +1580,7 @@ export default function CoupleProfile() {
                           onClick={() => setSelectedImageIndex(index)}
                   >
                     <img
-                            src={imageEdge.node?.url || '/placeholder.svg'}
+                            src={imageEdge.node?.url || '/assets/Images/placeholder.png'}
                             alt={`Thumbnail ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -1299,7 +1594,7 @@ export default function CoupleProfile() {
                       src={
                         selectedGiftData.images?.edges?.[0]?.node?.url ||
                         selectedGiftData.cashFund?.image?.fileUrl ||
-                        '/placeholder.svg'
+                        '/assets/Images/placeholder.png'
                       }
                         alt="Product"
                       className="w-full h-full object-cover"
@@ -1320,48 +1615,10 @@ export default function CoupleProfile() {
                     'Product'}
                 </h1>
                 <div className="text-xl font-medium mb-6">
-                  ${selectedGiftData.amount}
+                  ${selectedGiftData.amount || 0}
                 </div>
 
                 <div className="flex items-center gap-4 mb-6">
-                  {/* Display Requested/Still Needs */}
-                  {/* {!selectedGiftData.isCashFund && !selectedGiftData.isGroupGift && (
-                  <div className="flex flex-col items-start border border-gray-300 p-2 rounded text-sm">
-                    <div>
-                      Requested:{' '}
-                      <span className="font-medium">
-                          {selectedGiftData.quantity || 'N/A'}
-                      </span>
-                    </div>
-                    <div>
-                      Still Needs:{' '}
-                      <span className="font-medium">
-                          {selectedGiftData.status === 'purchased' 
-                            ? 0 
-                            : Math.max(0, (selectedGiftData.quantity || 0) - (selectedGiftData.purchasedQuantity || 0))}
-                      </span>
-                    </div>
-                  </div>
-                  )} */}
-
-                  {/* Display Cash Fund/Group Gift Progress */}
-                  {/* {(selectedGiftData.isCashFund || selectedGiftData.isGroupGift) && (
-                    <div className="flex flex-col items-start border border-gray-300 p-2 rounded text-sm">
-                      <div>
-                        Contributed:{' '}
-                        <span className="font-medium">
-                          ${(selectedGiftData.collectedAmount || 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div>
-                        Remaining:{' '}
-                        <span className="font-medium">
-                          ${Math.max(0, (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0)).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-                  )} */}
-
                   {/* Quantity Selector for Regular Products */}
                   {!selectedGiftData.isCashFund && !selectedGiftData.isGroupGift && selectedGiftData.status !== 'purchased' && (
                     <div className="flex flex-col items-center justify-center mb-4">
@@ -1426,30 +1683,13 @@ export default function CoupleProfile() {
                     selectedGiftData.cashFund?.note ||
                     "Keep your butter spreadable and fresh in this butter keeper, a French invention when refrigeration didn't exist. Marble naturally keeps butter cool, and the French naturally know their way around the kitchen. Need we say more?"}
                 </p>
-
-                {/* <div className="mb-6">
-                  <h2 className="font-medium uppercase text-xs tracking-wider mb-1 text-gray-500">
-                    HOW IT WORKS:
-                  </h2>
-                  <p className="text-gray-700 text-sm">
-                    Fill your butter keeper with 1/4" cold water to keep butter
-                    soft. Change water every 3-5 days to keep butter fresh.
-                  </p>
-                </div> */}
-
-                {/* <div>
-                  <h2 className="font-medium uppercase text-xs tracking-wider mb-1 text-gray-500">
-                    DETAILS:
-                  </h2>
-                  <p className="text-gray-700 text-sm">H 4.25" | 4" DIA</p>
-                </div> */}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {showEmailModal && (
+      {showEmailModal && hasProducts && registryId && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
           <form
             className="bg-white p-6 rounded shadow-lg w-full max-w-sm relative"

@@ -137,7 +137,7 @@ const GiftDetail = ({
                 id="groupGift"
                 checked={isGroupGift}
                 onChange={() => setIsGroupGift(!isGroupGift)}
-                className="w-7 h-7 border-2 border-black appearance-none rounded-full checked:bg-[#446184]"
+                className="w-7 h-7 border-2 border-black appearance-none rounded-full checked:bg-[#446184] checked:after:content-['✓'] checked:after:text-white checked:after:text-sm checked:after:flex checked:after:items-center checked:after:justify-center checked:after:w-full checked:after:h-full"
               />
               <label
                 htmlFor="groupGift"

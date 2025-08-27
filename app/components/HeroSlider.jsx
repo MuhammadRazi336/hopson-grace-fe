@@ -57,31 +57,24 @@ const HeroSlider = () => {
   const handleVideoError = (e) => {
     const error = e.target.error;
     const details = error ? `Code: ${error.code}, Message: ${error.message}` : 'Unknown error';
-    console.error('Video loading error:', e);
-    console.log('Current video source:', slides[1].videoSources[currentVideoIndex]);
-    console.log('Error details:', details);
     
     setErrorDetails(details);
     
     // Try next video source if available
     if (currentVideoIndex < slides[1].videoSources.length - 1) {
-      console.log('Trying next video source...');
       setCurrentVideoIndex(prev => prev + 1);
       setVideoError(false);
     } else {
-      console.log('All video sources failed, showing fallback');
       setVideoError(true);
     }
   };
 
   const handleVideoLoad = () => {
-    console.log('Video loaded successfully');
     setVideoLoaded(true);
     setVideoError(false);
   };
 
   const handleVideoCanPlay = () => {
-    console.log('Video can play');
     setVideoLoaded(true);
   };
 
@@ -93,10 +86,6 @@ const HeroSlider = () => {
 
   // Log current environment for debugging
   useEffect(() => {
-    console.log('HeroSlider mounted');
-    console.log('Current environment:', process.env.NODE_ENV);
-    console.log('Video sources:', slides[1].videoSources);
-    
     // Check browser video support
     checkBrowserVideoSupport();
     
@@ -107,11 +96,10 @@ const HeroSlider = () => {
   // Function to check browser video support
   const checkBrowserVideoSupport = () => {
     const video = document.createElement('video');
-    console.log('Browser video support:');
-    console.log('- WebM:', video.canPlayType('video/webm'));
-    console.log('- MP4:', video.canPlayType('video/mp4'));
-    console.log('- OGV:', video.canPlayType('video/ogg'));
-    console.log('- User Agent:', navigator.userAgent);
+    // Browser video support check - silent for production
+    video.canPlayType('video/webm');
+    video.canPlayType('video/mp4');
+    video.canPlayType('video/ogg');
   };
 
   // Function to test if video files are accessible
@@ -120,7 +108,6 @@ const HeroSlider = () => {
       const source = slides[1].videoSources[i];
       try {
         const response = await fetch(source.src, { method: 'HEAD' });
-        console.log(`Video source ${i} (${source.src}): ${response.ok ? 'OK' : 'Failed'} - Status: ${response.status}`);
         
         if (response.ok) {
           // Try to actually load the video
@@ -137,10 +124,6 @@ const HeroSlider = () => {
     const testVideo = document.createElement('video');
     testVideo.muted = true;
     testVideo.preload = 'metadata';
-    
-    testVideo.onloadedmetadata = () => {
-      console.log(`Video source ${index} (${src}): Successfully loaded metadata`);
-    };
     
     testVideo.onerror = (e) => {
       console.error(`Video source ${index} (${src}): Failed to load metadata`, e);
@@ -229,10 +212,6 @@ const HeroSlider = () => {
                   onError={handleVideoError}
                   onLoadedData={handleVideoLoad}
                   onCanPlay={handleVideoCanPlay}
-                  onLoadStart={() => console.log('Video load started')}
-                  onProgress={() => console.log('Video loading progress')}
-                  onAbort={() => console.log('Video loading aborted')}
-                  onSuspend={() => console.log('Video loading suspended')}
                   className="w-full h-full object-cover"
                 >
                   <source

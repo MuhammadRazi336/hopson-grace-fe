@@ -27,27 +27,39 @@ export async function loader({context}) {
     throw new Response('Registry not found in session', {status: 404});
   }
 
-  const data = await context.ClientGet(
-    `registryProducts/cash-fund/${registry.id}`,
-    context,
-  );
-
-  // Defensive check for image
-  if (data?.data && Array.isArray(data.data)) {
-    data.data.forEach((item, idx) => {
-      if (item && item.image && item.image.fileUrl) {
-        // ok
-      } else {
-        // Ensure item.image is at least an empty object
-        if (item && !item.image) item.image = {};
+  // Fetch collections data for the swiper and products
+  let collections = [];
+  let allProducts = [];
+  try {
+    const [{collections: collectionsData}] = await Promise.all([
+      context.storefront.query(COLLECTION_QUERY),
+    ]);
+    collections = collectionsData?.nodes || [];
+    
+    // Extract products from collections where cashfund metafield is true
+    collections.forEach(collection => {
+      if (collection.cashfundMetafield?.value === 'true' && collection.products?.edges) {
+        collection.products.edges.forEach(edge => {
+          const product = edge.node;
+          allProducts.push({
+            id: product.id,
+            title: product.title,
+            handle: product.handle,
+            description: product.description,
+            image: product.images?.edges?.[0]?.node?.url || null,
+            price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+            currency: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
+            availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
+            collectionId: collection.id // Add collection ID to track which collection the product belongs to
+          });
+        });
       }
     });
+  } catch (error) {
+    console.error('Error fetching collections:', error);
   }
 
-  // Remove or comment out the direct console.log that assumes image exists
-  // console.log('data', data.data[1].image.fileUrl);
-
-  return {cashFundData: data?.data || [], registryId: registry?.id};
+  return {products: allProducts, registryId: registry?.id, collections};
 }
 
 export async function action({request, context}) {
@@ -74,7 +86,13 @@ export async function action({request, context}) {
   }
 }
 const CashFunds = () => {
-  const {cashFundData, registryId} = useLoaderData();
+  const {products, registryId, collections} = useLoaderData();
+  const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
+
+  // Filter products based on selected collection
+  const filteredProducts = selectedSwiperCollectionId 
+    ? products.filter(product => product.collectionId === selectedSwiperCollectionId)
+    : products;
 
   const handleButtonClick = (title) => {
     alert(`Button clicked for ${title}`);
@@ -84,8 +102,13 @@ const CashFunds = () => {
     <>
       <div className="pt-[80px] relative p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          <span className="prata uppercase">ADD CASH</span> or{' '}
-          <span className="prata uppercase">TRAVEL</span>
+          {selectedSwiperCollectionId ? (
+            <span className="prata uppercase">
+              {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
+            </span>
+          ) : (
+            <><span className="prata uppercase">ADD CASH</span><span className='mx-2'>or</span><span className="prata uppercase">TRAVEL</span></>
+          )}
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"
@@ -93,103 +116,135 @@ const CashFunds = () => {
           className="max-w-[630px] mt-5 h-auto mx-auto"
         />
         <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
-          Browse honeymoon destinations, pick from curated cash funds, choose a
-          gift card, or create something totally unique—like a spa day on your
-          honeymoon or a wine subscription from your favourite vineyard.
-          Whatever your dream, this is the place to make it happen.
+          {selectedSwiperCollectionId 
+            ? `Browse products from ${collections.find(col => col.id === selectedSwiperCollectionId)?.title || 'this collection'}.`
+            : 'Browse honeymoon destinations, pick from curated cash funds, choose a gift card, or create something totally unique—like a spa day on your honeymoon or a wine subscription from your favourite vineyard. Whatever your dream, this is the place to make it happen.'
+          }
         </p>
       </div>
 
       <section className=" ">
         <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
           <div className=" ">
-            <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 size-6" />
-            </div>
+            {!selectedSwiperCollectionId && (
+              <>
+                <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
+                  <img src={nextitem} alt="" className="rotate-180 size-6" />
+                </div>
 
-            <Swiper
-              spaceBetween={15}
-              slidesPerView={3.25} // Shows 3 full + a portion of 4th
-              centeredSlides={true} // Enables .5 on both sides
-              loop={true}
-              modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
-              }}
-              className="px-[178px]"
-              breakpoints={{
-                345: {
-                  slidesPerView: 1.25,
-                  spaceBetween: 10,
-                  centeredSlides: true,
-                },
-                475: {
-                  slidesPerView: 2.25,
-                  spaceBetween: 15,
-                  centeredSlides: true,
-                },
-                768: {
-                  slidesPerView: 2.25,
-                  spaceBetween: 20,
-                  centeredSlides: true,
-                },
-                1024: {
-                  slidesPerView: 2.75,
-                  spaceBetween: 30,
-                  centeredSlides: true,
-                },
-                1366: {
-                  slidesPerView: 3.25,
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-                1600: {
-                  slidesPerView: 3.5,
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-              }}
-            >
-              {/* slides here */}
-              <SwiperSlide>
-                <img src={product1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  New Arrival
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={product2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  Tableware
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
+                <Swiper
+                  spaceBetween={15}
+                  slidesPerView={3.25} // Shows 3 full + a portion of 4th
+                  centeredSlides={true} // Enables .5 on both sides
+                  loop={true}
+                  modules={[Navigation]}
+                  navigation={{
+                    nextEl: '.swiper-button-next-prod',
+                    prevEl: '.swiper-button-prev-prod',
+                  }}
+                  className="px-[178px]"
+                  breakpoints={{
+                    345: {
+                      slidesPerView: 1.25,
+                      spaceBetween: 10,
+                      centeredSlides: true,
+                    },
+                    475: {
+                      slidesPerView: 2.25,
+                      spaceBetween: 15,
+                      centeredSlides: true,
+                    },
+                    768: {
+                      slidesPerView: 2.25,
+                      spaceBetween: 20,
+                      centeredSlides: true,
+                    },
+                    1024: {
+                      slidesPerView: 2.75,
+                      spaceBetween: 30,
+                      centeredSlides: true,
+                    },
+                    1366: {
+                      slidesPerView: 3.25,
+                      spaceBetween: 39,
+                      centeredSlides: true,
+                    },
+                    1600: {
+                      slidesPerView: 3.5,
+                      spaceBetween: 39,
+                      centeredSlides: true,
+                    },
+                  }}
+                >
+                  {/* Static Create Your Own slide */}
+                  <SwiperSlide
+                    key="create-your-own"
+                    onClick={() => {
+                      // Navigate to create new cash fund page
+                      window.location.href = '/dashboard/cashfunds/create-new';
+                    }}
+                    style={{ cursor: 'pointer'}}
+                  >
+                    <Link to="/dashboard/cashfunds/create-new">
+                    <div className="h-[500px] overflow-hidden bg-[#F5F2ED]">
+                      <img
+                        src="/assets/Images/registrylogoSteps.png"
+                        alt="Create Your Own Cash Fund"
+                        className="object-fit w-[50%] mx-auto"
+                      />
+                    </div>
+                    <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      CREATE YOUR OWN
+                    </h3>
+                    </Link>
+                  </SwiperSlide>
+
+                  {/* Dynamic slides from Shopify collections with cashfund metafield = true */}
+                  {collections
+                    .filter((col) => col.cashfundMetafield?.value === 'true')
+                    .map((col) => (
+                      <SwiperSlide
+                        key={col.id}
+                        onClick={() => {
+                          setSelectedSwiperCollectionId(col.id);
+                        }}
+                        style={{ cursor: 'pointer'}}
+                      >
+                        <div className="h-[500px] overflow-hidden">
+                          <img
+                            src={col.image?.url || '/assets/Images/placeholder.png'}
+                            alt={col.title}
+                            className="w-full h-[500px] object-cover"
+                          />
+                        </div>
+                        <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                          {col.title}
+                        </h3>
+                      </SwiperSlide>
+                    ))}
+                </Swiper>
+                <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
+                  <img src={nextitem} className="size-6" alt="" />
+                </div>
+              </>
+            )}
+
+            {/* Selected collection image at 100% width */}
+            {selectedSwiperCollectionId && (
+              <div className="relative">
                 <img
-                  src={product3}
-                  alt="Staub Cast Iron Q4"
-                  className="w-full"
+                  src={collections.find(col => col.id === selectedSwiperCollectionId)?.image?.url || '/assets/Images/placeholder.png'}
+                  alt={collections.find(col => col.id === selectedSwiperCollectionId)?.title}
+                  className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
-                <h3 className="mt-2.5 text-center uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-                  glassware & bareware
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={product4} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  New arrivals
-                </h3>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={product1} alt="tableware" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  tableware
-                </h3>
-              </SwiperSlide>
-            </Swiper>
-            <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
-              <img src={nextitem} className="size-6" alt="" />
-            </div>
+                <button
+                  onClick={() => setSelectedSwiperCollectionId(null)}
+                  className="absolute top-4 left-4 bg-white text-black px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
+                >
+                  ← Back to Collections
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -198,22 +253,21 @@ const CashFunds = () => {
         <div className="flex flex-col md:flex-row gap-12 pt-10">
           <SidebarFilter />
           <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
-                         {cashFundData.map((card, index) => (
-               <Card
-                 id={card.id}
-                 key={index}
-                 image={
-                   card.image && card.image.fileUrl
-                     ? card.image.fileUrl
-                     : undefined
-                 }
-                 title={card.name}
-                 amount={card.amount}
-                 buttonLabel={'Personalize Fund'}
-                 onButtonClick={() => handleButtonClick(card.title)}
-                 registryId={registryId}
-               />
-             ))}
+            {filteredProducts.map((card, index) => (
+              <Card
+                id={card.id}
+                key={index}
+                image={card.image}
+                title={card.title}
+                amount={card.price}
+                buttonLabel={'Personalize Fund'}
+                onButtonClick={() => handleButtonClick(card.title)}
+                registryId={registryId}
+                price={card.price}
+                currency={card.currency}
+                handle={card.handle}
+              />
+            ))}
           </div>
         </div>
 
@@ -377,9 +431,62 @@ const CashFunds = () => {
   );
 };
 
+const COLLECTION_QUERY = `#graphql
+  query {
+    collections(first: 50) {
+      nodes {
+        description
+        title
+        id
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        cashfundMetafield: metafield(namespace: "custom", key: "cashfund") {
+          id
+          value
+        }
+        products(first: 10){
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              images(first: 10) {
+                edges {
+                  node {
+                    id
+                    url
+                  }
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export default CashFunds;
 
-const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId}) => {
+const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId, price, currency, handle}) => {
   const fetcher = useFetcher();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -468,7 +575,7 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId}
 
         <div className="flex items-center justify-between mt-4">
           <div className="flex flex-col w-full items-center text-xs">
-            <Link to={`/dashboard/cashfunds/${id}`}>
+            <Link to={`/dashboard/cashfunds/${id}`} className='w-full'>
               <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
                 personalize fund
               </button>

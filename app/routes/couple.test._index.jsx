@@ -427,7 +427,7 @@ export default function CoupleProfileView() {
   );
 }
 
-export function CoupleProfileViewHeader({onCartClick}) {
+export function CoupleProfileViewHeader({onCartClick, showCart = true}) {
   return (
     <div className="container mx-auto flex justify-between md:items-start items-center md:pt-6 pt-2 absolute top-0 left-0 right-0">
       <img
@@ -436,13 +436,15 @@ export function CoupleProfileViewHeader({onCartClick}) {
         className="md:w-[150px] w-[100px] xl:-mb-6 mb-0 h-auto md:-ml-10 -ml-2"
       />
 
-      <span className="my-0 cursor-pointer" onClick={onCartClick}>
-        <img
-          src="/assets/Images/cart-icon.png"
-          alt="cart"
-          className="w-7 h-7"
-        />
-      </span>
+      {showCart && (
+        <span className="my-0 cursor-pointer" onClick={onCartClick}>
+          <img
+            src="/assets/Images/cart-icon.png"
+            alt="cart"
+            className="w-7 h-7"
+          />
+        </span>
+      )}
     </div>
   );
 }

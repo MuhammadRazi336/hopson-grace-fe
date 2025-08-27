@@ -4,12 +4,23 @@ import {Navigation, EffectFade} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import moreitem from '/assets/Images/more.png';
+import { Link } from '@remix-run/react';
 
 const stepsData = [
   {
     title: "Let's Connect",
-    description:
-      "Enter your names and wedding details and start adding gifts and funds. It's that easy! If you'd prefer to talk to us first or set up your registry in our Toronto showroom, we can do that as well.",
+    description: (
+      <>
+        Enter your names and wedding details and start adding gifts and funds - it's that easy. If you'd prefer to talk to us first or set up a virtual appointment, just{' '}
+        <Link 
+          to="https://calendly.com/concierge-theregistry/setting-up-your-registry" 
+          className="text-black hover:text-black underline cursor-pointer font-medium"
+        >
+          click here
+        </Link>{' '}
+        to connect.
+      </>
+    ),
   },
   {
     title: "Let's Connect",

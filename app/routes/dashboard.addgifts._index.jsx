@@ -706,7 +706,7 @@ export default function AddGifts() {
                         <img
                           src={col.image?.url || '/assets/Images/placeholder.png'}
                           alt={col.title}
-                          className="w-full"
+                          className="w-full h-[500px] object-cover"
                         />
                         <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                           {col.title}
@@ -726,7 +726,7 @@ export default function AddGifts() {
                 <img
                   src={collections.find(col => col.id === selectedSwiperCollectionId)?.image?.url || '/assets/Images/placeholder.png'}
                   alt={collections.find(col => col.id === selectedSwiperCollectionId)?.title}
-                  className="w-full h-[510px] lg:h-[800px] object-cover"
+                  className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
               </div>
             )}
