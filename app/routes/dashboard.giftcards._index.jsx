@@ -87,6 +87,9 @@ async function loadGiftCardData({context}) {
 const GiftCards = () => {
   const {collections, giftCards, registry} = useLoaderData();
   const fetcher = useFetcher();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success');
   
   console.log('Gift Cards Data:', giftCards);
 
@@ -94,13 +97,25 @@ const GiftCards = () => {
     try {
       // Check if registry exists and has an id
       if (!registry || !registry.id) {
-        alert('Registry not found. Please try again.');
+        setAlertMessage('Registry not found. Please try again.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
         return;
       }
 
       const firstVariant = giftCard?.variants?.edges?.[0]?.node;
       if (!firstVariant) {
-        alert('Product variant not found.');
+        setAlertMessage('Product variant not found.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
         return;
       }
 
@@ -121,9 +136,23 @@ const GiftCards = () => {
       );
 
       // Show success alert
-      alert(`${giftCard.title} has been added to your registry!`);
+      setAlertMessage(`${giftCard.title} has been added to your registry!`);
+      setAlertType('success');
+      setShowAlert(true);
+      
+      // Hide alert after 3 seconds
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
     } catch (error) {
-      alert('Failed to add to registry. Please try again.');
+      setAlertMessage('Failed to add to registry. Please try again.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
     }
   };
   
@@ -281,6 +310,68 @@ const GiftCards = () => {
         </div>
       </section>
     <Footer />
+    
+    {/* Alert Component */}
+    {showAlert && (
+      <div
+        className={`fixed top-4 right-4 ${
+          alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+      >
+        <div className="flex items-center">
+          {alertType === 'success' && (
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M5 13l4 4L19 7"></path>
+            </svg>
+          )}
+          {alertType === 'error' && (
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          )}
+          <span>{alertMessage}</span>
+        </div>
+      </div>
+    )}
+    <style jsx>{`
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        10% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        90% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+      }
+      .animate-fade-in-out {
+        animation: fadeInOut 3s ease-in-out;
+      }
+    `}</style>
     </>
   )
 }

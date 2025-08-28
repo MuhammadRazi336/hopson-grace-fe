@@ -5,6 +5,7 @@ import Heading from '~/components/Heading';
 import lineImghead from '/assets/Images/line.png';
 import RegistryLogo from '/assets/Images/registry-monogram.png';
 import HopsonGrace from '/assets/Images/HopsonGraceTitle.png';
+import {Link} from '@remix-run/react';
 
 const ContactUs = () => {
   return (
@@ -69,11 +70,11 @@ const ContactUs = () => {
                   stress-free.
                 </p>
               </div>
-              <button 
-                    className="font-bold px-6 mt-3 py-4 text-sm transition-colors duration-200 bg-white text-black hover:bg-gray-100"
-                  >
-                   BOOK AN APPOINTMENT
-                  </button>
+              <Link to={"https://calendly.com/concierge-theregistry/30min"}>
+                <button className="font-bold px-6 mt-3 py-4 text-sm transition-colors duration-200 bg-white text-black hover:bg-gray-100">
+                  BOOK AN APPOINTMENT
+                </button>
+              </Link>
             </div>
           </div>
         </section>

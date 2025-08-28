@@ -148,9 +148,9 @@ const ViewGifts = () => {
                 </h4>
               </div>
             </div>
-            <div className="flex flex-wrap">
+            <div className="flex flex-wrap ml-10">
               <div className="xl:w-5/12 w-full">
-                <div className="max-h-[440px] overflow-y-auto bg-[#FAF9F6]  px-4 py-2">
+                <div className="max-h-[540px] overflow-y-auto bg-[#FAF9F6]  px-4 py-2">
                   {viewGifts.map(
                     (item, idx) => (
                       console.log(item),

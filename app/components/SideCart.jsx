@@ -13,6 +13,8 @@ export default function SideCart({
   onClearCart,
   recommendedProducts = [], // Add this prop for recommended products
   onAddRecommendedProduct, // Add this prop for handling recommended product clicks
+  cashFunds = [], // Add this prop for cash funds
+  onAddCashFund, // Add this prop for adding cash funds
 }) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -75,7 +77,7 @@ export default function SideCart({
 
   // Separate regular items and cash funds
   const regularItems = items.filter((item) => !item?.isCashFund);
-  const cashFunds = items.filter((item) => item?.isCashFund);
+  const cartCashFunds = items.filter((item) => item?.isCashFund);
 
   console.log('Rendering SideCart with:', {
     regularItems,
@@ -151,7 +153,7 @@ export default function SideCart({
                         <img
                           src={item.image}
                           alt={item.title}
-                          className="w-20 h-20 object-cover rounded"
+                          className="w-32 h-32 object-cover rounded"
                         />
                         <div>
                           <div className="font-bold text-lg leading-tight">
@@ -188,7 +190,7 @@ export default function SideCart({
               )}
 
               {/* Cash Funds */}
-              {cashFunds.length > 0 && (
+              {cartCashFunds.length > 0 && (
                 <div>
                   <div className="grid grid-cols-12 gap-4 text-xs font-bold uppercase mb-4">
                     <div className="col-span-5">Cash Fund</div>
@@ -197,7 +199,7 @@ export default function SideCart({
                     <div className="col-span-2 text-center"></div>
                     <div className="col-span-1"></div>
                   </div>
-                  {cashFunds.map((item) => (
+                  {cartCashFunds.map((item) => (
                     <div
                       key={item.id}
                       className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 py-8 px-4"
@@ -206,7 +208,7 @@ export default function SideCart({
                         <img
                           src={item.image}
                           alt={item.title}
-                          className="w-20 h-20 object-cover rounded"
+                          className="w-32 h-32 object-cover rounded"
                         />
                         <div>
                           <div className="font-bold text-lg leading-tight">
@@ -276,28 +278,34 @@ export default function SideCart({
                 />
               </div>
 
-              {/* Recommended Products Section */}
-              {recommendedProducts.length > 0 && (
+              {/* Combined Recommended Items Section */}
+              {[...recommendedProducts, ...cashFunds].length > 0 && (
                 <div className="mt-6">
                   <div className="grid grid-cols-4 gap-3">
-                    {recommendedProducts.slice(0, 4).map((product) => (
+                    {[...recommendedProducts, ...cashFunds].slice(0, 4).map((item) => (
                       <div
-                        key={product.id}
+                        key={item.id}
                         className="rounded p-2 cursor-pointer hover:bg-gray-100 transition-colors"
-                        onClick={() => onAddRecommendedProduct && onAddRecommendedProduct(product)}
+                        onClick={() => {
+                          if (item.isCashFund) {
+                            onAddCashFund && onAddCashFund(item);
+                          } else {
+                            onAddRecommendedProduct && onAddRecommendedProduct(item);
+                          }
+                        }}
                       >
                         <div className="aspect-square mb-2">
                           <img
-                            src={product.image || '/placeholder.svg'}
-                            alt={product.title}
+                            src={item.image || '/placeholder.svg'}
+                            alt={item.title}
                             className="w-full h-full object-cover rounded"
                           />
                         </div>
                         <div className="text-xs font-semibold leading-tight mb-1">
-                          {product.title}
+                          {item.title}
                         </div>
                         <div className="text-xs text-gray-600">
-                          ${product.price}
+                          ${item.price}
                         </div>
                       </div>
                     ))}

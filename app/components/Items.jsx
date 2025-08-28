@@ -3,30 +3,29 @@ import kyleanderikmobile from '/assets/Images/kyleerikmobile.png';
 import img1 from '/assets/Images/Mask group.png';
 
 const Items = ({ featuredRegistryData = null }) => {
-  // Default fallback data if no dynamic data is provided
-  const fallbackData = {
-    parentCollection: {
-      title: "Kyle and Erik",
-      image: { url: kyleanderik }
-    },
-    subCollection: {
-      products: {
-        edges: [
-          { node: { title: "GINORI 1753 DINNERWARE", images: { edges: [{ node: { url: img1 } }] } } },
-          { node: { title: "ROYAL PACIFIC", images: { edges: [{ node: { url: img1 } }] } } },
-          { node: { title: "TOM DIXON STONE LAMP", images: { edges: [{ node: { url: img1 } }] } } },
-          { node: { title: "ILO HURRICANE", images: { edges: [{ node: { url: img1 } }] } } },
-          { node: { title: "RICHARD BRENDAN", images: { edges: [{ node: { url: img1 } }] } } },
-          { node: { title: "ZALTO WINE GLASSES", images: { edges: [{ node: { url: img1 } }] } } }
-        ]
-      }
-    }
-  };
-
-  // Use dynamic data if available, otherwise use fallback
-  const data = featuredRegistryData || fallbackData;
-  const products = data.subCollection?.products?.edges || [];
+  // Debug logging
+  console.log('🔍 DEBUG: Items component received:', featuredRegistryData);
   
+  if (!featuredRegistryData) {
+    console.log('🔍 DEBUG: No featuredRegistryData in Items component');
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">No registry data available</p>
+      </div>
+    );
+  }
+
+  const { parentCollection, subCollection } = featuredRegistryData;
+  
+  console.log('🔍 DEBUG: Parent collection in Items:', parentCollection);
+  console.log('🔍 DEBUG: Sub collection in Items:', subCollection);
+  
+  // Get products from the sub-collection
+  const products = subCollection?.products?.edges || [];
+  
+  console.log('🔍 DEBUG: Products count in Items:', products.length);
+  console.log('🔍 DEBUG: Products in Items:', products);
+
   return (
     <div>
       <div className="grid grid-cols-2 lg:grid-cols-[30%_23%_23%_23%] lg:grid-rows-2 gap-6 max-[1024px]:gap-y-5 max-[1024px]:gap-x-2">
@@ -34,22 +33,22 @@ const Items = ({ featuredRegistryData = null }) => {
         <div className="lg:row-span-2 max-[768px]:col-span-2">
           <div className="featureImage relative insetshadow registrytag h-full">
             <img 
-              src={data.subCollection?.image?.url || data.parentCollection?.image?.url || kyleanderik} 
-              alt={data.subCollection?.title || data.parentCollection?.title || "Kyle and Erik"} 
+              src={subCollection?.image?.url || parentCollection?.image?.url || img1} 
+              alt={subCollection?.title || parentCollection?.title || "Registry Collection"} 
               className="max-[1024px]:hidden h-full w-full object-cover" 
             />
             <img
-              src={data.subCollection?.image?.url || data.parentCollection?.image?.url || kyleanderikmobile}
-              alt={data.subCollection?.title || data.parentCollection?.title || "Kyle and Erik"}
+              src={subCollection?.image?.url || parentCollection?.image?.url || img1}
+              alt={subCollection?.title || parentCollection?.title || "Registry Collection"}
               className="hidden max-[1024px]:block w-full h-full object-cover"
             />
             <h4 className="max-[1024px]:hidden absolute top-9 left-9 text-[28px] text-white uppercase tracking-widest font-semibold z-10">
-              {data.subCollection?.title || data.parentCollection?.title || "Kyle and Erik"}
+              {subCollection?.title || parentCollection?.title || "Registry Collection"}
             </h4>
             
             {/* Mobile title */}
             <h4 className="max-[1024px]:block hidden absolute top-4 left-4 text-lg text-white uppercase tracking-widest font-semibold z-10 px-2">
-              {data.subCollection?.title || data.parentCollection?.title || "Kyle and Erik"}
+              {subCollection?.title || parentCollection?.title || "Registry Collection"}
             </h4>
           </div>
         </div>
@@ -80,44 +79,44 @@ const Items = ({ featuredRegistryData = null }) => {
             <div className="item flex-1">
               <img src={img1} alt="" className="w-full rounded-none" />
               <h3 className="mt-2 lg:mt-[21px] font-semibold text-sm lg:text-[22px] uppercase">
-                GINORI 1753 DINNERWARE
+                No Products Available
               </h3>
-              <p className="text-sm lg:text-[22px]">Assorted Sizes</p>
+              <p className="text-sm lg:text-[22px]">This collection is empty</p>
             </div>
             <div className="item flex-1">
               <img src={img1} alt="" className="w-full rounded-none" />
               <h3 className="mt-2 lg:mt-[21px] font-semibold text-sm lg:text-[22px] uppercase">
-                ROYAL PACIFIC
+                No Products Available
               </h3>
-              <p className="text-sm lg:text-[22px]">5 - Piece Place Setting</p>
+              <p className="text-sm lg:text-[22px]">This collection is empty</p>
             </div>
             <div className="item flex-1">
               <img src={img1} alt="" className="w-full rounded-none" />
               <h3 className="mt-2 lg:mt-[21px] font-semibold text-sm lg:text-[22px] uppercase">
-                TOM DIXON STONE LAMP
+                No Products Available
               </h3>
-              <p className="text-sm lg:text-[22px]">Portable LED</p>
+              <p className="text-sm lg:text-[22px]">This collection is empty</p>
             </div>
             <div className="item flex-1">
               <img src={img1} alt="" className="w-full rounded-none" />
               <h3 className="mt-2 lg:mt-[21px] font-semibold text-sm lg:text-[22px] uppercase">
-                ILO HURRICANE
+                No Products Available
               </h3>
-              <p className="text-sm lg:text-[22px]">Medium</p>
+              <p className="text-sm lg:text-[22px]">This collection is empty</p>
             </div>
             <div className="item flex-1">
               <img src={img1} alt="" className="w-full rounded-none" />
               <h3 className="mt-2 lg:mt-[21px] font-semibold text-sm lg:text-[22px] uppercase">
-                RICHARD BRENDAN
+                No Products Available
               </h3>
-              <p className="text-sm lg:text-[22px]">Double Old Fashioned Glass</p>
+              <p className="text-sm lg:text-[22px]">This collection is empty</p>
             </div>
             <div className="item flex-1">
               <img src={img1} alt="" className="w-full rounded-none" />
               <h3 className="mt-2 lg:mt-[21px] font-semibold text-sm lg:text-[22px] uppercase">
-                ZALTO WINE GLASSES
+                No Products Available
               </h3>
-              <p className="text-sm lg:text-[22px]">Multiple Sizes</p>
+              <p className="text-sm lg:text-[22px]">This collection is empty</p>
             </div>
           </>
         )}

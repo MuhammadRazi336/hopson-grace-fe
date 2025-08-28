@@ -39,13 +39,13 @@ export async function loader({params, context}) {
       context,
     );
     console.log('Loader: Registry response:', response);
-    
+
     // Check if registry exists
     if (!response.data || response.data.length === 0) {
       console.log('Loader: No registry data found');
       throw new Response('Registry not found', {status: 404});
     }
-    
+
     const registryId = response.data[0]?.id;
     if (!registryId) {
       console.log('Loader: Invalid registry ID');
@@ -60,17 +60,30 @@ export async function loader({params, context}) {
     }
 
     const [res, cashRes, shopifyCollections] = await Promise.all([
-      context.ClientGet(`registryProducts/${registryId}?type=gift`, context).catch(error => {
-        console.warn('Loader: Gift products query failed, using empty array:', error);
-        return { data: [] };
-      }),
-      context.ClientGet(`registryProducts/${registryId}?type=cash`, context).catch(error => {
-        console.warn('Loader: Cash fund query failed, using empty array:', error);
-        return { data: [] };
-      }),
-      context.storefront?.query?.(COLLECTION_QUERY).catch(error => {
-        console.warn('Loader: Collections query failed, using empty array:', error);
-        return { collections: { nodes: [] } };
+      context
+        .ClientGet(`registryProducts/${registryId}?type=gift`, context)
+        .catch((error) => {
+          console.warn(
+            'Loader: Gift products query failed, using empty array:',
+            error,
+          );
+          return {data: []};
+        }),
+      context
+        .ClientGet(`registryProducts/${registryId}?type=cash`, context)
+        .catch((error) => {
+          console.warn(
+            'Loader: Cash fund query failed, using empty array:',
+            error,
+          );
+          return {data: []};
+        }),
+      context.storefront?.query?.(COLLECTION_QUERY).catch((error) => {
+        console.warn(
+          'Loader: Collections query failed, using empty array:',
+          error,
+        );
+        return {collections: {nodes: []}};
       }),
     ]);
 
@@ -84,19 +97,20 @@ export async function loader({params, context}) {
     let mergedArray = [];
     if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
       console.log('Loader: Processing gift products, count:', res.data.length);
-      const ids = res.data.map(
-        (product) => `gid://shopify/Product/${product.productId}`,
-      ).filter(Boolean); // Filter out any undefined/null IDs
-      
+      const ids = res.data
+        .map((product) => `gid://shopify/Product/${product.productId}`)
+        .filter(Boolean); // Filter out any undefined/null IDs
+
       if (ids.length > 0) {
         try {
           console.log('Loader: Fetching Shopify products for IDs:', ids);
           const products = await fetchProducts(context.storefront, ids);
           console.log('Loader: Shopify products response:', products);
-          
+
           mergedArray = res.data.map((item1) => {
             const product = products?.nodes?.find(
-              (item2) => item2?.id === `gid://shopify/Product/${item1.productId}`,
+              (item2) =>
+                item2?.id === `gid://shopify/Product/${item1.productId}`,
             );
             let status = item1.isPurchased
               ? 'purchased'
@@ -113,11 +127,15 @@ export async function loader({params, context}) {
             };
           });
         } catch (shopifyError) {
-          console.warn('Loader: Shopify API failed, using fallback data:', shopifyError);
+          console.warn(
+            'Loader: Shopify API failed, using fallback data:',
+            shopifyError,
+          );
           // Fallback: use the registry data without Shopify enrichment
           mergedArray = res.data.map((item1) => ({
             status: item1.isPurchased ? 'purchased' : 'addToCart',
-            isCashFund: item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
+            isCashFund:
+              item1.productTypeId === 2 ? true : item1.isCashFund ?? false,
             availableForSale: true,
             ...item1,
           }));
@@ -129,14 +147,15 @@ export async function loader({params, context}) {
     }
 
     // Handle case where there are no cash fund products
-    const cashFundProducts = Array.isArray(cashRes?.data) && cashRes.data.length > 0
-      ? cashRes.data.map((item) => ({
-          ...item,
-          status: 'cashFund',
-          isCashFund: true,
-          availableForSale: true,
-        }))
-      : [];
+    const cashFundProducts =
+      Array.isArray(cashRes?.data) && cashRes.data.length > 0
+        ? cashRes.data.map((item) => ({
+            ...item,
+            status: 'cashFund',
+            isCashFund: true,
+            availableForSale: true,
+          }))
+        : [];
     console.log('Loader: Cash fund products:', cashFundProducts);
 
     // Combine all products
@@ -166,7 +185,9 @@ export async function loader({params, context}) {
       throw error;
     }
     // Otherwise, throw a generic error
-    throw new Response(`Internal server error: ${error.message}`, {status: 500});
+    throw new Response(`Internal server error: ${error.message}`, {
+      status: 500,
+    });
   }
 }
 
@@ -204,15 +225,11 @@ export async function action({request, context}) {
 
     // Handle cart operations
     if (clearCart === 'true') {
-      return json(
-        {success: true, action: 'clear'}
-      );
+      return json({success: true, action: 'clear'});
     }
 
     if (itemId && !productData) {
-      return json(
-        {success: true, action: 'remove', itemId}
-      );
+      return json({success: true, action: 'remove', itemId});
     }
 
     if (!productData) {
@@ -298,14 +315,12 @@ export async function action({request, context}) {
       isCashFund: productTypeId === 2 ? true : false,
     };
 
-    return json(
-      {
-        success: true,
-        action: 'add',
-        item: cartItem,
-        message: `${cartItem.title} added to cart`,
-      }
-    );
+    return json({
+      success: true,
+      action: 'add',
+      item: cartItem,
+      message: `${cartItem.title} added to cart`,
+    });
   } catch (error) {
     console.error('Action error:', error);
     return json(
@@ -334,19 +349,23 @@ async function hashCartId(cartId) {
 export default function CoupleProfile() {
   const loaderData = useLoaderData();
   console.log('Component: Loader data received:', loaderData);
-  
+
   // If no loader data, show loading or error state
   if (!loaderData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-700 mb-4">Loading...</h1>
-          <p className="text-gray-600">Please wait while we load the registry information.</p>
+          <h1 className="text-2xl font-semibold text-gray-700 mb-4">
+            Loading...
+          </h1>
+          <p className="text-gray-600">
+            Please wait while we load the registry information.
+          </p>
         </div>
       </div>
     );
   }
-  
+
   // Ensure we have valid data with fallbacks
   const {
     data = [],
@@ -356,22 +375,28 @@ export default function CoupleProfile() {
     collections = [],
     apiBaseUrl = '',
     hasProducts = false,
-    coupleId = null
+    coupleId = null,
   } = loaderData || {};
-  
+
   // Safety check: If we don't have a registry ID, show an error
   if (!registryId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold text-red-600 mb-4">Registry Not Found</h1>
-          <p className="text-gray-600 mb-4">We couldn't find the registry you're looking for.</p>
-          <p className="text-sm text-gray-500">Please check the URL and try again.</p>
+          <h1 className="text-2xl font-semibold text-red-600 mb-4">
+            Registry Not Found
+          </h1>
+          <p className="text-gray-600 mb-4">
+            We couldn't find the registry you're looking for.
+          </p>
+          <p className="text-sm text-gray-500">
+            Please check the URL and try again.
+          </p>
         </div>
       </div>
     );
   }
-  
+
   const fetcher = useFetcher();
 
   // Ensure data is always an array
@@ -379,14 +404,14 @@ export default function CoupleProfile() {
   const safeCashfundData = Array.isArray(cashfundData) ? cashfundData : [];
   const safeCollections = Array.isArray(collections) ? collections : [];
   const safeResponse = response || {};
-  
+
   console.log('Component: Safe data:', {
     safeData: safeData.length,
     safeCashfundData: safeCashfundData.length,
     safeCollections: safeCollections.length,
     hasProducts,
     registryId,
-    coupleId
+    coupleId,
   });
 
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -404,7 +429,7 @@ export default function CoupleProfile() {
   const [selectedGiftData, setSelectedGiftData] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [modalQuantity, setModalQuantity] = useState(1); // Add quantity state for modal
-  
+
   // Move guestEmail state to the top, before useEffect hooks
   const [guestEmail, setGuestEmail] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -416,10 +441,10 @@ export default function CoupleProfile() {
   const [pendingCartAction, setPendingCartAction] = useState(null); // { type: 'add'|'contribute', productId, amount }
   const [isApiLoading, setIsApiLoading] = useState(false);
   const emailInputRef = useRef();
-  
+
   // Add a ref to track cart items for immediate access
   const cartItemsRef = useRef([]);
-  
+
   // Add a state variable to force re-renders
   const [forceRender, setForceRender] = useState(0);
   // Function to fetch cart items from API
@@ -431,53 +456,76 @@ export default function CoupleProfile() {
       cartItemsRef.current = [];
       return;
     }
-    
-    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
-    console.log('fetchCartItems called with email:', email, 'registryId:', registryId);
-    
+
+    const email =
+      typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+    console.log(
+      'fetchCartItems called with email:',
+      email,
+      'registryId:',
+      registryId,
+    );
+
     if (!email || !registryId) {
-      console.log('fetchCartItems: Missing email or registryId, returning early');
+      console.log(
+        'fetchCartItems: Missing email or registryId, returning early',
+      );
       return;
     }
-    
+
     setCartLoading(true);
     try {
-      const res = await fetch(`${apiBaseUrl}/api/cart/get-cart/${registryId}/${email}`);
+      const res = await fetch(
+        `${apiBaseUrl}/api/cart/get-cart/${registryId}/${email}`,
+      );
       const apiData = await res.json();
-      
+
       if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
         // Extract registryProducts from the first cart
         const cartData = apiData.data[0];
         console.log('Cart API Response:', cartData);
         console.log('Cart Items:', cartData.cartItemProducts);
-        
+
         // Transform the API data to match SideCart expectations
-        const transformedItems = (cartData.cartItemProducts || []).map(cartItem => {
-          const registryProduct = cartItem.registryProduct;
-          console.log('Cart Item:', cartItem);
-          console.log('Registry Product:', registryProduct);
-          console.log('CartItem quantity:', cartItem.quantity);
-          console.log('RegistryProduct quantity:', registryProduct.quantity);
-          
-          // Try to find the product in our loaded data to get title and image
-          const productFromData = safeData.find(p => 
-            (p.productId && p.productId === registryProduct.productId) || 
-            (p.id && p.id === registryProduct.productId)
-          );
-          
-          return {
-            id: cartItem.id,
-            price: Number(cartItem.price) || 0, // Use the price from cartItem with fallback
-            quantity: Number(cartItem.quantity || cartItem.purchasedQuantity || 1), // Use cartItem.quantity for purchased quantity
-            title: cartItem.title || productFromData?.title || productFromData?.cashFund?.name || `Product ${registryProduct.productId}`,
-            image: cartItem.image || productFromData?.images?.edges?.[0]?.node?.url || productFromData?.cashFund?.image?.fileUrl || '/assets/Images/placeholder.png',
-            isCashFund: registryProduct.productTypeId === 2,
-            productId: registryProduct.productId,
-            amount: Number(registryProduct.amount) || 0, // Keep original amount for reference
-            registryProductId: registryProduct.id, // Keep registry product ID for reference
-            requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
-          };
-        });
+        const transformedItems = (cartData.cartItemProducts || []).map(
+          (cartItem) => {
+            const registryProduct = cartItem.registryProduct;
+            console.log('Cart Item:', cartItem);
+            console.log('Registry Product:', registryProduct);
+            console.log('CartItem quantity:', cartItem.quantity);
+            console.log('RegistryProduct quantity:', registryProduct.quantity);
+
+            // Try to find the product in our loaded data to get title and image
+            const productFromData = safeData.find(
+              (p) =>
+                (p.productId && p.productId === registryProduct.productId) ||
+                (p.id && p.id === registryProduct.productId),
+            );
+
+            return {
+              id: cartItem.id,
+              price: Number(cartItem.price) || 0, // Use the price from cartItem with fallback
+              quantity: Number(
+                cartItem.quantity || cartItem.purchasedQuantity || 1,
+              ), // Use cartItem.quantity for purchased quantity
+              title:
+                cartItem.title ||
+                productFromData?.title ||
+                productFromData?.cashFund?.name ||
+                `Product ${registryProduct.productId}`,
+              image:
+                cartItem.image ||
+                productFromData?.images?.edges?.[0]?.node?.url ||
+                productFromData?.cashFund?.image?.fileUrl ||
+                '/assets/Images/placeholder.png',
+              isCashFund: registryProduct.productTypeId === 2,
+              productId: registryProduct.productId,
+              amount: Number(registryProduct.amount) || 0, // Keep original amount for reference
+              registryProductId: registryProduct.id, // Keep registry product ID for reference
+              requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
+            };
+          },
+        );
         console.log('Transformed Items:', transformedItems);
         setCartItems(transformedItems);
         // Also update the ref for immediate access
@@ -497,7 +545,14 @@ export default function CoupleProfile() {
 
   // Fetch cart items on component mount and when email changes
   useEffect(() => {
-    console.log('useEffect triggered - guestEmail:', guestEmail, 'registryId:', registryId, 'hasProducts:', hasProducts);
+    console.log(
+      'useEffect triggered - guestEmail:',
+      guestEmail,
+      'registryId:',
+      registryId,
+      'hasProducts:',
+      hasProducts,
+    );
     if (guestEmail && registryId && hasProducts) {
       console.log('Calling fetchCartItems from useEffect');
       fetchCartItems();
@@ -559,8 +614,9 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
-    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+
+    const email =
+      typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
       setAlertMessage('Please enter your email first');
       setAlertType('error');
@@ -568,15 +624,19 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
+
     // If we don't have cart items loaded, fetch them first
     if (cartItems.length === 0) {
-      console.log('handleCartClick: No cart items, fetching before opening sidecart');
+      console.log(
+        'handleCartClick: No cart items, fetching before opening sidecart',
+      );
       fetchCartItems().then(() => {
         setSideCartOpen(true);
       });
     } else {
-      console.log('handleCartClick: Cart items already loaded, opening sidecart');
+      console.log(
+        'handleCartClick: Cart items already loaded, opening sidecart',
+      );
       setSideCartOpen(true);
     }
   };
@@ -591,12 +651,12 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
+
     setSelectedGiftData(product);
     setSelectedImageIndex(0); // Reset selected image for the new item
     setIsPopupOpen(true);
   };
-  
+
   // Validate selectedImageIndex when product data changes
   useEffect(() => {
     if (selectedGiftData && selectedGiftData.images?.edges) {
@@ -617,7 +677,11 @@ export default function CoupleProfile() {
   const getModalStillNeeds = () => {
     if (!selectedGiftData) return 0;
     if (selectedGiftData.status === 'purchased') return 0;
-    return Math.max(0, (selectedGiftData.quantity || 0) - (selectedGiftData.purchasedQuantity || 0));
+    return Math.max(
+      0,
+      (selectedGiftData.quantity || 0) -
+        (selectedGiftData.purchasedQuantity || 0),
+    );
   };
 
   // Handle quantity changes in modal
@@ -648,91 +712,114 @@ export default function CoupleProfile() {
   const callCartApi = async (email) => {
     if (!hasProducts || !registryId) {
       console.log('callCartApi: Skipping - no products or registry ID');
-      return { success: false, error: 'No products available' };
+      return {success: false, error: 'No products available'};
     }
-    
+
     setIsApiLoading(true);
     try {
       const res = await fetch(`${apiBaseUrl}/api/cart`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userEmail: email, registryId: Number(registryId) }),
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          userEmail: email,
+          registryId: Number(registryId),
+        }),
       });
       const data = await res.json();
       setIsApiLoading(false);
       if (data.code === 200) {
-        return { success: true, data };
+        return {success: true, data};
       } else {
-        return { success: false, error: data.message || 'Failed to initialize cart' };
+        return {
+          success: false,
+          error: data.message || 'Failed to initialize cart',
+        };
       }
     } catch (e) {
       setIsApiLoading(false);
-      return { success: false, error: e.message };
+      return {success: false, error: e.message};
     }
   };
 
   // Helper to call /api/cart/add-to-cart/{registryId}/{userEmail}
-  const callAddToCartApi = async (email, registryProductId, price, productData) => {
+  const callAddToCartApi = async (
+    email,
+    registryProductId,
+    price,
+    productData,
+  ) => {
     if (!hasProducts || !registryId) {
       console.log('callAddToCartApi: Skipping - no products or registry ID');
-      return { success: false, error: 'No products available' };
+      return {success: false, error: 'No products available'};
     }
-    
+
     setIsApiLoading(true);
     try {
-      const payload = { 
+      const payload = {
         registryProductId: Number(registryProductId),
         price: Number(price),
         title: productData.title || productData.cashFund?.name || 'Product',
-        image: productData.images?.edges?.[0]?.node?.url || productData.cashFund?.image?.fileUrl || '',
-        description: productData.description || productData.cashFund?.note || ''
+        image:
+          productData.images?.edges?.[0]?.node?.url ||
+          productData.cashFund?.image?.fileUrl ||
+          '',
+        description:
+          productData.description || productData.cashFund?.note || '',
       };
       console.log('Sending to Cart API:', payload);
-      
-      const res = await fetch(`${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+
+      const res = await fetch(
+        `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
+        {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        },
+      );
       const data = await res.json();
       setIsApiLoading(false);
       if (data.code === 200) {
-        return { success: true, data };
+        return {success: true, data};
       } else {
-        return { success: false, error: data.message || 'Failed to add to cart' };
+        return {success: false, error: data.message || 'Failed to add to cart'};
       }
     } catch (e) {
       setIsApiLoading(false);
-      return { success: false, error: e.message };
+      return {success: false, error: e.message};
     }
   };
 
   // Helper to call /api/cart/add-to-cart/{registryId}/{userEmail} with quantity
   const callAddToCartApiWithQuantity = async (email, payload) => {
     if (!hasProducts || !registryId) {
-      console.log('callAddToCartApiWithQuantity: Skipping - no products or registry ID');
-      return { success: false, error: 'No products available' };
+      console.log(
+        'callAddToCartApiWithQuantity: Skipping - no products or registry ID',
+      );
+      return {success: false, error: 'No products available'};
     }
-    
+
     setIsApiLoading(true);
     try {
       console.log('Sending to Cart API with quantity:', payload);
-      
-      const res = await fetch(`${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+
+      const res = await fetch(
+        `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
+        {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        },
+      );
       const data = await res.json();
       setIsApiLoading(false);
       if (data.code === 200) {
-        return { success: true, data };
+        return {success: true, data};
       } else {
-        return { success: false, error: data.message || 'Failed to add to cart' };
+        return {success: false, error: data.message || 'Failed to add to cart'};
       }
     } catch (e) {
       setIsApiLoading(false);
-      return { success: false, error: e.message };
+      return {success: false, error: e.message};
     }
   };
 
@@ -746,19 +833,22 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
-    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+
+    const email =
+      typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
-      setPendingCartAction({ type: 'add', productId, quantity });
+      setPendingCartAction({type: 'add', productId, quantity});
       setShowEmailModal(true);
       return;
     }
-    
+
     const product = safeData.find((item) => item.id === productId);
     if (!product) return;
 
     // Check if product is already in cart - prevent duplication
-    const isAlreadyInCart = cartItems.some(item => item.productId === (product.productId || product.id));
+    const isAlreadyInCart = cartItems.some(
+      (item) => item.productId === (product.productId || product.id),
+    );
     if (isAlreadyInCart) {
       setAlertMessage('This item is already in your cart');
       setAlertType('error');
@@ -766,32 +856,40 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
+
     // Store registryId in localStorage when first item is added to cart
     if (typeof window !== 'undefined' && product.registryId) {
       localStorage.setItem('registryId', product.registryId);
-      console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+      console.log(
+        'CoupleProfile: Stored registryId in localStorage:',
+        product.registryId,
+      );
     }
-    
+
     // Use the correct product ID for registryProductId
     const registryProductId = product.productId || product.id;
     const price = product.amount || 0;
-    
+
     // Add quantity to the payload
-    const payload = { 
+    const payload = {
       registryProductId: Number(registryProductId),
       price: Number(price),
       title: product.title || product.cashFund?.name || 'Product',
-      image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '',
+      image:
+        product.images?.edges?.[0]?.node?.url ||
+        product.cashFund?.image?.fileUrl ||
+        '',
       description: product.description || product.cashFund?.note || '',
-      quantity: Number(quantity)
+      quantity: Number(quantity),
     };
-    
+
     callAddToCartApiWithQuantity(email, payload).then((result) => {
       if (result.success) {
         // Refresh cart items after successful addition
         fetchCartItems();
-        setAlertMessage(`${product.title || 'Item'} (${quantity}) added to cart successfully`);
+        setAlertMessage(
+          `${product.title || 'Item'} (${quantity}) added to cart successfully`,
+        );
         setAlertType('success');
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
@@ -804,7 +902,7 @@ export default function CoupleProfile() {
     });
   };
 
-    // Modified Contribute
+  // Modified Contribute
   const handleContribute = (productId, amount) => {
     // Don't allow contributing if there are no products
     if (!hasProducts || !registryId) {
@@ -814,10 +912,11 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
-    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+
+    const email =
+      typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
-      setPendingCartAction({ type: 'contribute', productId, amount });
+      setPendingCartAction({type: 'contribute', productId, amount});
       setShowEmailModal(true);
       return;
     }
@@ -825,7 +924,9 @@ export default function CoupleProfile() {
     if (!product) return;
 
     // Check if product is already in cart - prevent duplication
-    const isAlreadyInCart = cartItems.some(item => item.productId === (product.productId || product.id));
+    const isAlreadyInCart = cartItems.some(
+      (item) => item.productId === (product.productId || product.id),
+    );
     if (isAlreadyInCart) {
       setAlertMessage('This item is already in your cart');
       setAlertType('error');
@@ -833,29 +934,36 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
+
     // Store registryId in localStorage when first item is added to cart
     if (typeof window !== 'undefined' && product.registryId) {
       localStorage.setItem('registryId', product.registryId);
-      console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+      console.log(
+        'CoupleProfile: Stored registryId in localStorage:',
+        product.registryId,
+      );
     }
     // Use the correct product ID for registryProductId
     const registryProductId = product.productId || product.id;
-    callAddToCartApi(email, registryProductId, amount, product).then((result) => {
-      if (result.success) {
-        // Refresh cart items after successful contribution
-        fetchCartItems();
-        setAlertMessage(`$${amount} contributed to ${product.title || 'fund'} successfully`);
-        setAlertType('success');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      } else {
-        setAlertMessage('Failed to contribute to fund');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      }
-    });
+    callAddToCartApi(email, registryProductId, amount, product).then(
+      (result) => {
+        if (result.success) {
+          // Refresh cart items after successful contribution
+          fetchCartItems();
+          setAlertMessage(
+            `$${amount} contributed to ${product.title || 'fund'} successfully`,
+          );
+          setAlertType('success');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        } else {
+          setAlertMessage('Failed to contribute to fund');
+          setAlertType('error');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        }
+      },
+    );
   };
 
   // Modal submit handler - handles email submission and adds pending products to cart
@@ -872,81 +980,106 @@ export default function CoupleProfile() {
     console.log('handleEmailSubmit: Calling callCartApi with email:', email);
     await callCartApi(email);
     setShowEmailModal(false);
-    
+
     // Update guest email state first to trigger useEffect
     console.log('handleEmailSubmit: Setting guestEmail state to:', email);
     setGuestEmail(email);
-    
+
     // Fetch cart items directly with the email before opening sidecart
     // This ensures we have the cart data before the sidecart opens
     const emailForCart = email; // Use the email we just set
-    console.log('handleEmailSubmit: Fetching cart items with email:', emailForCart, 'registryId:', registryId);
+    console.log(
+      'handleEmailSubmit: Fetching cart items with email:',
+      emailForCart,
+      'registryId:',
+      registryId,
+    );
     if (emailForCart && registryId) {
       setCartLoading(true);
       try {
-        const res = await fetch(`${apiBaseUrl}/api/cart/get-cart/${registryId}/${emailForCart}`);
+        const res = await fetch(
+          `${apiBaseUrl}/api/cart/get-cart/${registryId}/${emailForCart}`,
+        );
         const apiData = await res.json();
-        
+
         if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
           // Extract registryProducts from the first cart
           const cartData = apiData.data[0];
           console.log('Cart API Response:', cartData);
           console.log('Cart Items:', cartData.cartItemProducts);
-          
+
           // Transform the API data to match SideCart expectations
-          const transformedItems = (cartData.cartItemProducts || []).map(cartItem => {
-            const registryProduct = cartItem.registryProduct;
-            console.log('Cart Item:', cartItem);
-            console.log('Registry Product:', registryProduct);
-            console.log('CartItem quantity:', cartItem.quantity);
-            console.log('RegistryProduct quantity:', registryProduct.quantity);
-            
-            // Try to find the product in our loaded data to get title and image
-            const productFromData = safeData.find(p => 
-              (p.productId && p.productId === registryProduct.productId) || 
-              (p.id && p.id === registryProduct.productId)
-            );
-            
-            return {
-              id: cartItem.id,
-              price: Number(cartItem.price), // Use the price from cartItem
-              quantity: Number(cartItem.quantity || cartItem.purchasedQuantity || 1), // Use cartItem.quantity for purchased quantity
-              title: cartItem.title || productFromData?.title || productFromData?.cashFund?.name || `Product ${registryProduct.productId}`,
-              image: cartItem.image || productFromData?.images?.edges?.[0]?.node?.url || productFromData?.cashFund?.image?.fileUrl || '/placeholder.svg',
-              isCashFund: registryProduct.productTypeId === 2,
-              productId: registryProduct.productId,
-              amount: Number(registryProduct.amount), // Keep original amount for reference
-              registryProductId: registryProduct.id, // Keep registry product ID for reference
-              requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
-            };
-          });
+          const transformedItems = (cartData.cartItemProducts || []).map(
+            (cartItem) => {
+              const registryProduct = cartItem.registryProduct;
+              console.log('Cart Item:', cartItem);
+              console.log('Registry Product:', registryProduct);
+              console.log('CartItem quantity:', cartItem.quantity);
+              console.log(
+                'RegistryProduct quantity:',
+                registryProduct.quantity,
+              );
+
+              // Try to find the product in our loaded data to get title and image
+              const productFromData = safeData.find(
+                (p) =>
+                  (p.productId && p.productId === registryProduct.productId) ||
+                  (p.id && p.id === registryProduct.productId),
+              );
+
+              return {
+                id: cartItem.id,
+                price: Number(cartItem.price), // Use the price from cartItem
+                quantity: Number(
+                  cartItem.quantity || cartItem.purchasedQuantity || 1,
+                ), // Use cartItem.quantity for purchased quantity
+                title:
+                  cartItem.title ||
+                  productFromData?.title ||
+                  productFromData?.cashFund?.name ||
+                  `Product ${registryProduct.productId}`,
+                image:
+                  cartItem.image ||
+                  productFromData?.images?.edges?.[0]?.node?.url ||
+                  productFromData?.cashFund?.image?.fileUrl ||
+                  '/placeholder.svg',
+                isCashFund: registryProduct.productTypeId === 2,
+                productId: registryProduct.productId,
+                amount: Number(registryProduct.amount), // Keep original amount for reference
+                registryProductId: registryProduct.id, // Keep registry product ID for reference
+                requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
+              };
+            },
+          );
           console.log('Transformed Items:', transformedItems);
-          
+
           // Set cart items and wait for state update to complete
           console.log('About to set cart items:', transformedItems);
-          
+
           // Use a Promise to ensure the state update is complete
           await new Promise((resolve) => {
             setCartItems(transformedItems);
             // Also update the ref immediately
             cartItemsRef.current = transformedItems;
-            
+
             // Use a longer delay to ensure React processes the state update
             setTimeout(() => {
               console.log('State update delay completed');
               resolve();
             }, 300);
           });
-      
+
           // Store the items locally to ensure they're available when opening sidecart
           const localCartItems = transformedItems;
-          
-          console.log('handleEmailSubmit: Cart items set, now opening sidecart');
+
+          console.log(
+            'handleEmailSubmit: Cart items set, now opening sidecart',
+          );
           console.log('Local cart items:', localCartItems);
           console.log('Cart items ref:', cartItemsRef.current);
-          
+
           // Force a re-render to ensure the component updates
-          setForceRender(prev => prev + 1);
+          setForceRender((prev) => prev + 1);
         } else {
           setCartItems([]);
         }
@@ -957,39 +1090,51 @@ export default function CoupleProfile() {
         setCartLoading(false);
       }
     }
-    
+
     // Handle pending cart action first (add product to cart)
     // This ensures the product is added to cart when email is submitted
     if (pendingCartAction) {
       if (pendingCartAction.type === 'add') {
-        const product = safeData.find((item) => item.id === pendingCartAction.productId);
+        const product = safeData.find(
+          (item) => item.id === pendingCartAction.productId,
+        );
         if (product) {
           // Store registryId in localStorage when first item is added to cart
           if (typeof window !== 'undefined' && product.registryId) {
             localStorage.setItem('registryId', product.registryId);
-            console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+            console.log(
+              'CoupleProfile: Stored registryId in localStorage:',
+              product.registryId,
+            );
           }
-          
+
           const registryProductId = product.productId || product.id;
           const price = product.amount || 0;
           const quantity = pendingCartAction.quantity || 1;
-          
+
           // Add quantity to the payload
-          const payload = { 
+          const payload = {
             registryProductId: Number(registryProductId),
             price: Number(price),
             title: product.title || product.cashFund?.name || 'Product',
-            image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '',
+            image:
+              product.images?.edges?.[0]?.node?.url ||
+              product.cashFund?.image?.fileUrl ||
+              '',
             description: product.description || product.cashFund?.note || '',
-            quantity: Number(quantity)
+            quantity: Number(quantity),
           };
-          
+
           console.log('Adding pending product to cart:', payload);
           const result = await callAddToCartApiWithQuantity(email, payload);
-          
+
           if (result.success) {
             // Show success alert
-            setAlertMessage(`${product.title || 'Item'} (${quantity}) added to cart successfully`);
+            setAlertMessage(
+              `${
+                product.title || 'Item'
+              } (${quantity}) added to cart successfully`,
+            );
             setAlertType('success');
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
@@ -1002,20 +1147,34 @@ export default function CoupleProfile() {
           }
         }
       } else if (pendingCartAction.type === 'contribute') {
-        const product = safeData.find((item) => item.id === pendingCartAction.productId);
+        const product = safeData.find(
+          (item) => item.id === pendingCartAction.productId,
+        );
         if (product) {
           // Store registryId in localStorage when first item is added to cart
           if (typeof window !== 'undefined' && product.registryId) {
             localStorage.setItem('registryId', product.registryId);
-            console.log('CoupleProfile: Stored registryId in localStorage:', product.registryId);
+            console.log(
+              'CoupleProfile: Stored registryId in localStorage:',
+              product.registryId,
+            );
           }
-          
+
           const registryProductId = product.productId || product.id;
-          const result = await callAddToCartApi(email, registryProductId, pendingCartAction.amount, product);
-          
+          const result = await callAddToCartApi(
+            email,
+            registryProductId,
+            pendingCartAction.amount,
+            product,
+          );
+
           if (result.success) {
             // Show success alert
-            setAlertMessage(`$${pendingCartAction.amount} contributed to ${product.title || 'fund'} successfully`);
+            setAlertMessage(
+              `$${pendingCartAction.amount} contributed to ${
+                product.title || 'fund'
+              } successfully`,
+            );
             setAlertType('success');
             setShowAlert(true);
             setTimeout(() => setShowAlert(false), 3000);
@@ -1028,13 +1187,16 @@ export default function CoupleProfile() {
           }
         }
       }
-      
+
       // Clear the pending action
       setPendingCartAction(null);
     }
-    
-    console.log('handleEmailSubmit: Opening sidecart, current cartItems:', cartItems);
-    
+
+    console.log(
+      'handleEmailSubmit: Opening sidecart, current cartItems:',
+      cartItems,
+    );
+
     // Now open the sidecart - cart items should already be loaded
     setSideCartOpen(true);
   };
@@ -1042,17 +1204,20 @@ export default function CoupleProfile() {
   // Re-add handleRemoveFromCart for SideCart
   const handleRemoveFromCart = (itemId, updatedItem = null) => {
     if (!hasProducts || !registryId) {
-      console.log('handleRemoveFromCart: Skipping - no products or registry ID');
+      console.log(
+        'handleRemoveFromCart: Skipping - no products or registry ID',
+      );
       return;
     }
-    
-    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+
+    const email =
+      typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email || !registryId || !itemId) return;
-    
+
     // Find the cart item to get the registryProductId
-    const cartItem = cartItems.find(item => item.id === itemId);
+    const cartItem = cartItems.find((item) => item.id === itemId);
     if (!cartItem) return;
-    
+
     // Use registryProductId from the cart item
     const registryProductId = cartItem.registryProductId;
     if (!registryProductId) {
@@ -1062,67 +1227,73 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-    
+
     // If updatedItem is provided, this is a quantity update
     if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
       // Update quantity in cart
-      fetch(`${apiBaseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: updatedItem.quantity }),
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.code === 200) {
-          // Refresh cart items after successful update
-          fetchCartItems();
-          setAlertMessage('Quantity updated successfully');
-          setAlertType('success');
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        } else {
-          setAlertMessage('Failed to update quantity');
+      fetch(
+        `${apiBaseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`,
+        {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({quantity: updatedItem.quantity}),
+        },
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            // Refresh cart items after successful update
+            fetchCartItems();
+            setAlertMessage('Quantity updated successfully');
+            setAlertType('success');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          } else {
+            setAlertMessage('Failed to update quantity');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          }
+        })
+        .catch((error) => {
+          console.error('Error updating quantity:', error);
+          setAlertMessage('Error updating quantity');
           setAlertType('error');
           setShowAlert(true);
           setTimeout(() => setShowAlert(false), 3000);
-        }
-      })
-      .catch(error => {
-        console.error('Error updating quantity:', error);
-        setAlertMessage('Error updating quantity');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      });
+        });
     } else {
       // Remove item from cart
-      fetch(`${apiBaseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.code === 200) {
-          // Refresh cart items after successful removal
-          fetchCartItems();
-          setAlertMessage('Item removed from cart successfully');
-          setAlertType('success');
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        } else {
-          setAlertMessage('Failed to remove item from cart');
+      fetch(
+        `${apiBaseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`,
+        {
+          method: 'DELETE',
+          headers: {'Content-Type': 'application/json'},
+        },
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.code === 200) {
+            // Refresh cart items after successful removal
+            fetchCartItems();
+            setAlertMessage('Item removed from cart successfully');
+            setAlertType('success');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          } else {
+            setAlertMessage('Failed to remove item from cart');
+            setAlertType('error');
+            setShowAlert(true);
+            setTimeout(() => setShowAlert(false), 3000);
+          }
+        })
+        .catch((error) => {
+          console.error('Error removing item from cart:', error);
+          setAlertMessage('Error removing item from cart');
           setAlertType('error');
           setShowAlert(true);
           setTimeout(() => setShowAlert(false), 3000);
-        }
-      })
-      .catch(error => {
-        console.error('Error removing item from cart:', error);
-        setAlertMessage('Error removing item from cart');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      });
+        });
     }
   };
 
@@ -1132,101 +1303,141 @@ export default function CoupleProfile() {
       console.log('handleClearCart: Skipping - no products or registry ID');
       return;
     }
-    
+
     // TODO: Implement clear cart API call
     // For now, just refresh the cart
     fetchCartItems();
   };
 
   // Filter products
-  const filteredData = safeData && safeData.length > 0 && hasProducts && registryId ? safeData
-    .filter((product) => {
-      // Safety check: Ensure product exists and has required properties
-      if (!product || !product.id) {
-        return false;
-      }
-      
-      if (selectedCategory) {
-        const collectionTitles =
-          product.collections?.nodes?.map((c) => c.title) || [];
-        if (!collectionTitles.includes(selectedCategory)) return false;
-      }
+  const filteredData =
+    safeData && safeData.length > 0 && hasProducts && registryId
+      ? safeData
+          .filter((product) => {
+            // Safety check: Ensure product exists and has required properties
+            if (!product || !product.id) {
+              return false;
+            }
 
-      if (availability) {
-        if (product.isCashFund) {
-          return availability === 'in-stock';
-        }
-        const isAvailable = product.availableForSale ?? true;
-        const isPurchased = product.status === 'purchased';
-        if (availability === 'in-stock') {
-          return isAvailable && !isPurchased;
-        }
-        if (availability === 'out-of-stock') {
-          return !isAvailable || isPurchased;
-        }
-      }
-      return true;
-    })
-    .sort((a, b) => {
-      if (priceSort === 'low-to-high') {
-        return (a.amount ?? 0) - (b.amount ?? 0);
-      }
-      if (priceSort === 'high-to-low') {
-        return (b.amount ?? 0) - (a.amount ?? 0);
-      }
-      return 0;
-    }) : [];
+            if (selectedCategory) {
+              const collectionTitles =
+                product.collections?.nodes?.map((c) => c.title) || [];
+              if (!collectionTitles.includes(selectedCategory)) return false;
+            }
+
+            if (availability) {
+              if (product.isCashFund) {
+                return availability === 'in-stock';
+              }
+              const isAvailable = product.availableForSale ?? true;
+              const isPurchased = product.status === 'purchased';
+              if (availability === 'in-stock') {
+                return isAvailable && !isPurchased;
+              }
+              if (availability === 'out-of-stock') {
+                return !isAvailable || isPurchased;
+              }
+            }
+            return true;
+          })
+          .sort((a, b) => {
+            if (priceSort === 'low-to-high') {
+              return (a.amount ?? 0) - (b.amount ?? 0);
+            }
+            if (priceSort === 'high-to-low') {
+              return (b.amount ?? 0) - (a.amount ?? 0);
+            }
+            return 0;
+          })
+      : [];
 
   // Calculate cart totals from API data
-  const cartTotal = cartItems.reduce(
-    (sum, item) => {
-      // Safety check: Ensure item has valid price and quantity
-      if (!item || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-        return sum;
-      }
-      return sum + (Number(item.price) || 0) * (Number(item.quantity) || 1);
-    },
-    0,
-  );
+  const cartTotal = cartItems.reduce((sum, item) => {
+    // Safety check: Ensure item has valid price and quantity
+    if (
+      !item ||
+      typeof item.price !== 'number' ||
+      typeof item.quantity !== 'number'
+    ) {
+      return sum;
+    }
+    return sum + (Number(item.price) || 0) * (Number(item.quantity) || 1);
+  }, 0);
 
   // Get recommended products (unpurchased products from the same couple, excluding cash funds)
-  const recommendedProducts = safeData && safeData.length > 0 && hasProducts && registryId ? safeData
-    .filter(product => {
-      // Safety check: Ensure product exists and has required properties
-      if (!product || !product.id) {
-        return false;
-      }
-      
-      return !product.isCashFund && 
-        product.status !== 'purchased' && 
-        !cartItems.some(cartItem => cartItem.productId === product.productId);
-    })
-    .slice(0, 4)
-    .map(product => ({
-      id: product.id,
-      title: product.title || product.cashFund?.name || 'Unnamed Product',
-      price: product.amount || 0,
-      image: product.images?.edges?.[0]?.node?.url || product.cashFund?.image?.fileUrl || '/assets/Images/placeholder.png',
-      productId: product.productId || product.id
-    })) : [];
+  const recommendedProducts =
+    safeData && safeData.length > 0 && hasProducts && registryId
+      ? safeData
+          .filter((product) => {
+            // Safety check: Ensure product exists and has required properties
+            if (!product || !product.id) {
+              return false;
+            }
+
+            return (
+              !product.isCashFund &&
+              product.status !== 'purchased' &&
+              !cartItems.some(
+                (cartItem) => cartItem.productId === product.productId,
+              )
+            );
+          })
+          .slice(0, 4)
+          .map((product) => ({
+            id: product.id,
+            title: product.title || 'Unnamed Product',
+            price: product.amount || 0,
+            image:
+              product.images?.edges?.[0]?.node?.url ||
+              '/assets/Images/placeholder.png',
+            productId: product.productId || product.id,
+          }))
+      : [];
+
+  // Get recommended cash funds (unpurchased cash funds from the same couple)
+  const recommendedCashFunds =
+    safeCashfundData && safeCashfundData.length > 0 && hasProducts && registryId
+      ? safeCashfundData
+          .filter((cashFund) => {
+            // Safety check: Ensure cash fund exists and has required properties
+            if (!cashFund || !cashFund.id) {
+              return false;
+            }
+
+            return (
+              cashFund.status !== 'purchased' &&
+              !cartItems.some(
+                (cartItem) => cartItem.productId === cashFund.productId,
+              )
+            );
+          })
+          .slice(0, 4)
+          .map((cashFund) => ({
+            id: cashFund.id,
+            title: cashFund.cashFund?.name || 'Unnamed Cash Fund',
+            price: cashFund.amount || 0,
+            image: cashFund.cashFund?.image?.fileUrl || '/assets/Images/placeholder.png',
+            productId: cashFund.productId || cashFund.id,
+            isCashFund: true, // Add this property to identify cash funds
+          }))
+      : [];
 
   // Handle adding recommended product to cart
   const handleAddRecommendedProduct = (product) => {
     handleAddToCart(product.id);
   };
 
-  const childCollections = safeCollections.filter(
-    (collection) => {
-      // Safety check: Ensure collection exists and has required properties
-      if (!collection || !collection.metafield) {
-        return false;
-      }
-      return collection.metafield?.value === 'true';
+  const childCollections = safeCollections.filter((collection) => {
+    // Safety check: Ensure collection exists and has required properties
+    if (!collection || !collection.metafield) {
+      return false;
     }
-  );
-  
+    return collection.metafield?.value === 'true';
+  });
+
   // Only process child collections if we have products and registry
-  const validChildCollections = hasProducts && registryId ? childCollections : [];
+  const validChildCollections =
+    hasProducts && registryId ? childCollections : [];
   return (
     <>
       {showAlert && (
@@ -1265,17 +1476,24 @@ export default function CoupleProfile() {
           </div>
         </div>
       )}
-      <CoupleProfileViewHeader onCartClick={handleCartClick} showCart={hasProducts && registryId} />
+      <CoupleProfileViewHeader
+        onCartClick={handleCartClick}
+        showCart={hasProducts && registryId}
+      />
       <div className="text-center pt-[80px] container mx-auto font-sans">
         <img
-          src={safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl || "/assets/Images/couple-profile-bg.png"}
+          src={
+            safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl ||
+            '/assets/Images/couple-profile-bg.png'
+          }
           alt="Couple"
           className="w-full h-[400px] lg:h-[600px] object-cover"
         />
         <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
           <div className="xl:w-4/12 w-full">
             <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
-              {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} & {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
+              {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} &{' '}
+              {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
             </h1>
           </div>
           <div className="xl:w-4/12 w-full">
@@ -1301,14 +1519,16 @@ export default function CoupleProfile() {
               />
               <div className="text-right ">
                 <p className="text-lg my-1 uppercase">
-                  {safeResponse?.data?.[0]?.events?.[0]?.location || 'Location TBD'}
+                  {safeResponse?.data?.[0]?.events?.[0]?.location ||
+                    'Location TBD'}
                 </p>
                 <p className="text-lg my-1 uppercase">
                   {safeResponse?.data?.[0]?.events?.[0]?.city || 'City'},{' '}
                   {safeResponse?.data?.[0]?.events?.[0]?.province || 'Province'}
                 </p>
                 <p className="text-lg my-1 uppercase">
-                  {safeResponse?.data?.[0]?.events?.[0]?.weddingTime || 'Time TBD'}
+                  {safeResponse?.data?.[0]?.events?.[0]?.weddingTime ||
+                    'Time TBD'}
                 </p>
               </div>
             </div>
@@ -1320,7 +1540,8 @@ export default function CoupleProfile() {
         </h2>
 
         <p className="max-w-2xl mx-auto my-5 leading-relaxed">
-          {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage || 'Thank you for being part of our special day!'}
+          {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage ||
+            'Thank you for being part of our special day!'}
         </p>
       </div>
 
@@ -1338,23 +1559,24 @@ export default function CoupleProfile() {
         {hasProducts && validChildCollections.length > 0 && registryId && (
           <div className="filters">
             <div className="filter-item flex gap-x-12 mt-12 justify-center">
-                              <div
-                  className="relative"
-                  onClick={() => {
-                    const nextCategory =
-                      selectedCategory === ''
-                        ? validChildCollections[0]?.title || ''
-                        : selectedCategory ===
-                          validChildCollections[validChildCollections.length - 1]?.title
-                        ? ''
-                        : validChildCollections[
-                            validChildCollections.findIndex(
-                              (c) => c.title === selectedCategory,
-                            ) + 1
-                          ]?.title || '';
-                    setSelectedCategory(nextCategory);
-                  }}
-                >
+              <div
+                className="relative"
+                onClick={() => {
+                  const nextCategory =
+                    selectedCategory === ''
+                      ? validChildCollections[0]?.title || ''
+                      : selectedCategory ===
+                        validChildCollections[validChildCollections.length - 1]
+                          ?.title
+                      ? ''
+                      : validChildCollections[
+                          validChildCollections.findIndex(
+                            (c) => c.title === selectedCategory,
+                          ) + 1
+                        ]?.title || '';
+                  setSelectedCategory(nextCategory);
+                }}
+              >
                 <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
                   <strong>Categories</strong> {selectedCategory || 'All'}
                 </h3>
@@ -1404,38 +1626,51 @@ export default function CoupleProfile() {
         {/* Show products if they exist, otherwise show no products message */}
         {hasProducts && registryId && safeData.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
-            {filteredData.map((product, index) => {
-              // Safety check: Ensure product has required properties
-              if (!product || !product.id) {
-                console.warn('Skipping invalid product:', product);
-                return null;
-              }
-              
-              return (
-                <CoupleProductCard
-                  key={product.id || index}
-                  name={product.title || product.cashFund?.name || 'Unnamed Product'}
-                  image={
-                    product.images?.edges?.[0]?.node?.url ||
-                    product.cashFund?.image?.fileUrl ||
-                    '/assets/Images/placeholder.png'
-                  }
-                  price={product.amount || 0}
-                  description={product.description || product.cashFund?.note || 'No description available'}
-                  quantity={product.quantity || 1}
-                  isGroupGift={product.isGroupPayment || false}
-                  isCashFund={product.isCashFund || false}
-                  status={product.status || 'addToCart'}
-                  contributedAmount={Number(product.collectedAmount) || 0}
-                  maxContribution={Number(product.amount) || 0}
-                  purchasedQuantity={Number(product.purchasedQuantity) || 0}
-                  isAnyAmount={product.cashFund?.isAnyAmount || false}
-                  onAddToCart={() => handleAddToCart(product.id)}
-                  onContribute={(amount) => handleContribute(product.id, amount)}
-                  onTitleClick={() => handleTitleClick(product)}
-                />
-              );
-            }).filter(Boolean)} {/* Filter out null products */}
+            {filteredData
+              .map((product, index) => {
+                // Safety check: Ensure product has required properties
+                if (!product || !product.id) {
+                  console.warn('Skipping invalid product:', product);
+                  return null;
+                }
+
+                return (
+                  <CoupleProductCard
+                    key={product.id || index}
+                    name={
+                      product.title ||
+                      product.cashFund?.name ||
+                      'Unnamed Product'
+                    }
+                    image={
+                      product.images?.edges?.[0]?.node?.url ||
+                      product.cashFund?.image?.fileUrl ||
+                      '/assets/Images/placeholder.png'
+                    }
+                    price={product.amount || 0}
+                    description={
+                      product.description ||
+                      product.cashFund?.note ||
+                      'No description available'
+                    }
+                    quantity={product.quantity || 1}
+                    isGroupGift={product.isGroupPayment || false}
+                    isCashFund={product.isCashFund || false}
+                    status={product.status || 'addToCart'}
+                    contributedAmount={Number(product.collectedAmount) || 0}
+                    maxContribution={Number(product.amount) || 0}
+                    purchasedQuantity={Number(product.purchasedQuantity) || 0}
+                    isAnyAmount={product.cashFund?.isAnyAmount || false}
+                    onAddToCart={() => handleAddToCart(product.id)}
+                    onContribute={(amount) =>
+                      handleContribute(product.id, amount)
+                    }
+                    onTitleClick={() => handleTitleClick(product)}
+                  />
+                );
+              })
+              .filter(Boolean)}{' '}
+            {/* Filter out null products */}
           </div>
         ) : (
           <div className="text-center py-16 px-6 mt-12">
@@ -1449,13 +1684,13 @@ export default function CoupleProfile() {
                 No Products Found
               </h3>
               <p className="text-gray-600 mb-6">
-                This registry doesn't have any products or cash funds added yet. 
+                This registry doesn't have any products or cash funds added yet.
                 Check back later or contact the couple for more information.
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-500">
-                  <strong>Tip:</strong> You can still contribute to their journey using the 
-                  "Gift Any Amount" section below.
+                  <strong>Tip:</strong> You can still contribute to their
+                  journey using the "Gift Any Amount" section below.
                 </p>
               </div>
             </div>
@@ -1518,7 +1753,12 @@ export default function CoupleProfile() {
           onClick={onClose}
         />
       )}
-      {console.log('Rendering SideCart with cartItems:', cartItems, 'sideCartOpen:', sideCartOpen)}
+      {console.log(
+        'Rendering SideCart with cartItems:',
+        cartItems,
+        'sideCartOpen:',
+        sideCartOpen,
+      )}
       {hasProducts && registryId && (
         <SideCart
           key={`cart-${cartItems.length}-${JSON.stringify(cartItems.map(item => item.id))}-${forceRender}`}
@@ -1531,6 +1771,8 @@ export default function CoupleProfile() {
           onClearCart={handleClearCart}
           recommendedProducts={recommendedProducts}
           onAddRecommendedProduct={handleAddRecommendedProduct}
+          cashFunds={recommendedCashFunds}
+          onAddCashFund={(cashFund) => handleAddToCart(cashFund.id)}
         />
       )}
 
@@ -1555,7 +1797,8 @@ export default function CoupleProfile() {
               <div className="relative py-8 pl-8 md:pr-0 pr-8">
                 <img
                   src={
-                    selectedGiftData.images?.edges?.[selectedImageIndex]?.node?.url ||
+                    selectedGiftData.images?.edges?.[selectedImageIndex]?.node
+                      ?.url ||
                     selectedGiftData.cashFund?.image?.fileUrl ||
                     '/assets/Images/placeholder.png'
                   }
@@ -1569,37 +1812,43 @@ export default function CoupleProfile() {
                 {/* Interactive Thumbnail Display - clicking changes main image */}
                 <div className="flex gap-2 mt-4 px-4 md:px-0">
                   {/* Only show thumbnails if there are multiple images */}
-                  {selectedGiftData.images?.edges && selectedGiftData.images.edges.length > 1 ? (
+                  {selectedGiftData.images?.edges &&
+                  selectedGiftData.images.edges.length > 1 ? (
                     <>
                       {selectedGiftData.images.edges.map((imageEdge, index) => (
                         <div
                           key={index}
                           className={`border p-1 w-20 h-20 border-[#3d5a80] border-2 cursor-pointer transition-all hover:border-[#2c425e] ${
-                            selectedImageIndex === index ? 'border-[#2c425e] border-4' : ''
+                            selectedImageIndex === index
+                              ? 'border-[#2c425e] border-4'
+                              : ''
                           }`}
                           onClick={() => setSelectedImageIndex(index)}
-                  >
-                    <img
-                            src={imageEdge.node?.url || '/assets/Images/placeholder.png'}
+                        >
+                          <img
+                            src={
+                              imageEdge.node?.url ||
+                              '/assets/Images/placeholder.png'
+                            }
                             alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       ))}
                     </>
                   ) : (
                     // Fallback: show single thumbnail for cash funds or single images
                     <div className="border p-1 w-20 h-20 border-[#3d5a80] border-2">
-                    <img
-                      src={
-                        selectedGiftData.images?.edges?.[0]?.node?.url ||
-                        selectedGiftData.cashFund?.image?.fileUrl ||
-                        '/assets/Images/placeholder.png'
-                      }
+                      <img
+                        src={
+                          selectedGiftData.images?.edges?.[0]?.node?.url ||
+                          selectedGiftData.cashFund?.image?.fileUrl ||
+                          '/assets/Images/placeholder.png'
+                        }
                         alt="Product"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -1620,31 +1869,46 @@ export default function CoupleProfile() {
 
                 <div className="flex items-center gap-4 mb-6">
                   {/* Quantity Selector for Regular Products */}
-                  {!selectedGiftData.isCashFund && !selectedGiftData.isGroupGift && selectedGiftData.status !== 'purchased' && (
-                    <div className="flex flex-col items-center justify-center mb-4">
-                      <button
-                        onClick={incrementModalQuantity}
-                        disabled={modalQuantity >= getModalStillNeeds()}
-                        className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <img src="/assets/Images/arrowDown.png" alt="plus" className="w-4 h-4 rotate-180" />
-                      </button>
-                      
-                      <span className="mx-4 text-lg font-medium">{modalQuantity} / {getModalStillNeeds()}</span>
-                      <button
-                        onClick={decrementModalQuantity}
-                        disabled={modalQuantity <= 1}
-                        className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <img src="/assets/Images/arrowDown.png" alt="minus" className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
+                  {!selectedGiftData.isCashFund &&
+                    !selectedGiftData.isGroupGift &&
+                    selectedGiftData.status !== 'purchased' && (
+                      <div className="flex flex-col items-center justify-center mb-4">
+                        <button
+                          onClick={incrementModalQuantity}
+                          disabled={modalQuantity >= getModalStillNeeds()}
+                          className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <img
+                            src="/assets/Images/arrowDown.png"
+                            alt="plus"
+                            className="w-4 h-4 rotate-180"
+                          />
+                        </button>
+
+                        <span className="mx-4 text-lg font-medium">
+                          {modalQuantity} / {getModalStillNeeds()}
+                        </span>
+                        <button
+                          onClick={decrementModalQuantity}
+                          disabled={modalQuantity <= 1}
+                          className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <img
+                            src="/assets/Images/arrowDown.png"
+                            alt="minus"
+                            className="w-4 h-4"
+                          />
+                        </button>
+                      </div>
+                    )}
 
                   {/* Add to Cart Button */}
                   <button
                     onClick={() => {
-                      if (selectedGiftData.isCashFund || selectedGiftData.isGroupGift) {
+                      if (
+                        selectedGiftData.isCashFund ||
+                        selectedGiftData.isGroupGift
+                      ) {
                         // For cash funds and group gifts, you might want to show a contribution input
                         // For now, let's just close the popup
                         closePopup();
@@ -1656,22 +1920,38 @@ export default function CoupleProfile() {
                     }}
                     className={`bg-[#3d5a80] text-white py-3 px-6 uppercase text-sm tracking-wider flex-grow rounded transition-colors
                       ${
-                        (selectedGiftData.status === 'purchased') ||
-                        (selectedGiftData.isCashFund && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0) ||
-                        (selectedGiftData.isGroupGift && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0)
+                        selectedGiftData.status === 'purchased' ||
+                        (selectedGiftData.isCashFund &&
+                          (selectedGiftData.amount || 0) -
+                            (selectedGiftData.collectedAmount || 0) <=
+                            0) ||
+                        (selectedGiftData.isGroupGift &&
+                          (selectedGiftData.amount || 0) -
+                            (selectedGiftData.collectedAmount || 0) <=
+                            0)
                           ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
                           : 'hover:bg-[#2c425e]'
                       }
                     `}
                     disabled={
-                      (selectedGiftData.status === 'purchased') ||
-                      (selectedGiftData.isCashFund && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0) ||
-                      (selectedGiftData.isGroupGift && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0)
+                      selectedGiftData.status === 'purchased' ||
+                      (selectedGiftData.isCashFund &&
+                        (selectedGiftData.amount || 0) -
+                          (selectedGiftData.collectedAmount || 0) <=
+                          0) ||
+                      (selectedGiftData.isGroupGift &&
+                        (selectedGiftData.amount || 0) -
+                          (selectedGiftData.collectedAmount || 0) <=
+                          0)
                     }
                   >
                     {selectedGiftData.status === 'purchased'
                       ? 'PURCHASED'
-                      : (selectedGiftData.isCashFund || selectedGiftData.isGroupGift) && (selectedGiftData.amount || 0) - (selectedGiftData.collectedAmount || 0) <= 0
+                      : (selectedGiftData.isCashFund ||
+                          selectedGiftData.isGroupGift) &&
+                        (selectedGiftData.amount || 0) -
+                          (selectedGiftData.collectedAmount || 0) <=
+                          0
                       ? 'FULLY FUNDED'
                       : selectedGiftData.buttonLabel || 'ADD TO CART'}
                   </button>
@@ -1694,7 +1974,7 @@ export default function CoupleProfile() {
           <form
             className="bg-white p-6 rounded shadow-lg w-full max-w-sm relative"
             onSubmit={handleEmailSubmit}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Close (cross) button */}
             <button
@@ -1705,14 +1985,16 @@ export default function CoupleProfile() {
             >
               &times;
             </button>
-            <h2 className="text-lg font-bold mb-4">Enter your email to continue</h2>
+            <h2 className="text-lg font-bold mb-4">
+              Enter your email to continue
+            </h2>
             <input
               ref={emailInputRef}
               type="email"
               className="border p-2 w-full mb-4"
               placeholder="Guest Email"
               value={guestEmail}
-              onChange={e => setGuestEmail(e.target.value)}
+              onChange={(e) => setGuestEmail(e.target.value)}
               required
             />
             <button
@@ -1730,25 +2012,3 @@ export default function CoupleProfile() {
     </>
   );
 }
-
-// export function CoupleProfileViewHeader({onCartClick}) {
-//   return (
-//     <div className="container mx-auto flex justify-between items-start pt-6 absolute top-0 left-0 right-0">
-//       <img
-//         src="/assets/Images/couple-header-logo.png"
-//         alt="Hamburger"
-//         className="w-[150px] xl:-mb-6 mb-0 h-auto -ml-10"
-//       />
-
-//       <span className="my-0 cursor-pointer" onClick={onCartClick}>
-
-//           <img
-//             src="/assets/Images/cart-icon.png"
-//             alt="cart"
-//             className="w-7 h-7"
-//           />
-
-//       </span>
-//     </div>
-//   );
-// }

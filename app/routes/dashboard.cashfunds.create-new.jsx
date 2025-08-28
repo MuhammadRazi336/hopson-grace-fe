@@ -148,7 +148,7 @@ function CreateNewCashFund() {
                   <h2 className="text-white text-sm font-medium tracking-wide">
                     PHOTO
                   </h2>
-                  <div className="bg-[#F5F2ED]  aspect-square relative flex items-center justify-center">
+                  <div className="bg-[#F5F2ED]  aspect-square relative flex items-center justify-center w-full h-[650px]">
                     <div className="text-center">
                       <img
                         src={photoPreview || "/assets/Images/registrylogoSteps.png"}
@@ -367,22 +367,75 @@ function CreateNewCashFund() {
 
             {/* Feedback Alert */}
             {showAlert && (
-              <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
-                  <div className="flex items-center">
-                    {alertType === 'success' && (
-                      <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>
-                    )}
-                    {alertType === 'error' && (
-                      <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"></path></svg>
-                    )}
-                    <span>{alertMessage}</span>
+              <div className={`fixed top-4 right-4 ${
+                alertType === 'success' 
+                  ? 'bg-green-500 border-l-4 border-green-600' 
+                  : 'bg-red-500 border-l-4 border-red-600'
+              } text-white px-6 py-4 rounded-lg shadow-xl z-50 animate-fade-in-out max-w-md`}>
+                <div className="flex items-center">
+                  {alertType === 'success' && (
+                    <svg 
+                      className="w-6 h-6 mr-3 text-green-100" 
+                      fill="none" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth="2" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  )}
+                  {alertType === 'error' && (
+                    <svg 
+                      className="w-6 h-6 mr-3 text-red-100" 
+                      fill="none" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth="2" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  )}
+                  <div>
+                    <p className="font-semibold text-sm">
+                      {alertType === 'success' ? 'Success!' : 'Error!'}
+                    </p>
+                    <p className="text-sm mt-1">{alertMessage}</p>
                   </div>
                 </div>
+              </div>
             )}
           </div>
         </div>
       </div>
       <Footer />
+      
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 3s ease-in-out;
+        }
+      `}</style>
     </>
   );
 }

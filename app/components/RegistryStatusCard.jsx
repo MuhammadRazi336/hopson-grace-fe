@@ -4,18 +4,33 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
   const [status, setStatus] = useState(initialStatus);
   const isDraft = status === 'draft';
   const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'http://localhost:3040';
+  
   // Toggle handler
   const handleToggle = async () => {
     const newStatus = isDraft ? 'published' : 'draft';
-    await fetch(`${apiBaseUrl}/api/registries/status/${registryId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-      body: JSON.stringify({ status: newStatus }),
-    });
-    setStatus(newStatus);
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/registries/status/${registryId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      
+      if (response.ok) {
+        setStatus(newStatus);
+        
+        // Refresh the page after successful status update
+        setTimeout(() => {
+          window.location.reload();
+        }, 500); // Wait 0.5 seconds before refreshing
+      } else {
+        console.error('Failed to update registry status');
+      }
+    } catch (error) {
+      console.error('Error updating registry status:', error);
+    }
   };
 
   return (

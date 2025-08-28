@@ -240,7 +240,7 @@ function CoupleListing({data}) {
             .map((couple) => (
             <div key={couple.id} className="flex justify-center items-center flex-col gap-y-4 pb-4">
               <img
-                src={couple.event.image.fileUrl ? couple.event.image.fileUrl : `/assets/Images/couple-logo.png`}
+                src={couple.event.image.fileUrl !== null ? couple.event.image.fileUrl : `/assets/Images/couple-logo.png`}
                 alt="Couple"
                 className="w-32 h-32 mx-auto mt-12 rounded-full object-cover"
               />

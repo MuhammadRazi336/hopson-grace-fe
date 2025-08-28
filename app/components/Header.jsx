@@ -232,12 +232,17 @@ export function Header() {
       });
       
       if (response.ok) {
-      setStatus(newStatus);
+        setStatus(newStatus);
         // Update the registry data locally
         setRegistryData(prev => prev ? {...prev, status: newStatus} : prev);
         // Show success feedback
         setShowStatusFeedback(true);
         setTimeout(() => setShowStatusFeedback(false), 2000);
+        
+        // Refresh the page after successful status update
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // Wait 1 second to show the success feedback before refreshing
       } else {
         console.error('Failed to update registry status');
       }
@@ -423,7 +428,7 @@ export function Header() {
                   <span className="relative inline-block">
                     {/* Bell Icon (SVG) */}
                     <svg width="60" height="60" class="w-[3.125vw] h-[3.125vw]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/></svg>
 
                     {/* Red Dot */}

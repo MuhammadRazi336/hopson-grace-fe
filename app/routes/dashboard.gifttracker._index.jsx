@@ -36,50 +36,78 @@ const GiftTracker = () => {
           />
 
           <div className="w-full space-y-3 bg-[#F5F2ED] p-5 mt-8">
-            {/* Header */}
-            <div className="grid grid-cols-6 bg-[#F5F2ED] px-4 pt-6 pb-4 text-xs font-semibold uppercase text-gray-600">
-              <div>Order #</div>
-              <div>Purchased By</div>
-              <div>Date</div>
-              <div>Purchase Amount</div>
-              <div>Gift / Message</div>
-              <div>Thank Yous</div>
-            </div>
-
-            {/* Rows */}
-            {giftTrackingData.map((item, idx) => (
-              <div
-                key={idx}
-                className="grid grid-cols-6 items-center  bg-white px-4 py-6 text-sm"
-              >
-                <div>{item.checkoutNumber}</div>
-                <div>{item.name}</div>
-                <div>{new Date(item.purchaseDate).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric', 
-                  year: 'numeric'
-                })}</div>
-                <div>{item.totalAmount}</div>
-                <div>
-                  <Link to={`/dashboard/viewgifts/${item.greetingId}`}>
-                  <button className="border border-gray-700 px-3 py-3 text-sm font-medium hover:bg-gray-100">
-                    View Gifts/Message
-                  </button>
-                  </Link>
-                </div>
-                <div>
-                  {item.messageSent ? (
-                    <span className="text-xl text-center block text-[#446184] font-bold">✓</span>
-                  ) : (
-                    <a href="/sendthanks">
-                    <button className=" text-white font-bold py-3 px-3 bg-[#446184] rounded-none cursor-pointer">
-                      SEND THANKS
-                    </button>
-                    </a>
-                  )}
+            {/* Show message when no transactions */}
+            {giftTrackingData.length === 0 ? (
+              <div className="text-center py-16 px-6">
+                <div className="max-w-md mx-auto">
+                  <img
+                    src="/assets/Images/gift.png"
+                    alt="No Transactions"
+                    className="w-24 h-24 mx-auto mb-6 opacity-50"
+                  />
+                  <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
+                    No Transactions Found
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    No gift purchases have been made yet. When guests start buying gifts, 
+                    they will appear here for you to track and send thank you messages.
+                  </p>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="text-sm text-gray-500">
+                      <strong>Tip:</strong> Share your registry with friends and family to start 
+                      receiving gifts and tracking purchases.
+                    </p>
+                  </div>
                 </div>
               </div>
-            ))}
+            ) : (
+              <>
+                {/* Header */}
+                <div className="grid grid-cols-6 bg-[#F5F2ED] px-4 pt-6 pb-4 text-xs font-semibold uppercase text-gray-600">
+                  <div>Order #</div>
+                  <div>Purchased By</div>
+                  <div>Date</div>
+                  <div>Purchase Amount</div>
+                  <div>Gift / Message</div>
+                  <div>Thank Yous</div>
+                </div>
+
+                {/* Rows */}
+                {giftTrackingData.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-6 items-center  bg-white px-4 py-6 text-sm"
+                  >
+                    <div>{item.checkoutNumber}</div>
+                    <div>{item.name}</div>
+                    <div>{new Date(item.purchaseDate).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric', 
+                      year: 'numeric'
+                    })}</div>
+                    <div>${item.totalAmount}</div>
+                    <div>
+                      <Link to={`/dashboard/viewgifts/${item.greetingId}`}>
+                      <button className="border border-gray-700 px-3 py-3 text-sm font-medium hover:bg-gray-100">
+                        View Gifts/Message
+                      </button>
+                      </Link>
+                    </div>
+                    <div>
+                      {item.messageSent ? (
+                        <span className="text-xl text-center block text-[#446184] font-bold">✓</span>
+                      ) : (
+                        <Link to="/dashboard/sendthanks/toguest">
+                        <button className=" text-white font-bold py-3 px-3 bg-[#446184] rounded-none cursor-pointer">
+                          SEND THANKS
+                        </button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

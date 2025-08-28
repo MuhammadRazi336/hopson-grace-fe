@@ -2,7 +2,7 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import React, {useState, useEffect, useRef} from 'react';
-import {useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
+import {Link, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {defer, json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
@@ -27,24 +27,6 @@ import {Footer} from '~/components/Footer';
 import {Navigation} from 'swiper/modules';
 import arrowDown from '/assets/Images/arrowDown.png';
 
-const tabsData = [
-  {
-    label: 'REAL REGISTRIES',
-    value: 1,
-    route: 'realregistries',
-  },
-  {
-    label: 'THEMED REGISTRIES',
-    value: 2,
-    route: 'themedregistries',
-  },
-  {
-    label: 'LOREM IPSUM',
-    value: 3,
-    route: 'lorem',
-  },
-];
-
 export async function loader({request, context}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
@@ -52,21 +34,201 @@ export async function loader({request, context}) {
   const registry = await context?.session?.get('@Registry');
   const userData = await context?.ClientGet(`users/${user?.user?.id}`, context);
   
-  // Fetch preferred gifts data
-  let preferredGifts = null;
+  // Fetch ready-made registries using the same pattern as home index
+  let featuredRegistryData = null;
   try {
-    const preferredGiftsResponse = await context?.ClientGet(`users/preferred-gifts/${user?.user?.id}`, context);
-    console.log('Loader - preferredGiftsResponse:', preferredGiftsResponse);
-    if (preferredGiftsResponse?.code === 200) {
-      preferredGifts = preferredGiftsResponse.data;
-      console.log('Loader - preferredGifts data:', preferredGifts);
+    const { collections: readyMadeCollections } = await context.storefront.query(READY_MADE_REGISTRIES_QUERY);
+    
+    console.log('🔍 DEBUG: All collections from READY_MADE_REGISTRIES_QUERY:', readyMadeCollections?.nodes);
+    
+    // Filter collections where both ready_made AND parent_collection metafields are true
+    const realRegistries = readyMadeCollections?.nodes?.filter(collection => {
+      const readyMadeMetafield = collection.readyMadeMetafield?.value === 'true';
+      const parentCollectionMetafield = collection.parentCollectionMetafield?.value === 'true';
+      
+      console.log(`🔍 DEBUG: Collection "${collection.title}":`, {
+        readyMadeMetafield: readyMadeMetafield,
+        parentCollectionMetafield: parentCollectionMetafield,
+        readyMadeValue: collection.readyMadeMetafield?.value,
+        parentCollectionValue: collection.parentCollectionMetafield?.value
+      });
+      
+      return readyMadeMetafield && parentCollectionMetafield;
+    }) || [];
+
+    console.log('🔍 DEBUG: Filtered real registries (parent collections):', realRegistries);
+    console.log('🔍 DEBUG: Real registries count:', realRegistries.length);
+    
+    // Log each collection with its title and metafields for debugging
+    realRegistries.forEach((collection, index) => {
+      console.log(`🔍 DEBUG: Collection ${index + 1}:`, {
+        title: collection.title,
+        readyMade: collection.readyMadeMetafield?.value,
+        parentCollection: collection.parentCollectionMetafield?.value,
+        subCollection: collection.subCollectionMetafield?.value
+      });
+    });
+    
+    // Fetch sub-collections and their products for the "Real Registries" specifically
+    if (realRegistries.length > 0) {
+      // Find the "Real Registries" collection specifically (not just the first one)
+      // Priority order: 1. "Real" in title, 2. "Authentic" in title, 3. "Couple" in title, 4. Not "Themed"/"Minimalist"
+      let realRegistriesCollection = null;
+      
+      console.log('🔍 DEBUG: Starting priority-based collection selection...');
+      
+      // First priority: collections with "real" in the title
+      realRegistriesCollection = realRegistries.find(collection => 
+        collection.title.toLowerCase().includes('real')
+      );
+      
+      if (realRegistriesCollection) {
+        console.log('🔍 DEBUG: Found collection with "real" in title:', realRegistriesCollection.title);
+      }
+      
+      // Second priority: collections with "authentic" in the title
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries.find(collection => 
+          collection.title.toLowerCase().includes('authentic')
+        );
+        if (realRegistriesCollection) {
+          console.log('🔍 DEBUG: Found collection with "authentic" in title:', realRegistriesCollection.title);
+        }
+      }
+      
+      // Third priority: collections with "couple" or "wedding" in the title
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries.find(collection => 
+          collection.title.toLowerCase().includes('couple') ||
+          collection.title.toLowerCase().includes('wedding')
+        );
+        if (realRegistriesCollection) {
+          console.log('🔍 DEBUG: Found collection with "couple" or "wedding" in title:', realRegistriesCollection.title);
+        }
+      }
+      
+      // Fourth priority: any collection that's NOT "Themed" or "Minimalist"
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries.find(collection => 
+          !collection.title.toLowerCase().includes('themed') && 
+          !collection.title.toLowerCase().includes('minimalist') &&
+          !collection.title.toLowerCase().includes('style') &&
+          !collection.title.toLowerCase().includes('curated')
+        );
+        if (realRegistriesCollection) {
+          console.log('🔍 DEBUG: Found collection that is NOT themed/minimalist:', realRegistriesCollection.title);
+        }
+      }
+      
+      // Final fallback: first collection
+      if (!realRegistriesCollection) {
+        realRegistriesCollection = realRegistries[0];
+        console.log('🔍 DEBUG: Using fallback: first collection:', realRegistriesCollection?.title);
+      }
+      
+      console.log('🔍 DEBUG: Final selected registry collection:', realRegistriesCollection);
+      console.log('🔍 DEBUG: Selection reason: Priority-based selection for Real Registries');
+      
+      if (realRegistriesCollection.subCollectionMetafield?.value) {
+        try {
+          const subCollectionIds = JSON.parse(realRegistriesCollection.subCollectionMetafield.value);
+          
+          console.log('🔍 DEBUG: Parsed sub-collection IDs:', subCollectionIds);
+          
+          // Fetch ALL sub-collections for display (not just the first one)
+          if (subCollectionIds.length > 0) {
+            console.log('🔍 DEBUG: Sub-collection IDs count:', subCollectionIds.length);
+            
+            // Fetch all sub-collections
+            const subCollectionsData = [];
+            for (const subCollectionId of subCollectionIds) {
+              console.log('🔍 DEBUG: Fetching sub-collection:', subCollectionId);
+              
+              const subCollectionData = await context.storefront.query(SUB_COLLECTION_QUERY, {
+                variables: { id: subCollectionId }
+              });
+              
+              if (subCollectionData.collection) {
+                console.log('🔍 DEBUG: Successfully fetched sub-collection:', subCollectionData.collection.title);
+                subCollectionsData.push(subCollectionData.collection);
+              } else {
+                console.log('🔍 DEBUG: Failed to fetch sub-collection:', subCollectionId);
+              }
+            }
+            
+            featuredRegistryData = subCollectionsData;
+            console.log('🔍 DEBUG: Final featured registry data count:', featuredRegistryData?.length);
+            console.log('🔍 DEBUG: Final featured registry data titles:', featuredRegistryData?.map(col => col.title));
+          } else {
+            console.log('🔍 DEBUG: No sub-collection IDs found in subCollectionMetafield');
     }
   } catch (error) {
-    console.error('Error fetching preferred gifts:', error);
+          console.error('🔍 DEBUG: Error parsing or fetching sub-collections:', error);
+        }
+      } else {
+        console.log('🔍 DEBUG: No subCollectionMetafield value found');
+      }
+    } else {
+      console.log('🔍 DEBUG: No real registries found after filtering');
+    }
+  } catch (error) {
+    console.error('🔍 DEBUG: Error fetching ready-made registries:', error);
   }
 
-  console.log('Loader - returning preferredGifts:', preferredGifts);
-  return defer({products, collections, user, registry, userData, preferredGifts});
+  // Extract products only from parent collections (parentMetafield.value === 'true' and readyMadeMetafield.value !== 'true')
+  let allProducts = [];
+  try {
+    // First, find all parent collections
+    const parentCollections = collections.filter(
+      (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true'
+    );
+    
+    // For each parent collection, get products from its sub-collections
+    parentCollections.forEach(parentCollection => {
+      // Get sub-collection GIDs from the parent's subMetafield
+      let subCollectionGids = [];
+      if (parentCollection.subMetafield?.value) {
+        try {
+          subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
+        } catch (error) {
+          console.warn('Error parsing subMetafield for collection:', parentCollection.title, error);
+        }
+      }
+      
+      // Find sub-collections by GID
+      const subCollections = collections.filter(
+        (col) => col.parentMetafield?.value === 'false' && 
+                  col.readyMadeMetafield?.value !== 'true' &&
+                  subCollectionGids.includes(col.id)
+      );
+      
+      // Extract products from sub-collections
+      subCollections.forEach(subCollection => {
+        if (subCollection.products?.edges) {
+          subCollection.products.edges.forEach(edge => {
+            const product = edge.node;
+            allProducts.push({
+              id: product.id,
+              title: product.title,
+              handle: product.handle,
+              description: product.description,
+              image: product.images?.edges?.[0]?.node?.url || null,
+              price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+              currency: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
+              availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
+              collectionId: subCollection.id, // Use sub-collection ID
+              parentCollectionId: parentCollection.id, // Also track parent collection ID
+              parentCollectionTitle: parentCollection.title // Track parent collection title
+            });
+          });
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Error extracting products from collections:', error);
+  }
+
+  return defer({products: allProducts, collections, user, registry, userData, readyMadeRegistries: featuredRegistryData});
 }
 
 export async function action({request, context}) {
@@ -117,7 +279,6 @@ function SidebarFilter({
   collections,
   checkedCollectionIds,
   setCheckedCollectionIds,
-  preferredGifts,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
@@ -125,10 +286,12 @@ function SidebarFilter({
     styles: true,
   });
 
+  // Get parent collections for the swiper and Product Categories
   const parentCollection = collections.filter(
     (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
   );
 
+  // Get sub-collections for Shop by Style (these are the ones that actually contain products)
   const subCollection = collections.filter(
     (col) => col.parentMetafield?.value === 'false' && col.readyMadeMetafield?.value !== 'true',
   );
@@ -148,23 +311,6 @@ function SidebarFilter({
       newChecked = [...checkedCollectionIds, colId];
     }
     setCheckedCollectionIds(newChecked);
-  };
-
-  // Helper function to check if a collection should be checked based on preferred gifts
-  const isCollectionPreferred = (collectionTitle) => {
-    if (!preferredGifts) return false;
-    
-    const title = collectionTitle?.trim().toLowerCase();
-    const preferredCategories = (preferredGifts?.category || []).map(c => c.trim().toLowerCase());
-    const preferredSubCategories = (preferredGifts?.subCategory || []).map(c => c.trim().toLowerCase());
-    
-    const isPreferred = preferredCategories.includes(title) || preferredSubCategories.includes(title);
-    
-    if (isPreferred) {
-      console.log(`Collection "${collectionTitle}" is preferred`);
-    }
-    
-    return isPreferred;
   };
 
   return (
@@ -199,11 +345,7 @@ function SidebarFilter({
                   <input
                     type="checkbox"
                     className="mr-2"
-                    checked={(() => {
-                      const isChecked = checkedCollectionIds.includes(col.id) || isCollectionPreferred(col.title);
-                      console.log(`Categories checkbox for "${col.title}": checked=${isChecked}, checkedCollectionIds=${checkedCollectionIds.includes(col.id)}, isPreferred=${isCollectionPreferred(col.title)}`);
-                      return isChecked;
-                    })()}
+                    checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
                   {col.title}
@@ -271,11 +413,7 @@ function SidebarFilter({
                   <input
                     type="checkbox"
                     className="mr-2"
-                    checked={(() => {
-                      const isChecked = checkedCollectionIds.includes(col.id) || isCollectionPreferred(col.title);
-                      console.log(`Styles checkbox for "${col.title}": checked=${isChecked}, checkedCollectionIds=${checkedCollectionIds.includes(col.id)}, isPreferred=${isCollectionPreferred(col.title)}`);
-                      return isChecked;
-                    })()}
+                    checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
                   {col.title}
@@ -299,220 +437,85 @@ export default function AddGifts() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const {products, collections, registry, user, userData, preferredGifts} = useLoaderData();
+  const {products, collections, registry, user, userData, readyMadeRegistries} = useLoaderData();
   
-  // Debug logging
-  console.log('Loader data - preferredGifts:', preferredGifts);
-  console.log('Loader data - collections:', collections);
+  // Debug logging for readyMadeRegistries
+  console.log('🔍 DEBUG: Component received readyMadeRegistries:', readyMadeRegistries);
+  console.log('🔍 DEBUG: readyMadeRegistries type:', typeof readyMadeRegistries);
+  console.log('🔍 DEBUG: readyMadeRegistries length:', readyMadeRegistries?.length);
+  if (readyMadeRegistries && Array.isArray(readyMadeRegistries)) {
+    console.log('🔍 DEBUG: readyMadeRegistries titles:', readyMadeRegistries.map(col => col.title));
+  }
+  
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
+  // Static tabsData like in home index file
+  const tabsData = [
+    {
+      label: 'REAL REGISTRIES',
+      value: 1,
+      route: 'realregistries',
+    },
+    {
+      label: 'THEMED REGISTRIES',
+      value: 2,
+      route: 'themedregistries',
+    },
+    {
+      label: 'LOREM IPSUM',
+      value: 3,
+      route: 'lorem',
+    },
+  ];
+
   // State for checked collections and displayed products
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
-  const [displayedProducts, setDisplayedProducts] = useState([]);
-  const initialPreferencesApplied = useRef(false);
+  const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
-  const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
 
-  useEffect(() => {
-    if (
-      !initialPreferencesApplied.current &&
-      preferredGifts &&
-      collections &&
-      collections.length > 0
-    ) {
-      console.log('Initial preferences effect - Preferred gifts:', preferredGifts);
-      console.log('Initial preferences effect - Collections:', collections);
-      
-      const preferredCategories = (
-        preferredGifts?.category || []
-      ).map((s) => s.trim().toLowerCase());
-      const preferredSubCategories = (
-        preferredGifts?.subCategory || []
-      ).map((s) => s.trim().toLowerCase());
+  // Filter products based on selected collections
+  const filteredProducts = checkedCollectionIds.length > 0 
+    ? products.filter(product => {
+        // Check if the product's collection is directly selected
+        if (checkedCollectionIds.includes(product.collectionId)) {
+          return true;
+        }
+        
+        // Check if the product's parent collection is selected
+        if (checkedCollectionIds.includes(product.parentCollectionId)) {
+          return true;
+        }
+        
+        return false;
+      })
+    : products;
 
-      console.log('Initial preferences effect - Preferred categories:', preferredCategories);
-      console.log('Initial preferences effect - Preferred sub-categories:', preferredSubCategories);
-
-      // Only check parent collections for preferredCategory, sub-collections for preferredSubCategory
-      const checkedIds = [
-        ...collections
-          .filter(
-            (col) =>
-              col.parentMetafield?.value === 'true' &&
-              col.readyMadeMetafield?.value !== 'true' &&
-              preferredCategories.includes(
-                (col.title || '').trim().toLowerCase(),
-              ),
-          )
-          .map((col) => col.id),
-        ...collections
-          .filter(
-            (col) =>
-              col.parentMetafield?.value === 'false' &&
-              col.readyMadeMetafield?.value !== 'true' &&
-              preferredSubCategories.includes(
-                (col.title || '').trim().toLowerCase(),
-              ),
-          )
-          .map((col) => col.id),
-      ];
-
-      console.log('Initial preferences effect - Checked IDs:', checkedIds);
-
-      // Set the checked collection IDs and also update the displayed products
-      setCheckedCollectionIds(checkedIds);
-      initialPreferencesApplied.current = true;
-    }
-  }, [preferredGifts, collections]);
-
-  // Additional effect to handle when preferredGifts data becomes available after initial render
-  useEffect(() => {
-    if (
-      preferredGifts &&
-      collections &&
-      collections.length > 0 &&
-      checkedCollectionIds.length === 0
-    ) {
-      console.log('Preferred gifts data:', preferredGifts);
-      console.log('Available collections:', collections);
-      
-      const preferredCategories = (
-        preferredGifts?.category || []
-      ).map((s) => s.trim().toLowerCase());
-      const preferredSubCategories = (
-        preferredGifts?.subCategory || []
-      ).map((s) => s.trim().toLowerCase());
-
-      console.log('Preferred categories:', preferredCategories);
-      console.log('Preferred sub-categories:', preferredSubCategories);
-
-      const checkedIds = [
-        ...collections
-          .filter(
-            (col) =>
-              col.parentMetafield?.value === 'true' &&
-              col.readyMadeMetafield?.value !== 'true' &&
-              preferredCategories.includes(
-                (col.title || '').trim().toLowerCase(),
-              ),
-          )
-          .map((col) => col.id),
-        ...collections
-          .filter(
-            (col) =>
-              col.parentMetafield?.value === 'false' &&
-              col.readyMadeMetafield?.value !== 'true' &&
-              preferredSubCategories.includes(
-                (col.title || '').trim().toLowerCase(),
-              ),
-          )
-          .map((col) => col.id),
-      ];
-
-      console.log('Checked collection IDs:', checkedIds);
-
-      if (checkedIds.length > 0) {
-        setCheckedCollectionIds(checkedIds);
-      }
-    }
-  }, [preferredGifts, collections, checkedCollectionIds.length]);
-
-  // Helper to get all products for checked collections
-  const getProductsForCheckedCollections = (checkedIds) => {
-    const checkedParents = collections.filter(
-      (col) =>
-        col.parentMetafield?.value === 'true' && 
-        col.readyMadeMetafield?.value !== 'true' && 
-        checkedIds.includes(col.id),
-    );
-    const checkedSubs = collections.filter(
-      (col) =>
-        col.parentMetafield?.value === 'false' && checkedIds.includes(col.id),
-    );
-    let parentProducts = [];
-    checkedParents.forEach((parentCol) => {
-      let subCollectionGids = [];
-      const subColMeta = parentCol.subMetafield;
-      if (subColMeta?.value) {
-        try {
-          subCollectionGids = JSON.parse(subColMeta.value);
-        } catch {}
-      }
-      // Find sub-collections by GID
-      const subCols = collections.filter(
-        (col) =>
-          col.parentMetafield?.value === 'false' &&
-          col.readyMadeMetafield?.value !== 'true' &&
-          subCollectionGids.includes(col.id),
-      );
-      parentProducts = parentProducts.concat(
-        subCols.length > 0
-          ? subCols.flatMap((col) =>
-              (col.products?.edges || []).map((edge) => edge.node),
-            )
-          : [],
-      );
-    });
-    const subProducts =
-      checkedSubs.length > 0
-        ? checkedSubs.flatMap((col) =>
-            (col.products?.edges || []).map((edge) => edge.node),
-          )
-        : [];
-    const allProducts = [...parentProducts, ...subProducts];
-    const uniqueProducts = Array.from(
-      new Map(allProducts.map((p) => [p.id, p])).values(),
-    );
-    return uniqueProducts;
-  };
-
-  // Update displayedProducts when checkedCollectionIds changes
-  useEffect(() => {
-    setDisplayedProducts(
-      getProductsForCheckedCollections(checkedCollectionIds),
-    );
-    // Sync Swiper selection with SidebarFilter
-    if (checkedCollectionIds.length === 1) {
-      setSelectedSwiperCollectionId(checkedCollectionIds[0]);
-    } else {
-      setSelectedSwiperCollectionId(null);
-    }
-  }, [checkedCollectionIds]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // Sort products based on price
+  // Sort products based on selected sort option
   const sortedProducts = React.useMemo(() => {
-    if (!priceSort || displayedProducts.length === 0) {
-      return displayedProducts;
+    if (!priceSort && !dateSort || filteredProducts.length === 0) {
+      return filteredProducts;
     }
 
-    return [...displayedProducts].sort((a, b) => {
-      const priceA = parseFloat(a?.variants?.edges?.[0]?.node?.priceV2?.amount || 0);
-      const priceB = parseFloat(b?.variants?.edges?.[0]?.node?.priceV2?.amount || 0);
+    return [...filteredProducts].sort((a, b) => {
+      const priceA = parseFloat(a.price || 0);
+      const priceB = parseFloat(b.price || 0);
+      const createdAtA = new Date(a.createdAt || 0).getTime();
+      const createdAtB = new Date(b.createdAt || 0).getTime();
       
       if (priceSort === 'low-to-high') {
         return priceA - priceB;
       } else if (priceSort === 'high-to-low') {
         return priceB - priceA;
+      } else if (dateSort === 'newest') {
+        return createdAtB - createdAtA;
+      } else if (dateSort === 'oldest') {
+        return createdAtA - createdAtB;
       }
       return 0;
     });
-  }, [displayedProducts, priceSort]);
+  }, [filteredProducts, priceSort, dateSort]);
 
   const handleAddtoRegistry = (product) => {
     try {
@@ -528,21 +531,9 @@ export default function AddGifts() {
         return;
       }
 
-      const firstVariant = product?.variants?.edges?.[0]?.node;
-      if (!firstVariant) {
-        setAlertMessage('Product variant not found.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
-        return;
-      }
-
       const payload = {
         productId: Number(extractShopifyId(product.id)),
-        amount: Number(firstVariant.priceV2.amount),
+        amount: Number(product.price),
         registryId: Number(registry.id),
         productTypeId: 1,
         quantity: 1,
@@ -577,35 +568,19 @@ export default function AddGifts() {
     }
   };
 
-  // Filter the products based on selected filters
-  const filteredProducts = products
-    .filter((productWrapper) => {
-      const product = productWrapper.node;
-      const firstVariant = product?.variants?.edges?.[0]?.node;
-
-      if (!firstVariant) return false;
-
-      if (availability) {
-        const isAvailable = firstVariant.availableForSale;
-        if (availability === 'in-stock' && !isAvailable) return false;
-        if (availability === 'out-of-stock' && isAvailable) return false;
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
       }
+    };
 
-      return true;
-    })
-    .sort((a, b) => {
-      const priceA = Number(a.node.variants.edges[0].node.priceV2.amount);
-      const priceB = Number(b.node.variants.edges[0].node.priceV2.amount);
-      const createdAtA = new Date(a.node.createdAt).getTime();
-      const createdAtB = new Date(b.node.createdAt).getTime();
-
-      if (priceSort === 'low-to-high') return priceA - priceB;
-      if (priceSort === 'high-to-low') return priceB - priceA;
-      if (dateSort === 'newest') return createdAtB - createdAtA;
-      if (dateSort === 'oldest') return createdAtA - createdAtB;
-
-      return 0;
-    });
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const parentCollection = collections.filter(
     (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
@@ -631,11 +606,14 @@ export default function AddGifts() {
           className="max-w-[630px] mt-5 h-auto mx-auto"
         />
         <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
-          Browse by category, filter by price, or get inspired with our curated
-          edits. Add, update, or switch things up whenever you like.
+          {selectedSwiperCollectionId 
+            ? `Browse products from ${collections.find(col => col.id === selectedSwiperCollectionId)?.title || 'this collection'} and its sub-categories.`
+            : 'Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like.'
+          }
         </p>
-
+        <Link to={`/couple/single/${userData?.data?.user?.id}`}>
         <PreviewRegistry />
+        </Link>
       </div>
 
       <section className=" ">
@@ -698,7 +676,18 @@ export default function AddGifts() {
                       <SwiperSlide
                         key={col.id}
                         onClick={() => {
-                          setCheckedCollectionIds([col.id]);
+                          // Get sub-collection GIDs from the parent's subMetafield
+                          let subCollectionGids = [];
+                          if (col.subMetafield?.value) {
+                            try {
+                              subCollectionGids = JSON.parse(col.subMetafield.value);
+                            } catch (error) {
+                              console.warn('Error parsing subMetafield for collection:', col.title, error);
+                            }
+                          }
+                          
+                          // Set the checked collection IDs to all sub-collections of this parent
+                          setCheckedCollectionIds(subCollectionGids);
                           setSelectedSwiperCollectionId(col.id);
                         }}
                         style={{ cursor: 'pointer'}}
@@ -728,6 +717,15 @@ export default function AddGifts() {
                   alt={collections.find(col => col.id === selectedSwiperCollectionId)?.title}
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
+                <button
+                  onClick={() => {
+                    setSelectedSwiperCollectionId(null);
+                    setCheckedCollectionIds([]);
+                  }}
+                  className="absolute top-4 right-4 bg-white text-black px-4 py-2 rounded hover:bg-gray-100 transition-colors"
+                >
+                  Clear Selection
+                </button>
               </div>
             )}
           </div>
@@ -740,12 +738,10 @@ export default function AddGifts() {
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
-            preferredGifts={preferredGifts}
           />
-          {console.log('SidebarFilter preferredGifts prop:', preferredGifts)}
           <div className="flex flex-col">
             {/* Sort Filter */}
-            {displayedProducts.length > 0 && (
+            {filteredProducts.length > 0 && (
               <div className="flex justify-between items-center p-4">
                 <div className="flex items-center gap-4 ml-auto">
                   <span className="text-sm font-semibold">SORT BY:</span>
@@ -755,9 +751,11 @@ export default function AddGifts() {
                       className="flex items-center gap-2 text-sm focus:outline-none"
                     >
                       <span className='pr-3'>
-                        {priceSort === '' && 'Default'}
+                        {priceSort === '' && dateSort === '' && 'Default'}
                         {priceSort === 'low-to-high' && 'Price: Low to High'}
                         {priceSort === 'high-to-low' && 'Price: High to Low'}
+                        {dateSort === 'newest' && 'Date: Newest First'}
+                        {dateSort === 'oldest' && 'Date: Oldest First'}
                       </span>
                       <img 
                         src={arrowDown} 
@@ -770,10 +768,11 @@ export default function AddGifts() {
                         <button
                           onClick={() => {
                             setPriceSort('');
+                            setDateSort('');
                             setIsDropdownOpen(false);
                           }}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                            priceSort === '' ? 'bg-gray-100' : ''
+                            priceSort === '' && dateSort === '' ? 'bg-gray-100' : ''
                           }`}
                         >
                           Default
@@ -781,6 +780,7 @@ export default function AddGifts() {
                         <button
                           onClick={() => {
                             setPriceSort('low-to-high');
+                            setDateSort('');
                             setIsDropdownOpen(false);
                           }}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
@@ -792,6 +792,7 @@ export default function AddGifts() {
                         <button
                           onClick={() => {
                             setPriceSort('high-to-low');
+                            setDateSort('');
                             setIsDropdownOpen(false);
                           }}
                           className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
@@ -799,6 +800,30 @@ export default function AddGifts() {
                           }`}
                         >
                           Price: High to Low
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPriceSort('');
+                            setDateSort('newest');
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                            dateSort === 'newest' ? 'bg-gray-100' : ''
+                          }`}
+                        >
+                          Date: Newest First
+                        </button>
+                        <button
+                          onClick={() => {
+                            setPriceSort('');
+                            setDateSort('oldest');
+                            setIsDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
+                            dateSort === 'oldest' ? 'bg-gray-100' : ''
+                          }`}
+                        >
+                          Date: Oldest First
                         </button>
                       </div>
                     )}
@@ -815,39 +840,28 @@ export default function AddGifts() {
               if (sortedProducts.length === 0) {
                 return (
                   <div className="col-span-3 text-center text-gray-400">
-                    Select a collection to view products.
+                    No products found. Please check your collection filters.
                   </div>
                 );
               }
-              let anyRendered = false;
+              
               const productNodes = sortedProducts
                 .slice(0, productsToShow)
                 .map((product) => {
-                  const firstVariant = product?.variants?.edges?.[0]?.node;
-                  if (!firstVariant) return null;
-                  anyRendered = true;
-                  const firstImage =
-                    product?.images?.edges?.[0]?.node?.url ||
-                    'assets/Images/placeholder.jpg';
+                  const firstImage = product.image || '/assets/Images/placeholder.jpg';
                   return (
                     <RegistryProduct
                       key={product.id}
                       image={firstImage}
                       productName={product.title}
-                      price={firstVariant.priceV2.amount}
+                      price={product.price}
                       description={product.description}
                       onAddToRegistry={() => handleAddtoRegistry(product)}
                       onPersonalizeFund={() => navigate(`/dashboard/addgifts/${product.handle}`)}
                     />
                   );
                 });
-              if (!anyRendered) {
-                return (
-                  <div className="col-span-3 text-center text-gray-400">
-                    Select a collection to view products.
-                  </div>
-                );
-              }
+              
               return productNodes;
             })()}
           </div>
@@ -869,7 +883,7 @@ export default function AddGifts() {
                   link="#"
                   onClick={() =>
                     setProductsToShow((prev) =>
-                      Math.min(prev + 12, displayedProducts.length),
+                      Math.min(prev + 12, filteredProducts.length),
                     )
                   }
                 />
@@ -897,19 +911,50 @@ export default function AddGifts() {
 
       <section className="bg-[#FAF9F6] py-8">
         <Heading
-          text="Ready-Made Registries"
+          text="ready-made registries"
           classes={
             'prata text-3xl lg:text-5xl font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] mb-10'}
         />
-        <CustomTab tabsData={tabsData} />
+        <p className="text-center md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+        From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
+      </p>
+        
+        {/* Debug logging for CustomTab */}
+        {console.log('🔍 DEBUG: About to render CustomTab with:', {
+          tabsData: tabsData,
+          readyMadeRegistries: readyMadeRegistries,
+          readyMadeRegistriesType: typeof readyMadeRegistries,
+          readyMadeRegistriesLength: readyMadeRegistries?.length,
+          readyMadeRegistriesStructure: readyMadeRegistries?.map(col => ({
+            id: col.id,
+            title: col.title,
+            hasProducts: col.products?.edges?.length > 0,
+            productsCount: col.products?.edges?.length || 0
+          }))
+        })}
+        
+        {/* Safety check before rendering CustomTab */}
+        {readyMadeRegistries && Array.isArray(readyMadeRegistries) && readyMadeRegistries.length > 0 ? (
+          <CustomTab tabsData={tabsData} featuredRegistryData={readyMadeRegistries} />
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No ready-made registries available</p>
+            <p className="text-sm text-gray-400 mt-2">
+              Data type: {typeof readyMadeRegistries} | 
+              Length: {readyMadeRegistries?.length || 'undefined'}
+            </p>
+          </div>
+        )}
         <div className="text-center">
+        <Link to="/ready-made-registries">
           <ButtonComponent
-            text="EXPLORE SAMPLE REGISTRIES"
-            className="button-cs text-black border-3 border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
+            text="EXPLORE"
+            className="button-cs text-black border-3 w-[350px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
           />
+          </Link>
         </div>
       </section>
 
@@ -1168,6 +1213,7 @@ const COLLECTION_QUERY = `#graphql
               title
               handle
               description
+              createdAt
               images(first: 10) {
                 edges {
                   node {
@@ -1193,8 +1239,86 @@ const COLLECTION_QUERY = `#graphql
         }
       }
     }
-  }
-`;
+  }`;
+
+const READY_MADE_REGISTRIES_QUERY = `#graphql
+  query getRealRegistries {
+    collections(first: 50) {
+      nodes {
+        id
+        title
+        handle
+        description
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
+        parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {
+          id
+          value
+        }
+        subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+      }
+    }
+  }`;
+
+const SUB_COLLECTION_QUERY = `#graphql
+  query getSubCollection($id: ID!) {
+    collection(id: $id) {
+      id
+      title
+      handle
+      description
+      image {
+        id
+        url
+        altText
+        width
+        height
+      }
+      products(first: 10) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            createdAt
+            images(first: 1) {
+              edges {
+                node {
+                  id
+                  url
+                }
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
 
 // Export metadata for Remix
 export const meta = () => {

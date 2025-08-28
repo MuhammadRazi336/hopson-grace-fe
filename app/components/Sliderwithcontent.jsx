@@ -5,13 +5,32 @@ import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Pagination} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import nextitem from '/assets/Images/next.png';
 
 const Sliderwithcontent = ({ featuredRegistryData }) => {
+  // Debug logging
+  console.log('🔍 DEBUG: Sliderwithcontent received:', featuredRegistryData);
+  
+  if (!featuredRegistryData || !featuredRegistryData.subCollections) {
+    console.log('🔍 DEBUG: No valid data structure in Sliderwithcontent');
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">No registry data available</p>
+      </div>
+    );
+  }
+
+  const { parentCollection, subCollections } = featuredRegistryData;
+  
+  console.log('🔍 DEBUG: Parent collection:', parentCollection);
+  console.log('🔍 DEBUG: Sub collections count:', subCollections?.length);
+  console.log('🔍 DEBUG: Sub collections:', subCollections);
+
   return (
     <div>
       <Heading
-        text={featuredRegistryData?.parentCollection?.title || "Real Registries"}
+        text={"Real Registries"}
         classes={`text-xl lg:text-3xl font-bold uppercase tracking-[0.1em] mt-16 mb-4 lg:mb-[40px]`}
       />
 
@@ -28,24 +47,18 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
           slidesPerGroup={1}
           pagination={{clickable: true}}
         >
-          {featuredRegistryData?.subCollections?.map((subCollection, index) => (
+          {subCollections?.map((subCollection, index) => (
             <SwiperSlide key={subCollection.id || index}>
               <Items 
                 featuredRegistryData={{
-                  parentCollection: featuredRegistryData.parentCollection,
+                  parentCollection: parentCollection,
                   subCollection: subCollection
                 }} 
               />
             </SwiperSlide>
           ))}
-          
-          {/* Fallback if no sub-collections */}
-          {(!featuredRegistryData?.subCollections || featuredRegistryData.subCollections.length === 0) && (
-            <SwiperSlide>
-              <Items featuredRegistryData={featuredRegistryData} />
-            </SwiperSlide>
-          )}
         </Swiper>
+        
         <div className="max-[1024px]:hidden swiper-button-prev-tab absolute left-[-80px] top-1/2.5 transform -translate-y-full z-10 cursor-pointer text-black uppercase flex">
           <img src={nextitem} alt="" className="rotate-180" />
           <span className="rotate-90 text-black block">PREV</span>

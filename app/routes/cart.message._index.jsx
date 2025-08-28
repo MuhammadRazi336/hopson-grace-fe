@@ -309,7 +309,7 @@ const Message = () => {
               <div className="flex items-center gap-x-12 mt-8 justify-center">
                 <h4 className="text-[60px] text-white text-center">{showPreview ? '2' : '1'}</h4>
                 <h4 className="text-[30px] text-white text-center">/</h4>
-                <h4 className="text-[30px] text-white text-center">3</h4>
+                <h4 className="text-[30px] text-white text-center">2</h4>
               </div>
               
               {showPreview && (
@@ -317,7 +317,7 @@ const Message = () => {
                   <button 
                     type="button"
                     onClick={handleCheckout}
-                    className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-[800] text-black w-[225px] max-[1601px]:w-[280px] text-center"
+                    className="py-7 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-[800] text-black w-[280px] max-[1601px]:w-[280px] text-center"
                   >
                     Proceed To Checkout
                   </button>

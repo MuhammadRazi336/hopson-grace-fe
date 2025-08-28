@@ -1,6 +1,4 @@
 import Accordiance from '~/components/Accordiance.jsx';
-import ProductCard from '~/components/Product.jsx';
-import FundCard from '~/components/FundCard.jsx';
 import {defer} from '@remix-run/server-runtime';
 import {Link, useLoaderData, json} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
@@ -548,9 +546,28 @@ console.log('Final API Base URL:', finalApiBaseUrl);
 
 export default index;
 const ProductPage = ({data}) => {
+  // Calculate how many placeholder images to show
+  const actualGiftsCount = data.length;
+  const placeholderCount = Math.max(0, 4 - actualGiftsCount);
+  
+  // Create array of placeholder elements
+  const placeholderElements = Array.from({ length: placeholderCount }, (_, index) => (
+    <div key={`placeholder-${index}`} className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]">
+      <Link to="/dashboard/addgifts">
+        <img
+          src="/assets/Images/add-gift-placeholder.png"
+          alt="Add gift placeholder"
+          className="w-full h-full object-cover"
+        />
+      </Link>
+    </div>
+  ));
+
   return (
     <div className="container">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
+      <div className={`flex gap-6 p-6 mt-12 pb-4 ${
+        data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
+      }`}>
         {data.length > 0 ? (
           data.map((product) => {
             // Use priceV2 from Shopify, fallback to backend amount
@@ -562,71 +579,102 @@ const ProductPage = ({data}) => {
                 ? {amount: product.amount, currencyCode: 'USD'}
                 : null;
 
+            // Calculate if product is fully gifted
+            const quantity = product.quantity || 1;
+            const purchasedQuantity = Number(product.purchasedQuantity) || 0;
+            const stillNeeds = Math.max(0, quantity - purchasedQuantity);
+            const isFullyGifted = stillNeeds === 0;
+            
+            // Determine status
+            let status = 'addToCart';
+            if (isFullyGifted) {
+              status = 'purchased';
+            } else if (product.isGroupGift) {
+              status = 'groupGift';
+            }
+
             return (
-              <ProductCard
+              <div
                 key={product.id || product.productId || Math.random()}
-                productName={product.title || 'No Name'}
-                productImage={
-                  product.images?.edges?.[0]?.node?.url ||
-                  'https://www.dummyimage.co.uk'
-                }
-                price={
-                  price && price.amount && price.currencyCode
-                    ? price
-                    : {amount: 0, currencyCode: 'USD'}
-                }
-                collected={
-                  typeof product.collectedAmount === 'number'
-                    ? product.collectedAmount
-                    : 0
-                }
-                isGroupGift={!!product.isGroupGift}
-                onContributorsClick={() =>
-                  console.log(`Contributors for ${product.title || 'Unknown'}`)
-                }
-              />
+                className={`${
+                  isFullyGifted ? 'overlay-gifted' : ''
+                } p-4 flex flex-col justify-between ${
+                  data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
+                }`}
+              >
+                <div className="flex flex-col justify-between">
+                  <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                    <img
+                      src={
+                        product.images?.edges?.[0]?.node?.url ||
+                        '/assets/Images/placeholder.png'
+                      }
+                      alt={product.title || 'Product'}
+                      className="w-full h-full object-cover mb-4"
+                    />
+
+                    {product.isGroupGift && (
+                      <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                        <h2 className="prata text-black text-sm text-center font-bold mt-1">
+                          group <br /> gift
+                        </h2>
+                      </div>
+                    )}
+                  </div>
+                   
+                  <h2 className={`text-lg font-semibold ${
+                    isFullyGifted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                  }`}>
+                    {product.title || 'No Name'}
+                  </h2>
+                   
+                  <div className="flex justify-between items-center">
+                    <p className="font-semibold text-md">
+                      ${price?.amount || product.amount || 0}
+                    </p>
+                  </div>
+                   
+                  <div className="mt-2 flex flex-row items-center gap-6">
+                    <p className="text-sm text-gray-500 italic">
+                      Requested: {quantity}
+                    </p>
+                    <p className="text-sm text-gray-500 italic">
+                      Still Needs: {stillNeeds}
+                    </p>
+                  </div>
+                   
+                  {product.isGroupGift && (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Contributed: ${Number(product.collectedAmount || 0).toFixed(2)} / $
+                        {Number(product.amount || 0).toFixed(2)}
+                      </p>
+                      <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
+                        Remaining: ${Math.max(0, (product.amount || 0) - (product.collectedAmount || 0))}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-4 flex flex-col justify-end">
+                  {product.isGroupGift && (
+                    <div className="text-center">
+                      <p className="text-sm text-gray-600 mb-2">Group Gift</p>
+                      <Link to="/dashboard/shipgifts">
+                        <button className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white">
+                          View Contributors
+                        </button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
             );
           })
-        ) : (
-          <>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/addgifts">
-                <img
-                  src="/assets/Images/add-gift-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/addgifts">
-                <img
-                  src="/assets/Images/add-gift-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/addgifts">
-                <img
-                  src="/assets/Images/add-gift-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/addgifts">
-                <img
-                  src="/assets/Images/add-gift-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-          </>
-        )}
+        ) : null}
+        
+        {/* Render placeholder elements */}
+        {placeholderElements}
       </div>
     </div>
   );
@@ -638,74 +686,125 @@ const FundPage = ({data}) => {
   // Defensive: handle missing or malformed data
   if (!Array.isArray(data)) return <div>No funds available.</div>;
 
+  // Calculate how many placeholder images to show
+  const actualFundsCount = data.length;
+  const placeholderCount = Math.max(0, 4 - actualFundsCount);
+  
+  // Create array of placeholder elements
+  const placeholderElements = Array.from({ length: placeholderCount }, (_, index) => (
+    <div key={`placeholder-${index}`} className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]">
+      <Link to="/dashboard/cashfunds">
+        <img
+          src="/assets/Images/add-cash-placeholder.png"
+          alt="Add cash fund placeholder"
+          className="w-full h-full object-cover"
+        />
+      </Link>
+    </div>
+  ));
+
   const handleViewContributors = (fundName) => {
     // ...
   };
 
   return (
     <div className="container">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
+      <div className={`flex gap-6 p-6 mt-12 pb-4 ${
+        data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
+      }`}>
         {data.length > 0 ? (
-          data.map((fund) => (
-            <FundCard
-              key={fund.productId || Math.random()}
-              image={fund.cashFund.image?.fileUrl}
-              title={fund.cashFund?.name || 'No Fund Name'}
-              totalAmount={
-                Number(fund.amount) === 0
-                  ? ''
-                  : Number(fund.amount)
-                  ? fund.amount
-                  : 0
-              }
-              collectedAmount={
-                Number(fund.collectedAmount) ? fund.collectedAmount : 0
-              }
-              onViewContributors={() =>
-                handleViewContributors(fund.cashFund?.name || 'Unknown')
-              }
-            />
-          ))
-        ) : (
-          <>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/cashfunds">
-                <img
-                  src="/assets/Images/add-cash-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/cashfunds">
-                <img
-                  src="/assets/Images/add-cash-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/cashfunds">
-                <img
-                  src="/assets/Images/add-cash-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-            <div className="flex justify-center items-center h-full">
-              <Link to="/dashboard/cashfunds">
-                <img
-                  src="/assets/Images/add-cash-placeholder.png"
-                  alt="No funds"
-                  className="w-[80%] h-auto"
-                />
-              </Link>
-            </div>
-          </>
-        )}
+          data.map((fund) => {
+            // Calculate if fund is fully gifted
+            const totalAmount = Number(fund.amount) || 0;
+            const collectedAmount = Number(fund.collectedAmount) || 0;
+            const remainingAmount = Math.max(0, totalAmount - collectedAmount);
+            const isFullyGifted = remainingAmount === 0;
+            const isAnyAmount = fund.cashFund?.isAnyAmount || false;
+
+            return (
+              <div
+                key={fund.productId || Math.random()}
+                className={`${
+                  isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
+                } p-4 flex flex-col justify-between ${
+                  data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
+                }`}
+              >
+                <div className="flex flex-col justify-between">
+                  <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                    <img
+                      src={
+                        fund.cashFund.image?.fileUrl ||
+                        '/assets/Images/placeholder.png'
+                      }
+                      alt={fund.cashFund?.name || 'Cash Fund'}
+                      className="w-full h-full object-cover mb-4"
+                    />
+
+                    <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                      <h2 className="prata text-black text-sm text-center font-bold mt-1">
+                        cash <br /> fund
+                      </h2>
+                    </div>
+                  </div>
+                   
+                  <h2 className={`text-lg font-semibold ${
+                    isFullyGifted && !isAnyAmount ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                  }`}>
+                    {fund.cashFund?.name || 'No Fund Name'}
+                  </h2>
+                   
+                  <div className="flex justify-between items-center">
+                    {!isAnyAmount && (
+                      <p className="font-semibold text-md">
+                        ${totalAmount}
+                      </p>
+                    )}
+                  </div>
+                   
+                  {!isAnyAmount && (
+                    <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
+                      Remaining: ${remainingAmount}
+                    </p>
+                  )}
+                   
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Contributed: ${collectedAmount.toFixed(2)} / $
+                      {isAnyAmount ? 'Any Amount' : totalAmount.toFixed(2)}
+                    </p>
+                  </div>
+                   
+                  {!isAnyAmount && (
+                    <div className="mt-2">
+                      <div className="h-2 bg-gray-300 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-black rounded-full transition-all"
+                          style={{width: `${Math.min((collectedAmount / totalAmount) * 100, 100)}%`}}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-4 flex flex-col justify-end">
+                  <div className="text-center">
+                    <Link to="/dashboard/shipgifts">
+                      <button 
+                        className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white"
+                      >
+                        View Contributors
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : null}
+        
+        {/* Render placeholder elements */}
+        {placeholderElements}
       </div>
     </div>
   );
