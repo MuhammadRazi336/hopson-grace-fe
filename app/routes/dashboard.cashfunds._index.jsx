@@ -186,7 +186,7 @@ const CashFunds = () => {
                     style={{ cursor: 'pointer'}}
                   >
                     <Link to="/dashboard/cashfunds/create-new">
-                    <div className="h-[500px] overflow-hidden bg-[#F5F2ED]">
+                    <div className="h-[500px] overflow-hidden bg-[#F5F2ED] flex items-center justify-center">
                       <img
                         src="/assets/Images/registrylogoSteps.png"
                         alt="Create Your Own Cash Fund"
@@ -237,12 +237,6 @@ const CashFunds = () => {
                   alt={collections.find(col => col.id === selectedSwiperCollectionId)?.title}
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
-                <button
-                  onClick={() => setSelectedSwiperCollectionId(null)}
-                  className="absolute top-4 left-4 bg-white text-black px-4 py-2 rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
-                >
-                  ← Back to Collections
-                </button>
               </div>
             )}
           </div>
