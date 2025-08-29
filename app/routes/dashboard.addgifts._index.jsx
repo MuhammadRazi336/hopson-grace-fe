@@ -3,7 +3,7 @@ import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import React, {useState, useEffect, useRef} from 'react';
 import {Link, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
-import {defer, json} from '@shopify/remix-oxygen';
+import {json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
 import {extractShopifyId} from '~/utils/helpers.js';
@@ -31,148 +31,221 @@ export async function loader({request, context}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const user = await requireAuth(context);
-  const registry = await context?.session?.get('@Registry');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
   const userData = await context?.ClientGet(`users/${user?.user?.id}`, context);
   
   // Fetch ready-made registries using the same pattern as home index
   let featuredRegistryData = null;
   try {
+    console.log('Starting to fetch ready-made registries...');
     const { collections: readyMadeCollections } = await context.storefront.query(READY_MADE_REGISTRIES_QUERY);
     
-    console.log('🔍 DEBUG: All collections from READY_MADE_REGISTRIES_QUERY:', readyMadeCollections?.nodes);
+    console.log('All collections from query:', readyMadeCollections?.nodes);
+    console.log('Collections count:', readyMadeCollections?.nodes?.length || 0);
     
-    // Filter collections where both ready_made AND parent_collection metafields are true
-    const realRegistries = readyMadeCollections?.nodes?.filter(collection => {
-      const readyMadeMetafield = collection.readyMadeMetafield?.value === 'true';
-      const parentCollectionMetafield = collection.parentCollectionMetafield?.value === 'true';
-      
-      console.log(`🔍 DEBUG: Collection "${collection.title}":`, {
-        readyMadeMetafield: readyMadeMetafield,
-        parentCollectionMetafield: parentCollectionMetafield,
-        readyMadeValue: collection.readyMadeMetafield?.value,
-        parentCollectionValue: collection.parentCollectionMetafield?.value
+    // Log metafield values for debugging
+    if (readyMadeCollections?.nodes) {
+      readyMadeCollections.nodes.forEach((collection, index) => {
+        console.log(`Collection ${index + 1} (${collection.title}):`, {
+          readyMadeMetafield: collection.readyMadeMetafield?.value,
+          parentCollectionMetafield: collection.parentCollectionMetafield?.value,
+          subCollectionMetafield: collection.subCollectionMetafield?.value
+        });
       });
-      
-      return readyMadeMetafield && parentCollectionMetafield;
-    }) || [];
+    }
+    
+    // Filter collections that have both readyMadeMetafield AND parentCollectionMetafield set to true
+    const filteredReadyMadeCollections = readyMadeCollections?.nodes?.filter(
+      (collection) => 
+        collection.readyMadeMetafield?.value === 'true' && 
+        collection.parentCollectionMetafield?.value === 'true'
+    ) || [];
+    
+    console.log('Filtered ready-made parent collections:', filteredReadyMadeCollections);
+    console.log('Filtered collections count:', filteredReadyMadeCollections.length);
 
-    console.log('🔍 DEBUG: Filtered real registries (parent collections):', realRegistries);
-    console.log('🔍 DEBUG: Real registries count:', realRegistries.length);
-    
-    // Log each collection with its title and metafields for debugging
-    realRegistries.forEach((collection, index) => {
-      console.log(`🔍 DEBUG: Collection ${index + 1}:`, {
-        title: collection.title,
-        readyMade: collection.readyMadeMetafield?.value,
-        parentCollection: collection.parentCollectionMetafield?.value,
-        subCollection: collection.subCollectionMetafield?.value
-      });
-    });
-    
-    // Fetch sub-collections and their products for the "Real Registries" specifically
-    if (realRegistries.length > 0) {
-      // Find the "Real Registries" collection specifically (not just the first one)
-      // Priority order: 1. "Real" in title, 2. "Authentic" in title, 3. "Couple" in title, 4. Not "Themed"/"Minimalist"
-      let realRegistriesCollection = null;
+    // Filter for "real" registries (parent collections)
+    const realRegistries = filteredReadyMadeCollections.filter((collection) => {
+      const title = collection.title?.toLowerCase() || '';
+      const description = collection.description?.toLowerCase() || '';
       
-      console.log('🔍 DEBUG: Starting priority-based collection selection...');
-      
-      // First priority: collections with "real" in the title
-      realRegistriesCollection = realRegistries.find(collection => 
-        collection.title.toLowerCase().includes('real')
+      // Exclude specific unwanted collections
+      const unwantedTerms = ['kyle', 'erik', 'themed', 'minimalist', 'lorem'];
+      const hasUnwantedTerms = unwantedTerms.some(term => 
+        title.includes(term) || description.includes(term)
       );
       
-      if (realRegistriesCollection) {
-        console.log('🔍 DEBUG: Found collection with "real" in title:', realRegistriesCollection.title);
-      }
+      // Include collections with preferred terms
+      const preferredTerms = ['real', 'authentic', 'couple', 'wedding'];
+      const hasPreferredTerms = preferredTerms.some(term => 
+        title.includes(term) || description.includes(term)
+      );
       
-      // Second priority: collections with "authentic" in the title
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries.find(collection => 
-          collection.title.toLowerCase().includes('authentic')
-        );
-        if (realRegistriesCollection) {
-          console.log('🔍 DEBUG: Found collection with "authentic" in title:', realRegistriesCollection.title);
-        }
-      }
-      
-      // Third priority: collections with "couple" or "wedding" in the title
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries.find(collection => 
-          collection.title.toLowerCase().includes('couple') ||
-          collection.title.toLowerCase().includes('wedding')
-        );
-        if (realRegistriesCollection) {
-          console.log('🔍 DEBUG: Found collection with "couple" or "wedding" in title:', realRegistriesCollection.title);
-        }
-      }
-      
-      // Fourth priority: any collection that's NOT "Themed" or "Minimalist"
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries.find(collection => 
-          !collection.title.toLowerCase().includes('themed') && 
-          !collection.title.toLowerCase().includes('minimalist') &&
-          !collection.title.toLowerCase().includes('style') &&
-          !collection.title.toLowerCase().includes('curated')
-        );
-        if (realRegistriesCollection) {
-          console.log('🔍 DEBUG: Found collection that is NOT themed/minimalist:', realRegistriesCollection.title);
-        }
-      }
-      
-      // Final fallback: first collection
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries[0];
-        console.log('🔍 DEBUG: Using fallback: first collection:', realRegistriesCollection?.title);
-      }
-      
-      console.log('🔍 DEBUG: Final selected registry collection:', realRegistriesCollection);
-      console.log('🔍 DEBUG: Selection reason: Priority-based selection for Real Registries');
-      
-      if (realRegistriesCollection.subCollectionMetafield?.value) {
-        try {
-          const subCollectionIds = JSON.parse(realRegistriesCollection.subCollectionMetafield.value);
+      return !hasUnwantedTerms && hasPreferredTerms;
+    });
+
+    console.log('Real registries after filtering:', realRegistries);
+    console.log('Real registries count:', realRegistries.length);
+
+    // Priority-based collection selection
+    let realRegistriesCollection = null;
+    
+    // Priority 1: Collections with "real" in title
+    realRegistriesCollection = realRegistries.find(col => 
+      col.title?.toLowerCase().includes('real')
+    );
+    
+    if (!realRegistriesCollection) {
+      // Priority 2: Collections with "authentic" in title
+      realRegistriesCollection = realRegistries.find(col => 
+        col.title?.toLowerCase().includes('authentic')
+      );
+    }
+    
+    if (!realRegistriesCollection) {
+      // Priority 3: Collections with "couple" or "wedding" in title
+      realRegistriesCollection = realRegistries.find(col => 
+        col.title?.toLowerCase().includes('couple') || 
+        col.title?.toLowerCase().includes('wedding')
+      );
+    }
+    
+    if (!realRegistriesCollection) {
+      // Priority 4: Any collection that is NOT themed/minimalist
+      realRegistriesCollection = realRegistries.find(col => {
+        const title = col.title?.toLowerCase() || '';
+        return !title.includes('themed') && !title.includes('minimalist');
+      });
+    }
+    
+    if (!realRegistriesCollection && realRegistries.length > 0) {
+      // Fallback: use first available collection
+      realRegistriesCollection = realRegistries[0];
+    }
+
+    console.log('Selected real registries collection:', realRegistriesCollection);
+    console.log('Selection reason:', realRegistriesCollection ? 'Found matching collection' : 'No matching collection found');
+
+    // Initialize as empty array for sub-collections
+    let subCollections = [];
+    
+    if (realRegistriesCollection) {
+      console.log('Processing real registries collection:', realRegistriesCollection.title);
+      try {
+        // Parse sub-collection IDs from the subCollectionMetafield
+        const subCollectionMetafield = realRegistriesCollection.subCollectionMetafield;
+        
+        console.log('Sub-collection metafield:', subCollectionMetafield);
+        console.log('Sub-collection metafield value type:', typeof subCollectionMetafield?.value);
+        console.log('Sub-collection metafield value:', subCollectionMetafield?.value);
+        
+        if (subCollectionMetafield?.value) {
+          let subCollectionIds = [];
           
-          console.log('🔍 DEBUG: Parsed sub-collection IDs:', subCollectionIds);
-          
-          // Fetch ALL sub-collections for display (not just the first one)
-          if (subCollectionIds.length > 0) {
-            console.log('🔍 DEBUG: Sub-collection IDs count:', subCollectionIds.length);
+          try {
+            // Try to parse as JSON first (like home index does)
+            if (typeof subCollectionMetafield.value === 'string') {
+              subCollectionIds = JSON.parse(subCollectionMetafield.value);
+            } else if (Array.isArray(subCollectionMetafield.value)) {
+              // If it's already an array, use it directly
+              subCollectionIds = subCollectionMetafield.value;
+            }
             
-            // Fetch all sub-collections
-            const subCollectionsData = [];
-            for (const subCollectionId of subCollectionIds) {
-              console.log('🔍 DEBUG: Fetching sub-collection:', subCollectionId);
-              
+            // Ensure we have an array
+            if (!Array.isArray(subCollectionIds)) {
+              console.log('Sub-collection IDs is not an array, converting to array');
+              subCollectionIds = [subCollectionIds];
+            }
+          } catch (error) {
+            console.log('Error parsing subCollectionMetafield as JSON, trying comma split:', error);
+            // Fallback to comma split if JSON parsing fails
+            if (typeof subCollectionMetafield.value === 'string') {
+              subCollectionIds = subCollectionMetafield.value
+            .split(',')
+            .map(id => id.trim())
+            .filter(id => id.length > 0);
+            }
+          }
+
+          console.log('Parsed sub-collection IDs:', subCollectionIds);
+
+          // Fetch each sub-collection individually
+          for (const subCollectionId of subCollectionIds) {
+            try {
+              console.log('Fetching sub-collection with ID:', subCollectionId);
               const subCollectionData = await context.storefront.query(SUB_COLLECTION_QUERY, {
                 variables: { id: subCollectionId }
               });
               
-              if (subCollectionData.collection) {
-                console.log('🔍 DEBUG: Successfully fetched sub-collection:', subCollectionData.collection.title);
-                subCollectionsData.push(subCollectionData.collection);
-              } else {
-                console.log('🔍 DEBUG: Failed to fetch sub-collection:', subCollectionId);
+              console.log('Sub-collection data received:', subCollectionData);
+              
+              if (subCollectionData?.collection) {
+                 subCollections.push(subCollectionData.collection);
+                 console.log('Added sub-collection to subCollections');
               }
+            } catch (error) {
+              console.error('Error fetching sub-collection:', subCollectionId, error);
+              // Continue with other sub-collections if one fails
             }
-            
-            featuredRegistryData = subCollectionsData;
-            console.log('🔍 DEBUG: Final featured registry data count:', featuredRegistryData?.length);
-            console.log('🔍 DEBUG: Final featured registry data titles:', featuredRegistryData?.map(col => col.title));
-          } else {
-            console.log('🔍 DEBUG: No sub-collection IDs found in subCollectionMetafield');
-    }
-  } catch (error) {
-          console.error('🔍 DEBUG: Error parsing or fetching sub-collections:', error);
+          }
+          
+                     // Structure the data like home index does
+           if (subCollections.length > 0) {
+             featuredRegistryData = {
+               parentCollection: realRegistriesCollection,
+               subCollections: subCollections
+             };
+             console.log('Structured featuredRegistryData like home index:', featuredRegistryData);
+           } else {
+             console.log('No sub-collections were successfully fetched');
+           }
+        } else {
+          console.log('No sub-collection metafield value found');
         }
-      } else {
-        console.log('🔍 DEBUG: No subCollectionMetafield value found');
+      } catch (error) {
+        // Handle any errors in parsing or fetching sub-collections
+        console.error('Error fetching sub-collections:', error);
       }
     } else {
-      console.log('🔍 DEBUG: No real registries found after filtering');
+      console.log('No real registries collection found to process');
+    }
+    
+    console.log('Final featuredRegistryData before fallback check:', featuredRegistryData);
+    console.log('Final featuredRegistryData type:', typeof featuredRegistryData);
+    console.log('Final featuredRegistryData has subCollections:', !!featuredRegistryData?.subCollections);
+    
+    // If no ready-made registries found, try to use regular collections as fallback
+    if (!featuredRegistryData || (featuredRegistryData.subCollections && featuredRegistryData.subCollections.length === 0)) {
+      console.log('No ready-made registries found, trying fallback with regular collections');
+      
+      // Use the first few collections as a fallback
+      const fallbackCollections = collections?.slice(0, 3) || [];
+      if (fallbackCollections.length > 0) {
+        console.log('Using fallback collections:', fallbackCollections);
+        featuredRegistryData = {
+          parentCollection: { title: 'Fallback Collections' },
+          subCollections: fallbackCollections
+        };
+      }
     }
   } catch (error) {
-    console.error('🔍 DEBUG: Error fetching ready-made registries:', error);
+    // Handle any errors in fetching ready-made registries
+    console.error('Error fetching ready-made registries:', error);
+    console.error('Error stack:', error.stack);
+    
+    // Try fallback with regular collections
+    console.log('Trying fallback with regular collections due to error');
+    const fallbackCollections = collections?.slice(0, 3) || [];
+    if (fallbackCollections.length > 0) {
+      console.log('Using fallback collections after error:', fallbackCollections);
+      featuredRegistryData = {
+        parentCollection: { title: 'Fallback Collections' },
+        subCollections: fallbackCollections
+      };
+    }
   }
 
   // Extract products only from parent collections (parentMetafield.value === 'true' and readyMadeMetafield.value !== 'true')
@@ -191,7 +264,7 @@ export async function loader({request, context}) {
         try {
           subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
         } catch (error) {
-          console.warn('Error parsing subMetafield for collection:', parentCollection.title, error);
+          // Handle any errors in parsing subMetafield
         }
       }
       
@@ -225,10 +298,43 @@ export async function loader({request, context}) {
       });
     });
   } catch (error) {
-    console.error('Error extracting products from collections:', error);
+    // Handle any errors in extracting products from collections
   }
 
-  return defer({products: allProducts, collections, user, registry, userData, readyMadeRegistries: featuredRegistryData});
+  console.log('Loader returning data:', {
+    productsLength: allProducts?.length || 0,
+    collectionsLength: collections?.length || 0,
+    user: !!user,
+    registry: !!registry,
+    userData: !!userData,
+    readyMadeRegistriesStructure: {
+      hasData: !!featuredRegistryData,
+      hasSubCollections: !!featuredRegistryData?.subCollections,
+      subCollectionsCount: featuredRegistryData?.subCollections?.length || 0,
+      parentCollection: featuredRegistryData?.parentCollection?.title || 'None'
+    }
+  });
+  
+  console.log('About to return featuredRegistryData:', featuredRegistryData);
+  console.log('About to return featuredRegistryData type:', typeof featuredRegistryData);
+  console.log('About to return featuredRegistryData === null:', featuredRegistryData === null);
+  console.log('About to return readyMadeRegistries in json:', featuredRegistryData);
+  console.log('About to return featuredRegistryData.subCollections:', featuredRegistryData?.subCollections);
+  console.log('About to return featuredRegistryData.parentCollection:', featuredRegistryData?.parentCollection);
+  
+  const returnData = {
+    products: allProducts, 
+    collections, 
+    user, 
+    registry, 
+    userData, 
+    readyMadeRegistries: featuredRegistryData
+  };
+  
+  console.log('Final return data:', returnData);
+  console.log('Final return data readyMadeRegistries:', returnData.readyMadeRegistries);
+  
+  return json(returnData);
 }
 
 export async function action({request, context}) {
@@ -437,15 +543,46 @@ export default function AddGifts() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const {products, collections, registry, user, userData, readyMadeRegistries} = useLoaderData();
+  const loaderData = useLoaderData();
+  console.log('Raw loaderData received:', loaderData);
+  console.log('Raw loaderData keys:', Object.keys(loaderData || {}));
   
-  // Debug logging for readyMadeRegistries
-  console.log('🔍 DEBUG: Component received readyMadeRegistries:', readyMadeRegistries);
-  console.log('🔍 DEBUG: readyMadeRegistries type:', typeof readyMadeRegistries);
-  console.log('🔍 DEBUG: readyMadeRegistries length:', readyMadeRegistries?.length);
-  if (readyMadeRegistries && Array.isArray(readyMadeRegistries)) {
-    console.log('🔍 DEBUG: readyMadeRegistries titles:', readyMadeRegistries.map(col => col.title));
+  const {products, collections, registry, user, userData, readyMadeRegistries} = loaderData || {};
+  
+  // Debug logging for ready-made registries
+  console.log('Dashboard addgifts received loaderData:', loaderData);
+  console.log('Dashboard addgifts received readyMadeRegistries:', readyMadeRegistries);
+  console.log('Ready-made registries structure:', {
+    hasData: !!readyMadeRegistries,
+    hasSubCollections: !!readyMadeRegistries?.subCollections,
+    subCollectionsCount: readyMadeRegistries?.subCollections?.length || 0,
+    parentCollection: readyMadeRegistries?.parentCollection?.title || 'None'
+  });
+  if (readyMadeRegistries && readyMadeRegistries.subCollections && readyMadeRegistries.subCollections.length > 0) {
+    console.log('First ready-made registry sample:', readyMadeRegistries.subCollections[0]);
   }
+  
+  // Show loading state if data is not yet available
+  if (!loaderData || !products || !collections) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-lg text-gray-600 mb-4">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Get all products from all collections for search results
+  const allProducts = collections.flatMap(
+    (collection) =>
+      collection.products?.edges?.map((edge) => ({
+        ...edge.node,
+        collectionTitle: collection.title,
+        collectionHandle: collection.handle,
+      })) || [],
+  );
   
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -520,7 +657,7 @@ export default function AddGifts() {
   const handleAddtoRegistry = (product) => {
     try {
       // Check if registry exists and has an id
-      if (!registry || !registry.id) {
+      if (!registry || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
@@ -534,7 +671,7 @@ export default function AddGifts() {
       const payload = {
         productId: Number(extractShopifyId(product.id)),
         amount: Number(product.price),
-        registryId: Number(registry.id),
+        registryId: Number(registry.data[0].id),
         productTypeId: 1,
         quantity: 1,
       };
@@ -682,7 +819,7 @@ export default function AddGifts() {
                             try {
                               subCollectionGids = JSON.parse(col.subMetafield.value);
                             } catch (error) {
-                              console.warn('Error parsing subMetafield for collection:', col.title, error);
+                              // Handle any errors in parsing subMetafield
                             }
                           }
                           
@@ -922,30 +1059,47 @@ export default function AddGifts() {
         From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
       </p>
         
-        {/* Debug logging for CustomTab */}
-        {console.log('🔍 DEBUG: About to render CustomTab with:', {
-          tabsData: tabsData,
-          readyMadeRegistries: readyMadeRegistries,
-          readyMadeRegistriesType: typeof readyMadeRegistries,
-          readyMadeRegistriesLength: readyMadeRegistries?.length,
-          readyMadeRegistriesStructure: readyMadeRegistries?.map(col => ({
-            id: col.id,
-            title: col.title,
-            hasProducts: col.products?.edges?.length > 0,
-            productsCount: col.products?.edges?.length || 0
-          }))
-        })}
-        
         {/* Safety check before rendering CustomTab */}
-        {readyMadeRegistries && Array.isArray(readyMadeRegistries) && readyMadeRegistries.length > 0 ? (
-          <CustomTab tabsData={tabsData} featuredRegistryData={readyMadeRegistries} />
+        {readyMadeRegistries && readyMadeRegistries.subCollections && readyMadeRegistries.subCollections.length > 0 ? (
+          <CustomTab
+            tabsData={[
+              {
+                label: 'REAL REGISTRIES',
+                value: 1,
+                route: 'realregistries',
+              },
+              {
+                label: 'THEMED REGISTRIES',
+                value: 2,
+                route: 'themedregistries',
+              },
+              {
+                label: 'LOREM IPSUM',
+                value: 3,
+                route: 'lorem',
+              },
+            ]} 
+            featuredRegistryData={readyMadeRegistries} 
+          />
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No ready-made registries available</p>
-            <p className="text-sm text-gray-400 mt-2">
-              Data type: {typeof readyMadeRegistries} | 
-              Length: {readyMadeRegistries?.length || 'undefined'}
+          <div className="text-center py-8">
+            <p className="text-gray-600 mb-4">
+              {readyMadeRegistries === undefined ? 'Loading ready-made registries...' : 'No ready-made registries found'}
             </p>
+            <p className="text-sm text-gray-500">
+              Data type: {typeof readyMadeRegistries} | 
+              Structure: {readyMadeRegistries?.subCollections ? 'Has subCollections' : 'No subCollections'} |
+              Sub-collections count: {readyMadeRegistries?.subCollections?.length || 0}
+            </p>
+            {readyMadeRegistries && (
+              <div className="mt-4 p-4 bg-gray-100 rounded text-left">
+                <p className="text-sm font-semibold mb-2">Raw Data:</p>
+                <pre className="text-xs overflow-auto max-h-40">
+                  {JSON.stringify(readyMadeRegistries, null, 2)}
+                </pre>
+              </div>
+            )}
+            <p className="text-sm text-gray-500 mt-2">If this message persists, please check the console for any errors.</p>
           </div>
         )}
         <div className="text-center">
@@ -1273,7 +1427,7 @@ const READY_MADE_REGISTRIES_QUERY = `#graphql
   }`;
 
 const SUB_COLLECTION_QUERY = `#graphql
-  query getSubCollection($id: ID!) {
+  query getDashboardSubCollection($id: ID!) {
     collection(id: $id) {
       id
       title

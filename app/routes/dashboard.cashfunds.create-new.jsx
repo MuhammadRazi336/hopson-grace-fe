@@ -6,9 +6,13 @@ import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context} = args;
-  const registry = context?.session?.get('@Registry');
+  const user = await context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
-  if (!registry || !registry.id) {
+  if (!registry || !registry.data[0].id) {
     throw new Response('Registry not found in session', {status: 404});
   }
 
@@ -75,12 +79,13 @@ function CreateNewCashFund() {
       setAlertMessage('Cash fund has been created and added to your registry!');
       setAlertType('success');
       setShowAlert(true);
+      // Hide alert after 3 seconds
       setTimeout(() => {
         setShowAlert(false);
         setAlertMessage('');
       }, 3000);
     } else if (fetcher.data?.e) {
-      setAlertMessage('There was an error creating the cash fund.');
+      setAlertMessage('Failed to create cash fund. Please try again.');
       setAlertType('error');
       setShowAlert(true);
       setTimeout(() => {
@@ -105,7 +110,7 @@ function CreateNewCashFund() {
       return;
     }
     // Check if required fields are filled
-    const isMissingRequiredFields = !cashFundName || !registry?.id || (allowFixedAmount && !totalGoal);
+    const isMissingRequiredFields = !cashFundName || !registry?.data[0]?.id || (allowFixedAmount && !totalGoal);
     
     if (isMissingRequiredFields) {
       e.preventDefault();
@@ -351,7 +356,7 @@ function CreateNewCashFund() {
               <input type="hidden" name="isAnyAmount" value={allowAnyAmount ? 'true' : 'false'} />
               <input type="hidden" name="isFixedAmount" value={allowFixedAmount ? 'true' : 'false'} />
               <input type="hidden" name="isAmountHide" value={hideFromGuests ? 'true' : 'false'} />
-              <input type="hidden" name="registryId" value={registry?.id || ''} />
+              <input type="hidden" name="registryId" value={registry?.data[0]?.id || ''} />
 
               {/* Create Cash Fund Button */}
               <div className="mt-8 flex justify-end">
@@ -365,46 +370,41 @@ function CreateNewCashFund() {
               </div>
             </fetcher.Form>
 
-            {/* Feedback Alert */}
+            {/* Alert Component */}
             {showAlert && (
-              <div className={`fixed top-4 right-4 ${
-                alertType === 'success' 
-                  ? 'bg-green-500 border-l-4 border-green-600' 
-                  : 'bg-red-500 border-l-4 border-red-600'
-              } text-white px-6 py-4 rounded-lg shadow-xl z-50 animate-fade-in-out max-w-md`}>
+              <div
+                className={`fixed top-4 right-4 ${
+                  alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+                } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+              >
                 <div className="flex items-center">
                   {alertType === 'success' && (
-                    <svg 
-                      className="w-6 h-6 mr-3 text-green-100" 
-                      fill="none" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth="2" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
                       <path d="M5 13l4 4L19 7"></path>
                     </svg>
                   )}
                   {alertType === 'error' && (
-                    <svg 
-                      className="w-6 h-6 mr-3 text-red-100" 
-                      fill="none" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth="2" 
-                      viewBox="0 0 24 24" 
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
                       <path d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                   )}
-                  <div>
-                    <p className="font-semibold text-sm">
-                      {alertType === 'success' ? 'Success!' : 'Error!'}
-                    </p>
-                    <p className="text-sm mt-1">{alertMessage}</p>
-                  </div>
+                  <span>{alertMessage}</span>
                 </div>
               </div>
             )}

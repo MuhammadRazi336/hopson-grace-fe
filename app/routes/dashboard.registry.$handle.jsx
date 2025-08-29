@@ -16,7 +16,10 @@ export async function loader({request, context, params}) {
     return {data: {}};
   }
   const user = context.session.get('@User');
-  const registry = context.session.get('@Registry');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
   const eventRes = await context.ClientGet(`events/${params.handle}`, context);
   const userRes = await context.ClientGet(`users/${user.user.id}`, context);
@@ -76,7 +79,7 @@ export async function loader({request, context, params}) {
 
   // Combine shipping data into the main user object for easier state management
 
-  return {data: eventRes?.data || {}, userData: userData || {}, shippingData: shippingData || {}, registry: registry || {}, user};
+  return {data: eventRes?.data || {}, userData: userData || {}, shippingData: shippingData || {}, registry: registry?.data[0] || {}, user};
 }
 export async function action({request, context}) {
   try {

@@ -21,9 +21,14 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 export async function loader({context}) {
-  const registry = context?.session?.get('@Registry');
+  const user = await context?.session?.get('@User');
+  
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
-  if (!registry || !registry.id) {
+  if (!registry || !registry.data[0].id) {
     throw new Response('Registry not found in session', {status: 404});
   }
 
@@ -59,7 +64,7 @@ export async function loader({context}) {
     console.error('Error fetching collections:', error);
   }
 
-  return {products: allProducts, registryId: registry?.id, collections};
+  return {products: allProducts, registryId: registry?.data[0]?.id, collections};
 }
 
 export async function action({request, context}) {
@@ -511,8 +516,8 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
     const formData = new FormData();
     formData.append('name', title);
     formData.append('amount', amount);
-    formData.append('isAnyAmount', 'true');
-    formData.append('isFixedAmount', 'false');
+    formData.append('isAnyAmount', 'false');
+    formData.append('isFixedAmount', 'true');
     formData.append('isAmountHide', 'false');
     formData.append('registryId', registryId);
     formData.append('note', 'Added from cash funds listing');
@@ -587,18 +592,65 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
 
       {/* Feedback Alert */}
       {showAlert && (
-        <div className={`fixed top-4 right-4 ${alertType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}>
+        <div
+          className={`fixed top-4 right-4 ${
+            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+        >
           <div className="flex items-center">
             {alertType === 'success' && (
-              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
             )}
             {alertType === 'error' && (
-              <svg className="w-5 h-5 mr-2" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
             )}
             <span>{alertMessage}</span>
           </div>
         </div>
       )}
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 3s ease-in-out;
+        }
+      `}</style>
     </div>
   );
 };

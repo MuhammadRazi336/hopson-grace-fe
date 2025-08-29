@@ -6,9 +6,13 @@ import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context, params} = args;
-  const registry = context?.session?.get('@Registry');
+  const user = await context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
-  if (!registry || !registry.id) {
+  if (!registry || !registry.data[0].id) {
     throw new Response('Registry not found in session', {status: 404});
   }
 
@@ -132,7 +136,7 @@ function NewCashFund() {
       allowFixedAmount,
       totalGoal,
       agreedToTerms,
-      registryId: registry?.id
+      registryId: registry?.data[0]?.id
     });
 
     if (!agreedToTerms) {
@@ -147,7 +151,7 @@ function NewCashFund() {
       return;
     }
     // Check if required fields are filled
-    const isMissingRequiredFields = !cashFundName || !registry?.id || (allowFixedAmount && !totalGoal);
+    const isMissingRequiredFields = !cashFundName || !registry?.data[0]?.id || (allowFixedAmount && !totalGoal);
     
     if (isMissingRequiredFields) {
       e.preventDefault();
@@ -397,7 +401,7 @@ function NewCashFund() {
               <input type="hidden" name="isAnyAmount" value={allowAnyAmount ? 'true' : 'false'} />
               <input type="hidden" name="isFixedAmount" value={allowFixedAmount ? 'true' : 'false'} />
               <input type="hidden" name="isAmountHide" value={hideFromGuests ? 'true' : 'false'} />
-              <input type="hidden" name="registryId" value={registry?.id || ''} />
+              <input type="hidden" name="registryId" value={registry?.data[0]?.id || ''} />
 
               {/* Add to Registry Button */}
               <div className="mt-8 flex justify-end">

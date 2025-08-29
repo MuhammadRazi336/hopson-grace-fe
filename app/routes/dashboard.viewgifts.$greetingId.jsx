@@ -8,11 +8,14 @@ import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 
 export async function loader({params, context}) {
   const {greetingId} = params;
-  const registry = context?.session?.get('@Registry');
   const user = context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
   const response = await context.ClientGet(
-    `transactions/detail/${greetingId}/${registry.id}`,
+    `transactions/detail/${greetingId}/${registry.data[0].id}`,
     context,
   );
   const viewGifts = response.data || [];
@@ -51,7 +54,7 @@ export async function loader({params, context}) {
   return {
     viewGifts: giftsWithShopify,
     user: user,
-    registry: registry,
+    registry: registry?.data[0],
     greetingId,
   };
 }

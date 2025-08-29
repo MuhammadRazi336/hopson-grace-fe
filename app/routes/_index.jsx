@@ -29,8 +29,8 @@ export async function loader(args) {
         `registries/by-userId/${sessionUser?.user?.id}`,
         context,
       );
-      context.session.set('@Registry', getRegistries.data);
-      const cookie = await context.session.commit();
+      
+      // Remove @Registry session storage - only keep @User
       return redirect('/dashboard', {
         headers: {
           'Set-Cookie': cookie,

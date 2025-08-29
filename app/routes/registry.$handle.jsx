@@ -14,7 +14,7 @@ import lineImg4 from '/assets/Images/Vector 14.png';
 
 export async function loader({params, context}) {
   const {handle} = params;
-  
+  const user = context?.session?.get('@User');
   if (!handle) {
     throw new Response('Not Found', { status: 404 });
   }
@@ -29,7 +29,10 @@ export async function loader({params, context}) {
     }
 
     // Get registry data from session
-    const registry = await context?.session?.get('@Registry');
+    const registry = await context.ClientGet(
+      `registries/by-userId/${user.user.id}`,
+      context,
+    );
 
     // Fetch other ready-made registries (sub-collections) to show below
     const {collections} = await context.storefront.query(OTHER_REGISTRIES_QUERY);
@@ -124,7 +127,7 @@ const Registry = () => {
       }
 
       // Check if registry exists and has an ID
-      if (!registry || !registry.id) {
+      if (!registry || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please create a registry first.');
         setAlertType('error');
         setShowAlert(true);
@@ -139,7 +142,7 @@ const Registry = () => {
        const payload = {
          productId: Number(extractShopifyId(product.id)),
          amount: Number(firstVariant.priceV2.amount),
-         registryId: Number(registry.id),
+         registryId: Number(registry.data[0].id),
          productTypeId: 1,
          quantity: selectedQuantity,
          note: '',

@@ -22,14 +22,12 @@ export async function loader({request, context}) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('search');
   const user = context?.session?.get('@User');
-  const registry = context?.session?.get('@Registry');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
-  // Check for user/token authentication
-  if (!user || !user.accessToken) {
-    return redirect('/login');
-  }
-
-  if (!registry || !registry.id) {
+  if (!registry || !registry.data[0] || !registry.data[0].id) {
     throw new Response('Registry not found in session', {status: 404});
   }
 
@@ -57,7 +55,7 @@ export async function loader({request, context}) {
   return {
     cashFunds: filteredCashFunds,
     searchQuery,
-    registryId: registry?.id,
+    registryId: registry?.data[0]?.id,
     user,
   };
 }
@@ -130,14 +128,6 @@ const ProductCard = React.memo(
         !hasShownFeedback.current &&
         (fetcher.data.success === true || fetcher.data.error === true)
       ) {
-        // Debug logging only when we actually process data
-        console.log('ProductCard processing fetcher data:', {
-          productTitle: product.title,
-          fetcherData: fetcher.data,
-          fetcherState: fetcher.state,
-          hasShownFeedback: hasShownFeedback.current,
-        });
-
         if (fetcher.data.success === true) {
           onSuccess(`${product.title} has been added to your registry!`);
           hasShownFeedback.current = true;
@@ -166,6 +156,16 @@ const ProductCard = React.memo(
 
     const handleAddToRegistry = async () => {
       try {
+        // Check if user is logged in by looking for token in localStorage
+        const token =
+          localStorage.getItem('@token') || localStorage.getItem('@Token');
+
+        if (!token) {
+          // No token found, redirect to login
+          window.location.href = '/login';
+          return;
+        }
+
         // Fetch the image from the URL and convert it to a blob
         const imageResponse = await fetch(firstImage);
         const imageBlob = await imageResponse.blob();
@@ -236,7 +236,10 @@ const ProductCard = React.memo(
 
           <div className="flex items-center justify-between mt-4">
             <div className="flex flex-col w-full items-center text-xs">
-              <Link to={`/dashboard/cashfunds/${product.id}`} className="w-full">
+              <Link
+                to={`/dashboard/cashfunds/${product.id}`}
+                className="w-full"
+              >
                 <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
                   personalize fund
                 </button>
@@ -358,7 +361,10 @@ const CashFund = () => {
               </Link>
             </div>
             <div className="rounded-full w-[100px] h-[100px] md:w-[200px] md:h-[200px] lg:w-[500px] lg:h-[500px] bg-[#F5F2ED] relative">
-              <Link to="/dashboard/cashfunds/create-new" className="block w-full h-full">
+              <Link
+                to="/dashboard/cashfunds/create-new"
+                className="block w-full h-full"
+              >
                 <img
                   src="/assets/Images/registrylogoSteps.png"
                   alt="Create New Cash Fund"

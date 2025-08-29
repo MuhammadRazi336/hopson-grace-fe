@@ -39,13 +39,13 @@ export async function loader({params, context}) {
       context,
     );
     console.log('Loader: Registry response:', response);
-
+    
     // Check if registry exists
     if (!response.data || response.data.length === 0) {
       console.log('Loader: No registry data found');
       throw new Response('Registry not found', {status: 404});
     }
-
+    
     const registryId = response.data[0]?.id;
     if (!registryId) {
       console.log('Loader: Invalid registry ID');
@@ -100,13 +100,13 @@ export async function loader({params, context}) {
       const ids = res.data
         .map((product) => `gid://shopify/Product/${product.productId}`)
         .filter(Boolean); // Filter out any undefined/null IDs
-
+      
       if (ids.length > 0) {
         try {
           console.log('Loader: Fetching Shopify products for IDs:', ids);
           const products = await fetchProducts(context.storefront, ids);
           console.log('Loader: Shopify products response:', products);
-
+          
           mergedArray = res.data.map((item1) => {
             const product = products?.nodes?.find(
               (item2) =>
@@ -149,13 +149,13 @@ export async function loader({params, context}) {
     // Handle case where there are no cash fund products
     const cashFundProducts =
       Array.isArray(cashRes?.data) && cashRes.data.length > 0
-        ? cashRes.data.map((item) => ({
-            ...item,
-            status: 'cashFund',
-            isCashFund: true,
-            availableForSale: true,
-          }))
-        : [];
+      ? cashRes.data.map((item) => ({
+          ...item,
+          status: 'cashFund',
+          isCashFund: true,
+          availableForSale: true,
+        }))
+      : [];
     console.log('Loader: Cash fund products:', cashFundProducts);
 
     // Combine all products
@@ -316,10 +316,10 @@ export async function action({request, context}) {
     };
 
     return json({
-      success: true,
-      action: 'add',
-      item: cartItem,
-      message: `${cartItem.title} added to cart`,
+        success: true,
+        action: 'add',
+        item: cartItem,
+        message: `${cartItem.title} added to cart`,
     });
   } catch (error) {
     console.error('Action error:', error);
@@ -349,7 +349,7 @@ async function hashCartId(cartId) {
 export default function CoupleProfile() {
   const loaderData = useLoaderData();
   console.log('Component: Loader data received:', loaderData);
-
+  
   // If no loader data, show loading or error state
   if (!loaderData) {
     return (
@@ -365,7 +365,7 @@ export default function CoupleProfile() {
       </div>
     );
   }
-
+  
   // Ensure we have valid data with fallbacks
   const {
     data = [],
@@ -396,7 +396,7 @@ export default function CoupleProfile() {
       </div>
     );
   }
-
+  
   const fetcher = useFetcher();
 
   // Ensure data is always an array
@@ -404,7 +404,7 @@ export default function CoupleProfile() {
   const safeCashfundData = Array.isArray(cashfundData) ? cashfundData : [];
   const safeCollections = Array.isArray(collections) ? collections : [];
   const safeResponse = response || {};
-
+  
   console.log('Component: Safe data:', {
     safeData: safeData.length,
     safeCashfundData: safeCashfundData.length,
@@ -429,7 +429,7 @@ export default function CoupleProfile() {
   const [selectedGiftData, setSelectedGiftData] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [modalQuantity, setModalQuantity] = useState(1); // Add quantity state for modal
-
+  
   // Move guestEmail state to the top, before useEffect hooks
   const [guestEmail, setGuestEmail] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -441,10 +441,10 @@ export default function CoupleProfile() {
   const [pendingCartAction, setPendingCartAction] = useState(null); // { type: 'add'|'contribute', productId, amount }
   const [isApiLoading, setIsApiLoading] = useState(false);
   const emailInputRef = useRef();
-
+  
   // Add a ref to track cart items for immediate access
   const cartItemsRef = useRef([]);
-
+  
   // Add a state variable to force re-renders
   const [forceRender, setForceRender] = useState(0);
   // Function to fetch cart items from API
@@ -456,7 +456,7 @@ export default function CoupleProfile() {
       cartItemsRef.current = [];
       return;
     }
-
+    
     const email =
       typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     console.log(
@@ -465,45 +465,45 @@ export default function CoupleProfile() {
       'registryId:',
       registryId,
     );
-
+    
     if (!email || !registryId) {
       console.log(
         'fetchCartItems: Missing email or registryId, returning early',
       );
       return;
     }
-
+    
     setCartLoading(true);
     try {
       const res = await fetch(
         `${apiBaseUrl}/api/cart/get-cart/${registryId}/${email}`,
       );
       const apiData = await res.json();
-
+      
       if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
         // Extract registryProducts from the first cart
         const cartData = apiData.data[0];
         console.log('Cart API Response:', cartData);
         console.log('Cart Items:', cartData.cartItemProducts);
-
+        
         // Transform the API data to match SideCart expectations
         const transformedItems = (cartData.cartItemProducts || []).map(
           (cartItem) => {
-            const registryProduct = cartItem.registryProduct;
-            console.log('Cart Item:', cartItem);
-            console.log('Registry Product:', registryProduct);
-            console.log('CartItem quantity:', cartItem.quantity);
-            console.log('RegistryProduct quantity:', registryProduct.quantity);
-
-            // Try to find the product in our loaded data to get title and image
+          const registryProduct = cartItem.registryProduct;
+          console.log('Cart Item:', cartItem);
+          console.log('Registry Product:', registryProduct);
+          console.log('CartItem quantity:', cartItem.quantity);
+          console.log('RegistryProduct quantity:', registryProduct.quantity);
+          
+          // Try to find the product in our loaded data to get title and image
             const productFromData = safeData.find(
               (p) =>
-                (p.productId && p.productId === registryProduct.productId) ||
+            (p.productId && p.productId === registryProduct.productId) || 
                 (p.id && p.id === registryProduct.productId),
-            );
-
-            return {
-              id: cartItem.id,
+          );
+          
+          return {
+            id: cartItem.id,
               price: Number(cartItem.price) || 0, // Use the price from cartItem with fallback
               quantity: Number(
                 cartItem.quantity || cartItem.purchasedQuantity || 1,
@@ -518,12 +518,12 @@ export default function CoupleProfile() {
                 productFromData?.images?.edges?.[0]?.node?.url ||
                 productFromData?.cashFund?.image?.fileUrl ||
                 '/assets/Images/placeholder.png',
-              isCashFund: registryProduct.productTypeId === 2,
-              productId: registryProduct.productId,
+            isCashFund: registryProduct.productTypeId === 2,
+            productId: registryProduct.productId,
               amount: Number(registryProduct.amount) || 0, // Keep original amount for reference
-              registryProductId: registryProduct.id, // Keep registry product ID for reference
-              requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
-            };
+            registryProductId: registryProduct.id, // Keep registry product ID for reference
+            requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
+          };
           },
         );
         console.log('Transformed Items:', transformedItems);
@@ -614,7 +614,7 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     const email =
       typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
@@ -624,7 +624,7 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     // If we don't have cart items loaded, fetch them first
     if (cartItems.length === 0) {
       console.log(
@@ -651,12 +651,12 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     setSelectedGiftData(product);
     setSelectedImageIndex(0); // Reset selected image for the new item
     setIsPopupOpen(true);
   };
-
+  
   // Validate selectedImageIndex when product data changes
   useEffect(() => {
     if (selectedGiftData && selectedGiftData.images?.edges) {
@@ -714,7 +714,7 @@ export default function CoupleProfile() {
       console.log('callCartApi: Skipping - no products or registry ID');
       return {success: false, error: 'No products available'};
     }
-
+    
     setIsApiLoading(true);
     try {
       const res = await fetch(`${apiBaseUrl}/api/cart`, {
@@ -752,10 +752,10 @@ export default function CoupleProfile() {
       console.log('callAddToCartApi: Skipping - no products or registry ID');
       return {success: false, error: 'No products available'};
     }
-
+    
     setIsApiLoading(true);
     try {
-      const payload = {
+      const payload = { 
         registryProductId: Number(registryProductId),
         price: Number(price),
         title: productData.title || productData.cashFund?.name || 'Product',
@@ -767,13 +767,13 @@ export default function CoupleProfile() {
           productData.description || productData.cashFund?.note || '',
       };
       console.log('Sending to Cart API:', payload);
-
+      
       const res = await fetch(
         `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
         {
-          method: 'PUT',
+        method: 'PUT',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload),
+        body: JSON.stringify(payload),
         },
       );
       const data = await res.json();
@@ -797,17 +797,17 @@ export default function CoupleProfile() {
       );
       return {success: false, error: 'No products available'};
     }
-
+    
     setIsApiLoading(true);
     try {
       console.log('Sending to Cart API with quantity:', payload);
-
+      
       const res = await fetch(
         `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
         {
-          method: 'PUT',
+        method: 'PUT',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload),
+        body: JSON.stringify(payload),
         },
       );
       const data = await res.json();
@@ -833,7 +833,7 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     const email =
       typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
@@ -841,7 +841,7 @@ export default function CoupleProfile() {
       setShowEmailModal(true);
       return;
     }
-
+    
     const product = safeData.find((item) => item.id === productId);
     if (!product) return;
 
@@ -856,7 +856,7 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     // Store registryId in localStorage when first item is added to cart
     if (typeof window !== 'undefined' && product.registryId) {
       localStorage.setItem('registryId', product.registryId);
@@ -865,13 +865,13 @@ export default function CoupleProfile() {
         product.registryId,
       );
     }
-
+    
     // Use the correct product ID for registryProductId
     const registryProductId = product.productId || product.id;
     const price = product.amount || 0;
-
+    
     // Add quantity to the payload
-    const payload = {
+    const payload = { 
       registryProductId: Number(registryProductId),
       price: Number(price),
       title: product.title || product.cashFund?.name || 'Product',
@@ -882,7 +882,7 @@ export default function CoupleProfile() {
       description: product.description || product.cashFund?.note || '',
       quantity: Number(quantity),
     };
-
+    
     callAddToCartApiWithQuantity(email, payload).then((result) => {
       if (result.success) {
         // Refresh cart items after successful addition
@@ -902,7 +902,7 @@ export default function CoupleProfile() {
     });
   };
 
-  // Modified Contribute
+    // Modified Contribute
   const handleContribute = (productId, amount) => {
     // Don't allow contributing if there are no products
     if (!hasProducts || !registryId) {
@@ -912,7 +912,7 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     const email =
       typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email) {
@@ -934,7 +934,7 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     // Store registryId in localStorage when first item is added to cart
     if (typeof window !== 'undefined' && product.registryId) {
       localStorage.setItem('registryId', product.registryId);
@@ -947,21 +947,21 @@ export default function CoupleProfile() {
     const registryProductId = product.productId || product.id;
     callAddToCartApi(email, registryProductId, amount, product).then(
       (result) => {
-        if (result.success) {
-          // Refresh cart items after successful contribution
-          fetchCartItems();
+      if (result.success) {
+        // Refresh cart items after successful contribution
+        fetchCartItems();
           setAlertMessage(
             `$${amount} contributed to ${product.title || 'fund'} successfully`,
           );
-          setAlertType('success');
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        } else {
-          setAlertMessage('Failed to contribute to fund');
-          setAlertType('error');
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        }
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      } else {
+        setAlertMessage('Failed to contribute to fund');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      }
       },
     );
   };
@@ -980,11 +980,11 @@ export default function CoupleProfile() {
     console.log('handleEmailSubmit: Calling callCartApi with email:', email);
     await callCartApi(email);
     setShowEmailModal(false);
-
+    
     // Update guest email state first to trigger useEffect
     console.log('handleEmailSubmit: Setting guestEmail state to:', email);
     setGuestEmail(email);
-
+    
     // Fetch cart items directly with the email before opening sidecart
     // This ensures we have the cart data before the sidecart opens
     const emailForCart = email; // Use the email we just set
@@ -1001,35 +1001,35 @@ export default function CoupleProfile() {
           `${apiBaseUrl}/api/cart/get-cart/${registryId}/${emailForCart}`,
         );
         const apiData = await res.json();
-
+        
         if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
           // Extract registryProducts from the first cart
           const cartData = apiData.data[0];
           console.log('Cart API Response:', cartData);
           console.log('Cart Items:', cartData.cartItemProducts);
-
+          
           // Transform the API data to match SideCart expectations
           const transformedItems = (cartData.cartItemProducts || []).map(
             (cartItem) => {
-              const registryProduct = cartItem.registryProduct;
-              console.log('Cart Item:', cartItem);
-              console.log('Registry Product:', registryProduct);
-              console.log('CartItem quantity:', cartItem.quantity);
+            const registryProduct = cartItem.registryProduct;
+            console.log('Cart Item:', cartItem);
+            console.log('Registry Product:', registryProduct);
+            console.log('CartItem quantity:', cartItem.quantity);
               console.log(
                 'RegistryProduct quantity:',
                 registryProduct.quantity,
               );
-
-              // Try to find the product in our loaded data to get title and image
+            
+            // Try to find the product in our loaded data to get title and image
               const productFromData = safeData.find(
                 (p) =>
-                  (p.productId && p.productId === registryProduct.productId) ||
+              (p.productId && p.productId === registryProduct.productId) || 
                   (p.id && p.id === registryProduct.productId),
-              );
-
-              return {
-                id: cartItem.id,
-                price: Number(cartItem.price), // Use the price from cartItem
+            );
+            
+            return {
+              id: cartItem.id,
+              price: Number(cartItem.price), // Use the price from cartItem
                 quantity: Number(
                   cartItem.quantity || cartItem.purchasedQuantity || 1,
                 ), // Use cartItem.quantity for purchased quantity
@@ -1043,41 +1043,41 @@ export default function CoupleProfile() {
                   productFromData?.images?.edges?.[0]?.node?.url ||
                   productFromData?.cashFund?.image?.fileUrl ||
                   '/placeholder.svg',
-                isCashFund: registryProduct.productTypeId === 2,
-                productId: registryProduct.productId,
-                amount: Number(registryProduct.amount), // Keep original amount for reference
-                registryProductId: registryProduct.id, // Keep registry product ID for reference
-                requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
-              };
+              isCashFund: registryProduct.productTypeId === 2,
+              productId: registryProduct.productId,
+              amount: Number(registryProduct.amount), // Keep original amount for reference
+              registryProductId: registryProduct.id, // Keep registry product ID for reference
+              requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
+            };
             },
           );
           console.log('Transformed Items:', transformedItems);
-
+          
           // Set cart items and wait for state update to complete
           console.log('About to set cart items:', transformedItems);
-
+          
           // Use a Promise to ensure the state update is complete
           await new Promise((resolve) => {
             setCartItems(transformedItems);
             // Also update the ref immediately
             cartItemsRef.current = transformedItems;
-
+            
             // Use a longer delay to ensure React processes the state update
             setTimeout(() => {
               console.log('State update delay completed');
               resolve();
             }, 300);
           });
-
+      
           // Store the items locally to ensure they're available when opening sidecart
           const localCartItems = transformedItems;
-
+          
           console.log(
             'handleEmailSubmit: Cart items set, now opening sidecart',
           );
           console.log('Local cart items:', localCartItems);
           console.log('Cart items ref:', cartItemsRef.current);
-
+          
           // Force a re-render to ensure the component updates
           setForceRender((prev) => prev + 1);
         } else {
@@ -1090,7 +1090,7 @@ export default function CoupleProfile() {
         setCartLoading(false);
       }
     }
-
+    
     // Handle pending cart action first (add product to cart)
     // This ensures the product is added to cart when email is submitted
     if (pendingCartAction) {
@@ -1107,13 +1107,13 @@ export default function CoupleProfile() {
               product.registryId,
             );
           }
-
+          
           const registryProductId = product.productId || product.id;
           const price = product.amount || 0;
           const quantity = pendingCartAction.quantity || 1;
-
+          
           // Add quantity to the payload
-          const payload = {
+          const payload = { 
             registryProductId: Number(registryProductId),
             price: Number(price),
             title: product.title || product.cashFund?.name || 'Product',
@@ -1124,10 +1124,10 @@ export default function CoupleProfile() {
             description: product.description || product.cashFund?.note || '',
             quantity: Number(quantity),
           };
-
+          
           console.log('Adding pending product to cart:', payload);
           const result = await callAddToCartApiWithQuantity(email, payload);
-
+          
           if (result.success) {
             // Show success alert
             setAlertMessage(
@@ -1159,7 +1159,7 @@ export default function CoupleProfile() {
               product.registryId,
             );
           }
-
+          
           const registryProductId = product.productId || product.id;
           const result = await callAddToCartApi(
             email,
@@ -1167,7 +1167,7 @@ export default function CoupleProfile() {
             pendingCartAction.amount,
             product,
           );
-
+          
           if (result.success) {
             // Show success alert
             setAlertMessage(
@@ -1187,16 +1187,16 @@ export default function CoupleProfile() {
           }
         }
       }
-
+      
       // Clear the pending action
       setPendingCartAction(null);
     }
-
+    
     console.log(
       'handleEmailSubmit: Opening sidecart, current cartItems:',
       cartItems,
     );
-
+    
     // Now open the sidecart - cart items should already be loaded
     setSideCartOpen(true);
   };
@@ -1209,15 +1209,15 @@ export default function CoupleProfile() {
       );
       return;
     }
-
+    
     const email =
       typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email || !registryId || !itemId) return;
-
+    
     // Find the cart item to get the registryProductId
     const cartItem = cartItems.find((item) => item.id === itemId);
     if (!cartItem) return;
-
+    
     // Use registryProductId from the cart item
     const registryProductId = cartItem.registryProductId;
     if (!registryProductId) {
@@ -1227,73 +1227,73 @@ export default function CoupleProfile() {
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }
-
+    
     // If updatedItem is provided, this is a quantity update
     if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
       // Update quantity in cart
       fetch(
         `${apiBaseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`,
         {
-          method: 'PUT',
+        method: 'PUT',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({quantity: updatedItem.quantity}),
         },
       )
         .then((response) => response.json())
         .then((data) => {
-          if (data.code === 200) {
-            // Refresh cart items after successful update
-            fetchCartItems();
-            setAlertMessage('Quantity updated successfully');
-            setAlertType('success');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
-          } else {
-            setAlertMessage('Failed to update quantity');
-            setAlertType('error');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
-          }
-        })
-        .catch((error) => {
-          console.error('Error updating quantity:', error);
-          setAlertMessage('Error updating quantity');
+        if (data.code === 200) {
+          // Refresh cart items after successful update
+          fetchCartItems();
+          setAlertMessage('Quantity updated successfully');
+          setAlertType('success');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        } else {
+          setAlertMessage('Failed to update quantity');
           setAlertType('error');
           setShowAlert(true);
           setTimeout(() => setShowAlert(false), 3000);
-        });
+        }
+      })
+        .catch((error) => {
+        console.error('Error updating quantity:', error);
+        setAlertMessage('Error updating quantity');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      });
     } else {
       // Remove item from cart
       fetch(
         `${apiBaseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`,
         {
-          method: 'DELETE',
+        method: 'DELETE',
           headers: {'Content-Type': 'application/json'},
         },
       )
         .then((response) => response.json())
         .then((data) => {
-          if (data.code === 200) {
-            // Refresh cart items after successful removal
-            fetchCartItems();
-            setAlertMessage('Item removed from cart successfully');
-            setAlertType('success');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
-          } else {
-            setAlertMessage('Failed to remove item from cart');
-            setAlertType('error');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
-          }
-        })
-        .catch((error) => {
-          console.error('Error removing item from cart:', error);
-          setAlertMessage('Error removing item from cart');
+        if (data.code === 200) {
+          // Refresh cart items after successful removal
+          fetchCartItems();
+          setAlertMessage('Item removed from cart successfully');
+          setAlertType('success');
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 3000);
+        } else {
+          setAlertMessage('Failed to remove item from cart');
           setAlertType('error');
           setShowAlert(true);
           setTimeout(() => setShowAlert(false), 3000);
-        });
+        }
+      })
+        .catch((error) => {
+        console.error('Error removing item from cart:', error);
+        setAlertMessage('Error removing item from cart');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+      });
     }
   };
 
@@ -1303,7 +1303,7 @@ export default function CoupleProfile() {
       console.log('handleClearCart: Skipping - no products or registry ID');
       return;
     }
-
+    
     // TODO: Implement clear cart API call
     // For now, just refresh the cart
     fetchCartItems();
@@ -1313,41 +1313,41 @@ export default function CoupleProfile() {
   const filteredData =
     safeData && safeData.length > 0 && hasProducts && registryId
       ? safeData
-          .filter((product) => {
+    .filter((product) => {
             // Safety check: Ensure product exists and has required properties
             if (!product || !product.id) {
               return false;
             }
 
-            if (selectedCategory) {
-              const collectionTitles =
-                product.collections?.nodes?.map((c) => c.title) || [];
-              if (!collectionTitles.includes(selectedCategory)) return false;
-            }
+      if (selectedCategory) {
+        const collectionTitles =
+          product.collections?.nodes?.map((c) => c.title) || [];
+        if (!collectionTitles.includes(selectedCategory)) return false;
+      }
 
-            if (availability) {
-              if (product.isCashFund) {
-                return availability === 'in-stock';
-              }
-              const isAvailable = product.availableForSale ?? true;
-              const isPurchased = product.status === 'purchased';
-              if (availability === 'in-stock') {
-                return isAvailable && !isPurchased;
-              }
-              if (availability === 'out-of-stock') {
-                return !isAvailable || isPurchased;
-              }
-            }
-            return true;
-          })
-          .sort((a, b) => {
-            if (priceSort === 'low-to-high') {
-              return (a.amount ?? 0) - (b.amount ?? 0);
-            }
-            if (priceSort === 'high-to-low') {
-              return (b.amount ?? 0) - (a.amount ?? 0);
-            }
-            return 0;
+      if (availability) {
+        if (product.isCashFund) {
+          return availability === 'in-stock';
+        }
+        const isAvailable = product.availableForSale ?? true;
+        const isPurchased = product.status === 'purchased';
+        if (availability === 'in-stock') {
+          return isAvailable && !isPurchased;
+        }
+        if (availability === 'out-of-stock') {
+          return !isAvailable || isPurchased;
+        }
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      if (priceSort === 'low-to-high') {
+        return (a.amount ?? 0) - (b.amount ?? 0);
+      }
+      if (priceSort === 'high-to-low') {
+        return (b.amount ?? 0) - (a.amount ?? 0);
+      }
+      return 0;
           })
       : [];
 
@@ -1375,16 +1375,16 @@ export default function CoupleProfile() {
             }
 
             return (
-              !product.isCashFund &&
-              product.status !== 'purchased' &&
+      !product.isCashFund && 
+      product.status !== 'purchased' && 
               !cartItems.some(
                 (cartItem) => cartItem.productId === product.productId,
-              )
+    )
             );
           })
-          .slice(0, 4)
+    .slice(0, 4)
           .map((product) => ({
-            id: product.id,
+      id: product.id,
             title: product.title || 'Unnamed Product',
             price: product.amount || 0,
             image:
@@ -1434,7 +1434,7 @@ export default function CoupleProfile() {
     }
     return collection.metafield?.value === 'true';
   });
-
+  
   // Only process child collections if we have products and registry
   const validChildCollections =
     hasProducts && registryId ? childCollections : [];
@@ -1559,24 +1559,24 @@ export default function CoupleProfile() {
         {hasProducts && validChildCollections.length > 0 && registryId && (
           <div className="filters">
             <div className="filter-item flex gap-x-12 mt-12 justify-center">
-              <div
-                className="relative"
-                onClick={() => {
-                  const nextCategory =
-                    selectedCategory === ''
-                      ? validChildCollections[0]?.title || ''
-                      : selectedCategory ===
+                              <div
+                  className="relative"
+                  onClick={() => {
+                    const nextCategory =
+                      selectedCategory === ''
+                        ? validChildCollections[0]?.title || ''
+                        : selectedCategory ===
                         validChildCollections[validChildCollections.length - 1]
                           ?.title
-                      ? ''
-                      : validChildCollections[
-                          validChildCollections.findIndex(
-                            (c) => c.title === selectedCategory,
-                          ) + 1
-                        ]?.title || '';
-                  setSelectedCategory(nextCategory);
-                }}
-              >
+                        ? ''
+                        : validChildCollections[
+                            validChildCollections.findIndex(
+                              (c) => c.title === selectedCategory,
+                            ) + 1
+                          ]?.title || '';
+                    setSelectedCategory(nextCategory);
+                  }}
+                >
                 <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
                   <strong>Categories</strong> {selectedCategory || 'All'}
                 </h3>
@@ -1635,16 +1635,16 @@ export default function CoupleProfile() {
                 }
 
                 return (
-                  <CoupleProductCard
+              <CoupleProductCard
                     key={product.id || index}
                     name={
                       product.title ||
                       product.cashFund?.name ||
                       'Unnamed Product'
                     }
-                    image={
+                image={
                       product.images?.edges?.[0]?.node?.url ||
-                      product.cashFund?.image?.fileUrl ||
+                  product.cashFund?.image?.fileUrl ||
                       '/assets/Images/placeholder.png'
                     }
                     price={product.amount || 0}
@@ -1657,16 +1657,16 @@ export default function CoupleProfile() {
                     isGroupGift={product.isGroupPayment || false}
                     isCashFund={product.isCashFund || false}
                     status={product.status || 'addToCart'}
-                    contributedAmount={Number(product.collectedAmount) || 0}
-                    maxContribution={Number(product.amount) || 0}
-                    purchasedQuantity={Number(product.purchasedQuantity) || 0}
-                    isAnyAmount={product.cashFund?.isAnyAmount || false}
-                    onAddToCart={() => handleAddToCart(product.id)}
+                contributedAmount={Number(product.collectedAmount) || 0}
+                maxContribution={Number(product.amount) || 0}
+                purchasedQuantity={Number(product.purchasedQuantity) || 0}
+                isAnyAmount={product.cashFund?.isAnyAmount || false}
+                onAddToCart={() => handleAddToCart(product.id)}
                     onContribute={(amount) =>
                       handleContribute(product.id, amount)
                     }
-                    onTitleClick={() => handleTitleClick(product)}
-                  />
+                onTitleClick={() => handleTitleClick(product)}
+              />
                 );
               })
               .filter(Boolean)}{' '}
@@ -1684,7 +1684,7 @@ export default function CoupleProfile() {
                 No Products Found
               </h3>
               <p className="text-gray-600 mb-6">
-                This registry doesn't have any products or cash funds added yet.
+                This registry doesn't have any products or cash funds added yet. 
                 Check back later or contact the couple for more information.
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -1824,31 +1824,31 @@ export default function CoupleProfile() {
                               : ''
                           }`}
                           onClick={() => setSelectedImageIndex(index)}
-                        >
-                          <img
+                  >
+                    <img
                             src={
                               imageEdge.node?.url ||
                               '/assets/Images/placeholder.png'
                             }
                             alt={`Thumbnail ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                       ))}
                     </>
                   ) : (
                     // Fallback: show single thumbnail for cash funds or single images
                     <div className="border p-1 w-20 h-20 border-[#3d5a80] border-2">
-                      <img
-                        src={
-                          selectedGiftData.images?.edges?.[0]?.node?.url ||
-                          selectedGiftData.cashFund?.image?.fileUrl ||
+                    <img
+                      src={
+                        selectedGiftData.images?.edges?.[0]?.node?.url ||
+                        selectedGiftData.cashFund?.image?.fileUrl ||
                           '/assets/Images/placeholder.png'
-                        }
+                      }
                         alt="Product"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   )}
                 </div>
               </div>
@@ -1872,35 +1872,35 @@ export default function CoupleProfile() {
                   {!selectedGiftData.isCashFund &&
                     !selectedGiftData.isGroupGift &&
                     selectedGiftData.status !== 'purchased' && (
-                      <div className="flex flex-col items-center justify-center mb-4">
-                        <button
-                          onClick={incrementModalQuantity}
-                          disabled={modalQuantity >= getModalStillNeeds()}
-                          className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                    <div className="flex flex-col items-center justify-center mb-4">
+                      <button
+                        onClick={incrementModalQuantity}
+                        disabled={modalQuantity >= getModalStillNeeds()}
+                        className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
                           <img
                             src="/assets/Images/arrowDown.png"
                             alt="plus"
                             className="w-4 h-4 rotate-180"
                           />
-                        </button>
-
+                      </button>
+                      
                         <span className="mx-4 text-lg font-medium">
                           {modalQuantity} / {getModalStillNeeds()}
                         </span>
-                        <button
-                          onClick={decrementModalQuantity}
-                          disabled={modalQuantity <= 1}
-                          className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
+                      <button
+                        onClick={decrementModalQuantity}
+                        disabled={modalQuantity <= 1}
+                        className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
                           <img
                             src="/assets/Images/arrowDown.png"
                             alt="minus"
                             className="w-4 h-4"
                           />
-                        </button>
-                      </div>
-                    )}
+                      </button>
+                    </div>
+                  )}
 
                   {/* Add to Cart Button */}
                   <button

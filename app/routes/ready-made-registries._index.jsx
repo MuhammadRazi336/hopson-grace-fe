@@ -209,10 +209,10 @@ query getReadyMadeRegistries {
      }
    }
  }
- `;
+`;
 
 const SUB_COLLECTION_QUERY = `#graphql
- query getSubCollection($id: ID!) {
+ query getReadyMadeSubCollection($id: ID!) {
    collection(id: $id) {
      id
      title

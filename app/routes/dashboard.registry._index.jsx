@@ -10,14 +10,20 @@ import RegistryStatusCard from '~/components/RegistryStatusCard';
 import PreviewRegistry from '~/components/PreviewRegistry';
 
 export async function loader({request, context}) {
-  const registry = context?.session?.get('@Registry');
   const user = context?.session?.get('@User');
+  const registry = await context.ClientGet(`registries/by-userId/${user.user.id}`, context);
 
-  if (!registry || !registry.events || registry.events.length === 0) {
+  if (!registry.data || !Array.isArray(registry.data) || registry.data.length === 0) {
+    throw new Response('Registry data not found or empty', {status: 404});
+  }
+
+  const registryData = registry.data[0];
+  
+  if (!registryData || !registryData.events || !Array.isArray(registryData.events) || registryData.events.length === 0) {
     throw new Response('Registry or Events not found', {status: 404});
   }
 
-  const eventId = registry.events.id;
+  const eventId = registryData.events[0].id;
   if (!eventId) {
     throw new Response('Event ID not found', {status: 404});
   }
@@ -50,7 +56,7 @@ export async function loader({request, context}) {
   let res, cashRes;
   try {
     res = await context.ClientGet(
-      `registryProducts/${registry.id}?type=gift`,
+      `registryProducts/${registryData.id}?type=gift`,
       context,
     );
   } catch (e) {
@@ -58,7 +64,7 @@ export async function loader({request, context}) {
   }
   try {
     cashRes = await context.ClientGet(
-      `registryProducts/${registry.id}?type=cash`,
+      `registryProducts/${registryData.id}?type=cash`,
       context,
     );
   } catch (e) {
@@ -132,15 +138,15 @@ export async function action({request, context}) {
 
 const index = () => {
   const loaderData = useLoaderData();
-const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} = loaderData;
+  const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
+    loaderData;
 
-// Debug logging to see what we're getting from the loader
-console.log('Loader data:', loaderData);
-console.log('API Base URL:', apiBaseUrl);
+  // Fallback for apiBaseUrl if it's not available from loader
+  const finalApiBaseUrl =
+    apiBaseUrl || 'http://localhost:3040' || 'https://dev-hopsongrace.codup.io';
 
-// Fallback for apiBaseUrl if it's not available from loader
-const finalApiBaseUrl = apiBaseUrl || 'http://localhost:3040' || 'https://dev-hopsongrace.codup.io';
-console.log('Final API Base URL:', finalApiBaseUrl);
+  // Get the actual registry data from the response
+  const registryData = registry?.data?.[0];
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isBackgroundEditPopupOpen, setIsBackgroundEditPopupOpen] =
@@ -166,7 +172,7 @@ console.log('Final API Base URL:', finalApiBaseUrl);
   const handleSavePreview = async () => {
     try {
       const payload = {
-        id: registry.events.id,
+        id: registryData?.events?.[0]?.id,
         welcomeMessage: note,
       };
       const response = await fetch(
@@ -200,10 +206,10 @@ console.log('Final API Base URL:', finalApiBaseUrl);
     try {
       const formData = new FormData();
       formData.append('file', croppedBlob, 'profile.jpg');
-      formData.append('id', registry.events.id);
+      formData.append('id', registryData?.events?.[0]?.id);
 
       const response = await fetch(
-        `${finalApiBaseUrl}/api/events/${registry.events.id}`,
+        `${finalApiBaseUrl}/api/events/${registryData?.events?.[0]?.id}`,
         {
           method: 'PUT',
           body: formData,
@@ -251,7 +257,7 @@ console.log('Final API Base URL:', finalApiBaseUrl);
       formData.append('file', croppedBlob, 'background.jpg');
 
       const response = await fetch(
-        `${finalApiBaseUrl}/api/events/${registry.events.id}/background-image`,
+        `${finalApiBaseUrl}/api/events/${registryData?.events?.[0]?.id}/background-image`,
         {
           method: 'POST',
           body: formData,
@@ -311,8 +317,8 @@ console.log('Final API Base URL:', finalApiBaseUrl);
         <div className="w-[300px] flex flex-col gap-y-4">
           <div>
             <RegistryStatusCard
-              status={registry?.status}
-              registryId={registry?.id}
+              status={registryData?.status}
+              registryId={registryData?.id}
               token={user?.accessToken}
             />
           </div>
@@ -455,7 +461,7 @@ console.log('Final API Base URL:', finalApiBaseUrl);
             >
               Save & Preview
             </button>
-            <Link to={`/dashboard/registry/${registry.events.id}`}>
+            <Link to={`/dashboard/registry/${registryData.events[0].id}`}>
               <button
                 className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
                 type="button"
@@ -549,130 +555,151 @@ const ProductPage = ({data}) => {
   // Calculate how many placeholder images to show
   const actualGiftsCount = data.length;
   const placeholderCount = Math.max(0, 4 - actualGiftsCount);
-  
+
   // Create array of placeholder elements
-  const placeholderElements = Array.from({ length: placeholderCount }, (_, index) => (
-    <div key={`placeholder-${index}`} className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]">
-      <Link to="/dashboard/addgifts">
-        <img
-          src="/assets/Images/add-gift-placeholder.png"
-          alt="Add gift placeholder"
-          className="w-full h-full object-cover"
-        />
-      </Link>
-    </div>
-  ));
+  const placeholderElements = Array.from(
+    {length: placeholderCount},
+    (_, index) => (
+      <div
+        key={`placeholder-${index}`}
+        className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]"
+      >
+        <Link to="/dashboard/addgifts">
+          <img
+            src="/assets/Images/add-gift-placeholder.png"
+            alt="Add gift placeholder"
+            className="w-full h-full object-cover"
+          />
+        </Link>
+      </div>
+    ),
+  );
 
   return (
     <div className="container">
-      <div className={`flex gap-6 p-6 mt-12 pb-4 ${
-        data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
-      }`}>
-        {data.length > 0 ? (
-          data.map((product) => {
-            // Use priceV2 from Shopify, fallback to backend amount
-            const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
-            const price =
-              priceObj && priceObj.amount && priceObj.currencyCode
-                ? {amount: priceObj.amount, currencyCode: priceObj.currencyCode}
-                : product.amount
-                ? {amount: product.amount, currencyCode: 'USD'}
-                : null;
+      <div
+        className={`flex gap-6 p-6 mt-12 pb-4 ${
+          data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
+        }`}
+      >
+        {data.length > 0
+          ? data.map((product) => {
+              // Use priceV2 from Shopify, fallback to backend amount
+              const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
+              const price =
+                priceObj && priceObj.amount && priceObj.currencyCode
+                  ? {
+                      amount: priceObj.amount,
+                      currencyCode: priceObj.currencyCode,
+                    }
+                  : product.amount
+                  ? {amount: product.amount, currencyCode: 'USD'}
+                  : null;
 
-            // Calculate if product is fully gifted
-            const quantity = product.quantity || 1;
-            const purchasedQuantity = Number(product.purchasedQuantity) || 0;
-            const stillNeeds = Math.max(0, quantity - purchasedQuantity);
-            const isFullyGifted = stillNeeds === 0;
-            
-            // Determine status
-            let status = 'addToCart';
-            if (isFullyGifted) {
-              status = 'purchased';
-            } else if (product.isGroupGift) {
-              status = 'groupGift';
-            }
+              // Calculate if product is fully gifted
+              const quantity = product.quantity || 1;
+              const purchasedQuantity = Number(product.purchasedQuantity) || 0;
+              const stillNeeds = Math.max(0, quantity - purchasedQuantity);
+              const isFullyGifted = stillNeeds === 0;
 
-            return (
-              <div
-                key={product.id || product.productId || Math.random()}
-                className={`${
-                  isFullyGifted ? 'overlay-gifted' : ''
-                } p-4 flex flex-col justify-between ${
-                  data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
-                }`}
-              >
-                <div className="flex flex-col justify-between">
-                  <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
-                    <img
-                      src={
-                        product.images?.edges?.[0]?.node?.url ||
-                        '/assets/Images/placeholder.png'
-                      }
-                      alt={product.title || 'Product'}
-                      className="w-full h-full object-cover mb-4"
-                    />
+              // Determine status
+              let status = 'addToCart';
+              if (isFullyGifted) {
+                status = 'purchased';
+              } else if (product.isGroupGift) {
+                status = 'groupGift';
+              }
+
+              return (
+                <div
+                  key={product.id || product.productId || Math.random()}
+                  className={`${
+                    isFullyGifted ? 'overlay-gifted' : ''
+                  } p-4 flex flex-col justify-between ${
+                    data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
+                  }`}
+                >
+                  <div className="flex flex-col justify-between">
+                    <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                      <img
+                        src={
+                          product.images?.edges?.[0]?.node?.url ||
+                          '/assets/Images/placeholder.png'
+                        }
+                        alt={product.title || 'Product'}
+                        className="w-full h-full object-cover mb-4"
+                      />
+
+                      {product.isGroupGift && (
+                        <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                          <h2 className="prata text-black text-sm text-center font-bold mt-1">
+                            group <br /> gift
+                          </h2>
+                        </div>
+                      )}
+                    </div>
+
+                    <h2
+                      className={`text-lg font-semibold ${
+                        isFullyGifted
+                          ? 'cursor-not-allowed opacity-50'
+                          : 'cursor-pointer'
+                      }`}
+                    >
+                      {product.title || 'No Name'}
+                    </h2>
+
+                    <div className="flex justify-between items-center">
+                      <p className="font-semibold text-md">
+                        ${price?.amount || product.amount || 0}
+                      </p>
+                    </div>
+
+                    <div className="mt-2 flex flex-row items-center gap-6">
+                      <p className="text-sm text-gray-500 italic">
+                        Requested: {quantity}
+                      </p>
+                      <p className="text-sm text-gray-500 italic">
+                        Still Needs: {stillNeeds}
+                      </p>
+                    </div>
 
                     {product.isGroupGift && (
-                      <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
-                        <h2 className="prata text-black text-sm text-center font-bold mt-1">
-                          group <br /> gift
-                        </h2>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          Contributed: $
+                          {Number(product.collectedAmount || 0).toFixed(2)} / $
+                          {Number(product.amount || 0).toFixed(2)}
+                        </p>
+                        <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
+                          Remaining: $
+                          {Math.max(
+                            0,
+                            (product.amount || 0) -
+                              (product.collectedAmount || 0),
+                          )}
+                        </p>
                       </div>
                     )}
                   </div>
-                   
-                  <h2 className={`text-lg font-semibold ${
-                    isFullyGifted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-                  }`}>
-                    {product.title || 'No Name'}
-                  </h2>
-                   
-                  <div className="flex justify-between items-center">
-                    <p className="font-semibold text-md">
-                      ${price?.amount || product.amount || 0}
-                    </p>
+
+                  <div className="mt-4 flex flex-col justify-end">
+                    {product.isGroupGift && (
+                      <div className="text-center">
+                        <p className="text-sm text-gray-600 mb-2">Group Gift</p>
+                        <Link to="/dashboard/shipgifts">
+                          <button className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white">
+                            View Contributors
+                          </button>
+                        </Link>
+                      </div>
+                    )}
                   </div>
-                   
-                  <div className="mt-2 flex flex-row items-center gap-6">
-                    <p className="text-sm text-gray-500 italic">
-                      Requested: {quantity}
-                    </p>
-                    <p className="text-sm text-gray-500 italic">
-                      Still Needs: {stillNeeds}
-                    </p>
-                  </div>
-                   
-                  {product.isGroupGift && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Contributed: ${Number(product.collectedAmount || 0).toFixed(2)} / $
-                        {Number(product.amount || 0).toFixed(2)}
-                      </p>
-                      <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
-                        Remaining: ${Math.max(0, (product.amount || 0) - (product.collectedAmount || 0))}
-                      </p>
-                    </div>
-                  )}
                 </div>
-                
-                <div className="mt-4 flex flex-col justify-end">
-                  {product.isGroupGift && (
-                    <div className="text-center">
-                      <p className="text-sm text-gray-600 mb-2">Group Gift</p>
-                      <Link to="/dashboard/shipgifts">
-                        <button className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white">
-                          View Contributors
-                        </button>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        ) : null}
-        
+              );
+            })
+          : null}
+
         {/* Render placeholder elements */}
         {placeholderElements}
       </div>
@@ -681,7 +708,6 @@ const ProductPage = ({data}) => {
 };
 const FundPage = ({data}) => {
   data.length === 0;
-  console.log(data.length);
 
   // Defensive: handle missing or malformed data
   if (!Array.isArray(data)) return <div>No funds available.</div>;
@@ -689,19 +715,25 @@ const FundPage = ({data}) => {
   // Calculate how many placeholder images to show
   const actualFundsCount = data.length;
   const placeholderCount = Math.max(0, 4 - actualFundsCount);
-  
+
   // Create array of placeholder elements
-  const placeholderElements = Array.from({ length: placeholderCount }, (_, index) => (
-    <div key={`placeholder-${index}`} className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]">
-      <Link to="/dashboard/cashfunds">
-        <img
-          src="/assets/Images/add-cash-placeholder.png"
-          alt="Add cash fund placeholder"
-          className="w-full h-full object-cover"
-        />
-      </Link>
-    </div>
-  ));
+  const placeholderElements = Array.from(
+    {length: placeholderCount},
+    (_, index) => (
+      <div
+        key={`placeholder-${index}`}
+        className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]"
+      >
+        <Link to="/dashboard/cashfunds">
+          <img
+            src="/assets/Images/add-cash-placeholder.png"
+            alt="Add cash fund placeholder"
+            className="w-full h-full object-cover"
+          />
+        </Link>
+      </div>
+    ),
+  );
 
   const handleViewContributors = (fundName) => {
     // ...
@@ -709,100 +741,110 @@ const FundPage = ({data}) => {
 
   return (
     <div className="container">
-      <div className={`flex gap-6 p-6 mt-12 pb-4 ${
-        data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
-      }`}>
-        {data.length > 0 ? (
-          data.map((fund) => {
-            // Calculate if fund is fully gifted
-            const totalAmount = Number(fund.amount) || 0;
-            const collectedAmount = Number(fund.collectedAmount) || 0;
-            const remainingAmount = Math.max(0, totalAmount - collectedAmount);
-            const isFullyGifted = remainingAmount === 0;
-            const isAnyAmount = fund.cashFund?.isAnyAmount || false;
+      <div
+        className={`flex gap-6 p-6 mt-12 pb-4 ${
+          data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
+        }`}
+      >
+        {data.length > 0
+          ? data.map((fund) => {
+              // Calculate if fund is fully gifted
+              const totalAmount = Number(fund.amount) || 0;
+              const collectedAmount = Number(fund.collectedAmount) || 0;
+              const remainingAmount = Math.max(
+                0,
+                totalAmount - collectedAmount,
+              );
+              const isFullyGifted = remainingAmount === 0;
+              const isAnyAmount = fund.cashFund?.isAnyAmount || false;
 
-            return (
-              <div
-                key={fund.productId || Math.random()}
-                className={`${
-                  isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
-                } p-4 flex flex-col justify-between ${
-                  data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
-                }`}
-              >
-                <div className="flex flex-col justify-between">
-                  <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
-                    <img
-                      src={
-                        fund.cashFund.image?.fileUrl ||
-                        '/assets/Images/placeholder.png'
-                      }
-                      alt={fund.cashFund?.name || 'Cash Fund'}
-                      className="w-full h-full object-cover mb-4"
-                    />
+              return (
+                <div
+                  key={fund.productId || Math.random()}
+                  className={`${
+                    isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
+                  } p-4 flex flex-col justify-between ${
+                    data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
+                  }`}
+                >
+                  <div className="flex flex-col justify-between">
+                    <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                      <img
+                        src={
+                          fund.cashFund.image?.fileUrl ||
+                          '/assets/Images/placeholder.png'
+                        }
+                        alt={fund.cashFund?.name || 'Cash Fund'}
+                        className="w-full h-full object-cover mb-4"
+                      />
 
-                    <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
-                      <h2 className="prata text-black text-sm text-center font-bold mt-1">
-                        cash <br /> fund
-                      </h2>
-                    </div>
-                  </div>
-                   
-                  <h2 className={`text-lg font-semibold ${
-                    isFullyGifted && !isAnyAmount ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-                  }`}>
-                    {fund.cashFund?.name || 'No Fund Name'}
-                  </h2>
-                   
-                  <div className="flex justify-between items-center">
-                    {!isAnyAmount && (
-                      <p className="font-semibold text-md">
-                        ${totalAmount}
-                      </p>
-                    )}
-                  </div>
-                   
-                  {!isAnyAmount && (
-                    <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
-                      Remaining: ${remainingAmount}
-                    </p>
-                  )}
-                   
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Contributed: ${collectedAmount.toFixed(2)} / $
-                      {isAnyAmount ? 'Any Amount' : totalAmount.toFixed(2)}
-                    </p>
-                  </div>
-                   
-                  {!isAnyAmount && (
-                    <div className="mt-2">
-                      <div className="h-2 bg-gray-300 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-black rounded-full transition-all"
-                          style={{width: `${Math.min((collectedAmount / totalAmount) * 100, 100)}%`}}
-                        ></div>
+                      <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                        <h2 className="prata text-black text-sm text-center font-bold mt-1">
+                          cash <br /> fund
+                        </h2>
                       </div>
                     </div>
-                  )}
-                </div>
-                
-                <div className="mt-4 flex flex-col justify-end">
-                  <div className="text-center">
-                    <Link to="/dashboard/shipgifts">
-                      <button 
-                        className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white"
-                      >
-                        View Contributors
-                      </button>
-                    </Link>
+
+                    <h2
+                      className={`text-lg font-semibold ${
+                        isFullyGifted && !isAnyAmount
+                          ? 'cursor-not-allowed opacity-50'
+                          : 'cursor-pointer'
+                      }`}
+                    >
+                      {fund.cashFund?.name || 'No Fund Name'}
+                    </h2>
+
+                    <div className="flex justify-between items-center">
+                      {!isAnyAmount && (
+                        <p className="font-semibold text-md">${totalAmount}</p>
+                      )}
+                    </div>
+
+                    {!isAnyAmount && (
+                      <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
+                        Remaining: ${remainingAmount}
+                      </p>
+                    )}
+
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Contributed: ${collectedAmount.toFixed(2)} / $
+                        {isAnyAmount ? 'Any Amount' : totalAmount.toFixed(2)}
+                      </p>
+                    </div>
+
+                    {!isAnyAmount && (
+                      <div className="mt-2">
+                        <div className="h-2 bg-gray-300 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-black rounded-full transition-all"
+                            style={{
+                              width: `${Math.min(
+                                (collectedAmount / totalAmount) * 100,
+                                100,
+                              )}%`,
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4 flex flex-col justify-end">
+                    <div className="text-center">
+                      <Link to="/dashboard/shipgifts">
+                        <button className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white">
+                          View Contributors
+                        </button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
-        ) : null}
-        
+              );
+            })
+          : null}
+
         {/* Render placeholder elements */}
         {placeholderElements}
       </div>

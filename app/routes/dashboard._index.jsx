@@ -15,34 +15,52 @@ export async function loader(args) {
 
   try {
     const user = await context?.session?.get('@User');
+    
+    // Handle new minimal session structure
     if (!user?.user?.id) {
       throw new Error('User ID not found in session');
     }
-
-    console.log('User found:', user.user.id);
-
+    
     const registriesResponse = await context.ClientGet(
       `registries/by-userId/${user.user.id}`,
       context,
     );
 
-    console.log('Registries response:', registriesResponse);
-
     if (!registriesResponse?.data) {
       throw new Error('Invalid API response structure');
     }
 
-    const registries = registriesResponse.data.map((registry) => ({
+    // Debug: Log the exact structure
+    // Handle different possible data structures
+    let registriesData = registriesResponse.data;
+    
+    // If data is not an array, check if it's nested
+    if (!Array.isArray(registriesData)) {
+      // Check if data has a nested array property
+      if (registriesData && typeof registriesData === 'object') {
+        // Look for common nested array properties
+        const possibleArrayProps = ['registries', 'items', 'list', 'data'];
+        for (const prop of possibleArrayProps) {
+          if (Array.isArray(registriesData[prop])) {
+            registriesData = registriesData[prop];
+            break;
+          }
+        }
+      }
+      
+      // If still not an array, throw error
+      if (!Array.isArray(registriesData)) {
+        throw new Error('Registries data is not an array');
+      }
+    }
+
+    const registries = registriesData.map((registry) => ({
       ...registry,
       value: registry.name,
       label: registry.name
     }));
 
-    console.log('Processed registries:', registries);
-
     const registry = registries.find((registry) => registry.isSelected);
-    
-    console.log('Selected registry:', registry);
     
     if (!registry) {
       throw new Error('No selected registry found');
@@ -53,16 +71,7 @@ export async function loader(args) {
       context,
     );
 
-    console.log('Detail response:', detailResponse);
-
-    context.session.set('@Registry', {
-      ...registry,
-      ...detailResponse.data,
-    });
-    await context.session.commit();
-
     const finalRegistry = {...registry, ...detailResponse.data};
-    console.log('Final registry object:', finalRegistry);
 
     return json(
       {
@@ -107,13 +116,8 @@ export async function action({request, context}) {
 
 const index = () => {
   const loaderData = useLoaderData();
-  console.log('Full loader data:', loaderData);
   
   const {registries, registry, user} = loaderData;
-
-  console.log('Registry from loader:', registry);
-  console.log('Registry type:', typeof registry);
-  console.log('Registry keys:', registry ? Object.keys(registry) : 'null');
 
   const fetcher = useFetcher();
 
@@ -175,7 +179,7 @@ const index = () => {
       id: 'add-gifts',
       title: 'ADD GIFTS',
       description:
-        "Based on the number of people attending your wedding, we recommend you add at least 95 gifts. When over 25% of your gifts are purchased, we'll advise you to consider adding more.",
+        `Based on the number of people attending your wedding, we recommend you add at least ${Math.ceil(registry?.events?.noOfGuest * 1.5)} gifts. When over 85% of your gifts are purchased, we'll advise you to consider adding more.`,
       value: registry?.giftAvailable || 0,
       total: Math.ceil(registry?.events?.noOfGuest * 1.5),
       label: 'GIFTS ADDED',

@@ -425,7 +425,7 @@ query getRealRegistries {
 `;
 
 const SUB_COLLECTION_QUERY = `#graphql
-query getSubCollection($id: ID!) {
+query getHomeSubCollection($id: ID!) {
   collection(id: $id) {
     id
     title
@@ -472,7 +472,7 @@ query getSubCollection($id: ID!) {
 }`;
 
 const BRAND_QUERY = `#graphql
-query getBrands {
+query getHomeBrands {
   collections(first: 50) {
     nodes {
       id

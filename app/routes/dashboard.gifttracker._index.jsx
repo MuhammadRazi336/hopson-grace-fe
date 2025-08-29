@@ -3,10 +3,14 @@ import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context} = args;
-  const registry = context?.session?.get('@Registry');
+  const user = await context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
   const data = await context.ClientGet(
-    `transactions/${registry.id}`,
+    `transactions/${registry.data[0].id}`,
     context,
   );
 

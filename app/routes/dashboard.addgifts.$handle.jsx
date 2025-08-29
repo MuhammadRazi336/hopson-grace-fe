@@ -33,7 +33,10 @@ export async function loader(args) {
   const {collections} = await loadCollectionData({context});
   const {product} = await loadProductData(args);
   const user = await requireAuth(context);
-  const registry = context?.session?.get('@Registry');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
   return defer({collections, product, user, registry});
 }
 
@@ -57,8 +60,12 @@ async function loadCollectionData({context}) {
     context.storefront.query(COLLECTION_QUERY),
     // Add other queries here, so that they are loaded in parallel
   ]);
+  const filteredCollections = collections.nodes.filter(collection => 
+    collection.readyMadeMetafield?.value !== 'true' && 
+    collection.parentMetafield?.value === 'true'
+  );
   return {
-    collections: collections.nodes,
+    collections: filteredCollections,
   };
 }
 async function loadProductData({context, params, request}) {
@@ -91,7 +98,7 @@ const GiftDetailHandle = () => {
     const payload = {
       productId: id,
       amount: Number(price),
-      registryId: Number(registry.id),
+      registryId: Number(registry.data[0].id),
       productTypeId: 1,
       quantity,
       isGroupPayment: isGroupPayment || false
@@ -358,7 +365,7 @@ const GiftDetailHandle = () => {
         </section>
 
         <div className="py-[120px] px-12">
-          <ExploreCategories />
+          <ExploreCategories collections={collections} />
         </div>
 
         <section className="py-[70px]  my-12 lg:my-[240px] container">
@@ -527,6 +534,10 @@ const COLLECTION_QUERY = `#graphql
           altText
           width
           height
+        }
+          readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
         }
         parentMetafield: metafield(namespace: "parent", key: "collection") {
           id

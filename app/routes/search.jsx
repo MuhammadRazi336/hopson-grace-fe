@@ -191,7 +191,11 @@ const BLOGS_QUERY = `#graphql
 export async function loader({ request, context }) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('q');
-  const registry = await context?.session?.get('@Registry');
+  const user = context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
   if (!searchQuery) {
     return defer({ 
@@ -199,7 +203,7 @@ export async function loader({ request, context }) {
       collections: [], 
       cashFunds: [], 
       searchQuery: null, 
-      registry 
+      registry: registry?.data[0]
     });
   }
 
@@ -283,7 +287,7 @@ export async function loader({ request, context }) {
       cashFunds: filteredCashFundProducts, 
       blogs: filteredBlogs,
       searchQuery, 
-      registry 
+      registry: registry?.data[0]
     });
   } catch (error) {
     console.error("Error loading search results:", error);
@@ -292,7 +296,7 @@ export async function loader({ request, context }) {
       collections: [], 
       cashFunds: [], 
       searchQuery, 
-      registry 
+      registry: registry?.data[0]
     });
   }
 }

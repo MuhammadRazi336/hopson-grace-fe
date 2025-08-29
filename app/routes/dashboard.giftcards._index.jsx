@@ -17,7 +17,7 @@ import { extractShopifyId } from '~/utils/helpers.js';
 import { json } from '@shopify/remix-oxygen';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { defer } from '@remix-run/server-runtime';
+
 import { useLoaderData } from '@remix-run/react';
 import ExploreCategories from '~/components/ExploreCategories';
 
@@ -25,8 +25,12 @@ export async function loader(args) {
   const {request, context} = args;
   const {collections} = await loadCollectionData({context});
   const {giftCards} = await loadGiftCardData({context});
-  const registry = context?.session?.get('@Registry');
-  return defer({collections, giftCards, registry});
+  const user = await context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
+  return json({collections, giftCards, registry});
 }
 
 export async function action({request, context}) {
@@ -49,8 +53,11 @@ async function loadCollectionData({context}) {
       context.storefront.query(COLLECTION_QUERY),
       // Add other queries here, so that they are loaded in parallel
     ]);
+    const filteredCollections = collections.nodes.filter(collection => 
+      collection.parentMetafield?.value === 'true' && collection.readyMadeMetafield?.value !== 'true'
+    );
     return {
-      collections: collections.nodes,
+      collections: filteredCollections,
     };
   }
 
@@ -92,11 +99,17 @@ const GiftCards = () => {
   const [alertType, setAlertType] = useState('success');
   
   console.log('Gift Cards Data:', giftCards);
+  console.log('Collections Data:', collections);
+  console.log('Collections count:', collections?.length || 0);
+  if (collections && collections.length > 0) {
+    console.log('First collection sample:', collections[0]);
+    console.log('Collections with parentMetafield:', collections.filter(col => col.parentMetafield?.value === 'true'));
+  }
 
   const handleAddToRegistry = (giftCard, quantity) => {
     try {
       // Check if registry exists and has an id
-      if (!registry || !registry.id) {
+      if (!registry || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
@@ -122,7 +135,7 @@ const GiftCards = () => {
       const payload = {
         productId: Number(extractShopifyId(giftCard.id)),
         amount: Number(firstVariant.priceV2.amount),
-        registryId: Number(registry.id),
+        registryId: Number(registry.data[0].id),
         productTypeId: 1,
         quantity: quantity,
       };
@@ -194,7 +207,7 @@ const GiftCards = () => {
                 image={image}
                 title={giftCard.title}
                 price={price}
-                registryId={registry?.id}
+                registryId={registry?.data[0]?.id}
                 onAddToRegistry={(quantity) => handleAddToRegistry(giftCard, quantity)}
               />
             );
@@ -204,7 +217,7 @@ const GiftCards = () => {
     )}
 
     <div className="py-[120px] px-12">
-          <ExploreCategories/>
+          <ExploreCategories collections={collections} />
         </div>
 
     <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
@@ -546,6 +559,10 @@ const COLLECTION_QUERY = `#graphql
           value
         }
         subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+          readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
           id
           value
         }

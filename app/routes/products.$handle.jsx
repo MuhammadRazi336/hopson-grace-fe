@@ -48,7 +48,11 @@ const tabsData = [
 export async function loader({request, context, params}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
-  const registry = await context?.session?.get('@Registry');
+  const user = context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
   const userData = await context?.session?.get('@User'); // No user data for public pages
 
   return defer({products, collections, registry, userData});
@@ -434,7 +438,7 @@ export default function ProductCollection() {
     });
 
   const parentCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'true',
+    (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
   );
 
   return (
@@ -525,7 +529,7 @@ export default function ProductCollection() {
                 >
                   {/* Dynamic slides from Shopify collections */}
                   {collections
-                    .filter((col) => col.parentMetafield?.value === 'true')
+                    .filter((col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true')
                     .map((col) => (
                       <SwiperSlide
                         key={col.id}
@@ -538,7 +542,7 @@ export default function ProductCollection() {
                         <img
                           src={col.image?.url || '/assets/Images/placeholder.png'}
                           alt={col.title}
-                          className="w-full"
+                          className="w-full h-[500px] object-cover"
                         />
                         <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                           {col.title}
@@ -885,6 +889,10 @@ const COLLECTION_QUERY = `#graphql
       width
       height
     }
+      readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
         parentMetafield: metafield(namespace: "parent", key: "collection") {
           id
           value

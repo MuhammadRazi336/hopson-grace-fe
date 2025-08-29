@@ -74,7 +74,7 @@ const OurBrands = () => {
 export default OurBrands;
 
 const BRAND_QUERY = `#graphql
-query getBrands {
+query getOurBrands {
   collections(first: 50) {
     nodes {
       id
@@ -127,5 +127,4 @@ query getBrands {
       }
     }
   }
-}
-`;
+}`;

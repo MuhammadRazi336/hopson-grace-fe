@@ -37,6 +37,10 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
+          readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
         products(first: 10){
           edges {
             node {
@@ -76,7 +80,11 @@ export async function loader({request, context}) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('search');
   const {collections} = await loadCollectionData({context});
-  const registry = await context?.session?.get('@Registry');
+  const user = context?.session?.get('@User');
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
   
   // If there's a search query, filter collections by title/description
   let filteredCollections = collections;
@@ -87,7 +95,7 @@ export async function loader({request, context}) {
     );
   }
   
-  return defer({collections: filteredCollections, searchQuery, registry});
+  return defer({collections: filteredCollections, searchQuery, registry: registry?.data[0]});
 }
 
 export async function action({request, context}) {
@@ -107,6 +115,7 @@ export async function action({request, context}) {
 
 async function loadCollectionData({context}) {
   const {collections} = await context.storefront.query(COLLECTION_QUERY);
+  // Return all collections so ExploreCategories can filter them properly
   return {
     collections: collections.nodes,
   };
@@ -120,19 +129,28 @@ const Products = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  
+  console.log('Products page collections:', collections);
+  console.log('Collections count:', collections?.length || 0);
+  if (collections && collections.length > 0) {
+    console.log('First collection sample:', collections[0]);
+    console.log('Collections with parentMetafield:', collections.filter(col => col.parentMetafield?.value === 'true'));
+  }
 
   const parentCollections = collections.filter(
-    (col) => col.parentMetafield?.value === 'true',
+    (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
   );
 
   // Get all products from all collections for search results (only if not searching)
-  const allProducts = collections.flatMap(collection => 
-    collection.products?.edges?.map(edge => ({
-      ...edge.node,
-      collectionTitle: collection.title,
-      collectionHandle: collection.handle
-    })) || []
-  );
+  const allProducts = collections
+    .filter(collection => collection.readyMadeMetafield?.value !== 'true')
+    .flatMap(collection => 
+      collection.products?.edges?.map(edge => ({
+        ...edge.node,
+        collectionTitle: collection.title,
+        collectionHandle: collection.handle
+      })) || []
+    );
 
   const handleAddtoRegistry = (product) => {
     try {
@@ -146,7 +164,7 @@ const Products = () => {
       }
 
       // Check if registry exists and has an id
-      if (!registry || !registry.id) {
+      if (!registry || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
@@ -172,7 +190,7 @@ const Products = () => {
       const payload = {
         productId: Number(extractShopifyId(product.id)),
         amount: Number(firstVariant.priceV2.amount),
-        registryId: Number(registry.id),
+        registryId: Number(registry.data[0].id),
         productTypeId: 1,
         quantity: 1,
       };
@@ -250,11 +268,11 @@ const Products = () => {
                 key={collection.id} 
                 className="group cursor-pointer hover:opacity-80 transition-opacity"
               >
-                <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden h-[500px]">
                   <img
                     src={collection.image?.url || '/assets/Images/placeholder.png'}
                     alt={collection.title}
-                    className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-[500px] object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
                 <div className="mt-4">
@@ -334,7 +352,7 @@ const Products = () => {
       </section>
 
           <div className="py-[120px] px-12">
-            <ExploreCategories />
+            <ExploreCategories collections={collections} />
           </div>
         </>
       )}
