@@ -562,7 +562,9 @@ const ProductPage = ({data}) => {
     (_, index) => (
       <div
         key={`placeholder-${index}`}
-        className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]"
+        className={`h-[380px] mb-4 flex items-center justify-center ${
+          data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
+        }`}
       >
         <Link to="/dashboard/addgifts">
           <img
@@ -578,9 +580,14 @@ const ProductPage = ({data}) => {
   return (
     <div className="container">
       <div
-        className={`flex gap-6 p-6 mt-12 pb-4 ${
-          data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
+        className={`${
+          data.length > 4 
+            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory' 
+            : 'grid gap-6 p-6 mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
+        style={{
+          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined
+        }}
       >
         {data.length > 0
           ? data.map((product) => {
@@ -611,14 +618,14 @@ const ProductPage = ({data}) => {
               }
 
               return (
-                <div
-                  key={product.id || product.productId || Math.random()}
-                  className={`${
-                    isFullyGifted ? 'overlay-gifted' : ''
-                  } p-4 flex flex-col justify-between ${
-                    data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
-                  }`}
-                >
+                                 <div
+                   key={product.id || product.productId || Math.random()}
+                   className={`${
+                     isFullyGifted ? 'overlay-gifted' : ''
+                   } p-4 flex flex-col justify-between ${
+                     data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
+                   }`}
+                 >
                   <div className="flex flex-col justify-between">
                     <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
                       <img
@@ -722,7 +729,9 @@ const FundPage = ({data}) => {
     (_, index) => (
       <div
         key={`placeholder-${index}`}
-        className="h-[380px] w-full mb-4 flex items-center justify-center min-w-[280px] max-w-[280px]"
+        className={`h-[380px] mb-4 flex items-center justify-center ${
+          data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
+        }`}
       >
         <Link to="/dashboard/cashfunds">
           <img
@@ -742,9 +751,14 @@ const FundPage = ({data}) => {
   return (
     <div className="container">
       <div
-        className={`flex gap-6 p-6 mt-12 pb-4 ${
-          data.length > 4 ? 'overflow-x-auto' : 'overflow-x-hidden'
+        className={`${
+          data.length > 4 
+            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory' 
+            : 'grid gap-6 p-6 mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
+        style={{
+          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined
+        }}
       >
         {data.length > 0
           ? data.map((fund) => {
@@ -759,14 +773,14 @@ const FundPage = ({data}) => {
               const isAnyAmount = fund.cashFund?.isAnyAmount || false;
 
               return (
-                <div
-                  key={fund.productId || Math.random()}
-                  className={`${
-                    isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
-                  } p-4 flex flex-col justify-between ${
-                    data.length <= 4 ? 'w-1/4' : 'min-w-[280px] max-w-[280px]'
-                  }`}
-                >
+                                 <div
+                   key={fund.productId || Math.random()}
+                   className={`${
+                     isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
+                   } p-4 flex flex-col justify-between ${
+                     data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
+                   }`}
+                 >
                   <div className="flex flex-col justify-between">
                     <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
                       <img
