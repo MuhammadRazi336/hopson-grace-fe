@@ -113,7 +113,7 @@ const OnboardingIndex = () => {
     <div> 
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
-        stepNo={currentStep + 2} // Start from step 3 and increment
+        stepNo={currentStep + 1} // Start from step 3 and increment
         totalSteps={9} // Add total number of steps
         content={hydrated && <Onboarding onStepChange={setCurrentStep} />} 
         className={currentStep === 6 || currentStep === 7 ? 'px-12' : ''} // Add className prop

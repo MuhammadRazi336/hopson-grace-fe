@@ -694,6 +694,7 @@ const OnboardingClient = ({onStepChange}) => {
 };
 
 const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
+  const {useState, useEffect} = React;
   // Create disabled dates array - disable all dates before today
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Set to start of day
@@ -702,13 +703,28 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
     { from: new Date(1900, 0, 1), to: new Date(today.getTime() - 24 * 60 * 60 * 1000) }
   ];
 
+  // For step 1, we don't want to show the prefilled date initially
+  const [localSelectedDate, setLocalSelectedDate] = useState(null);
+
+  // Update local date when selectedDate changes (but only if it's a new selection, not the initial prefilled value)
+  useEffect(() => {
+    if (selectedDate && !localSelectedDate) {
+      setLocalSelectedDate(selectedDate);
+    }
+  }, [selectedDate, localSelectedDate]);
+
+  const handleDateChange = (date) => {
+    setLocalSelectedDate(date);
+    setSelectedDate(date);
+  };
+
   return (
     <div className="text-center">
       <div className="p-4 w-[300px] mx-auto customdatepicker">
         <DatePicker
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          placeholder="Choose a Date"
+          selectedDate={localSelectedDate}
+          onDateChange={handleDateChange}
+          placeholder="Select a date"
           inputProps={{
             className:
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
@@ -734,6 +750,7 @@ const Step2 = ({
   step2Errors,
   onSkip,
 }) => {
+  const {useState, useEffect} = React;
   // Create disabled dates array - disable all dates before today
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Set to start of day
@@ -741,6 +758,21 @@ const Step2 = ({
   const disabledDates = [
     { from: new Date(1900, 0, 1), to: new Date(today.getTime() - 24 * 60 * 60 * 1000) }
   ];
+
+  // For step 2, we don't want to show the prefilled date from step 1
+  const [localSelectedDate, setLocalSelectedDate] = useState(null);
+
+  // Update local date when selectedDate changes (but only if it's a new selection, not the initial prefilled value)
+  useEffect(() => {
+    if (selectedDate && !localSelectedDate) {
+      setLocalSelectedDate(selectedDate);
+    }
+  }, [selectedDate, localSelectedDate]);
+
+  const handleDateChange = (date) => {
+    setLocalSelectedDate(date);
+    setSelectedDate(date);
+  };
 
   return (
     <div>
@@ -776,9 +808,9 @@ const Step2 = ({
       />
       <div className="mt-6 customdatepicker">
         <DatePicker
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          label="Choose a Date"
+          selectedDate={localSelectedDate}
+          onDateChange={handleDateChange}
+          placeholder="Select a date"
           inputProps={{
             className:
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black h-[68px] customDatePicker',

@@ -11,15 +11,27 @@ import PreviewRegistry from '~/components/PreviewRegistry';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
-  const registry = await context.ClientGet(`registries/by-userId/${user.user.id}`, context);
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
 
-  if (!registry.data || !Array.isArray(registry.data) || registry.data.length === 0) {
+  if (
+    !registry.data ||
+    !Array.isArray(registry.data) ||
+    registry.data.length === 0
+  ) {
     throw new Response('Registry data not found or empty', {status: 404});
   }
 
   const registryData = registry.data[0];
-  
-  if (!registryData || !registryData.events || !Array.isArray(registryData.events) || registryData.events.length === 0) {
+
+  if (
+    !registryData ||
+    !registryData.events ||
+    !Array.isArray(registryData.events) ||
+    registryData.events.length === 0
+  ) {
     throw new Response('Registry or Events not found', {status: 404});
   }
 
@@ -581,12 +593,12 @@ const ProductPage = ({data}) => {
     <div className="container">
       <div
         className={`${
-          data.length > 4 
-            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory' 
+          data.length > 4
+            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory'
             : 'grid gap-6 p-6 mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
-          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined
+          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
         }}
       >
         {data.length > 0
@@ -618,14 +630,16 @@ const ProductPage = ({data}) => {
               }
 
               return (
-                                 <div
-                   key={product.id || product.productId || Math.random()}
-                   className={`${
-                     isFullyGifted ? 'overlay-gifted' : ''
-                   } p-4 flex flex-col justify-between ${
-                     data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
-                   }`}
-                 >
+                <div
+                  key={product.id || product.productId || Math.random()}
+                  className={`${
+                    isFullyGifted ? 'overlay-gifted' : ''
+                  } p-4 flex flex-col justify-between ${
+                    data.length > 4
+                      ? 'snap-start min-w-[360px] max-w-[360px]'
+                      : 'w-full'
+                  }`}
+                >
                   <div className="flex flex-col justify-between">
                     <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
                       <img
@@ -752,12 +766,12 @@ const FundPage = ({data}) => {
     <div className="container">
       <div
         className={`${
-          data.length > 4 
-            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory' 
+          data.length > 4
+            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory'
             : 'grid gap-6 p-6 mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
-          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined
+          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
         }}
       >
         {data.length > 0
@@ -773,14 +787,16 @@ const FundPage = ({data}) => {
               const isAnyAmount = fund.cashFund?.isAnyAmount || false;
 
               return (
-                                 <div
-                   key={fund.productId || Math.random()}
-                   className={`${
-                     isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
-                   } p-4 flex flex-col justify-between ${
-                     data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
-                   }`}
-                 >
+                <div
+                  key={fund.productId || Math.random()}
+                  className={`${
+                    isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
+                  } p-4 flex flex-col justify-between ${
+                    data.length > 4
+                      ? 'snap-start min-w-[360px] max-w-[360px]'
+                      : 'w-full'
+                  }`}
+                >
                   <div className="flex flex-col justify-between">
                     <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
                       <img

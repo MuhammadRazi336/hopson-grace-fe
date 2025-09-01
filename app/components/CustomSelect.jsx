@@ -22,7 +22,7 @@ const CustomSelect = ({label, options, selected, setSelected}) => {
           }}
           className="appearance-none rounded-none border-[#B9B4AE] border-2 bg-white text-black h-[inital] p-5"
           menuProps={{
-            className: 'bg-gray-300 py-5',
+            className: 'bg-blue-500 py-5',
           }}
         >
           {/* Render the options */}

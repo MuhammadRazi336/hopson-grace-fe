@@ -162,7 +162,7 @@ const RegisterIndex = () => {
                   <Input
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    label="First *"
+                    placeholder="First *"
                     name="firstName"
                     className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                     classNameLabel="max-[580px]:text-left"
@@ -171,7 +171,7 @@ const RegisterIndex = () => {
                   <Input
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    label="Last *"
+                    placeholder="Last *"
                     name="lastName"
                     className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                     classNameLabel="max-[580px]:text-left"
@@ -188,7 +188,7 @@ const RegisterIndex = () => {
                   <Input
                     value={formData.fianceFirstName}
                     onChange={handleInputChange}
-                    label="First *"
+                    placeholder="First *"
                     name="fianceFirstName"
                     className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                     classNameLabel="max-[580px]:text-left"
@@ -197,7 +197,7 @@ const RegisterIndex = () => {
                   <Input
                     value={formData.fianceLastName}
                     onChange={handleInputChange}
-                    label="Last *"
+                    placeholder="Last *"
                     name="fianceLastName"
                     className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                     classNameLabel="max-[580px]:text-left"
