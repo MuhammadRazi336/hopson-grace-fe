@@ -74,7 +74,14 @@ export default function FindCoupleForm() {
                         value={firstName}
                         className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
                         required
-                        onChange={(e) => setFirstName(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length > 0) {
+                            setFirstName(value.charAt(0).toUpperCase() + value.slice(1));
+                          } else {
+                            setFirstName(value);
+                          }
+                        }}
                       />
                     </div>
                     <div className="w-full">
@@ -86,7 +93,14 @@ export default function FindCoupleForm() {
                         value={fianceFirstName}
                         className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
                         required
-                        onChange={(e) => setFianceFirstName(e.target.value)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length > 0) {
+                            setFianceFirstName(value.charAt(0).toUpperCase() + value.slice(1));
+                          } else {
+                            setFianceFirstName(value);
+                          }
+                        }}
                       />
                     </div>
                   </div>

@@ -972,6 +972,16 @@ export default function CoupleProfile() {
     const email = guestEmail.trim();
     console.log('handleEmailSubmit: Starting with email:', email);
     if (!email) return;
+    
+    // Email validation - check if it's a valid email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setAlertMessage('Please enter a valid email address');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
     if (typeof window !== 'undefined') {
       localStorage.setItem('guestEmail', email);
       console.log('handleEmailSubmit: Stored email in localStorage:', email);
@@ -1991,12 +2001,30 @@ export default function CoupleProfile() {
             <input
               ref={emailInputRef}
               type="email"
-              className="border p-2 w-full mb-4"
+              className={`border p-2 w-full mb-2 ${
+                guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail) 
+                  ? 'border-red-500' 
+                  : 'border-gray-300'
+              }`}
               placeholder="Guest Email"
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
+              onBlur={(e) => {
+                const email = e.target.value.trim();
+                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                  setAlertMessage('Please enter a valid email address');
+                  setAlertType('error');
+                  setShowAlert(true);
+                  setTimeout(() => setShowAlert(false), 3000);
+                }
+              }}
               required
             />
+            {guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail) && (
+              <p className="text-red-500 text-sm mb-4">
+                Please enter a valid email address (e.g., user@example.com)
+              </p>
+            )}
             <button
               type="submit"
               className="bg-blue-600 text-white px-4 py-2 rounded w-full"
