@@ -18,15 +18,15 @@ const CollectionItems = () => {
   return (
     <div className="relative">
       <div className="max-w-[80%] max-[1024px]:max-w-[1400px] mx-auto relative collection-slider">
-        <h2 className="text-3xl leading-normal lg:text-5xl prata text-center lg:leading-[60px] font-normal mb-2 lg:mb-5">
-          Why The Registry?
+        <h2 className="text-3xl leading-normal lg:text-5xl prata text-center lg:leading-[48px] font-normal mb-2 lg:mb-5">
+          why the registry?
         </h2>
         <img
           src={vectorImg}
           alt=""
           className="w-[350px] lg:w-[500px] m-auto mb-12"
         />
-        <p className="text-center md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+        <p className="text-center md:text-lg lg:text-[26px] 2xl:text-[26px] md:leading-[38px] lg:leading-[38px] xl:leading-[38px] 2xl:leading-[38px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
         A smarter, more stylish way to register—curated for how couples live now.
       </p>
         <Swiper
@@ -78,7 +78,7 @@ const CollectionItems = () => {
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                CASH FUNDS
+                <>CASH <br/>FUNDS</>
               </h3>
             </div>
           </SwiperSlide>
@@ -90,7 +90,7 @@ const CollectionItems = () => {
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                BESPOKE TRAVEL
+                <>BESPOKE <br/>TRAVEL</>
               </h3>
             </div>
           </SwiperSlide>
@@ -114,7 +114,7 @@ const CollectionItems = () => {
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                READY-MADE REGISTRIES
+                <>READY-MADE <br/>REGISTRIES</>
               </h3>
             </div>
           </SwiperSlide>
@@ -126,7 +126,7 @@ const CollectionItems = () => {
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                EXCLUSIVE OFFERS
+                <>EXCLUSIVE <br/>OFFERS</>
               </h3>
             </div>
           </SwiperSlide>
@@ -138,7 +138,7 @@ const CollectionItems = () => {
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                PERSONALIZED GIFTING
+                <>PERSONALIZED <br/>GIFTING</>
               </h3>
             </div>
           </SwiperSlide>
@@ -150,7 +150,7 @@ const CollectionItems = () => {
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                TRAVEL VOUCHERS
+                <>TRAVEL <br/>VOUCHERS</>
               </h3>
             </div>
           </SwiperSlide>
@@ -162,17 +162,17 @@ const CollectionItems = () => {
                 className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
               />
               <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
-                GIFT CARDS GALORE
+                <>GIFT CARDS <br/>GALORE</>
               </h3>
             </div>
           </SwiperSlide>
         </Swiper>
       </div>
-      <div className="swiper-button-prev-collection absolute flex left-[10px] top-9/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
+      <div className="swiper-button-prev-collection absolute flex left-[10px] top-10.5/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
         <img src={nextitem} alt="" className="rotate-180" />
         <span className="rotate-90 text-black max-[1024px]:text-sm">more</span>
       </div>
-      <div className="swiper-button-next-collection absolute flex right-[10px] top-9/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
+      <div className="swiper-button-next-collection absolute flex right-[10px] top-10.5/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
         <span className="rotate-90 text-black max-[1024px]:text-sm">more</span>
         <img src={nextitem} alt="" />
       </div>
@@ -180,7 +180,7 @@ const CollectionItems = () => {
         <Link to="/why-the-registry">
         <Button
           text="IT’S ALL IN THE DETAILS"
-          className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[18px] lg:py-[30px] lg:w-[320px] w-[280px] rounded-none max-[768px]:text-lg"
+          className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[16px] lg:py-[26px] lg:w-[360px] w-[280px] rounded-none max-[768px]:text-lg"
         />
         </Link>
       </div>

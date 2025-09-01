@@ -19,9 +19,9 @@ const ImageAndText = ({
 }) => {
     return ( 
         <div className={`flex lg:gap-8 gap-2 ${direction === 'left' ? 'items-stretch' : 'items-stretch flex-row-reverse'}`}>
-            <div className={`bg-[#F5F2ED] py-16 relative flex items-center justify-center flex-col lg:w-[40%] w-1/2 max-[768px]:p-10 ${direction === 'left' ? 'lg:mb-20 mb-6' : 'lg:mt-20 mt-6'}`}>
-                <h3 className='text-2xl lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center'>{title}</h3>
-                <img src={lineimg} alt="lineimg" className='mb-8 mt-8 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[50%]' />
+            <div className={`bg-[#F5F2ED] py-16 relative flex justify-center items-center flex-col lg:w-[40%] w-1/2 max-[768px]:p-10 ${direction === 'left' ? 'lg:mb-20 mb-6' : 'lg:mt-20 mt-6'}`}>
+                <h3 className='text-2xl lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] lg:pl-[40px]'>{title}</h3>
+                <img src={lineimg} alt="lineimg" className='mb-8 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[50%]' />
                 {stepsCheck ? <Steps className="max-w-[520px]" /> : <p className='text-sm lg:text-2xl leading-normal lg:leading-[44px] max-w-[488px] mt-4 mb-4 text-center'>{description}</p>}
                 <div>
                     {buttontext === 'BOOK NOW' ? (

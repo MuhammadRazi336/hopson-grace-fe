@@ -13,7 +13,7 @@ const HeroSlider = () => {
     {
       id: 1,
       type: 'content',
-      content: 'Elevated. Effortless. Yours.',
+      content: <>elevated. effortless.<br /><span style={{fontFamily: 'ivyora'}}>Yours</span>.</>,
       description:
         'A modern registry for gifts, travel & everything in between.',
       image: heroImg,
@@ -138,18 +138,19 @@ const HeroSlider = () => {
       slidesPerView={1}
       autoplay={{delay: 14000}} // Autoplay every 14 seconds
       pagination={{clickable: true}} // Show dots
+      className='lg:h-[940px]'
     >
       {slides.map((slide) => (
         <SwiperSlide key={slide.id}>
           {slide.type === 'content' ? (
-            <div>
+            <div className='lg:h-[940px]'>
               <img
                 src={slide.image}
                 alt="Slide"
                 className="w-full h-[510px] lg:h-[1000px] object-cover"
               />
               <div className="absolute flex flex-col items-center top-0 max-w-[50%] max-[1024px]:max-w-[70%] h-full justify-center text-white px-12 gap-8">
-                <h3 className="text-5xl leading-[60px] lg:text-[112px] text-center prata lg:leading-[124px] text-shadow">
+                <h3 className="text-5xl leading-[60px] lg:text-[106px] text-center prata lg:leading-[112px] text-shadow">
                   {slide.content}
                 </h3>
                 <img src={vectorImg} alt="line" className="w-72" />
