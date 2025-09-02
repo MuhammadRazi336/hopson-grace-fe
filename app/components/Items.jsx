@@ -28,7 +28,7 @@ const Items = ({ featuredRegistryData = null }) => {
 
   return (
     <div>
-      <div className="grid grid-cols-2 lg:grid-cols-[27%_23%_23%_23%] lg:grid-rows-2 lg:gap-[1.146vw] max-[1024px]:gap-y-5 max-[1024px]:gap-x-2">
+      <div className="grid lg:justify-center grid-cols-2 lg:grid-cols-[27.083vw_18.49vw_18.49vw_18.49vw] lg:grid-rows-2 lg:gap-[1.146vw] max-[1024px]:gap-y-5 max-[1024px]:gap-x-2">
         {/* First item spans full width */}
         <div className="lg:row-span-2 max-[768px]:col-span-2">
           <div className="featureImage relative insetshadow registrytag h-full">
@@ -61,10 +61,10 @@ const Items = ({ featuredRegistryData = null }) => {
               alt={product.node.title || `Product ${index + 1}`} 
               className="w-full rounded-none" 
             />
-            <h3 className="mt-2 lg:mt-[21px] font-semibold text-sm lg:text-[22px] uppercase">
+            <h3 className="mt-2 lg:mt-[21px] bastardogrotesk lg:leading-[22px] lg:mb-[4px] font-[500] text-sm lg:text-[22px] uppercase">
               {product.node.title || `Product ${index + 1}`}
             </h3>
-            <p className="text-sm lg:text-[22px]">
+            <p className="text-sm lg:text-[22px] lg:leading-[22px] bastardogrotesk">
               {product.node.description ? 
                 product.node.description.slice(0, 20) + (product.node.description.length > 20 ? '...' : '') : 
                 'Product Description'

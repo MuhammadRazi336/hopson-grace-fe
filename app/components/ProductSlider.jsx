@@ -13,7 +13,7 @@ const ProductSlider = () => {
   return (
     <div className="relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
       <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-        <div className="swiper-button-prev-prod absolute top-0 -left-[4%] max-[1601px]:-left-[8%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-[#446184] h-full max-h-[380px] justify-center max-[1024px]:w-[33px]">
+        <div className="swiper-button-prev-prod absolute top-0 -left-[5.1%] max-[1601px]:-left-[8%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-[#446184] h-full max-h-[360px] justify-center max-[1024px]:w-[33px]">
           <img src={nextitem} alt="" className="rotate-180 invert-100" />
           <span className="-rotate-90 text-white block tracking-wider max-[1024px]:hidden">
             more
@@ -21,7 +21,7 @@ const ProductSlider = () => {
         </div>
 
         <Swiper
-          spaceBetween={39}
+          spaceBetween={40}
           slidesPerView={4}
           modules={[Navigation]}
           navigation={{
@@ -46,15 +46,15 @@ const ProductSlider = () => {
             },
             1366: {
               slidesPerView: 3,
-              spaceBetween: 19,
+              spaceBetween: 40,
             },
             1440: {
               slidesPerView: 4,
-              spaceBetween: 19,
+              spaceBetween: 40,
             },
             1600: {
               slidesPerView: 4,
-              spaceBetween: 19,
+              spaceBetween: 40,
             },
           }}
         >
@@ -99,7 +99,7 @@ const ProductSlider = () => {
             <p className="lg:text-2xl text-sm">Prices vary</p>
           </SwiperSlide>
         </Swiper>
-        <div className="swiper-button-next-prod absolute top-0 -right-[4%] max-[1601px]:-right-[8%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-[#446184] h-full max-h-[380px] justify-center max-[1024px]:w-[33px]">
+        <div className="swiper-button-next-prod absolute top-0 -right-[5.1%] max-[1601px]:-right-[8%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-[#446184] h-full max-h-[360px] justify-center max-[1024px]:w-[33px]">
           <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>
