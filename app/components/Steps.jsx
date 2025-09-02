@@ -73,11 +73,11 @@ const Steps = () => {
                   <div className="text-3xl 2xl:text-[56px] lg:text-[42px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
                     {idx + 1}.
                   </div>
-                  <h2 className="uppercase text-lg 2xl:text-[20px] font-80 mb-6 leading-[28px] tracking-[10%]">
+                  <h2 className="uppercase text-lg 2xl:text-[1.25vw] lg:text-[1.25vw] font-80 mb-6 leading-[1.458vw] tracking-[10%]">
                     {step.title}
                   </h2>
                 </div>
-                <p className="text-sm leading-normal lg:text-[18px] 2xl:text-[22px] lg:leading-[28px] 2xl:leading-[32px] text-gray-700 w-[90%]">
+                <p className="text-sm leading-normal lg:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.979vw] 2xl:leading-[1.979vw] text-gray-700 w-[90%]">
                   {step.description}
                 </p>
               </div>

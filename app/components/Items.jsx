@@ -28,7 +28,7 @@ const Items = ({ featuredRegistryData = null }) => {
 
   return (
     <div>
-      <div className="grid grid-cols-2 lg:grid-cols-[30%_23%_23%_23%] lg:grid-rows-2 gap-6 max-[1024px]:gap-y-5 max-[1024px]:gap-x-2">
+      <div className="grid grid-cols-2 lg:grid-cols-[27%_23%_23%_23%] lg:grid-rows-2 lg:gap-[1.146vw] max-[1024px]:gap-y-5 max-[1024px]:gap-x-2">
         {/* First item spans full width */}
         <div className="lg:row-span-2 max-[768px]:col-span-2">
           <div className="featureImage relative insetshadow registrytag h-full">
