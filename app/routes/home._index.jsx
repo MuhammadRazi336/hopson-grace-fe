@@ -304,6 +304,12 @@ const Home = () => {
           A peek inside some of our most-loved celebrations.
         </p>
         <Testimonialslider />
+        <div className="text-center">
+          <ButtonComponent
+            text="EXPLORE REAL WEDDINGS"
+            className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+          />
+        </div>
       </section>
 
       <section className=" my-12 lg:my-[240px]">

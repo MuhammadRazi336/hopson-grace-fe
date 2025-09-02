@@ -54,7 +54,7 @@ const NavBarLinks = (mobileClasses) => {
               OUR BRANDS
             </NavLink>
             {/* Nested Menu */}
-            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-20 w-full p-[90px] bg-[#F5F2ED]">
+            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
               <div className="flex mx-auto">
                 <div className="mr-[90px]">
                   <h4 className="text-lg font-semibold mb-11">
@@ -136,7 +136,7 @@ const NavBarLinks = (mobileClasses) => {
             >
               PRODUCTS
             </NavLink>
-            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-20 w-full p-[90px] bg-[#F5F2ED]">
+            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
               <div className="flex mx-auto">
                 <div className="mr-[90px]">
                   <ul className="">
