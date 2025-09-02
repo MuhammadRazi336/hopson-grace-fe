@@ -239,7 +239,7 @@ const Home = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px] mb-10'}
         />
-        <p className="text-center md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+        <p className="text-center md:text-lg lg:text-[26px] 2xl:text-[26px] md:leading-[24px] lg:leading-[38px] xl:leading-[38px] 2xl:leading-[38px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
         From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
       </p>
         <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} />
