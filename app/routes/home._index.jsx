@@ -206,7 +206,7 @@ const Home = () => {
   return (
     <div className="overflow-x-hidden">
       <Header />
-      <section className="hero-slider">
+      <section className="hero-slider lg:h-[940px]">
         <HeroSlider />
       </section>
       <section className="text-and-button-section py-14 lg:py-36">
@@ -222,7 +222,7 @@ const Home = () => {
           imgBanner={cupImg}
           lineimg={lineImg}
           stepsCheck={true}
-          title="How It Works"
+          title="how it works"
           description="There's no question too small or request too big for our Registry advisors. We're always at your service."
           buttontext={'CREATE YOUR REGISTRY'}
           buttontype={'Color'}
@@ -255,7 +255,7 @@ const Home = () => {
 
       <section className="py-[70px] bg-[#F5F2ED80] my-12 lg:my-[240px]">
         <Heading
-          text="A Few of Our Brands"
+          text="a few of our brands"
           classes={
             'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
           }
@@ -275,7 +275,7 @@ const Home = () => {
 
       <section className="py-[70px]  my-12 lg:my-[240px] container">
         <Heading
-          text="The Registry Bestsellers"
+          text="the registry bestsellers"
           classes={
             'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
           }
@@ -311,7 +311,7 @@ const Home = () => {
           direction={'left'}
           imgBanner={flowerImg}
           lineimg={lineImg}
-          title="At Your Service"
+          title="at your service"
           description={
             <>
               There's no question too small or request too big for our Registry
@@ -333,7 +333,7 @@ const Home = () => {
           direction={'left'}
           imgBanner={showroomImg}
           lineimg={lineImg2}
-          title="book a virtual appointment"
+          title=<>book a virtual <br/>appointment</>
           description="Our virtual appointments offer the  same personalized guidance — without leaving home. "
           buttontext={'BOOK NOW'}
           buttontype={'link'}

@@ -57,7 +57,7 @@ const Faqs = () => {
       id="faq-section"
     >
       <h2 className="prata text-center text-3xl lg:text-5xl font-normal mb-0">
-        Frequently Asked Questions
+        frequently asked questions
       </h2>
       <img
         src={vector14}
