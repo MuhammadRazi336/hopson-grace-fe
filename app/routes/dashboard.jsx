@@ -13,33 +13,33 @@ const introSteps = [
     tab: 'MY DETAILS',
     message: 'Store your names, address, email, and wedding date securely here. Filling this out helps us tailor your experience and ensures everything runs smoothly - from personalized recommendations to timely reminders.',
     arrow: {
-      tailOffsetX: -200,
-      tailOffsetY: -180,
-      headOffsetX: 10,
-      headOffsetY: 80,
-      controlOffsetX: -180,
-      controlOffsetY: -20,
+      tailOffsetX: -260,
+      tailOffsetY: -200,
+      headOffsetX: 80,
+      headOffsetY: 70,
+      controlOffsetX: -250,
+      controlOffsetY: 20,
     },
   },
   {
     tab: 'MY REGISTRY HOMEPAGE',
     message: 'This is the page your guests will see - so have fun with it! Upload photos, share your story, and add a personal message or video to welcome your guests. Prefer not to use your own photos? Choose from our curated illustrations to make your page feel beautifully personal.',
     arrow: {
-      tailOffsetX: -200,
-      tailOffsetY: -160,
+      tailOffsetX: -250,
+      tailOffsetY: -230,
       headOffsetX: 10,
-      headOffsetY: 90,
-      controlOffsetX: -60,
-      controlOffsetY: -20,
+      headOffsetY: 70,
+      controlOffsetX: -150,
+      controlOffsetY: 20,
     },
   },
   {
     tab: 'ADD OR EDIT GIFTS',
     message: 'Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like.',
     arrow: {
-      tailOffsetX: -150,
-      tailOffsetY: -230,
-      headOffsetX: -15,
+      tailOffsetX: -200,
+      tailOffsetY: -300,
+      headOffsetX: 15,
       headOffsetY: 60,
       controlOffsetX: -30,
       controlOffsetY: -10,
@@ -49,8 +49,8 @@ const introSteps = [
     tab: 'ADD A CASH OR TRAVEL FUND',
     message: 'Browse honeymoon destinations, pick from curated cash funds, choose a gift card, or create something totally unique - like a spa day on your honeymoon or a wine subscription from your favorite vineyard. Whatever your dream, this is the place to make it happen.',
     arrow: {
-      tailOffsetX: -30,
-      tailOffsetY: -260,
+      tailOffsetX: -60,
+      tailOffsetY: -330,
       headOffsetX: -15,
       headOffsetY: 60,
       controlOffsetX: 0,
@@ -62,8 +62,8 @@ const introSteps = [
     message: 'Keep track of who purchased what - and make saying thank you simple and seamless.',
     arrow: {
       tailOffsetX: 110,
-      tailOffsetY: -220,
-      headOffsetX: -35,
+      tailOffsetY: -300,
+      headOffsetX: 15,
       headOffsetY: 60,
       controlOffsetX: 0,
       controlOffsetY: 0,
@@ -74,7 +74,7 @@ const introSteps = [
     message: 'Enjoy one-time free shipping after the wedding - just let us know when you\'re ready. Prefer to receive something sooner? You can ship gifts anytime; standard shipping rates will apply.',
     arrow: {
       tailOffsetX: 180,
-      tailOffsetY: -180,
+      tailOffsetY: -200,
       headOffsetX: -20,
       headOffsetY: 60,
       controlOffsetX: 100,
@@ -97,24 +97,24 @@ const introSteps = [
     tab: 'MY MESSAGES',
     message: "This is where you'll receive updates about your registry - including notifications when gifts are purchased and messages from our team to help guide your journey.",
     arrow: {
-      tailOffsetX: 150,
-      tailOffsetY: -190,
-      headOffsetX: -220,
-      headOffsetY: 130,
-      controlOffsetX: 100,
-      controlOffsetY: -70
+      tailOffsetX: 270,
+      tailOffsetY: -230,
+      headOffsetX: -170,
+      headOffsetY: 10,
+      controlOffsetX: 80,
+      controlOffsetY: -90
     }
   },
   {
     tab: 'SHARE MY REGISTRY',
     message: "Ready to go live? Share your registry with loved ones so they can browse and shop your handpicked favorites.",
     arrow: {
-      tailOffsetX: 180,
-      tailOffsetY: -120,
-      headOffsetX: -220,
-      headOffsetY: 300,
-      controlOffsetX: 100,
-      controlOffsetY: 0
+      tailOffsetX: 310,
+      tailOffsetY: -40,
+      headOffsetX: -190,
+      headOffsetY: 20,
+      controlOffsetX: 150,
+      controlOffsetY: 30
     }
   }
 ];
@@ -199,6 +199,12 @@ const Dashboard_index = ({context}) => {
     }
   }, [showIntro]);
 
+  // Log when currentStep changes
+  useEffect(() => {
+    console.log(`Current step changed to: ${currentStep}`);
+    console.log(`Step data:`, introSteps[currentStep]);
+  }, [currentStep]);
+
 
   // Animated Arrow (relative to overlay container, with per-step config)
   const AnimatedArrow = ({ fromRef, toRef, show, containerRef, arrowConfig }) => {
@@ -229,11 +235,42 @@ const Dashboard_index = ({context}) => {
         const y2 = toRect.top + toRect.height / 2 - containerRect.top + headOffsetY;
         const controlX = x1 + controlOffsetX;
         const controlY = y1 + controlOffsetY;
-        setCoords({ x1, y1, x2, y2, controlX, controlY });
+        
+        console.log(`Arrow coordinates for step ${currentStep}:`, {
+          x1, y1, x2, y2, controlX, controlY,
+          tailOffsetX, tailOffsetY, headOffsetX, headOffsetY, controlOffsetX, controlOffsetY
+        });
+        
+        // Ensure coordinates are within reasonable bounds
+        const containerWidth = containerRect.width;
+        const containerHeight = containerRect.height;
+        
+        // Clamp coordinates to container bounds with some padding
+        const clampedX1 = Math.max(10, Math.min(containerWidth - 10, x1));
+        const clampedY1 = Math.max(10, Math.min(containerHeight - 10, y1));
+        const clampedX2 = Math.max(10, Math.min(containerWidth - 10, x2));
+        const clampedY2 = Math.max(10, Math.min(containerHeight - 10, y2));
+        const clampedControlX = Math.max(10, Math.min(containerWidth - 10, controlX));
+        const clampedControlY = Math.max(10, Math.min(containerHeight - 10, controlY));
+        
+        setCoords({ 
+          x1: clampedX1, 
+          y1: clampedY1, 
+          x2: clampedX2, 
+          y2: clampedY2, 
+          controlX: clampedControlX, 
+          controlY: clampedControlY 
+        });
       }
     }, [fromRef, toRef, show, containerRef, arrowConfig]);
 
-    if (!coords || !show) return null;
+    if (!coords || !show) {
+      console.log(`Arrow not rendering: coords=${!!coords}, show=${show}`);
+      return null;
+    }
+    
+    console.log(`Rendering arrow with coordinates:`, coords);
+    
     return (
       <svg
         key={key}
@@ -246,6 +283,7 @@ const Dashboard_index = ({context}) => {
           pointerEvents: 'none',
           zIndex: 40,
         }}
+        viewBox={`0 0 ${overlayRef.current?.offsetWidth || 800} ${overlayRef.current?.offsetHeight || 600}`}
       >
         <defs>
           <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
@@ -280,7 +318,7 @@ const Dashboard_index = ({context}) => {
            stroke="#222"
            strokeWidth="2"
            fill="none"
-          //  opacity="0.3"
+           opacity="0.3"
          />
       </svg>
     );
@@ -298,14 +336,24 @@ const Dashboard_index = ({context}) => {
   // Get current step target node
   const getCurrentStepNode = () => {
     const currentStepData = introSteps[currentStep];
-    if (currentStepData.type === 'notification') return notificationNode;
-    if (currentStepData.type === 'status') return statusNode;
     
     // For steps 0-6, return the corresponding tab node
     if (currentStep < 7) {
       const tabNode = tabNodes[currentStepData.tab];
       console.log(`Step ${currentStep}: Looking for tab "${currentStepData.tab}", found:`, tabNode);
       return tabNode;
+    }
+    
+    // For step 7 (MY MESSAGES), target the notification node
+    if (currentStep === 7) {
+      console.log(`Step ${currentStep}: Targeting notification node:`, notificationNode);
+      return notificationNode;
+    }
+    
+    // For step 8 (SHARE MY REGISTRY), target the status node
+    if (currentStep === 8) {
+      console.log(`Step ${currentStep}: Targeting status node:`, statusNode);
+      return statusNode;
     }
     
     return null;
