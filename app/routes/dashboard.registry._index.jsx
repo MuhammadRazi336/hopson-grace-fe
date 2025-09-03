@@ -193,6 +193,7 @@ const index = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user?.accessToken}`,
           },
           body: JSON.stringify(payload),
         },
@@ -224,6 +225,9 @@ const index = () => {
         `${finalApiBaseUrl}/api/events/${registryData?.events?.[0]?.id}`,
         {
           method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${user?.accessToken}`,
+          },
           body: formData,
         },
       );
@@ -272,6 +276,9 @@ const index = () => {
         `${finalApiBaseUrl}/api/events/${registryData?.events?.[0]?.id}/background-image`,
         {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${user?.accessToken}`,
+          },
           body: formData,
         },
       );
@@ -529,7 +536,7 @@ const index = () => {
               className="w-full h-full object-cover"
             />
           </div>
-          <div>
+          <div className='flex flex-col items-center justify-center'>
             <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
               add a gift card
             </h3>
