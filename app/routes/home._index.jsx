@@ -247,7 +247,7 @@ const Home = () => {
         <Link to="/ready-made-registries">
           <ButtonComponent
             text="EXPLORE"
-            className="button-cs text-black border-3 w-[350px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
+            className="button-cs text-black border-3 w-[360px] border-black py-4 lg:py-[21px] bg-transparent rounded-none mt-11"
           />
           </Link>
         </div>
@@ -260,14 +260,14 @@ const Home = () => {
             'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
           }
           image={lineImg4}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[525px]'}
         />
         <Marquee brands={brands} />
         <div className="text-center">
           <Link to="/our-brands">
           <ButtonComponent
             text="EXPLORE ALL BRANDS"
-            className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-4 lg:py-[30px] bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-4 lg:py-[21.5px] bg-transparent rounded-none mt-2 lg:mt-11"
           />
           </Link>
         </div>
@@ -286,7 +286,7 @@ const Home = () => {
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"
-            className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-[21.5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
           />
         </div>
       </section>
@@ -300,14 +300,14 @@ const Home = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[230px]'}
         />
-        <p className="text-center mt-5 md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+        <p className="text-center mt-5 md:text-[26px] lg:text-[26px] 2xl:text-[26px] md:leading-[38px] lg:leading-[38px] xl:leading-[38px] 2xl:leading-[38px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
           A peek inside some of our most-loved celebrations.
         </p>
         <Testimonialslider />
         <div className="text-center">
           <ButtonComponent
             text="EXPLORE REAL WEDDINGS"
-            className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-[26.5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
           />
         </div>
       </section>
