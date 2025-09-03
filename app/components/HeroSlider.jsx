@@ -161,13 +161,13 @@ const HeroSlider = () => {
                 <NavLink to="/register">
                 <Button
                   text="Begin Your Journey"
-                  className="text-white bg-[#446184] py-[22px] lg:py-[30px] lg:w-[320px] w-[280px] rounded-none button-cs max-[768px]:text-lg"
+                  className="text-white text-[16px] min-h-[78px] lg:px-[10px] leading-[18px] bg-[#446184] py-[21.5px] lg:py-[21.5px] lg:w-[275.58px] w-[275.58px] rounded-none button-cs max-[768px]:text-lg"
                 />
                 </NavLink>
                 <NavLink to="/couple">
                 <Button
                   text="Find a Couple"
-                  className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[18px] lg:py-[30px] lg:w-[320px] w-[280px] rounded-none max-[768px]:text-lg"
+                  className="button-cs text-[#1F1D1B] min-h-[78px] text-[16px] leading-[18px] lg:px-[10px] bg-white border-3 border-[#1F1D1B]  py-[21.5px] lg:py-[21.5px] lg:w-[275.58px] w-[275.58px] rounded-none max-[768px]:text-lg"
                 />
                 </NavLink>
               </div>
