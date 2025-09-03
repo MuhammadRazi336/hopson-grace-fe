@@ -260,7 +260,7 @@ const RegisterIndex = () => {
                 </div>
 
                 {/* Back and Next buttons */}
-                <div className="flex justify-end mt-4 absolute bottom-6 right-6">
+                <div className="flex justify-end mt-4 absolute bottom-6 right-6 steps-btns-hover">
                   {/* Add any additional buttons if needed */}
                   <button
                     type="submit"

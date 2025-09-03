@@ -72,10 +72,18 @@ const MeetOurTeam = () => {
           direction={'right'}
           imgBanner={teaImg}
           lineimg={lineImg3}
-          title="at your service"
-          description="There’s no question too small or request too big for our Registry advisors.  We’re always at your service."
-          buttontext={'CONTACT US'}
+          title="questions?"
+          description="We’ve got answers."
+          buttontext={'PHONE, EMAIL OR LIVE CHAT'}
           buttontype={'Color'}
+          buttonLink={'/contact-us'}
+          sx={{
+            button: {
+              backgroundColor: "transparent",
+              color: "#1F1D1B",
+              border: "2px solid #1F1D1B"
+            }
+          }}
         />
       </div>
       <Footer />

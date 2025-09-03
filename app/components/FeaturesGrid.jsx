@@ -28,7 +28,7 @@ export default function FeaturesGrid() {
   const features = [
     {
       icon: WorldBestBrands,
-      title: "THE WORLD'S BEST BRANDS",
+      title: <>THE WORLD'S <br/>BEST BRANDS</>,
       description:
         'From storied heritage brands to next-generation designers, we offer gifts from over 150 makers—chosen for every style and budget.',
     },
@@ -46,13 +46,13 @@ export default function FeaturesGrid() {
     },
     {
       icon: TYNote,
-      title: 'THANK YOU NOTE TRACKER',
+      title: <>THANK YOU NOTE <br/>TRACKER</>,
       description:
         'Track who gave what, view guest messages, and manage thank-you notes in one simple place.',
     },
     {
       icon: ReadyMadeRegistries,
-      title: 'READY-MADE REGISTRIES',
+      title: <>READY-MADE <br/>REGISTRIES</>,
       description:
         'Pre-built, ready-to-shop registries curated by us and real couples to make getting started easy.',
     },
@@ -64,7 +64,7 @@ export default function FeaturesGrid() {
     },
     {
       icon: NEWLYWED,
-      title: 'NEWLYWED DISCOUNT',
+      title: <>NEWLYWED <br/>DISCOUNT</>,
       description: 'Take 15% off anything left on your list after the wedding.',
     },
     {
@@ -75,21 +75,21 @@ export default function FeaturesGrid() {
     },
     {
       icon: FEWERBETTER,
-      title: 'FEWER, BETTER THINGS',
+      title: <>FEWER, <br/>BETTER THINGS</>,
       description:
         'A curated collection of design-forward pieces chosen for their longevity, durability and the belief that lasting is the most sustainable choice of all.',
     },
     {
-      icon: STYLEADVICE,
-      title: 'STYLE ADVICE & GUIDED TOOLS',
-      description:
-        'We offer expert guidance and smart tools to help you build your registry with style and confidence.',
-    },
-    {
       icon: PERSONALIZE,
-      title: 'PERSONALIZED HOMEPAGE',
+      title: <>PERSONALIZED <br/>REGISTRY PAGE</>,
       description:
         'Customize your registry page with photos and a message for a more personal touch.',
+    },
+    {
+      icon: STYLEADVICE,
+      title: <>STYLE ADVICE & <br/>GUIDED TOOLS</>,
+      description:
+        'We offer expert guidance and smart tools to help you build your registry with style and confidence.',
     },
   ];
 
@@ -113,12 +113,12 @@ export default function FeaturesGrid() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-2xl h-20 font-semibold tracking-wider uppercase text-gray-900 py-4">
+                <h3 className="text-2xl h-20 lg:text-[1.042vw] lg:leading-[1.354vw] font-semibold tracking-wider uppercase text-gray-900 py-4">
                   {feature.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-2xl text-gray-600 leading-relaxed max-w-xs mx-auto">
+                <p className="text-2xl lg:text-[1.146vw] lg:leading-[1.354vw] text-gray-600 leading-relaxed max-w-xs mx-auto">
                   {feature.description}
                 </p>
               </div>

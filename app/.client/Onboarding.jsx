@@ -726,7 +726,7 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
         <DatePicker
           selectedDate={localSelectedDate}
           onDateChange={handleDateChange}
-          placeholder="Select a date"
+          placeholder="Select a Date"
           inputProps={{
             className:
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',

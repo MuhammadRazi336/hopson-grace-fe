@@ -980,6 +980,12 @@ td.rdp-day.rdp-outside {
   /* width: 100%; */
   display: block;
   margin-top: 15px;
+  width: 39.375vw;
+  margin-bottom: 20px;
+}
+
+.steps-btns-hover:hover {
+  transform: translateY(-3px);
 }
 
 .tickafter {
