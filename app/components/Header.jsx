@@ -516,49 +516,49 @@ export function Header() {
           <div className="w-full">
             <div className="w-full">
               <div className="w-full shadow-md flex justify-between bg-[#F5F2ED]">
-                <a className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                <a className={`flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">MY DETAILS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/registry' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/registry">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
+                <a className={`flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/registry' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/registry">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">MY REGISTRY HOMEPAGE<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/registry' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
+                <a className={`flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">ADD OR EDIT GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/addgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/cashfunds' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/cashfunds">
+                <a className={`flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/cashfunds' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/cashfunds">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/cashfunds' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/gifttracker' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/gifttracker">
+                <a className={`flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/gifttracker' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/gifttracker">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">GIFTS + THANK YOU TRACKER<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/gifttracker' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
+                <a className={`flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">SHIP MY GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/shipgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/support' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/support">
+                <a className={`flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/support' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/support">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">SUPPORT<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/support' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
@@ -566,7 +566,7 @@ export function Header() {
                   </div>
                 </a>
                 <button 
-                  className="flex-1 text-center px-4 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" 
+                  className="flex-1 text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" 
                   onClick={() => {
                     // Clear all localStorage
                     localStorage.clear();
