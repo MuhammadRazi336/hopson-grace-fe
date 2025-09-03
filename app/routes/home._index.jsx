@@ -247,7 +247,7 @@ const Home = () => {
         <Link to="/ready-made-registries">
           <ButtonComponent
             text="EXPLORE"
-            className="button-cs text-black border-3 w-[360px] border-black py-4 lg:py-[21px] bg-transparent rounded-none mt-11"
+            className="button-cs text-black border-3 w-[360px] border-black py-4 lg:py-[21px] bg-transparent rounded-none mt-11 hover:bg-gray-100"
           />
           </Link>
         </div>
@@ -267,7 +267,7 @@ const Home = () => {
           <Link to="/our-brands">
           <ButtonComponent
             text="EXPLORE ALL BRANDS"
-            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-4 lg:py-[21.5px] bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-4 lg:py-[21.5px] bg-transparent rounded-none mt-2 lg:mt-11 hover:bg-gray-200"
           />
           </Link>
         </div>
@@ -286,7 +286,7 @@ const Home = () => {
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"
-            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-[21.5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-[21.5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11 hover:bg-gray-100"
           />
         </div>
       </section>
@@ -307,7 +307,7 @@ const Home = () => {
         <div className="text-center">
           <ButtonComponent
             text="EXPLORE REAL WEDDINGS"
-            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-[26.5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] lg:w-[360px] border-3 border-[#1F1D1B] py-[26.5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11 hover:bg-gray-100"
           />
         </div>
       </section>

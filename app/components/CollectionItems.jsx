@@ -180,7 +180,7 @@ const CollectionItems = () => {
         <Link to="/why-the-registry">
         <Button
           text="IT’S ALL IN THE DETAILS"
-          className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[16px] lg:py-[26px] lg:w-[360px] w-[280px] rounded-none max-[768px]:text-lg"
+          className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[16px] lg:py-[26px] lg:w-[360px] w-[280px] rounded-none max-[768px]:text-lg hover:bg-gray-100"
         />
         </Link>
       </div>
