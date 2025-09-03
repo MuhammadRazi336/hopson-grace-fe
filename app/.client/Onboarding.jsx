@@ -41,6 +41,7 @@ const OnboardingClient = ({onStepChange}) => {
   const [eventTypes, setEventTypes] = useState([]);
   const [selectedCollections, setSelectedCollections] = useState([]);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
+  const [selectedGiftPreference, setSelectedGiftPreference] = useState(null);
   const [addressData, setAddressData] = useState({
     phoneNumber: '',
     address: '',
@@ -490,6 +491,11 @@ const OnboardingClient = ({onStepChange}) => {
        if (Object.keys(errors).length > 0) return;
        await handleShipping();
     } else if (step === 5) {
+      // Validate that at least one gift preference is selected
+      if (!selectedGiftPreference) {
+        alert('Please select your gift preference to continue.');
+        return;
+      }
       setStep(step + 1);
          } else if (step === 6) {
        // Validate that at least one collection is selected
@@ -627,7 +633,7 @@ const OnboardingClient = ({onStepChange}) => {
           />
         );
       case STEPS_CONSTANTS.PREFER_GIFT_INFO:
-        return <Step5 />;
+        return <Step5 onGiftPreferenceSelect={setSelectedGiftPreference} selectedGiftPreference={selectedGiftPreference} />;
       case STEPS_CONSTANTS.COLLECTION_INFO:
         return (
           <Step6
@@ -948,8 +954,13 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
   );
 };
 
-const Step5 = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
+  const [selectedOption, setSelectedOption] = useState(selectedGiftPreference);
+
+  // Sync local state with prop
+  useEffect(() => {
+    setSelectedOption(selectedGiftPreference);
+  }, [selectedGiftPreference]);
 
   // Options for the grid
   const options = [
@@ -984,7 +995,10 @@ const Step5 = () => {
         {options.map((option) => (
           <button
             key={option.id}
-            onClick={() => setSelectedOption(option.id)}
+            onClick={() => {
+              setSelectedOption(option.id);
+              onGiftPreferenceSelect(option.id);
+            }}
             className={`p-6 flex items-center justify-center flex-col max-[768px]:p-2 rounded-full text-center text-white font-normal text-[20px] ${
               selectedOption === option.id ? '' : ''
             }`}
