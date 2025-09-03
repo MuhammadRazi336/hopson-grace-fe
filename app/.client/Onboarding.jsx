@@ -667,16 +667,18 @@ const OnboardingClient = ({onStepChange}) => {
         {/* Back and Next buttons, hidden on last step */}
         {step !== 8 && (
           <div className="flex justify-between mt-4">
-            <button
-              onClick={goBack}
-              disabled={step === STEPS_CONSTANTS.EVENT_DATE_INFO}
-              type="submit"
-              text="Next"
-              className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
-            >
-              <img src={arrow} alt="" className="rotate-180 max-[768px]:w-4" />{' '}
-              Back
-            </button>
+            {/* Only show back button if not on step 1 */}
+            {step !== STEPS_CONSTANTS.EVENT_DATE_INFO && (
+              <button
+                onClick={goBack}
+                type="submit"
+                text="Next"
+                className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+              >
+                <img src={arrow} alt="" className="rotate-180 max-[768px]:w-4" />{' '}
+                Back
+              </button>
+            )}
             <button
               onClick={goNext}
               type="submit"
