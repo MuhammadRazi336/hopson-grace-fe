@@ -314,18 +314,17 @@ const index = () => {
   return (
     <>
       <div className="flex justify-between mt-6">
-        <div className="flex-1 ml-[300px]">
+        <div className="flex-1 lg:ml-[15.625vw]">
           <div className="text-center">
-            <h2 className="mt-16 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata lg:leading-[60px] font-normal mb-4">
+            <h2 className="mt-16 lg:text-[48px] xl:text-4xl 2xl:text-[48px] text-[24px] ivyora lg:leading-[60px] font-normal mb-4">
               <span className="prata uppercase">My registry</span> homepage
             </h2>
 
-            <img
-              src="/assets/Images/profile-view-page-bdr.png"
-              alt="Couple"
-              className="max-w-[630px] h-auto mx-auto"
-            />
-            <p className="text-gray-600 max-w-[630px] mx-auto mt-10 text-2xl">
+            <svg className='mx-auto mt-[30px]' width="757" height="10" viewBox="0 0 757 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 3.83965C181.526 3.83965 361.053 3.83965 540.579 3.83965C595.616 3.83965 650.652 3.83965 705.689 3.83965C714.879 3.83965 750.471 -2.35887 755 8" stroke="#1F1D1B" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+
+            <p className="max-w-[43.958vw] text-[#1F1D1B] mx-auto mt-[39px] text-2xl lg:text-[26px] lg:leading-[36px]">
               Your guests will land here—so have fun with it! Leave them a
               message and upload your photos or video, or pick from our
               illustrations to create something uniquely you.
@@ -366,7 +365,7 @@ const index = () => {
         onClose={() => setIsBackgroundEditPopupOpen(false)}
         onSave={handleBackgroundImageSave}
       />
-      <div className="text-center pt-[80px] container mx-auto font-sans">
+      <div className="text-center pt-[80px] px-[3.281vw] mx-auto font-sans">
         <div className="relative">
           <img
             src={backgroundImage}
@@ -374,7 +373,7 @@ const index = () => {
             className="w-full h-[400px] lg:h-[600px] object-cover"
           />
           <div
-            className="absolute top-4 right-4 cursor-pointer"
+            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[5.833vw] height[5.833vw]"
             onClick={() =>
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
@@ -406,14 +405,14 @@ const index = () => {
           />
         </div> */}
 
-        <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
-          <div className="xl:w-4/12 w-full">
-            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
+        <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-10 xl:-translate-y-[200px] ">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
+            <h1 className="md:text-[4.479vw] md:leading-[4.792vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
               {userGet?.data?.user?.firstName} &{' '}
               {userGet?.data?.user?.fianceFirstName}
             </h1>
           </div>
-          <div className="xl:w-4/12 w-full">
+          <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[36.979vw] lg:h-[36.979vw] w-full">
             <div className="relative">
               <img
                 src={eventImage || '/assets/Images/couple-placeholder.png'}
@@ -421,7 +420,7 @@ const index = () => {
                 className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto object-cover"
               />
               <div
-                className="absolute top-[85%] -translate-x-[-55%] w-[70%]"
+                className="absolute -bottom-[2.604vw] left-[50%] translate-x-[-50%] w-[5.938vw] h-[5.938vw]"
                 onClick={() => !isUploading && setIsEditPopupOpen(true)}
               >
                 <img
@@ -439,15 +438,15 @@ const index = () => {
               </div>
             </div>
           </div>
-          <div className="xl:w-4/12 w-full">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
             <div className="mr-16">
-              <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
+              <p className="md:text-[2.5vw] text-right my-2 md:leading-[2.917vw] prata ml-auto">
                 {eventGet?.data?.eventDate}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
                 alt="Couple"
-                className="max-w-[370px] h-auto ml-auto"
+                className="max-w-[19.219vw] h-auto ml-auto"
               />
               <div className="uppercase text-right ">
                 <p className="text-lg my-1">{eventGet?.data?.location}</p>
@@ -491,7 +490,7 @@ const index = () => {
           </div>
         </div>
       </div>
-      <div className="container mx-auto bg-[#FAF9F6] py-10 px-6">
+      <div className="mx-auto w-[calc(100%-7.812vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] ">
         <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
           our registry selections
         </h2>
@@ -517,45 +516,45 @@ const index = () => {
             </h3>
           </div>
         </div>
-        <div className="gap-6 p-6 mt-12">
-          <h2 className="text-2xl font-bold text-center">GIFTS</h2>
+        <div className="gap-6 mt-12">
+          <h2 className="text-[30px] leading-[36px] font-bold text-center">GIFTS</h2>
           <ProductPage data={data} />
         </div>
 
-        <div className="gap-6 p-6 mt-12">
-          <h2 className="text-2xl font-bold text-center">CASH FUNDS</h2>
+        <div className="gap-6 mt-12">
+          <h2 className="text-[30px] leading-[36px] font-bold text-center">CASH FUNDS</h2>
           <FundPage data={cashfundData} />
         </div>
       </div>
       <div className="py-12 w-full flex justify-center items-center">
-        <div className="py-10 md:py-12 bg-[#446184] flex items-center justify-around flex-row lg:w-[70%] w-full max-[768px]:p-10 lg:mt-20 mt-6 gap-x-16">
-          <div>
+        <div className="py-10 md:py-12 bg-[#446184] flex items-center justify-between flex-row lg:w-[81.354vw] lg:min-h-[28.698vw] w-full max-[768px]:p-10 lg:mt-20 mt-6 gap-x-16">
+          <div className='pl-[25px]'>
             <img
               src="/assets/Images/giftCard.png"
               alt="gift"
               className="w-full h-full object-cover"
             />
           </div>
-          <div className='flex flex-col items-center justify-center'>
-            <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
+          <div className='flex flex-col items-center justify-center pr-[7.656vw]'>
+            <h3 className="text-2xl text-white lg:text-[44px] lg:leading-[36px] 3xl:w-full prata max-w-[410px] text-center">
               add a gift card
             </h3>
             <img
               src="/assets/Images/white-bdr.png"
               alt="couple"
-              className="max-w-[315px] mb-4 mt-4 mx-auto"
+              className="max-w-[325.9px] mb-[35px] mx-auto mt-[25px]"
             />
-            <h5 className="text-white text-xl text-center font-normal">
+            <h5 className="text-white text-[24px] leading-[44px] text-center font-[500]">
               CONTRIBUTE TO OUR JOURNEY!
             </h5>
-            <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-7 font-normal text-center">
+            <p className="text-sm lg:text-[24px] leading-[30px] text-white max-w-[30.99vw] mt-4 mb-7 font-normal text-center">
               Help us create our dream wedding, honeymoon or life experience.
               We're so grateful.
             </p>
             <Link to="/dashboard/giftcards">
               <button
                 type="button"
-                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
+                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] w-[296px] h-[78px] text-[18px] leading-[18px] rounded-none cursor-pointer mx-auto block"
               >
                 ADD GIFT CARDS
               </button>
@@ -601,8 +600,8 @@ const ProductPage = ({data}) => {
       <div
         className={`${
           data.length > 4
-            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-6 p-6 mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            ? 'flex gap-[3.281vw] mt-12 overflow-x-auto snap-x snap-mandatory'
+            : 'grid gap-[3.281vw] mt-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
@@ -770,12 +769,12 @@ const FundPage = ({data}) => {
   };
 
   return (
-    <div className="container">
+    <div className="">
       <div
         className={`${
           data.length > 4
-            ? 'flex gap-6 p-6 mt-12 pb-4 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-6 p-6 mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            ? 'flex gap-[3.281vw] mt-12 pb-4 overflow-x-auto snap-x snap-mandatory'
+            : 'grid gap-[3.281vw] mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
@@ -812,7 +811,7 @@ const FundPage = ({data}) => {
                           '/assets/Images/placeholder.png'
                         }
                         alt={fund.cashFund?.name || 'Cash Fund'}
-                        className="w-full h-full object-cover mb-4"
+                        className="w-full h-full object-contain mb-4"
                       />
 
                       <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
