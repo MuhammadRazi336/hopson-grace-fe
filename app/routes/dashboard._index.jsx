@@ -251,21 +251,21 @@ const index = () => {
             <img src="/assets/Images/heart.png" alt="" />
           </div>
 
-          <h2 className="md:text-[42px] text-center xl:mt-0 mt-16 font-normal ivyora">
+          <h2 className="md:text-[42px] lg:text-[48px] lg:leading-[56px] text-center xl:mt-0 mt-16 font-normal ivyora">
             welcome to the heart of your wedding,
-            <span className="font-italic block">{user?.user.firstName} & {user?.user.fianceFirstName}</span>
+            <span className="block">{user?.user.firstName} & {user?.user.fianceFirstName}</span>
           </h2>
 
-          <p className="text-lg font-bold prata">{registry?.events?.eventDate}</p>
+          <p className="text-lg font-bold bastardogrotesk mb-[10px] lg:text-[30px] lg:leading-[36px]">{registry?.events?.eventDate}</p>
 
           <img
             src="/assets/Images/dashboard-bdr.png"
             alt="Hamburger"
             className="w-auto h-auto mx-auto -mt-2"
           />
-          <p className="text-xl font-normal text-center mt-2">
+          <p className="text-xl font-normal text-center mt-[20px] lg:text-[32px] lg:leading-[36px]">
             YOU HAVE &nbsp;
-            <span className="font-bold prata text-2xl">{daysLeft} </span> DAYS &nbsp;
+            <span className="font-bold prata text-2xl lg:text-[58px] lg:leading-[36px] relative top-[10px]">{daysLeft} </span> DAYS &nbsp;
             UNTIL THE WEDDING!
           </p>
         </div>
@@ -279,34 +279,34 @@ const index = () => {
         </div>
       </div>
 
-      <div className="grid xl:gap-y-[150px] gap-y-24 xl:grid-cols-2 md:grid-cols-1 grid-cols-1 w-full mt-[100px] xl:px-12 px-6 pb-[100px]">
+      <div className="grid xl:gap-y-[150px] lg:gap-[3.906vw] lg:w-[64.323vw] lg:mx-auto gap-y-24 xl:grid-cols-2 md:grid-cols-1 grid-cols-1 w-full mt-[100px] pb-[11.615vw]">
         {REGISTRY_CARDS.map((card) => (
           <div
             key={card.id}
-            className="bg-[#446184] text-white pb-6 px-[50px] mx-[100px] max-h-[800px] flex flex-col items-center"
+            className="bg-[#446184] text-white pb-[2.5vw] lg:px-[2.865vw] flex flex-col items-center"
           >
              {card.showIcon && (
-              <div className='flex bg-[#F6F5ED] rounded-full -mt-24 mb-6 w-40 h-40 items-center justify-center'>
+              <div className='flex bg-[#F6F5ED] rounded-full -mt-24 w-40 h-40 lg:w-[11.198vw] lg:h-[11.198vw] items-center justify-center'>
                 <img
                   src={card.icon}
                   alt="Gift Icon"
-                  className="w-24 h-24 mb-4"
+                  className="w-24 h-24 lg:w-[8.021vw] lg:h-[8.021vw] mb-4"
                 />
               </div>
              )}
-            <h3 className="text-3xl font-semibold mb-16 mt-[50px]">
+            <h3 className="text-3xl font-semibold lg:text-[24px] lg:leading-[24px] mb-[1.302vw] mt-[2.656vw]">
               {card.title}
             </h3>
-            <p className="text-2xl min-h-[240px]  text-center mb-6">
+            <p className="text-2xl min-h-[135px] lg:text-[22px] lg:leading-[32px] text-center mb-6">
               {card.description}
             </p>
             <div className="text-5xl prata flex items-baseline">
               {(card.id === 'funds' || card.id === 'gift-balance') && (
                 <span className="text-7xl mr-1 self-start">$</span>
               )}
-              <span className="text-7xl">{card.value}</span>
+              <span className="text-7xl lg:text-[64px]">{card.value}</span>
               {card.total && (
-                <span className="ml-1 text-6xl">
+                <span className="ml-1 text-6xl lg:text-[36px]">
                   /<span className="text-4xl">{card.total}</span>
                 </span>
               )}
@@ -314,7 +314,7 @@ const index = () => {
             <p className="text-sm mt-2">{card.label}</p>
             {card.buttonText && (
               <Link to={card.link}>
-              <button className="bg-[#F6F5ED] font-bold text-black px-14 py-4 mt-10 mb-10 text-base">
+              <button className="bg-[#F6F5ED] lg:w-[296px] lg:h-[78px] font-bold text-black px-1 py-1 mt-10 text-base lg:text-[18px] lg:leading-[18px]">
                 {card.buttonText}
               </button>
               </Link>

@@ -984,9 +984,9 @@ td.rdp-day.rdp-outside {
   margin-bottom: 20px;
 }
 
-.steps-btns-hover:hover {
+/* .steps-btns-hover:hover {
   transform: translateY(-3px);
-}
+} */
 
 .tickafter {
   position: relative;

@@ -368,14 +368,14 @@ const Dashboard_index = ({context}) => {
           <><div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative min-h-[70vh]">
             {/* Welcome and couple name */}
             <div className="mb-6 mt-16">
-              <div className="md:text-[42px] text-center xl:mt-0 mt-16 font-normal ivyora">welcome to your dashboard</div>
+              <div className="md:text-[42px] lg:text-[48px] lg:leading-[56px] text-center xl:mt-0 mt-16 font-normal ivyora">welcome to your dashboard</div>
               <div className="font-serif text-3xl text-center mb-2">{coupleName}</div>
               <img src={lineImg3} alt="line" className="w-[60%] h-auto mx-auto" />
-              <div className="uppercase mt-6 text-sm text-center tracking-widest text-black/70">How this works</div>
+              <div className="uppercase mt-[39px] mb-[30px] text-sm lg:text-[24px] lg:leading-[36px] text-center tracking-widest text-black/70">How this works</div>
             </div>
 
             {/* Right side cards */}
-            <div className="absolute right-4 top-4 flex flex-col gap-4">
+            <div className="absolute right-4 top-4 flex flex-col gap-[18px]">
               <div ref={(node) => setNotificationNode(node)}>
                 <NotificationCard
                   className={currentStep === 7 ? 'border-2 border-black' : ''}
@@ -391,12 +391,14 @@ const Dashboard_index = ({context}) => {
             </div>
 
             {/* Blue card */}
-            <div ref={introCardRef} className="bg-[#3d5676] text-white p-8 w-full max-w-lg text-center shadow-lg z-40 relative">
-              <div className="uppercase text-lg font-bold tracking-wide mb-2">
+            <div ref={introCardRef} className="bg-[#3d5676] text-white p-[38px] w-full max-w-lg lg:w-[41.354vw] lg:max-w-[41.354vw] text-center shadow-lg z-40 relative">
+              <div className="uppercase text-lg lg:text-[24px] lg:leading-[36px] font-bold tracking-wide mb-2">
                 {introSteps[currentStep].type ? introSteps[currentStep].type.toUpperCase() : introSteps[currentStep].tab}
+                <svg className='mx-auto mt-[20px] mb-[34px]' width="223" height="6" viewBox="0 0 223 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 2.61322C54.2128 2.61322 106.426 2.61322 158.638 2.61322C174.645 2.61322 190.652 2.61322 206.659 2.61322C209.331 2.61322 219.683 0.547044 221 4" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                </svg>
               </div>
-              <div className="w-16 h-1 bg-white mx-auto mb-4 rounded"></div>
-              <div className="mb-6">
+              <div className="mb-6 font-normal lg:w-[33.906vw] lg:text-[22px] lg:leading-[32px]">
                 {introSteps[currentStep].message}
               </div>
               <div className="absolute left-4 bottom-3">
@@ -405,10 +407,10 @@ const Dashboard_index = ({context}) => {
             </div>
 
             {/* Pagination centered below the card */}
-            <div className="flex flex-col items-center mt-6 w-full max-w-lg">
+            <div className="flex flex-col items-center mt-[35px] w-full max-w-lg lg:w-[41.354vw] lg:max-w-[41.354vw]">
               <div className="w-full flex justify-end">
                 <button
-                  className="font-bold uppercase tracking-wide text-black"
+                  className="font-bold lg:text-[22px] lg:leading-[18px] uppercase tracking-wide text-black"
                   onClick={() => {
                     if (currentStep < introSteps.length - 1) {
                       setCurrentStep(s => s + 1);
@@ -420,11 +422,11 @@ const Dashboard_index = ({context}) => {
                   {currentStep < introSteps.length - 1 ? 'Got it, Next →' : 'Done'}
                 </button>
               </div>
-              <div className="text-lg font-bold text-center mb-2">
-                <span className="text-3xl md:text-4xl font-semibold">{currentStep + 1}</span> <span className="font-normal text-lg">/ {introSteps.length}</span>
+              <div className="text-lg font-bold text-center mb-[35px] mt-[20px]">
+                <span className="text-3xl md:text-4xl font-normal lg:text-[62px] lg:leading-[62px] top-[10px] relative mr-[10px]">{currentStep + 1}</span> <span className="font-normal text-lg lg:text-[24px] lg:leading-[28px]">/ {introSteps.length}</span>
               </div>
               <button
-                className="font-bold uppercase tracking-wide text-black underline mb-4"
+                className="font-bold uppercase tracking-wide text-black mb-[140px] lg:text-[18px] pb-[8px] border-b-1.5 border-[#1F1D1B] lg:leading-[18px] "
                 onClick={handleFinishIntro}
               >
                 Skip Intro

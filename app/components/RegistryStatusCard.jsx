@@ -35,7 +35,7 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
 
   return (
     <div className={`bg-[#f5f2ed] rounded-sm p-6 w-64 text-center relative shadow-sm ${className}`}>
-      <div className="uppercase text-lg font-medium tracking-wide text-black mb-4">
+      <div className="uppercase text-lg lg:text-[18px] lg:leading-[20px] font-medium tracking-wide text-black mb-4">
         Registry<br />Homepage Status:
       </div>
       {/* Toggle Switch */}
@@ -43,13 +43,13 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
         type="button"
         aria-pressed={!isDraft}
         onClick={handleToggle}
-        className={`mx-auto mb-4 w-16 h-8 flex items-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${isDraft ? 'bg-white border-black' : 'bg-white border-black'}`}
+        className={`mx-auto mb-[15px] w-[60px] h-[26px] flex items-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${isDraft ? 'bg-white border-black' : 'bg-white border-black'}`}
       >
         <span
-          className={`w-7 h-7 rounded-full shadow-md transform transition-transform duration-200 ${isDraft ? 'translate-x-0 bg-gray-300' : 'translate-x-8 bg-[#FF6F61]'}`}
+          className={`w-[26px] h-[22px] rounded-full shadow-md transform transition-transform duration-200 ${isDraft ? 'translate-x-0 bg-gray-300' : 'translate-x-8 bg-[#FF6F61]'}`}
         />
       </button>
-      <div className="uppercase text-lg font-bold text-black tracking-wide">
+      <div className="uppercase text-lg font-bold text-black tracking-wide lg:text-[18px] lg:leading-[18px]">
         {isDraft ? 'Draft' : 'Published'}
       </div>
     </div>

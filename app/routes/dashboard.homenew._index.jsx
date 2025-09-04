@@ -50,7 +50,7 @@ export default function DashboardHome() {
         <div className="w-full xl:w-9/12 flex flex-col gap-y-4 items-center pb-8">
           <div className="w-64 h-32 bg-gray-500"></div>
 
-          <h2 className="md:text-[42px] text-center xl:mt-0 mt-16 font-normal ivyora">
+          <h2 className="md:text-[42px] lg:text-[48px] lg:leading-[56px] text-center xl:mt-0 mt-16 font-normal ivyora">
             welcome to the heart of your wedding,
             <span className="font-italic block">HANNAH & MAX</span>
           </h2>

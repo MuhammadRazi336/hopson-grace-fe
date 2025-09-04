@@ -306,7 +306,7 @@ export function Header() {
             <form onSubmit={handleSearch} className="flex items-center justify-center bg-[#F5F2ED] py-1 px-[1.563vw] w-[22.448vw] h-[3.281vw] rounded-full">
               <button type="submit" className="text-xl hover:text-blue-500 max-[1024px]:hidden">
                 <span role="img" aria-label="Search Icon">
-                  <img src={searchImg} class="w-[1.979vw] h-[1.979vw] min-w-[1.979vw] min-h-[1.979vw]" alt="Search Icon" />
+                  <img src={searchImg} className="w-[1.979vw] h-[1.979vw] min-w-[1.979vw] min-h-[1.979vw]" alt="Search Icon" />
                 </span>
               </button>
               <input
@@ -427,7 +427,7 @@ export function Header() {
                 <div className="">
                   <span className="relative inline-block">
                     {/* Bell Icon (SVG) */}
-                    <svg width="60" height="60" class="w-[3.125vw] h-[3.125vw]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="60" height="60" className="w-[3.125vw] h-[3.125vw]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/></svg>
 
