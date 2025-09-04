@@ -32,12 +32,12 @@ const ProductCard = ({
           <img
             src={image}
             alt={productName}
-            className="w-full h-[300px] object-cover"
+            className="w-[360px] h-[360px] object-cover"
           />
-          <h3 className="text-[18px] font-semibold uppercase mt-3">
+          <h3 className="text-[20px] font-semibold uppercase mt-3 w-[360px]">
             {productName}
           </h3>
-          <p className="text-sm mt-1">${price}</p>
+          <p className="text-[24px] mt-1 w-[360px]">${price}</p>
         </div>
 
         {/* Expanding Overlay */}

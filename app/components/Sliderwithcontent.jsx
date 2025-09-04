@@ -1,6 +1,6 @@
 import Heading from './Heading';
 import Items from './Items';
-import React from 'react';
+import React, { useState } from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Pagination} from 'swiper/modules';
 import 'swiper/css';
@@ -9,6 +9,8 @@ import 'swiper/css/pagination';
 import nextitem from '/assets/Images/next.png';
 
 const Sliderwithcontent = ({ featuredRegistryData }) => {
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  
   // Debug logging
   console.log('🔍 DEBUG: Sliderwithcontent received:', featuredRegistryData);
   
@@ -17,6 +19,27 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">No registry data available</p>
+        <p className="text-sm text-gray-400 mt-2">
+          {featuredRegistryData?.parentCollection?.title ? 
+            `No subcollections found for ${featuredRegistryData.parentCollection.title}` : 
+            'No parent collection found'
+          }
+        </p>
+      </div>
+    );
+  }
+
+  if (featuredRegistryData.subCollections.length === 0) {
+    console.log('🔍 DEBUG: Empty subcollections array in Sliderwithcontent');
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">No subcollections available</p>
+        <p className="text-sm text-gray-400 mt-2">
+          {featuredRegistryData?.parentCollection?.title ? 
+            `No subcollections found for ${featuredRegistryData.parentCollection.title}` : 
+            'No parent collection found'
+          }
+        </p>
       </div>
     );
   }
@@ -30,7 +53,7 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
   return (
     <div>
       <Heading
-        text={"Real Registries"}
+        text={subCollections[activeSlideIndex]?.title || 'Registry'}
         classes={`text-xl lg:text-3xl font-bold uppercase tracking-[0.1em] mt-16 mb-4 lg:mb-[40px]`}
       />
 
@@ -46,6 +69,9 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
           }}
           slidesPerGroup={1}
           pagination={{clickable: true}}
+          onSlideChange={(swiper) => {
+            setActiveSlideIndex(swiper.activeIndex);
+          }}
         >
           {subCollections?.map((subCollection, index) => (
             <SwiperSlide key={subCollection.id || index}>

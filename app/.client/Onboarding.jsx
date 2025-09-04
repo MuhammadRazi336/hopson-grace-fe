@@ -258,14 +258,18 @@ const OnboardingClient = ({onStepChange}) => {
       // Handle Shopify validation errors
       if (e?.response?.data?.shopifyError) {
         const shopifyError = e.response.data.shopifyError;
+        const suggestions = e?.response?.data?.suggestions || [];
+        
         if (shopifyError.includes('Invalid province/state')) {
           setStep4Errors({
-            province: shopifyError
+            province: shopifyError,
+            suggestions: suggestions
           });
         } else {
-          // For other Shopify errors, show a general message
+          // For other Shopify errors, show a general message with suggestions
           setStep4Errors({
-            general: 'Address validation failed. Please check your address details.'
+            general: 'Address validation failed. Please check your address details.',
+            suggestions: suggestions
           });
         }
       } else {
@@ -885,6 +889,17 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
       {step4Errors?.general && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {step4Errors.general}
+          {/* Display suggestions if available */}
+          {step4Errors?.suggestions && step4Errors.suggestions.length > 0 && (
+            <div className="mt-3">
+              <p className="font-semibold mb-2">Suggestions:</p>
+              <ul className="list-disc list-inside space-y-1">
+                {step4Errors.suggestions.map((suggestion, index) => (
+                  <li key={index} className="text-sm">{suggestion}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
       
@@ -938,6 +953,17 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
           error={step4Errors?.province}
         />
+        {/* Display suggestions for province errors */}
+        {step4Errors?.province && step4Errors?.suggestions && step4Errors.suggestions.length > 0 && (
+          <div className="col-span-2 mt-2 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded">
+            <p className="font-semibold mb-2">Suggestions:</p>
+            <ul className="list-disc list-inside space-y-1">
+              {step4Errors.suggestions.map((suggestion, index) => (
+                <li key={index} className="text-sm">{suggestion}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Country */}
         <Input

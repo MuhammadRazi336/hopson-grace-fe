@@ -15,7 +15,7 @@ const ProductSlider = () => {
       <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
         <div className="swiper-button-prev-prod absolute top-0 -left-[5.1%] max-[1601px]:-left-[8%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-[#446184] h-full max-h-[360px] justify-center max-[1024px]:w-[33px]">
           <img src={nextitem} alt="" className="rotate-180 invert-100" />
-          <span className="-rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+          <span className="-rotate-90 text-[22px] text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>
         </div>
@@ -60,11 +60,11 @@ const ProductSlider = () => {
         >
           <SwiperSlide>
             <img src={product1} alt="Marble Butter Keeper" className="w-full" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
               MARBLE BUTTER KEEPER
             </h3>
-            <p className="lg:text-2xl text-sm">$80</p>
-            <p className="ivyora lg:text-lg text-sm">*The Registry Exclusive</p>
+            <p className="lg:text-[24px] text-sm py-2">$80</p>
+            <p className="ivyora italic lg:text-lg text-[20px">*The Registry Exclusive</p>
           </SwiperSlide>
           <SwiperSlide>
             <img
@@ -72,35 +72,35 @@ const ProductSlider = () => {
               alt="Belle-V Icecream Scoop"
               className="w-full max-h-[380px]"
             />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
               BELLE-V ICECREAM SCOOP
             </h3>
-            <p className="lg:text-2xl text-sm">$95</p>
+            <p className="lg:text-[24px] text-sm py-2">$95</p>
           </SwiperSlide>
           <SwiperSlide>
             <img src={product3} alt="Staub Cast Iron Q4" className="w-full max-h-[380px]" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
               STAUB CAST IRON Q4
             </h3>
-            <p className="lg:text-2xl text-sm">$430</p>
+            <p className="lg:text-[24px] text-sm py-2">$430</p>
           </SwiperSlide>
           <SwiperSlide>
             <img src={product4} alt="Coluna Fruit Bowls" className="w-full max-h-[380px]" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
               COLUNA FRUIT BOWLS
             </h3>
-            <p className="lg:text-2xl text-sm">Prices vary</p>
+            <p className="lg:text-[24px] text-sm py-2">Prices vary</p>
           </SwiperSlide>
           <SwiperSlide>
             <img src={product1} alt="Coluna Fruit Bowls" className="w-full max-h-[380px]" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
               COLUNA FRUIT BOWLS
             </h3>
-            <p className="lg:text-2xl text-sm">Prices vary</p>
+            <p className="lg:text-[24px] text-sm py-2">Prices vary</p>
           </SwiperSlide>
         </Swiper>
         <div className="swiper-button-next-prod absolute top-0 -right-[5.1%] max-[1601px]:-right-[8%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-[#446184] h-full max-h-[360px] justify-center max-[1024px]:w-[33px]">
-          <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+          <span className="rotate-90 text-[22px] text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>
           <img src={nextitem} className="invert-100" alt="" />

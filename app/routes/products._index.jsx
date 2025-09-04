@@ -80,11 +80,23 @@ export async function loader({request, context}) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('search');
   const {collections} = await loadCollectionData({context});
+  
+  // Get user session if available (optional for non-logged in users)
   const user = context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
+  let registry = null;
+  
+  // Only fetch registry if user is logged in
+  if (user && user.user && user.user.id) {
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+    } catch (error) {
+      console.log('Error fetching registry:', error);
+      // Continue without registry data
+    }
+  }
   
   // If there's a search query, filter collections by title/description
   let filteredCollections = collections;
@@ -95,7 +107,12 @@ export async function loader({request, context}) {
     );
   }
   
-  return defer({collections: filteredCollections, searchQuery, registry: registry?.data[0]});
+  return defer({
+    collections: filteredCollections, 
+    searchQuery, 
+    registry: registry?.data?.[0] || null,
+    user: user || null
+  });
 }
 
 export async function action({request, context}) {
@@ -122,7 +139,7 @@ async function loadCollectionData({context}) {
 }
 
 const Products = () => {
-  const {collections, searchQuery, registry} = useLoaderData();
+  const {collections, searchQuery, registry, user} = useLoaderData();
   const [searchParams] = useSearchParams();
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -154,17 +171,15 @@ const Products = () => {
 
   const handleAddtoRegistry = (product) => {
     try {
-      // Check if user is logged in by looking for token in localStorage
-      const token = localStorage.getItem('@token') || localStorage.getItem('@Token');
-      
-      if (!token) {
-        // No token found, redirect to login
+      // Check if user is logged in
+      if (!user || !user.user || !user.user.id) {
+        // User not logged in, redirect to login
         navigate('/login');
         return;
       }
 
       // Check if registry exists and has an id
-      if (!registry || !registry.data[0].id) {
+      if (!registry || !registry.id) {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
@@ -190,7 +205,7 @@ const Products = () => {
       const payload = {
         productId: Number(extractShopifyId(product.id)),
         amount: Number(firstVariant.priceV2.amount),
-        registryId: Number(registry.data[0].id),
+        registryId: Number(registry.id),
         productTypeId: 1,
         quantity: 1,
       };
