@@ -16,12 +16,12 @@ const HowItWorks = () => {
         <Heading
           text="how it works"
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <p className="text-center text-2xl lg:text-3xl font-normal py-16">
+        <p className="text-center text-2xl lg:text-[1.25vw] lg:max-w-[55.729vw] lg:mx-auto lg:leading-[1.875vw] font-normal py-16">
            Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod
           tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim
           veniam, quis nostrum exercitationem ullam

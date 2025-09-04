@@ -28,10 +28,10 @@ const OurPhilosophy = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <h2 className="text-center font-semibold text-2xl lg:text-4xl py-16">
+        <h2 className="text-center font-[500] text-[22px] leading-[36px] lg:text-[22px] leading-[36px] py-16">
           FEWER, BETTER THINGS.
         </h2>
-        <p className="text-center text-2xl lg:text-3xl font-normal">
+        <p className="text-center text-[26px] lg:text-[26px] leading-[38px] font-normal">
           We believe in fewer, better things. That the gifts you choose should
           be beautifully made, deeply personal, and built to last. That great
           design never goes out of style. And that weddings should be a
@@ -56,13 +56,13 @@ const OurPhilosophy = () => {
           className="object-cover mx-auto"
         />
 
-        <h2 className="text-center font-semibold text-2xl lg:text-4xl pt-16">
-        DISCOVER THE BRANDS & PRODUCTS THAT REFLECT  OUR ‘FEWER, BETTER THINGS’ PHILOSOPHY
+        <h2 className="text-center tracking-[0.8px] font-[500] text-[22px] lg:text-[22px] leading-[32px] pt-[41px]">
+        DISCOVER THE BRANDS & PRODUCTS THAT REFLECT  <br/>OUR ‘FEWER, BETTER THINGS’ PHILOSOPHY
         </h2>
-        <div className="flex justify-center py-16">
+        <div className="flex justify-center pb-16 pt-[30px]">
           <Button
             text="BROWSE OUR CURATED COLLECTION   "
-            className="text-white bg-[#446184] py-[22px] lg:py-[30px] lg:w-[520px] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
+            className="text-white font-normal bg-[#446184] py-[22px] lg:py-[21.5px] lg:w-[465px] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
           />
         </div>
       </div>
@@ -76,6 +76,7 @@ const OurPhilosophy = () => {
           description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
           buttontext={'GET STARTED'}
           buttontype={'Color'}
+          buttonLink={'/register'}
         />
       </div>
       <Footer />

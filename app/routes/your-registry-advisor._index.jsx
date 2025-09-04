@@ -28,7 +28,7 @@ const YourRegistryAdvisor = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <h2 className="text-center font-semibold text-2xl lg:text-4xl py-16">
+        <h2 className="text-center font-[500] text-2xl lg:text-4xl py-16">
           REAL PEOPLE, HERE TO HELP.
         </h2>
         <p className="text-center text-2xl lg:text-3xl font-normal">
@@ -69,15 +69,16 @@ const YourRegistryAdvisor = () => {
         </div>
       </div>
 
-      <div className="w-full py-16">
+      <div className="w-full py-16 text-center">
         <ImageAndText
           direction={'left'}
           imgBanner={DinnerSetImg}
           lineimg={lineImg3}
-          title="at your service"
+          title="book a virtual appointment"
           description="There’s no question too small or request too big for our Registry advisors.  We’re always at your service."
           buttontext={'CONTACT US'}
           buttontype={'Color'}
+          buttonLink={'/contact-us'}
         />
       </div>
       <Footer />

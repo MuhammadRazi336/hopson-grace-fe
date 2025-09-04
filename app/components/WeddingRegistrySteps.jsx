@@ -39,9 +39,9 @@ export default function WeddingRegistrySteps() {
 
   return (
     <div className="bg-white">
-      <div className="flex flex-col lg:flex-row h-[120vh]">
+      <div className="flex flex-col lg:flex-row">
         {/* Left side - Image */}
-        <div className="lg:w-1/2 relative mb-12 z-0">
+        <div className="lg:w[37.552vw] relative mb-12 z-0">
           {/* <div
               className="h-64 lg:h-screen bg-cover bg-center bg-teal-400"
               style={{
@@ -77,14 +77,14 @@ export default function WeddingRegistrySteps() {
         {/* </div> */}
 
         {/* Right side - Steps */}
-        <div className="lg:w-1/2 flex flex-col items-center justify-center bg-[#446184] text-white p-8 lg:p-12 mt-16 relative z-10 lg:-ml-12">
+        <div className="lg:w-[52.083vw] flex flex-col items-center justify-center bg-[#446184] text-white p-8 lg:p-12 mt-16 relative z-10 lg:-ml-12">
           <div className="w-full  mx-auto lg:mx-0 space-y-12">
             {steps.map((step, index) => (
               <div key={index} className="space-y-3 text-center">
                 <div className="text-6xl lg:text-8xl font-light text-white/90">
                   {step.number}
                 </div>
-                <h3 className="text-2xl font-normal tracking-wider uppercase text-white">
+                <h3 className="text-[1.146vw] leading-[1.875vw] font-normal tracking-wider uppercase text-white">
                   {step.title}
                   <img src={WhiteLine} width={250} alt="" className='mx-auto pt-2'/>
                 </h3>
