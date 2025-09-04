@@ -21,14 +21,24 @@ import {Link, useLoaderData, useFetcher, redirect} from '@remix-run/react';
 export async function loader({request, context}) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('search');
+  
+  // Get user session if available (optional for non-logged in users)
   const user = context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
-
-  if (!registry || !registry.data[0] || !registry.data[0].id) {
-    throw new Response('Registry not found in session', {status: 404});
+  let registry = null;
+  let registryId = null;
+  
+  // Only fetch registry if user is logged in
+  if (user && user.user && user.user.id) {
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+      registryId = registry?.data?.[0]?.id || null;
+    } catch (error) {
+      console.log('Error fetching registry:', error);
+      // Continue without registry data
+    }
   }
 
   const cashFunds = await loadCashFunds({context});
@@ -55,8 +65,8 @@ export async function loader({request, context}) {
   return {
     cashFunds: filteredCashFunds,
     searchQuery,
-    registryId: registry?.data[0]?.id,
-    user,
+    registryId,
+    user: user || null,
   };
 }
 
@@ -109,7 +119,7 @@ async function loadCashFunds({context}) {
 
 // ProductCard component with Add to Registry functionality - moved outside to prevent recreation
 const ProductCard = React.memo(
-  ({product, collection, registryId, onSuccess, onError}) => {
+  ({product, collection, registryId, user, onSuccess, onError}) => {
     const fetcher = useFetcher();
     const hasShownFeedback = React.useRef(false);
     const previousFetcherData = React.useRef(null);
@@ -156,12 +166,9 @@ const ProductCard = React.memo(
 
     const handleAddToRegistry = async () => {
       try {
-        // Check if user is logged in by looking for token in localStorage
-        const token =
-          localStorage.getItem('@token') || localStorage.getItem('@Token');
-
-        if (!token) {
-          // No token found, redirect to login
+        // Check if user is logged in and has registry
+        if (!registryId) {
+          // No registry found, redirect to login
           window.location.href = '/login';
           return;
         }
@@ -262,7 +269,7 @@ const ProductCard = React.memo(
 );
 
 const CashFund = () => {
-  const {cashFunds, searchQuery, registryId} = useLoaderData();
+  const {cashFunds, searchQuery, registryId, user} = useLoaderData();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
@@ -399,6 +406,7 @@ const CashFund = () => {
                       product={product}
                       collection={collection}
                       registryId={registryId}
+                      user={user}
                       onSuccess={handleSuccess}
                       onError={handleError}
                     />
