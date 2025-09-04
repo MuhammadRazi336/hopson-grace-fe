@@ -6,7 +6,7 @@ const NotificationCard = ({ count = 0, onView, className }) => (
     <div className="absolute top-4 right-4">
       <span className="relative inline-block">
         {/* Bell Icon (SVG) */}
-        <svg width="28" height="28" fill="none" viewBox="0 0 24 24" className="inline-block align-middle">
+        <svg width="24" height="29" fill="none" viewBox="0 0 24 24" className="inline-block align-middle">
           <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2Zm6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" stroke="currentColor" strokeWidth="2" />
         </svg>
         {/* Red Dot */}
@@ -14,18 +14,18 @@ const NotificationCard = ({ count = 0, onView, className }) => (
       </span>
     </div>
     {/* Number */}
-    <div className="text-6xl font-serif font-medium text-black mb-1 relative">
+    <div className="text-[48px] leading-[50px] font-serif font-medium text-black mb-1 relative">
       {count}
-      <div className="w-10 h-1 bg-black mx-auto mt-1 mb-2 rounded"></div>
+      <div className="w-[65px] h-1 bg-black mx-auto mt-0 mb-[16px] rounded"></div>
     </div>
     {/* Message */}
-    <div className="uppercase text-base font-medium tracking-wide text-black mb-4">
+    <div className="uppercase text-base lg:text-[18px] lg:leading-[20px] font-medium tracking-wide text-black mb-[23px]">
       You have<br />new messages
     </div>
     {/* View Link */}
     <button
       onClick={onView}
-      className="uppercase font-bold text-lg tracking-wide text-black underline underline-offset-4 hover:text-gray-700"
+      className="uppercase font-bold text-lg tracking-wide text-black lg:text-[18px] lg:leading-[18px] border-b-2 border-[#1F1D1B] hover:text-gray-700"
     >
       View
     </button>
