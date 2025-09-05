@@ -49,15 +49,37 @@ export async function action({request, context}) {
     // Step 2: Guest checkout
     const guestCheckoutPayload = {
       registryId: Number(registryId),
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
+      email: email.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
       lineItems: lineItems,
-      message: message,
-      paymentIntentId: paymentIntentId
+      message: message.trim(),
+      paymentIntentId: paymentIntentId.trim()
     };
     
+    // Additional validation
+    if (!guestCheckoutPayload.registryId || guestCheckoutPayload.registryId <= 0) {
+      throw new Error('Invalid registry ID');
+    }
+    
+    if (!guestCheckoutPayload.email || !guestCheckoutPayload.email.includes('@')) {
+      throw new Error('Invalid email format');
+    }
+    
+    if (!guestCheckoutPayload.paymentIntentId || guestCheckoutPayload.paymentIntentId.length < 10) {
+      throw new Error('Invalid payment intent ID');
+    }
+    
     console.log('Guest checkout payload:', guestCheckoutPayload);
+    console.log('Payload validation:', {
+      registryId: typeof guestCheckoutPayload.registryId,
+      email: typeof guestCheckoutPayload.email,
+      firstName: typeof guestCheckoutPayload.firstName,
+      lastName: typeof guestCheckoutPayload.lastName,
+      lineItemsLength: guestCheckoutPayload.lineItems?.length,
+      message: typeof guestCheckoutPayload.message,
+      paymentIntentId: typeof guestCheckoutPayload.paymentIntentId
+    });
     
     // Get API base URL from context
     const apiBaseUrl = 'https://dev-hopsongrace.codup.io';
@@ -73,7 +95,20 @@ export async function action({request, context}) {
       });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to get error details from the response
+        let errorDetails;
+        try {
+          errorDetails = await response.json();
+        } catch (e) {
+          errorDetails = await response.text();
+        }
+        console.error('API Error Response:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorDetails
+        });
+        throw new Error(`HTTP error! status: ${response.status}, details: ${JSON.stringify(errorDetails)}`);
       }
       
       guestCheckoutResponse = await response.json();
