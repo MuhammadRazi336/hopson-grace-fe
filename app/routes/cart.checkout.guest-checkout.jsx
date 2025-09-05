@@ -81,41 +81,71 @@ export async function action({request, context}) {
       paymentIntentId: typeof guestCheckoutPayload.paymentIntentId
     });
     
+    // Log line items structure for debugging
+    console.log('Line items details:', guestCheckoutPayload.lineItems.map((item, index) => ({
+      index,
+      id: item.id,
+      productId: item.productId,
+      price: item.price,
+      quantity: item.quantity,
+      title: item.title,
+      isCashFund: item.isCashFund,
+      amount: item.amount,
+      registryProductId: item.registryProductId
+    })));
+    
     // Get API base URL from context
     const apiBaseUrl = 'https://dev-hopsongrace.codup.io';
     
     let guestCheckoutResponse;
     try {
-      const response = await fetch(`${apiBaseUrl}/api/transactions/guest-checkout`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(guestCheckoutPayload),
-      });
+      // Try using context.ClientPost first (like other transaction calls)
+      console.log('Trying context.ClientPost method...');
+      guestCheckoutResponse = await context.ClientPost(
+        guestCheckoutPayload,
+        'transactions/guest-checkout',
+        context,
+      );
+      console.log('Guest checkout response (ClientPost):', guestCheckoutResponse);
+    } catch (clientPostError) {
+      console.error('ClientPost failed, trying direct fetch:', clientPostError);
       
-      if (!response.ok) {
-        // Try to get error details from the response
-        let errorDetails;
-        try {
-          errorDetails = await response.json();
-        } catch (e) {
-          errorDetails = await response.text();
-        }
-        console.error('API Error Response:', {
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries()),
-          body: errorDetails
+      // Fallback to direct fetch
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/transactions/guest-checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(guestCheckoutPayload),
         });
-        throw new Error(`HTTP error! status: ${response.status}, details: ${JSON.stringify(errorDetails)}`);
+        
+        if (!response.ok) {
+          // Try to get error details from the response
+          let errorDetails;
+          try {
+            errorDetails = await response.json();
+          } catch (e) {
+            errorDetails = await response.text();
+          }
+          console.error('API Error Response:', {
+            status: response.status,
+            statusText: response.statusText,
+            headers: Object.fromEntries(response.headers.entries()),
+            body: errorDetails
+          });
+          throw new Error(`HTTP error! status: ${response.status}, details: ${JSON.stringify(errorDetails)}`);
+        }
+        
+        guestCheckoutResponse = await response.json();
+        console.log('Guest checkout response (fetch):', guestCheckoutResponse);
+      } catch (fetchError) {
+        console.error('Both ClientPost and fetch failed:', {
+          clientPostError: clientPostError.message,
+          fetchError: fetchError.message
+        });
+        throw new Error(`API call failed: ${fetchError.message || 'Unknown API error'}`);
       }
-      
-      guestCheckoutResponse = await response.json();
-      console.log('Guest checkout response:', guestCheckoutResponse);
-    } catch (apiError) {
-      console.error('API call error:', apiError);
-      throw new Error(`API call failed: ${apiError.message || 'Unknown API error'}`);
     }
     
     if (guestCheckoutResponse?.data?.checkoutNumber) {
