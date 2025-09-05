@@ -4,6 +4,7 @@ import product1 from '/assets/Images/gift-img-collection-1.png';
 import product2 from '/assets/Images/gift-img-collection-1.png';
 import product3 from '/assets/Images/gift-img-collection-1.png';
 import product4 from '/assets/Images/gift-img-collection-1.png';
+import headingCurve from '../assets/Images/heading-bottom-curve.png';
 
 function ExploreCategories({ collections = [] }) {
   // Filter collections to only show parent collections (parentMetafield.value === 'true')
@@ -12,22 +13,22 @@ function ExploreCategories({ collections = [] }) {
   );
 
   return (
-    <section className="bg-[#FAF9F6] py-12  container mx-auto">
+    <section className="bg-[#FAF9F6] py-[5.26vw] px-[4.583vw] lg:w-[86.719vw] mx-auto">
       <Heading
         text="explore more categories"
         classes={
-          'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+          'prata text-2xl lg:text-[2.083vw] lg:leading-[1.979vw] font-normal text-center max-[1024px]:m-0'
         }
-        image={lineImghead}
-        imageClasses={'max-[1024px]:max-w-[330px] px-4 '}
+        image={headingCurve}
+        imageClasses={'max-[1024px]:max-w-[330px]'}
       />
 
       {/* slides here */}
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-6 mt-16 mx-10">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-row-[5.208vw] gap-col-[3.438vw] mt-[5.573vw]">
         {parentCollections.map((col) => (
           <div key={col.id}>
-            <img src={col.image?.url || '/assets/Images/placeholder.png'} alt={col.title} className="w-full h-[500px] object-cover" />
-            <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+            <img src={col.image?.url || '/assets/Images/placeholder.png'} alt={col.title} className="w-full h-[23.698vw] object-cover" />
+            <h3 className="mt-2.5 text-center lg:mt-[1.771vw] uppercase lg:text-[1.25vw] lg:leading-[1.25vw] text-sm font-[500] tracking-wider">
               {col.title}
             </h3>
           </div>

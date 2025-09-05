@@ -60,10 +60,10 @@ const ProductSlider = () => {
         >
           <SwiperSlide>
             <img src={product1} alt="Marble Butter Keeper" className="w-full" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.25vw] text-sm font-medium tracking-wider">
               MARBLE BUTTER KEEPER
             </h3>
-            <p className="lg:text-[24px] text-sm py-2">$80</p>
+            <p className="lg:text-[1.25vw] text-sm py-2">$80</p>
             <p className="ivyora italic lg:text-lg text-[20px">*The Registry Exclusive</p>
           </SwiperSlide>
           <SwiperSlide>
@@ -72,31 +72,31 @@ const ProductSlider = () => {
               alt="Belle-V Icecream Scoop"
               className="w-full max-h-[380px]"
             />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.25vw] text-sm font-medium tracking-wider">
               BELLE-V ICECREAM SCOOP
             </h3>
-            <p className="lg:text-[24px] text-sm py-2">$95</p>
+            <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
           </SwiperSlide>
           <SwiperSlide>
             <img src={product3} alt="Staub Cast Iron Q4" className="w-full max-h-[380px]" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.25vw] text-sm font-medium tracking-wider">
               STAUB CAST IRON Q4
             </h3>
-            <p className="lg:text-[24px] text-sm py-2">$430</p>
+            <p className="lg:text-[1.25vw] text-sm py-2">$430</p>
           </SwiperSlide>
           <SwiperSlide>
             <img src={product4} alt="Coluna Fruit Bowls" className="w-full max-h-[380px]" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.25vw] text-sm font-medium tracking-wider">
               COLUNA FRUIT BOWLS
             </h3>
-            <p className="lg:text-[24px] text-sm py-2">Prices vary</p>
+            <p className="lg:text-[1.25vw] text-sm py-2">Prices vary</p>
           </SwiperSlide>
           <SwiperSlide>
             <img src={product1} alt="Coluna Fruit Bowls" className="w-full max-h-[380px]" />
-            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+            <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.25vw] text-sm font-medium tracking-wider">
               COLUNA FRUIT BOWLS
             </h3>
-            <p className="lg:text-[24px] text-sm py-2">Prices vary</p>
+            <p className="lg:text-[1.25vw] text-sm py-2">Prices vary</p>
           </SwiperSlide>
         </Swiper>
         <div className="swiper-button-next-prod absolute top-0 -right-[5.1%] max-[1601px]:-right-[8%] cursor-pointer text-white uppercase flex w-[139px] max-[1601px]:w-[90px] items-center bg-[#446184] h-full max-h-[360px] justify-center max-[1024px]:w-[33px]">

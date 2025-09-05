@@ -54,17 +54,17 @@ const NavBarLinks = (mobileClasses) => {
               OUR BRANDS
             </NavLink>
             {/* Nested Menu */}
-            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
-              <div className="flex mx-auto">
+            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-999 w-full py-[50px] lg:pb-[5.729vw] lg:pt-[5vw] bg-[#F5F2ED]">
+              <div className="flex mx-auto justify-between lg:w-[83.333vw]">
                 <div className="mr-[90px]">
-                  <h4 className="text-lg font-semibold mb-11">
+                  <h4 className="text-[18px] lg:text-[0.938vw]  font-[500] mb-[26px]">
                     TOP TRENDING BRANDS
                   </h4>
                   <ul className="">
                     <li>
                       <NavLink
                         to="/our-brands/ginori-1753"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
                       >
                         Ginori 1753
                       </NavLink>
@@ -72,7 +72,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/our-brands/mud-australia"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
                       >
                         Mud Australia
                       </NavLink>
@@ -80,7 +80,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/our-brands/richard-brendan"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
                       >
                         Richard Brendan
                       </NavLink>
@@ -88,7 +88,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/our-brands/zalto"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
                       >
                         Zalto
                       </NavLink>
@@ -96,7 +96,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/our-brands/coluna"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
                       >
                         Coluna
                       </NavLink>
@@ -104,7 +104,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/our-brands/pom-bedding"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
                       >
                         Pom Bedding
                       </NavLink>
@@ -112,7 +112,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/our-brands/a-table"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
                       >
                         A Table
                       </NavLink>
