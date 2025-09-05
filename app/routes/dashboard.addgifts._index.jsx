@@ -929,7 +929,7 @@ export default function AddGifts() {
 
             {/* Selected collection image at 100% width */}
             {selectedSwiperCollectionId && (
-              <div className="relative">
+              <div className="relative w-full">
                 <img
                   src={
                     collections.find(
@@ -943,15 +943,7 @@ export default function AddGifts() {
                   }
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
-                <button
-                  onClick={() => {
-                    setSelectedSwiperCollectionId(null);
-                    setCheckedCollectionIds([]);
-                  }}
-                  className="absolute top-4 right-4 bg-white text-black px-4 py-2 rounded hover:bg-gray-100 transition-colors"
-                >
-                  Clear Selection
-                </button>
+                
               </div>
             )}
           </div>
@@ -1209,7 +1201,7 @@ export default function AddGifts() {
 
         <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
           <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[15%] left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+            <div className="swiper-button-prev-prod absolute top-[5%] left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
               <img src={nextitem} alt="" className="rotate-180 " />
               <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
                 more
@@ -1255,42 +1247,42 @@ export default function AddGifts() {
             >
               {/* slides here */}
               <SwiperSlide>
-                <img src={youll1} alt="New Arrival" className="w-full" />
+                <img src={youll1} alt="New Arrival" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Tableware" className="w-full" />
+                <img src={youll2} alt="Tableware" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
                 <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
+                <img src={youll3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
                 <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll1} alt="New arrivals" className="w-full" />
+                <img src={youll1} alt="New arrivals" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
+                <img src={youll2} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
                 <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-[15%] right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+            <div className="swiper-button-next-prod absolute top-[5%] right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
               <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
                 more
               </span>

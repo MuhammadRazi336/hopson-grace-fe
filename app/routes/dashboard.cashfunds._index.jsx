@@ -1,5 +1,5 @@
 import {useLoaderData, Link, useFetcher} from '@remix-run/react';
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import GiftAnyAmount from '~/components/GiftAnyAmount';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
@@ -93,11 +93,17 @@ export async function action({request, context}) {
 const CashFunds = () => {
   const {products, registryId, collections} = useLoaderData();
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
+  const [productsToShow, setProductsToShow] = useState(12);
+  const productGridRef = useRef(null);
 
   // Filter products based on selected collection
   const filteredProducts = selectedSwiperCollectionId 
     ? products.filter(product => product.collectionId === selectedSwiperCollectionId)
     : products;
+
+  // Sort products and limit display
+  const sortedProducts = filteredProducts.sort((a, b) => a.title.localeCompare(b.title));
+  const displayedProducts = sortedProducts.slice(0, productsToShow);
 
   const handleButtonClick = (title) => {
     alert(`Button clicked for ${title}`);
@@ -112,7 +118,7 @@ const CashFunds = () => {
               {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
             </span>
           ) : (
-            <><span className="prata uppercase">ADD CASH</span><span className='mx-2'>or</span><span className="prata uppercase">TRAVEL</span></>
+            <><span className="prata uppercase">ADD CASH</span><span className='mx-2'> or </span><span className="prata uppercase">TRAVEL</span></>
           )}
         </h2>
         <img
@@ -120,7 +126,7 @@ const CashFunds = () => {
           alt="Couple"
           className="max-w-[630px] mt-5 h-auto mx-auto"
         />
-        <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
+        <p className="max-w-5xl mx-auto text-center text-[24px] my-5 font-normal leading-relaxed">
           {selectedSwiperCollectionId 
             ? `Browse products from ${collections.find(col => col.id === selectedSwiperCollectionId)?.title || 'this collection'}.`
             : 'Browse honeymoon destinations, pick from curated cash funds, choose a gift card, or create something totally unique—like a spa day on your honeymoon or a wine subscription from your favourite vineyard. Whatever your dream, this is the place to make it happen.'
@@ -133,7 +139,7 @@ const CashFunds = () => {
           <div className=" ">
             {!selectedSwiperCollectionId && (
               <>
-                <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
+                <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[35%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
                   <img src={nextitem} alt="" className="rotate-180 size-6" />
                 </div>
 
@@ -191,7 +197,7 @@ const CashFunds = () => {
                     style={{ cursor: 'pointer'}}
                   >
                     <Link to="/dashboard/cashfunds/create-new">
-                    <div className="h-[500px] overflow-hidden bg-[#F5F2ED] flex items-center justify-center">
+                    <div className="w-[550px] h-[440px] overflow-hidden bg-[#F5F2ED] flex items-center justify-center">
                       <img
                         src="/assets/Images/registrylogoSteps.png"
                         alt="Create Your Own Cash Fund"
@@ -215,11 +221,11 @@ const CashFunds = () => {
                         }}
                         style={{ cursor: 'pointer'}}
                       >
-                        <div className="h-[500px] overflow-hidden">
+                        <div className="w-[550px] h-[440px] overflow-hidden">
                           <img
                             src={col.image?.url || '/assets/Images/placeholder.png'}
                             alt={col.title}
-                            className="w-full h-[500px] object-cover"
+                            className="w-full h-full object-cover"
                           />
                         </div>
                         <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
@@ -228,7 +234,7 @@ const CashFunds = () => {
                       </SwiperSlide>
                     ))}
                 </Swiper>
-                <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
+                <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[35%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
                   <img src={nextitem} className="size-6" alt="" />
                 </div>
               </>
@@ -251,8 +257,11 @@ const CashFunds = () => {
       <section className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-10">
           <SidebarFilter />
-          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
-            {filteredProducts.map((card, index) => (
+          <div 
+            className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0"
+            ref={productGridRef}
+          >
+            {displayedProducts.map((card, index) => (
               <Card
                 id={card.id}
                 key={index}
@@ -273,13 +282,41 @@ const CashFunds = () => {
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">LOADING 12 of 427</p>
+            <p className="text-center text-md my-10">
+              LOADING {Math.min(productsToShow, sortedProducts.length)} of{' '}
+              {sortedProducts.length}
+            </p>
 
-            <WhiteThemeButton Text="View more" link="/quick-start-guide" />
+            {sortedProducts.length > 12 &&
+              productsToShow < sortedProducts.length && (
+                <WhiteThemeButton
+                  Text="VIEW MORE"
+                  buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
+                  link="#"
+                  onClick={() =>
+                    setProductsToShow((prev) =>
+                      Math.min(prev + 12, sortedProducts.length),
+                    )
+                  }
+                />
+              )}
 
-            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
-              Back to Top
-            </button>
+            {productsToShow > 12 && (
+              <button 
+                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+                onClick={() => {
+                  setProductsToShow(12);
+                  if (productGridRef.current) {
+                    productGridRef.current.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    });
+                  }
+                }}
+              >
+                Back to Top
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -324,7 +361,7 @@ const CashFunds = () => {
         <Heading
           text="we think you’ll love"
           classes={
-            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[40px] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
@@ -332,7 +369,7 @@ const CashFunds = () => {
 
         <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
           <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+            <div className="swiper-button-prev-prod absolute top-[5%] left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
               <img src={nextitem} alt="" className="rotate-180 " />
               <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
                 more
@@ -378,42 +415,42 @@ const CashFunds = () => {
             >
               {/* slides here */}
               <SwiperSlide>
-                <img src={youll1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={product1} alt="New Arrival" className="w-[455px] h-[455px]" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={product2} alt="Tableware" className="w-[455px] h-[455px]" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={product3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
+                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll1} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={product4} alt="New arrivals" className="w-[455px] h-[455px]" />
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={product3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
+                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95</p>
               </SwiperSlide>
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+            <div className="swiper-button-next-prod absolute top-[5%] right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
               <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
                 more
               </span>
@@ -536,17 +573,17 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
           <img
             src={image}
             alt="Cash Fund"
-            className="w-full h-[300px] object-cover"
+            className="w-[360px] h-[360px] object-cover"
           />
         ) : (
           <div className="w-full h-[300px] flex items-center justify-center bg-gray-200 text-gray-400">
             No Image
           </div>
         )}
-        <h3 className="text-sm font-semibold uppercase mt-3">
+        <h3 className="text-[22px] font-semibold uppercase mt-3">
           {title}
         </h3>
-        <p className="text-sm mt-1">${amount}</p>
+        <p className="text-[24px] mt-1">${amount}</p>
       </div>
 
       {/* Expanding Overlay */}
@@ -673,7 +710,7 @@ function SidebarFilter() {
     <div className="w-full xl:w-3/12 p-6 h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-[18px] font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -694,7 +731,7 @@ function SidebarFilter() {
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-[16px]">
             <li>
               <label>
                 <input type="checkbox" className="mr-2" />
@@ -711,18 +748,6 @@ function SidebarFilter() {
               <label>
                 <input type="checkbox" className="mr-2" />
                 DATE NIGHTS
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
               </label>
             </li>
             <li>
@@ -748,12 +773,12 @@ function ProductGrid({products}) {
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-[300px] object-cover"
+              className="w-[360px] h-[360px] object-cover"
             />
-            <h3 className="text-sm font-semibold uppercase mt-3">
+            <h3 className="text-[22px] font-semibold uppercase mt-3">
               {product.name}
             </h3>
-            <p className="text-sm mt-1">{product.price}</p>
+            <p className="text-[24px] mt-1">{product.price}</p>
           </div>
 
           {/* Expanding Overlay */}
