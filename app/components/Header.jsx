@@ -11,9 +11,10 @@ import TopHeader from './TopHeader';
 import {Navbar} from '@material-tailwind/react';
 import NavBarLinks from './NavBarLinks';
 import HeaderMobileMenu from './HeaderMobileMenu';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import Popup from './Popup';
 import {useLocation} from 'react-router-dom';
+import { io } from 'socket.io-client';
 
 export function Header() {
   const [user, setUser] = useState(null);
@@ -34,14 +35,14 @@ export function Header() {
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'http://localhost:3040';
+  const apiBaseUrl = "https://dev-hopsongrace.codup.io" || 'http://localhost:3040';
 
   // Notification system state
   const [notifications, setNotifications] = useState([]);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  // const notificationRef = useRef(null);
-  // const socketRef = useRef(null);
+  const notificationRef = useRef(null);
+  const socketRef = useRef(null);
 
   // Update status when registry data changes
   useEffect(() => {
@@ -119,6 +120,194 @@ export function Header() {
         }
       }
     }
+  }, []);
+
+  // Socket connection and notification handling
+  useEffect(() => {
+    console.log('Socket useEffect triggered:', {
+      userDataId: userData?.id,
+      hasUser: !!user,
+      apiBaseUrl
+    });
+
+    if (userData?.id && user) {
+      console.log('Initializing socket connection to:', apiBaseUrl);
+      
+      // Initialize socket connection
+      const socket = io(apiBaseUrl, {
+        auth: {
+          token: user,
+          userId: userData.id
+        }
+      });
+
+      socketRef.current = socket;
+
+      // Listen for new notifications
+      socket.on('notification', (notification) => {
+        console.log('New notification received:', notification);
+        setNotifications(prev => [notification, ...prev]);
+        setUnreadCount(prev => prev + 1);
+      });
+
+      // Listen for connection status
+      socket.on('connect', () => {
+        console.log('Connected to notification server');
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from notification server');
+      });
+
+      socket.on('connect_error', (error) => {
+        console.error('Socket connection error:', error);
+      });
+
+      // Fetch existing notifications
+      console.log('Calling fetchNotifications...');
+      fetchNotifications();
+
+      // TEMPORARY: Create a test notification (remove this after testing)
+      setTimeout(() => {
+        console.log('Creating test notification...');
+        fetch(`${apiBaseUrl}/api/notifications/test`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${user}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Test notification created:', data);
+          // Refresh notifications after creating test
+          setTimeout(() => fetchNotifications(), 1000);
+        })
+        .catch(err => console.log('Test notification failed (this is expected if endpoint doesn\'t exist):', err));
+      }, 2000);
+
+      // Cleanup on unmount
+      return () => {
+        console.log('Cleaning up socket connection');
+        socket.disconnect();
+      };
+    } else {
+      console.log('Socket connection skipped - missing requirements');
+    }
+  }, [userData?.id, user, apiBaseUrl]);
+
+  // Fetch notifications from API
+  const fetchNotifications = async () => {
+    if (!userData?.id || !user) {
+      console.log('Cannot fetch notifications - missing userData.id or user token:', {
+        userDataId: userData?.id,
+        hasUser: !!user
+      });
+      return;
+    }
+
+    console.log('Fetching notifications for user:', userData.id);
+    console.log('API URL:', `${apiBaseUrl}/api/notifications`);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/notifications`, {
+        headers: {
+          'Authorization': `Bearer ${user}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Notifications API response status:', response.status);
+      console.log('Notifications API response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (response.ok) {
+        const notifications = await response.json();
+        console.log('Raw notifications response:', notifications);
+        
+        // Handle direct array response
+        if (Array.isArray(notifications)) {
+          console.log('Setting notifications:', notifications);
+          setNotifications(notifications);
+          const unreadNotifications = notifications.filter(n => n.status === 'unread');
+          console.log('Unread notifications count:', unreadNotifications.length);
+          setUnreadCount(unreadNotifications.length);
+        } else {
+          console.log('Notifications response is not an array:', typeof notifications);
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('Notifications API error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  // Mark notification as read
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/notifications/${notificationId}/read`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${user}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setNotifications(prev => 
+          prev.map(n => n.id === notificationId ? { ...n, status: 'read' } : n)
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // Mark all notifications as read
+  const markAllAsRead = async () => {
+    if (!userData?.id || !user) return;
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/notifications/read-all`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${user}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        setNotifications(prev => prev.map(n => ({ ...n, status: 'read' })));
+        setUnreadCount(0);
+      }
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
+  // Toggle notification dropdown
+  const toggleNotificationDropdown = () => {
+    setShowNotificationDropdown(prev => !prev);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotificationDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   // Generate user initials from fetched user data
@@ -424,16 +613,101 @@ export function Header() {
                     }`}>{getUserInitials()}</h2>
                   )}
                 </div>
-                <div className="">
-                  <span className="relative inline-block">
+                <div className="relative" ref={notificationRef}>
+                  <button 
+                    onClick={toggleNotificationDropdown}
+                    className="relative inline-block hover:opacity-80 transition-opacity"
+                  >
                     {/* Bell Icon (SVG) */}
                     <svg width="60" height="60" className="w-[3.125vw] h-[3.125vw]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/></svg>
+                      <path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/>
+                    </svg>
 
-                    {/* Red Dot */}
-                    {/* <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full border-2 border-[#f5f2ed]"></span> */}
-                  </span>
+                    {/* Red Dot for unread notifications */}
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
+                        <span className="text-xs text-white font-bold">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Notification Dropdown */}
+                  {showNotificationDropdown && (
+                    <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                      {/* Header */}
+                      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={markAllAsRead}
+                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            Mark all as read
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Notifications List */}
+                      <div className="max-h-80 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="p-4 text-center text-gray-500">
+                            <p>No notifications yet</p>
+                          </div>
+                        ) : (
+                          notifications.map((notification) => (
+                            <div
+                              key={notification.id}
+                              className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                notification.status === 'unread' ? 'bg-blue-50' : ''
+                              }`}
+                              onClick={() => {
+                                if (notification.status === 'unread') {
+                                  markNotificationAsRead(notification.id);
+                                }
+                              }}
+                            >
+                              <div className="flex items-start space-x-3">
+                                <div className={`w-2 h-2 rounded-full mt-2 ${
+                                  notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
+                                }`}></div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {notification.title}
+                                  </p>
+                                  <p className="text-sm text-gray-600 mt-1">
+                                    {notification.message}
+                                  </p>
+                                  <p className="text-xs text-gray-400 mt-2">
+                                    {new Date(notification.createdAt).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      {/* Footer */}
+                      {notifications.length > 0 && (
+                        <div className="p-3 border-t border-gray-200 text-center">
+                          <button
+                            onClick={() => setShowNotificationDropdown(false)}
+                            className="text-sm text-gray-600 hover:text-gray-800"
+                          >
+                            Close
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 {isLoadingRegistry ? (
                   <div className='pt-1'>
