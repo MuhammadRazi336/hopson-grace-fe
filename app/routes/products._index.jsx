@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
-import lineImghead from '~/assets/Images/line.png';
+import lineImghead from '../assets/Images/heading-bottom-curve.png';
 import ButtonComponent from '~/components/Button';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
@@ -249,10 +249,10 @@ const Products = () => {
         <Heading
           text={searchQuery ? `Search Results for "${searchQuery}"` : "products"}
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[13.542vw] h-[6px]'}
         />
         {searchQuery && (
           <p className="text-center my-5 text-lg">
@@ -264,10 +264,10 @@ const Products = () => {
           alt="Couple"
           className="max-w-[630px] mt-5 h-auto mx-auto"
         /> */}
-        <p className="max-w-xl mx-auto text-center my-5 font-normal leading-relaxed">
+        <p className="max-w-[52.396vw] mt-[1.615vw] mx-auto text-center font-normal lg:leading-[1.875vw] lg:text-[1.25vw]">
           {searchQuery 
             ? "Browse the search results below or use the filters to refine your search."
-            : "Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like."
+            : "From heritage brands to up-and-coming makers, our collection is thoughtfully curated for how you actually live. Expect timeless design, lasting quality, and modern pieces you’ll love now—and for years to come. Nothing you don’t need, everything you’ll use."
           }
         </p>
       </div>
@@ -317,29 +317,29 @@ const Products = () => {
       {/* Regular Products Page Content - Only show when no search query */}
       {!searchQuery && (
         <>
-          <div className="pt-[20px] px-16 pb-[100px]">
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-6 mt-16 mx-10">
+          <div className="pt-[20px] lg:w-[80.625vw] lg:px-0 lg:mx-auto px-16 pb-[100px]">
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-[24px] mt-16 mx-10">
               <div className="flex flex-col items-center justify-center">
-                <img src={newArrivals} alt="" className="w-full" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={newArrivals} alt="" className="w-full lg:h-[25.417vw]" />
+                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-medium tracking-wider">
                   NEW ARRIVALS
                 </h3>
               </div>
               <div className="flex flex-col items-center justify-center">
-                <img src={bestSellers} alt="" className="w-full" />
+                <img src={bestSellers} alt="" className="w-full lg:h-[25.417vw]" />
                 <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   BESTSELLERS
                 </h3>
               </div>
               <div className="flex flex-col items-center justify-center">
-                <img src={giftCards} alt="" className="w-full h-full bg-[#446184]" />
+                <img src={giftCards} alt="" className="w-full lg:h-[25.417vw] bg-[#446184]" />
                 <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   GIFT CARDS
                 </h3>
               </div>
               {parentCollections.map((col) => (
                 <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
-                  <img src={col.image.url} alt={col.title} className="w-full" />
+                  <img src={col.image.url} alt={col.title} className="w-full lg:h-[25.417vw]" />
                   <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                     {col.title}
                   </h3>
@@ -348,27 +348,27 @@ const Products = () => {
             </div>
       </div>
 
-      <section className="py-[70px]  my-12 lg:my-[240px] container">
+      <section className="pt-[70px] pb-[160px] my-12 lg:my-[240px] container">
         <Heading
-          text="The Registry Bestsellers"
+          text="the registry bestsellers"
           classes={
-            'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
+            'prata text-3xl lg:text-[2.5vw] font-normal text-center  max-[1024px]:m-0'
           }
           image={brandline}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw]'}
         />
             <ProductSlider />
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"
-            className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] text-[18px] leading-[18px] lg:w-[360px] lg:h-[78px] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
           />
         </div>
       </section>
 
-          <div className="py-[120px] px-12">
+          {/* <div className="py-[120px] px-12">
             <ExploreCategories collections={collections} />
-          </div>
+          </div> */}
         </>
       )}
 

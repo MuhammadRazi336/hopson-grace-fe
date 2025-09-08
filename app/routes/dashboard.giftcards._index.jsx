@@ -6,7 +6,7 @@ import GiftCardBg from '/assets/Images/giftCardBg.png';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
 import Heading from '~/components/Heading';
-import lineImghead from '/assets/Images/line.png';
+import lineImghead from '../assets/Images/heading-bottom-curve.png';
 import youll1 from '/assets/Images/youll-1.png';
 import youll2 from '/assets/Images/youll-2.png';
 import youll3 from '/assets/Images/youll-3.png';
@@ -188,14 +188,14 @@ const GiftCards = () => {
     <img
         src={GiftCardBg}
         alt=""
-        className="w-full h-[510px] lg:h-[800px] object-cover"
+        className="w-full h-[520px] lg:h-[520px] object-cover"
       />
     </section>
 
     {/* Gift Cards Grid Section */}
     {giftCards.length > 0 && (
-      <section className="container mx-auto py-12">        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12 px-6">
+      <section className="w-[81.25vw] mx-auto py-12">        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12">
           {giftCards.map((giftCard, index) => {
             const price = giftCard.variants?.edges?.[0]?.node?.priceV2;
             const image = giftCard.images?.edges?.[0]?.node?.url;
@@ -216,22 +216,22 @@ const GiftCards = () => {
       </section>
     )}
 
-    <div className="py-[120px] px-12">
+    <div className="py-[6.771vw] px-0">
           <ExploreCategories collections={collections} />
         </div>
 
-    <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+    <section className="bg-[#FAF9F6] pt-[5.26vw] pb-8 mb-[100px]">
         <Heading
           text="we think you'll love"
           classes={
-            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.083vw] lg:leading-[2.083vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw]'}
         />
 
         <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
+          <div className="lg:max-w-[81.25vw] max-w-[85%] mx-auto">
             <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
               <img src={nextitem} alt="" className="rotate-180 " />
               <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
@@ -271,7 +271,7 @@ const GiftCards = () => {
                   centeredSlides: true,
                 },
                 1600: {
-                  spaceBetween: 39,
+                  spaceBetween: 66,
                   centeredSlides: true,
                 },
               }}
@@ -279,35 +279,35 @@ const GiftCards = () => {
               {/* slides here */}
               <SwiperSlide>
                 <img src={youll1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5  uppercase lg:mt-[30px] lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll1} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
@@ -406,13 +406,13 @@ const GiftCard = ({id, image, title, price, registryId, onAddToRegistry}) => {
 
   return (
     <div className="pt-0 relative z-0">
-      <div className="relative group h-[460px]">
+      <div className="relative group h-[460px] lg:h-[31.313vw]">
         {/* Gift Card Image and Info */}
-        <div className="p-4 z-10 relative">
+        <div className="relative">
           <img
             src={image}
             alt={title}
-            className="w-full h-[300px] object-fill bg-[#446184]"
+            className="w-full h-[300px] lg:h-[18.75vw] object-contain bg-[#446184]"
           />
           <h3 className="text-[18px] font-semibold uppercase mt-3">
             {title}
@@ -423,20 +423,20 @@ const GiftCard = ({id, image, title, price, registryId, onAddToRegistry}) => {
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
             <img
               src={image}
               alt={title}
-              className="w-full h-[220px] mx-auto object-fill mb-2 bg-[#446184]"
+              className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-contain mb-[20px] bg-[#446184]"
             />
-            <h4 className="text-xs font-medium uppercase text-left mb-1">
+            <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
               GIFT CARD
             </h4>
-            <h3 className="text-sm font-bold uppercase text-left leading-snug">
+            <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
               {title}
             </h3>
-            <p className="text-sm mt-2 text-left">
+            <p className="text-[20px] lg:text-[1.25vw] leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
               {price ? `$${parseFloat(price.amount).toFixed(2)}` : 'Price not available'}
             </p>
           </div>
@@ -444,19 +444,19 @@ const GiftCard = ({id, image, title, price, registryId, onAddToRegistry}) => {
           <div className="flex flex-col w-full items-center text-xs">
             {/* Quantity Selector and Add to Registry Button in same line */}
             <div className="flex items-center justify-around w-full mb-4">
-              <p className='text-xs font-bold uppercase text-left mb-1'>QTY</p>
+              <p className='text-[18px] lg:text-[0.938vw] font-[500] uppercase text-left mb-1'>QTY</p>
               {/* Quantity Selector */}
               <div className="flex flex-col items-center">
                 <button 
                   onClick={incrementQuantity}
-                  className=" flex items-center justify-center bg-white transition-colors"
+                  className="flex items-center justify-center bg-white transition-colors"
                 >
-                  <img src="/assets/Images/arrowDown.png" className='w-3 h-3 rotate-180' alt="" />
+                  <img src="/assets/Images/arrowDown.png" className='w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-180' alt="" />
                 </button>
                 
                 <input
                   value={quantity}
-                  className="w-16 h-8 text-center border-none outline-none text-sm"
+                  className="w-16 lg:text-[1.458vw] lg:leading-[1.25vw] lg:h-[1.563vw] relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-sm"
                   readOnly
                 />
                 
@@ -464,14 +464,14 @@ const GiftCard = ({id, image, title, price, registryId, onAddToRegistry}) => {
                   onClick={decrementQuantity}
                   className="flex items-center justify-center bg-white transition-colors"
                 >
-                  <img src="/assets/Images/arrowDown.png" className='w-3 h-3' alt="" />
+                  <img src="/assets/Images/arrowDown.png" className='w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw]' alt="" />
                 </button>
               </div>
 
               {/* Add to Registry Button */}
               <button 
                 onClick={() => onAddToRegistry(quantity)}
-                className="bg-[#446184] text-white text-xs font-bold py-4 px-6"
+                className="bg-[#446184] text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[10.156vw] lg:h-[4.01vw]"
               >
                 ADD TO REGISTRY
               </button>
