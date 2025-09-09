@@ -225,7 +225,7 @@ const ProductCard = React.memo(
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute lg:h-[27.5vw] inset-0 z-40 bg-[#FAF9F6] px-[2.24vw] py-[2vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute lg:h-[27.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.24vw] py-[2vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
             <img
               src={firstImage}
