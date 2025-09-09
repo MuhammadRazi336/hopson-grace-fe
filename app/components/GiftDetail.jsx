@@ -34,8 +34,8 @@ const GiftDetail = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-12">
+    <div className="max-w-[1500px] mx-auto px-4 py-8">
+      <div className="flex flex-col lg:flex-row">
         {/* Left Section: Product Images */}
         <div className="lg:w-1/2">
           {/* Main Product Image */}
@@ -43,13 +43,13 @@ const GiftDetail = ({
             <img
               src={selectedImage?.node?.src || '/fallback-image.jpg'}
               alt={productTitle || 'Product image'}
-              className="w-full h-full object-contain"
+              className="w-[690px] h-[690px] object-contain"
             />
           </div>
 
           {/* Thumbnail Images */}
           {safeProductImages.length > 1 && (
-            <div className="flex gap-3">
+            <div className="flex w-[690px] gap-3">
               {safeProductImages.map((image, index) => (
                 <div
                   key={index}
@@ -72,7 +72,7 @@ const GiftDetail = ({
         </div>
 
         {/* Right Section: Product Information */}
-        <div className="lg:w-1/2 lg:pl-8">
+        <div className="lg:w-1/2">
           {/* Brand */}
           <div className="text-[22px] font-medium text-gray-600 mb-2">
             {productBrand}
@@ -137,13 +137,13 @@ const GiftDetail = ({
                 id="groupGift"
                 checked={isGroupGift}
                 onChange={() => setIsGroupGift(!isGroupGift)}
-                className="w-16 h-12 border-2 border-black appearance-none rounded-full checked:bg-[#446184] checked:after:content-['✓'] checked:after:text-white checked:after:text-sm checked:after:flex checked:after:items-center checked:after:justify-center checked:after:w-full checked:after:h-full"
+                className="w-[45px] h-[45px] border-2 border-black appearance-none rounded-full checked:bg-[#446184] checked:after:content-['✓'] checked:after:text-white checked:after:text-sm checked:after:flex checked:after:items-center checked:after:justify-center checked:after:w-full checked:after:h-full"
               />
               <label
                 htmlFor="groupGift"
                 className="text-[12px] font-medium text-black cursor-pointer text-center"
               >
-                TAG AS GROUP GIFT
+                TAG AS <br /> GROUP GIFT
               </label>
             </div>
           </div>
