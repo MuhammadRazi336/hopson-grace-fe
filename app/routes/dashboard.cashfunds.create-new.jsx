@@ -128,10 +128,10 @@ function CreateNewCashFund() {
 
   return (
     <>
-    <div className="xl:mx-20 py-[100px] mx-6">
-        <div className="container mx-auto bg-[#446184]  py-16">
-          <h2 className="mt-0 text-white ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-            <span className="prata uppercase">CREATE NEW</span> cash or{' '}
+    <div className="py-[110px] px-[120px]">
+        <div className="p-[114px] bg-[#446184]">
+          <h2 className="mt-0 text-white ivyora lg:text-3xl xl:text-[40px] 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+            <span className="prata uppercase">NEW CASH</span> or{' '}
             <span className="prata uppercase">TRAVEL</span> fund
           </h2>
           <img
@@ -140,26 +140,34 @@ function CreateNewCashFund() {
             className="max-w-[630px] mt-5 h-auto mx-auto"
           />
 
-          <p className="max-w-2xl mb-10 mx-auto text-center text-white mt-5 font-normal leading-relaxed">
+          <p className="max-w-4xl mb-10 text-[26px] mx-auto text-center text-white mt-5 font-normal leading-relaxed">
             Create your own custom cash fund for anything you dream of - from honeymoon adventures to home improvements. 
             Design it exactly how you want it and share it with your loved ones.
           </p>
 
           <div className="container mx-auto">
             <fetcher.Form method="post" encType="multipart/form-data" onSubmit={handleFormSubmit}>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2">
                 {/* Photo Section */}
                 <div className="space-y-4">
-                  <h2 className="text-white text-sm font-medium tracking-wide">
+                  <h2 className="text-white text-[18px] font-bold tracking-wide">
                     PHOTO
                   </h2>
-                  <div className="bg-[#F5F2ED]  aspect-square relative flex items-center justify-center w-full h-[650px]">
+                  <div className="bg-[#F5F2ED] aspect-square relative flex items-center justify-center w-[670px] h-[670px]">
                     <div className="text-center">
-                      <img
-                        src={photoPreview || "/assets/Images/registrylogoSteps.png"}
+                      {photoPreview ? (
+                        <img
+                          src={photoPreview}
+                          alt="Cash Fund"
+                          className="w-[670px] h-[670px] object-cover"
+                        />
+                      ) : (
+                        <img
+                          src={"/assets/Images/registrylogoSteps.png"}
                         alt="Cash Fund"
-                        className="w-full h-full object-cover"
+                        className="w-[300px] object-cover"
                       />
+                      )}
                     </div>
                     <input
                       type="file"
@@ -177,7 +185,7 @@ function CreateNewCashFund() {
                       <img
                         src="/assets/Images/edit-icon.png"
                         alt="edit"
-                        className="absolute -top-6 size-20 -right-4 "
+                        className="absolute -top-6 size-[114px] -right-4 "
                       />
                     </button>
                   </div>
@@ -185,17 +193,17 @@ function CreateNewCashFund() {
 
                 {/* Details Section */}
                 <div className="space-y-6 ">
-                  <h2 className="text-white text-sm font-medium tracking-wide">
+                  <h2 className="text-white text-[18px] font-bold tracking-wide">
                     DETAILS
                   </h2>
 
-                  <div className=" rounded-lg p-4">
+                  <div className="rounded-lg">
                     <div className="w-full">
                       <Input
                         id="cashFundName"
                         name="name"
                         value={cashFundName}
-                        className="bg-white w-full p-4"
+                        className="bg-white w-full p-4 h-[82px]"
                         placeholder="e.g., HONEYMOON FUND, HOME RENOVATION"
                         onChange={(e) => setCashFundName(e.target.value)}
                       />
@@ -203,7 +211,7 @@ function CreateNewCashFund() {
 
                     {/* Payment Type Toggle */}
                     <div className="flex mt-12 gap-4 mb-10 items-center justify-center">
-                      <span className="text-white text-center">
+                      <span className="text-white text-[18px] font-bold tracking-wide text-center">
                         ANY <br /> AMOUNT
                       </span>
 
@@ -214,9 +222,9 @@ function CreateNewCashFund() {
                           setAllowFixedAmount(false);
                           setTotalGoal(''); // Clear total goal when any amount is selected
                         }}
-                        className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                        className={`flex items-center gap-2 h-[80px] w-[80px] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
                           allowAnyAmount
-                            ? 'bg-slate-600 text-white'
+                            ? 'bg-[#223247] text-white'
                             : 'bg-gray-200 text-white  hover:bg-gray-300'
                         }`}
                       >
@@ -224,13 +232,13 @@ function CreateNewCashFund() {
                           <img
                             src="/assets/Images/check-icon.png"
                             alt="check"
-                            className="w-4 h-4"
+                            className="w-[36px] h-[36px] mx-auto"
                           />
                         ) : (
-                          <span className="w-4 h-4">&nbsp;</span>
+                          <span className="w-[36px] h-[36px]">&nbsp;</span>
                         )}
                       </button>
-                      <span className="text-white text-center">
+                      <span className="text-white text-[18px] font-bold tracking-wide text-center">
                         FIXED <br /> AMOUNT
                       </span>
 
@@ -240,9 +248,9 @@ function CreateNewCashFund() {
                           setAllowAnyAmount(false);
                           setAllowFixedAmount(true);
                         }}
-                        className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                        className={`flex items-center gap-2 h-[80px] w-[80px] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
                           allowFixedAmount
-                            ? 'bg-slate-600 text-white'
+                            ? 'bg-[#223247] text-white'
                             : 'bg-gray-200 text-white hover:bg-gray-300'
                         }`}
                       >
@@ -250,10 +258,10 @@ function CreateNewCashFund() {
                           <img
                             src="/assets/Images/check-icon.png"
                             alt="check"
-                            className="w-4 h-4"
+                            className="w-[36px] h-[36px] mx-auto"
                           />
                         ) : (
-                          <span className="w-4 h-4">&nbsp;</span>
+                          <span className="w-[36px] h-[36px]">&nbsp;</span>
                         )}
                       </button>
                     </div>
@@ -265,7 +273,7 @@ function CreateNewCashFund() {
                           id="totalGoal"
                           name="amount"
                           value={totalGoal}
-                          className={`bg-white w-full p-4 ${allowAnyAmount ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className={`bg-white w-full p-4 h-[82px] ${allowAnyAmount ? 'opacity-50 cursor-not-allowed' : ''}`}
                           placeholder="Total Goal*"
                           onChange={(e) => setTotalGoal(e.target.value)}
                           disabled={allowAnyAmount}
@@ -274,16 +282,16 @@ function CreateNewCashFund() {
 
                       {/* Hide from Guests Toggle */}
                       <div className=" flex items-center justify-center gap-5 w-5/12 pl-2">
-                        <span className="text-white text-sm text-center">
+                        <span className="text-white text-[18px] font-bold text-center">
                           HIDE <br /> FROM <br /> GUESTS
                         </span>
 
                         <button
                           type="button"
                           onClick={() => setHideFromGuests(!hideFromGuests)}
-                          className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-colors ${
+                          className={`flex items-center gap-2 h-[80px] w-[80px] px-4 py-4 rounded-full text-xs font-medium tracking-colors ${
                             hideFromGuests
-                              ? 'bg-slate-600 text-white'
+                              ? 'bg-[#223247] text-white'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                           }`}
                         >
@@ -291,10 +299,10 @@ function CreateNewCashFund() {
                             <img
                               src="/assets/Images/check-icon.png"
                               alt="check"
-                              className="w-4 h-4"
+                              className="w-[36px] h-[36px] mx-auto"
                             />
                           ) : (
-                            <span className="w-4 h-4">&nbsp;</span>
+                            <span className="w-[36px] h-[36px]">&nbsp;</span>
                           )}
                         </button>
                       </div>
@@ -302,24 +310,24 @@ function CreateNewCashFund() {
 
                     {/* Terms & Conditions */}
                     <div className="space-y-3 mt-10">
-                      <h4 className="text-white font-medium text-md tracking-wide">
+                      <h4 className="text-white font-bold text-[18px] tracking-wide">
                         TERMS & CONDITIONS
                       </h4>
-                      <p className="text-white text-md prata tracking-wide italic font-normal ">
+                      <p className="text-white text-[18px] prata tracking-wide italic font-normal ">
                         By creating this cash fund, you agree to our terms and conditions. 
                         This fund will be added to your registry and shared with your guests.
                       </p>
                       <div className="flex items-center space-x-2 mt-8">
-                        <span className="text-white text-sm text-center">
+                        <span className="text-white text-[14px] font-bold text-center">
                           AGREE
                         </span>
 
                         <button
                           type="button"
                           onClick={() => setAgreedToTerms(!agreedToTerms)}
-                          className={`flex items-center gap-2 px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                          className={`flex items-center gap-2 h-[32px] w-[32px] rounded-full text-xs font-medium tracking-wide transition-colors ${
                             agreedToTerms
-                              ? 'bg-slate-600 text-white'
+                              ? 'bg-[#223247] text-white'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                           }`}
                         >
@@ -327,10 +335,10 @@ function CreateNewCashFund() {
                             <img
                               src="/assets/Images/check-icon.png"
                               alt="check"
-                              className="w-4 h-4"
+                              className="w-4 h-4 mx-auto"
                             />
                           ) : (
-                            <span className="w-4 h-4">&nbsp;</span>
+                            <span className="w-4 h-4 mx-auto">&nbsp;</span>
                           )}
                         </button>
                       </div>
@@ -345,11 +353,18 @@ function CreateNewCashFund() {
                   placeholder="Write a short note to friends and family — explaining what this fund is for and why it's important to you (optional)."
                   name="note"
                   value={noteToFamily}
-                  onChange={(e) => setNoteToFamily(e.target.value)}
-                  className="w-full h-32 p-4 bg-white resize-none"
+                  onChange={(e) => {
+                    if (e.target.value.length <= 500) {
+                      setNoteToFamily(e.target.value);
+                    }
+                  }}
+                  maxLength={500}
+                  className="w-full h-[270px] p-[45px] text-[24px] bg-white resize-none border-none outline-none"
                 />
-                <p className="text-gray-400 text-xs">
-                  300-500 characters remaining
+                <p className={`ivyora text-[18px] italic tracking-wide font-extralight ${
+                  (500 - noteToFamily.length) < 50 ? 'text-red-400' : 'text-[#FFFCFC]'
+                }`}>
+                  {500 - noteToFamily.length}/500 characters remaining
                 </p>
               </div>
 
@@ -361,11 +376,11 @@ function CreateNewCashFund() {
               {/* Create Cash Fund Button */}
               <div className="mt-8 flex justify-end">
                 <button
-                  className="bg-white hover:bg-gray-400 text-gray-800 font-medium tracking-wide px-8 py-4 border-3 border-black"
+                  className="bg-white font-bold text-[18px] hover:bg-gray-100 text-black tracking-wide w-[360px] h-[77px] border-3 border-black"
                   disabled={!agreedToTerms || fetcher.state === 'submitting'}
                   type="submit"
                 >
-                  {fetcher.state === 'submitting' ? 'Creating Cash Fund...' : 'CREATE CASH FUND'}
+                  {fetcher.state === 'submitting' ? 'Adding Cash Fund...' : 'ADD TO REGISTRY'}
                 </button>
               </div>
             </fetcher.Form>
