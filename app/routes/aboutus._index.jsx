@@ -18,22 +18,22 @@ const AboutUs = () => {
       <img
         src={AboutUsBg}
         alt=""
-        className="w-full h-[510px] lg:h-[800px] object-cover"
+        className="w-full h-[520px] lg:h-[520px] object-cover"
       />
 
       <div className="container mx-auto py-16">
         <Heading
           text="about us"
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <h2 className="text-center font-semibold text-2xl lg:text-4xl py-16">
+        <h2 className="text-center font-[500] text-2xl lg:text-[1.146vw] lg:leading-[1.875vw] pt-[3.75vw] pb-[3.333vw]">
           ELEVATED, EFFORTLESS, YOURS.
         </h2>
-        <p className="text-center text-2xl lg:text-3xl font-normal">
+        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.875vw] font-normal">
           After years of working with engaged couples at our sister store,
           Hopson Grace, we noticed a shift: couples still wanted beautiful,
           lasting things—but they wanted to build their registries online
@@ -44,7 +44,7 @@ const AboutUs = () => {
           </span>{' '}
         </p>
         <br />
-        <p className="text-center text-2xl lg:text-3xl font-normal py-4">
+        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.875vw] font-normal py-4">
           Where thoughtful design meets exceptional quality. Where registries
           feel less like checklists and more like reflections of who you are—and
           the life you're building together. We’ve curated timeless pieces,
@@ -54,7 +54,7 @@ const AboutUs = () => {
           lean on our team for support and inspiration.
         </p>
         <br />
-        <p className="text-center text-2xl lg:text-3xl font-normal">
+        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.875vw] font-normal">
           <span className="font-[500]">Our philosophy?</span> Fewer, better
           things. A registry that’s elevated and personal. And a wedding gift
           experience that’s as thoughtful as the day itself.
@@ -84,7 +84,7 @@ const AboutUs = () => {
           <NavLink to="/register">
             <Button
               text="Let's Go"
-              className="text-white bg-[#446184] py-[22px] lg:py-[30px] lg:w-[320px] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
+              className="text-white font-[500] tracking-[0.8px] text-[18px] leading-[18px] bg-[#446184] py-0 lg:w-[332px] lg:h-[78px] mx-auto w-[280px] rounded-none button-cs"
             />
           </NavLink>
         </div>
