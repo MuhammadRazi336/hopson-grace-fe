@@ -39,7 +39,7 @@ const GiftDetail = ({
         {/* Left Section: Product Images */}
         <div className="lg:w-1/2">
           {/* Main Product Image */}
-          <div className="w-full aspect-square bg-gray-50 rounded-lg overflow-hidden mb-6">
+          <div className="w-[690px] h-[690px] aspect-square bg-gray-50 rounded-lg overflow-hidden mb-6">
             <img
               src={selectedImage?.node?.src || '/fallback-image.jpg'}
               alt={productTitle || 'Product image'}
@@ -53,10 +53,10 @@ const GiftDetail = ({
               {safeProductImages.map((image, index) => (
                 <div
                   key={index}
-                  className={`cursor-pointer w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`cursor-pointer w-[125px] h-[125px] overflow-hidden border-b-2 transition-all ${
                     selectedImage?.node?.src === image?.node?.src
-                      ? 'border-gray-800'
-                      : 'border-gray-200 hover:border-gray-400'
+                      ? 'border-b-gray-800'
+                      : 'border-b-gray-200 hover:border-b-gray-400'
                   }`}
                   onClick={() => setSelectedImage(image)}
                 >
@@ -74,24 +74,24 @@ const GiftDetail = ({
         {/* Right Section: Product Information */}
         <div className="lg:w-1/2 lg:pl-8">
           {/* Brand */}
-          <div className="text-sm font-medium text-gray-600 mb-2">
+          <div className="text-[22px] font-medium text-gray-600 mb-2">
             {productBrand}
           </div>
 
           {/* Product Title */}
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 className="prata text-3xl lg:text-[44px] font-bold text-gray-900 mb-4 leading-tight">
             {productTitle}
           </h1>
 
           {/* Price */}
-          <div className="text-2xl font-semibold text-gray-900 mb-6">
+          <div className="text-[28px] font-semibold text-gray-900 mb-6">
             <Money data={productPrice} />
           </div>
 
           {/* Quantity Selector */}
 
-          <div className="flex items-center w-full mb-4">
-            <p className="text-xs font-bold uppercase text-left mb-1">QTY</p>
+          <div className="flex items-center w-full mb-4 gap-6">
+            <p className="text-[22px] font-bold uppercase text-left mb-1">QTY</p>
             {/* Quantity Selector */}
             <div className="flex flex-col items-center">
               <button
@@ -100,14 +100,14 @@ const GiftDetail = ({
               >
                 <img
                   src="/assets/Images/arrowDown.png"
-                  className="w-3 h-3 rotate-180"
+                  className="w-[20px] h-[20px] rotate-180"
                   alt=""
                 />
               </button>
 
               <input
                 value={quantity}
-                className="w-16 h-8 text-center border-none outline-none text-sm"
+                className="w-16 h-16 text-center border-none outline-none text-[40px]"
                 readOnly
               />
 
@@ -117,7 +117,7 @@ const GiftDetail = ({
               >
                 <img
                   src="/assets/Images/arrowDown.png"
-                  className="w-3 h-3"
+                  className="w-[20px] h-[20px]"
                   alt=""
                 />
               </button>
@@ -126,7 +126,7 @@ const GiftDetail = ({
             {/* Add to Registry Button */}
             <button
               onClick={handleRegistryPress}
-              className="bg-[#446184] text-white text-xs font-bold py-4 px-6"
+              className="bg-[#446184] text-white text-[18px] font-bold w-[320px] h-[80px] px-6"
             >
               ADD TO REGISTRY
             </button>
@@ -137,20 +137,20 @@ const GiftDetail = ({
                 id="groupGift"
                 checked={isGroupGift}
                 onChange={() => setIsGroupGift(!isGroupGift)}
-                className="w-7 h-7 border-2 border-black appearance-none rounded-full checked:bg-[#446184] checked:after:content-['✓'] checked:after:text-white checked:after:text-sm checked:after:flex checked:after:items-center checked:after:justify-center checked:after:w-full checked:after:h-full"
+                className="w-16 h-12 border-2 border-black appearance-none rounded-full checked:bg-[#446184] checked:after:content-['✓'] checked:after:text-white checked:after:text-sm checked:after:flex checked:after:items-center checked:after:justify-center checked:after:w-full checked:after:h-full"
               />
               <label
                 htmlFor="groupGift"
-                className="text-sm font-medium text-black cursor-pointer"
+                className="text-[12px] font-medium text-black cursor-pointer text-center"
               >
-                TAG AS GROUP GIFT ?
+                TAG AS GROUP GIFT
               </label>
             </div>
           </div>
 
           {/* Product Description */}
           <div className="prose prose-gray max-w-none">
-            <div className="text-gray-700 leading-relaxed space-y-4">
+            <div className="text-gray-700 text-[22px] leading-relaxed py-3">
               {productDescription ? (
                 <p>{productDescription}</p>
               ) : (

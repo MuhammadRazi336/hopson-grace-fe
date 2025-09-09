@@ -231,11 +231,11 @@ const GiftDetailHandle = () => {
           </div> */}
         </div>
 
-        <section className="bg-[#446184] text-white py-12 px-6">
+        <section className="mt-[180px] bg-[#446184] text-white px-6">
           <div className="container mx-auto flex flex-col lg:flex-row gap-10 items-center">
             {/* Left Text Section */}
             <div className="lg:w-4/12 w-full flex items-center flex-col gap-2">
-              <p className="text-[22px] tracking-wider uppercase   pb-1">
+              <p className="text-[22px] tracking-wider uppercase pb-1">
                 Meet the Maker
               </p>
               <img
@@ -243,20 +243,20 @@ const GiftDetailHandle = () => {
                 alt=""
                 className="w-auto -mt-3"
               />
-              <h5 className="text-[40px] prata  mb-1">hopson grace</h5>
-              <p className="text-xl uppercase mb-4">Toronto</p>
-              <p className="text-xl leading-[1.7] text-center mb-6">
+              <h5 className="text-[40px] prata mb-1">hopson grace</h5>
+              <p className="text-[14px] uppercase mb-4">Toronto</p>
+              <p className="text-[18px] leading-[1.7] text-center mb-6">
                 Lorem ipsum dolor sit amet. Ab nesciunt officia qui labore unde
                 33 veniam reprehenderit ut impedit perspiciatis in magnam
                 accusantium est ratione dignissimos qui dolor internos. Sit
                 laboriosam rerum est minima provident eos doloremque omnis.
               </p>
-              <button className=" text-white border-b px-4 pt-2 pb-1 text-sm font-semibold uppercase tracking-wide">
+              <button className=" text-white border-b px-4 pt-2 pb-1 text-[14px] font-semibold uppercase tracking-wide">
                 View Full Profile
               </button>
             </div>
             <section className="lg:w-8/12 w-full  container ">
-              <div className="relative items-start mt-[105px] mb-10 max-[1024px]:my-10 mr-8">
+              <div className="relative items-start mt-[100px] mb-[80px] max-[1024px]:my-10 mr-8">
                 <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
                   <Swiper
                     spaceBetween={39}
@@ -300,59 +300,59 @@ const GiftDetailHandle = () => {
                       <img
                         src={product1}
                         alt="Marble Butter Keeper"
-                        className="w-full"
+                        className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         CLASSIC TUMBLER, SET OF 6
                       </h3>
-                      <p className="lg:text-2xl text-sm">$80</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$80</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
                         src={product2}
                         alt="Belle-V Icecream Scoop"
-                        className="w-full"
+                        className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         FARMHOUSE BOWL 11"
                       </h3>
-                      <p className="lg:text-2xl text-sm">$95</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$95</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
                         src={product3}
                         alt="Staub Cast Iron Q4"
-                        className="w-full"
+                        className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         RAW HONEY
                       </h3>
-                      <p className="lg:text-2xl text-sm">$430</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$430</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
                         src={product3}
                         alt="Staub Cast Iron Q4"
-                        className="w-full"
+                        className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         RAW HONEY
                       </h3>
-                      <p className="lg:text-2xl text-sm">$430</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$430</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
                         src={product2}
                         alt="Belle-V Icecream Scoop"
-                        className="w-full"
+                        className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         FARMHOUSE BOWL 11"
                       </h3>
-                      <p className="lg:text-2xl text-sm">$95</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$95</p>
                     </SwiperSlide>
                   </Swiper>
-                  <div className="swiper-button-next-prod absolute top-[45%] z-10 -right-16  cursor-pointer uppercase flex items-center justify-center text-white">
+                  <div className="swiper-button-next-prod absolute top-[40%] z-10 -right-16  cursor-pointer uppercase flex items-center justify-center text-white">
                     <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
                       more
                     </span>
@@ -364,26 +364,26 @@ const GiftDetailHandle = () => {
           </div>
         </section>
 
-        <div className="py-[120px] px-12">
+        <div className=" pt-[180px] px-12">
           <ExploreCategories collections={collections} />
         </div>
 
-        <section className="py-[70px]  my-12 lg:my-[240px] container">
+        <section className="pt-[180px] pb-[180px] my-12 lg:my-[240px] container">
           <Heading
             text="you might also like"
             classes={
-              'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
+              'prata text-3xl lg:text-[44px] font-normal text-center  max-[1024px]:m-0'
             }
             image={brandline}
             imageClasses={'max-[1024px]:max-w-[330px]'}
           />
           <ProductSlider />
-          <div className="text-center">
+          {/* <div className="text-center">
             <ButtonComponent
               text="browse bestsellers"
               className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
             />
-          </div>
+          </div> */}
         </section>
       <Footer />
     </>
