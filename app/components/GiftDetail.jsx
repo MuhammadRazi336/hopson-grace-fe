@@ -90,7 +90,7 @@ const GiftDetail = ({
 
           {/* Quantity Selector */}
 
-          <div className="flex items-center w-full mb-4 gap-6">
+          <div className="flex items-center w-full my-10 gap-6">
             <p className="text-[22px] font-bold uppercase text-left mb-1">QTY</p>
             {/* Quantity Selector */}
             <div className="flex flex-col items-center">
