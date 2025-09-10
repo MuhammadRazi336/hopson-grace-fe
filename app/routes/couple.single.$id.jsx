@@ -5,6 +5,8 @@ import {useState, useRef, useEffect} from 'react';
 import {CoupleProfileViewHeader} from './couple.test._index';
 import SideCart from '~/components/SideCart';
 import {CoupleFooter} from '~/components/CoupleFooter';
+import Input from '~/components/Input';
+import Heading from '~/components/Heading';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -313,6 +315,7 @@ export async function action({request, context}) {
       quantity: 1,
       originalId: product.id,
       isCashFund: productTypeId === 2 ? true : false,
+      isGroupPayment: product.isGroupPayment || false,
     };
 
     return json({
@@ -523,7 +526,8 @@ export default function CoupleProfile() {
               amount: Number(registryProduct.amount) || 0, // Keep original amount for reference
               registryProductId: registryProduct.id, // Keep registry product ID for reference
               requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
-            };
+              isGroupPayment: registryProduct.isGroupPayment || false,
+             };
           },
         );
         console.log('Transformed Items:', transformedItems);
@@ -1640,6 +1644,7 @@ export default function CoupleProfile() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
             {filteredData
               .map((product, index) => {
+                console.log('Product:', product);
                 // Safety check: Ensure product has required properties
                 if (!product || !product.id) {
                   console.warn('Skipping invalid product:', product);
@@ -1983,58 +1988,82 @@ export default function CoupleProfile() {
 
       {showEmailModal && hasProducts && registryId && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <form
-            className="bg-white p-6 rounded shadow-lg w-full max-w-sm relative"
-            onSubmit={handleEmailSubmit}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close (cross) button */}
-            <button
-              type="button"
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold focus:outline-none"
-              aria-label="Close"
-              onClick={() => setShowEmailModal(false)}
-            >
-              &times;
-            </button>
-            <h2 className="text-lg font-bold mb-4">
-              Enter your email to continue
-            </h2>
-            <input
-              ref={emailInputRef}
-              type="email"
-              className={`border p-2 w-full mb-2 ${
-                guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)
-                  ? 'border-red-500'
-                  : 'border-gray-300'
-              }`}
-              placeholder="Guest Email"
-              value={guestEmail}
-              onChange={(e) => setGuestEmail(e.target.value)}
-              onBlur={(e) => {
-                const email = e.target.value.trim();
-                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                  setAlertMessage('Please enter a valid email address');
-                  setAlertType('error');
-                  setShowAlert(true);
-                  setTimeout(() => setShowAlert(false), 3000);
-                }
-              }}
-              required
-            />
-            {guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail) && (
-              <p className="text-red-500 text-sm mb-4">
-                Please enter a valid email address (e.g., user@example.com)
-              </p>
-            )}
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full"
-              disabled={isApiLoading}
-            >
-              {isApiLoading ? 'Processing...' : 'Continue'}
-            </button>
-          </form>
+          <div className="w-full max-w-4xl mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex py-32 max-[768px]:py-10 justify-center max-[768px]:flex-col max-[768px]:items-center max-[768px]:px-4 container">
+              <div className="bg-steel-blue text-white py-[110px] px-[90px] lg:w-[52.083vw] pb-28 pt-[100px] relative max-[768px]:max-w-[100%] max-w-[1000px] max-[1024px]:p-6 max-[768px]:pb-20 max-[768px]:pt-14 max-[768px]:w-full text-center">
+                <h3 className="text-5xl font-[400] lg:text-[2.292vw] lg:leading-[3.125vw] prata text-center max-[768px]:text-2xl afterimg">
+                  let's get to know each other.
+                </h3>
+                <div className="mb-10">
+                  <div className="flex h-full items-center">
+                    <form
+                      className="space-y-6 max-w-full w-full mx-auto"
+                      onSubmit={handleEmailSubmit}
+                    >
+                      <div className="text-center mt-6">
+                        <Heading
+                          text="ENTER YOUR EMAIL"
+                          classes="font-normal text-[22px] m-0"
+                        />
+                      </div>
+                      <div className="max-w-md mx-auto">
+                        <Input
+                          ref={emailInputRef}
+                          value={guestEmail}
+                          onChange={(e) => setGuestEmail(e.target.value)}
+                          placeholder="Email Address *"
+                          name="email"
+                          type="email"
+                          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                          classNameLabel="text-center"
+                          error={
+                            guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)
+                              ? 'Please enter a valid email address'
+                              : undefined
+                          }
+                          onBlur={(e) => {
+                            const email = e.target.value.trim();
+                            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                              setAlertMessage('Please enter a valid email address');
+                              setAlertType('error');
+                              setShowAlert(true);
+                              setTimeout(() => setShowAlert(false), 3000);
+                            }
+                          }}
+                          required
+                        />
+                      </div>
+
+                      {/* Back and Next buttons */}
+                      <div className="flex justify-between mt-8 absolute bottom-6 left-6 right-6 steps-btns-hover">
+                        <button
+                          type="button"
+                          onClick={() => setShowEmailModal(false)}
+                          className="flex items-center uppercase font-bold gap-2 z-10"
+                        >
+                          <img src="" alt="" className="rotate-180" />
+                          
+                        </button>
+                        <button
+                          type="submit"
+                          className="flex items-center uppercase font-bold gap-2 z-10"
+                          disabled={isApiLoading}
+                        >
+                          {isApiLoading ? 'Processing...' : 'Continue'}
+                          <img src="/assets/Images/arrow.png" alt="" />
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+                {/* <div className="step absolute bottom-6 max-[768px]:bottom-2.5 right-0 left-0 text-center flex items-center gap-2 justify-center">
+                  <span className="text-6xl max-[768px]:text-4xl">1</span>
+                  <span className="text-3xl max-[768px]:text-lg font-normal">/</span>
+                  <span className="text-3xl max-[768px]:text-lg font-normal">1</span>
+                </div> */}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

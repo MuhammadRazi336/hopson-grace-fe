@@ -7,7 +7,9 @@ import arrowImg from '/assets/Images/arrow.png';
 
 const NavBarLinks = (mobileClasses) => {
   const [collections, setCollections] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [brandsLoading, setBrandsLoading] = useState(true);
 
   // Fetch collections on component mount
   useEffect(() => {
@@ -41,6 +43,38 @@ const NavBarLinks = (mobileClasses) => {
     fetchCollections();
   }, []);
 
+  // Fetch brands on component mount
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        // Make the request to our brands API endpoint
+        const response = await fetch('/api/navigation-brands', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Navigation brands data:', data);
+          setBrands(data.brands || []);
+        } else {
+          console.error('Failed to fetch brands');
+          setBrands([]);
+        }
+      } catch (error) {
+        console.error('Error fetching brands:', error);
+        setBrands([]);
+      } finally {
+        setBrandsLoading(false);
+      }
+    };
+
+    fetchBrands();
+  }, []);
+
   return (
     <div className={`navbar container-menu ${mobileClasses}`}>
       {/* Navigation Menu */}
@@ -61,64 +95,32 @@ const NavBarLinks = (mobileClasses) => {
                     TOP TRENDING BRANDS
                   </h4>
                   <ul className="">
-                    <li>
-                      <NavLink
-                        to="/our-brands/ginori-1753"
-                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
-                      >
-                        Ginori 1753
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/our-brands/mud-australia"
-                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
-                      >
-                        Mud Australia
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/our-brands/richard-brendan"
-                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
-                      >
-                        Richard Brendan
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/our-brands/zalto"
-                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
-                      >
-                        Zalto
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/our-brands/coluna"
-                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
-                      >
-                        Coluna
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/our-brands/pom-bedding"
-                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
-                      >
-                        Pom Bedding
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink
-                        to="/our-brands/a-table"
-                        className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
-                      >
-                        A Table
-                      </NavLink>
-                    </li>
+                    {brandsLoading ? (
+                      <li className="block mb-[26px] text-gray-500">Loading brands...</li>
+                    ) : brands.length > 0 ? (
+                      brands.slice(0, 7).map((brand) => (
+                        <li key={brand.id}>
+                          <NavLink
+                            to={`/brand/${brand.handle}`}
+                            className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
+                          >
+                            {brand.title}
+                          </NavLink>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="block mb-[26px] text-gray-500">No brands available</li>
+                    )}
                   </ul>
-                  <h4 className="text-lg font-semibold">BRANDS A-Z</h4>
+                  <div className="flex items-center gap-2 mt-4">
+                    <NavLink
+                      to="/our-brands"
+                      className="text-black font-semibold underline hover:bg-gray-200 flex items-center gap-2"
+                    >
+                      VIEW ALL BRANDS
+                      <img src={arrowImg} className='text-black brightness-0' alt="" />
+                    </NavLink>
+                  </div>
                 </div>
                 <div className="relative">
                   <img src={brandImg} alt="Our brands" />
@@ -165,7 +167,7 @@ const NavBarLinks = (mobileClasses) => {
                       collections.map((collection) => (
                         <li key={collection.id}>
                           <NavLink
-                            to={`/collections/${collection.handle}`}
+                            to={`/products/${collection.handle}`}
                             className="block mb-[26px] text-black hover:bg-gray-200"
                           >
                             {collection.title.toUpperCase()}

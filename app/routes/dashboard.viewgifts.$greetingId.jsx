@@ -179,7 +179,8 @@ const ViewGifts = () => {
                           </div>
                           <div className="flex-1 text-center">
                             <div className="text-sm text-gray-600 mt-1">
-                              CONTRIBUTION AMOUNT
+                              {item.productTypeId === "1" ? 'QTY: ' : 'CONTRIBUTION AMOUNT'}
+                              {item.productTypeId === "1" && (item.quantity || 1)}
                             </div>
                           </div>
                           <div className="text-right min-w-[120px]">

@@ -1,5 +1,5 @@
 import {Form, Link, redirect, useActionData, useLoaderData, useSubmit} from '@remix-run/react';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import ButtonComponent from '~/components/Button';
 import { Footer } from '~/components/Footer';
 import Input from '~/components/Input';
@@ -18,7 +18,7 @@ export async function action({request, context}) {
     const response = await context.ClientPost(payload, `greetings`, context);
 
     if (response?.code === 200) {
-      return redirect('/sendthanks/toguest');
+      return {success: true, message: 'Thank you email sent successfully!'};
     } else {
       return {error: response?.message || 'Failed to send message'};
     }
@@ -33,7 +33,39 @@ const ThankYou = () => {
   const submit = useSubmit();
   const [showPreview, setShowPreview] = useState(false);
   const [message, setMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success');
   const maxLength = 500;
+
+  // Handle action data to show alerts
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.success === true) {
+        setAlertMessage(actionData.message || 'Thank you email sent successfully!');
+        setAlertType('success');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 5000);
+        // Reset form after successful send
+        setFormData({
+          to: '',
+          subject: `Thank's from ${user?.user?.firstName} & ${user?.user?.fianceFirstName}`,
+          message: 'Thank you for your generosity and for celebrating this milestone moment with us. It means so much!',
+        });
+        setShowPreview(false);
+      } else if (actionData.error) {
+        setAlertMessage(actionData.error);
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 5000);
+      } else if (actionData.success === false) {
+        setAlertMessage('Failed to send email. Please try again.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 5000);
+      }
+    }
+  }, [actionData, user]);
 
   const handlePreview = (e) => {
     e.preventDefault();
@@ -65,6 +97,67 @@ const ThankYou = () => {
   return (
     <>
     <div className="pt-[80px]">
+      {/* Alert Component */}
+      {showAlert && (
+        <div
+          className={`fixed top-4 right-4 ${
+            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+        >
+          <div className="flex items-center">
+            {alertType === 'success' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+            {alertType === 'error' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            )}
+            <span>{alertMessage}</span>
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 5s ease-in-out;
+        }
+      `}</style>
     <div className="mx-20 py-[80px]">
     <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
           send your <span className="prata uppercase">Thank you</span> here

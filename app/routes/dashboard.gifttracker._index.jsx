@@ -68,12 +68,12 @@ const GiftTracker = () => {
               <>
                 {/* Header */}
                 <div className="grid grid-cols-6 bg-[#F5F2ED] px-4 pt-6 pb-4 text-xs font-semibold uppercase text-gray-600">
-                  <div>Order #</div>
-                  <div>Purchased By</div>
-                  <div>Date</div>
-                  <div>Purchase Amount</div>
-                  <div>Gift / Message</div>
-                  <div>Thank Yous</div>
+                  <div className='text-center'>Order #</div>
+                  <div className='text-center'>Purchased By</div>
+                  <div className='text-center'>Date</div>
+                  <div className='text-center'>Purchase Amount</div>
+                  <div className='text-center'>Gift / Message</div>
+                  <div className='text-center'>Thank Yous</div>
                 </div>
 
                 {/* Rows */}
@@ -82,24 +82,24 @@ const GiftTracker = () => {
                     key={idx}
                     className="grid grid-cols-6 items-center  bg-white px-4 py-6 text-sm"
                   >
-                    <div>{item.checkoutNumber}</div>
-                    <div>{item.name}</div>
-                    <div>{new Date(item.purchaseDate).toLocaleDateString('en-US', {
+                    <div className='text-center'>{item.checkoutNumber}</div>
+                    <div className='text-center'>{item.name}</div>
+                    <div className='text-center'>{new Date(item.purchaseDate).toLocaleDateString('en-US', {
                       month: 'long',
                       day: 'numeric', 
                       year: 'numeric'
                     })}</div>
-                    <div>${item.totalAmount}</div>
-                    <div>
+                    <div className='text-center'>${item.totalAmount}</div>
+                    <div className='text-center'>
                       <Link to={`/dashboard/viewgifts/${item.greetingId}`}>
                       <button className="border border-gray-700 px-3 py-3 text-sm font-medium hover:bg-gray-100">
                         View Gifts/Message
                       </button>
                       </Link>
                     </div>
-                    <div>
+                    <div className='text-center'>
                       {item.messageSent ? (
-                        <span className="text-xl text-center block text-[#446184] font-bold">✓</span>
+                        <span className='text-xl text-center block text-[#446184] font-bold'>&#10004;</span>
                       ) : (
                         <Link to="/dashboard/sendthanks/toguest">
                         <button className=" text-white font-bold py-3 px-3 bg-[#446184] rounded-none cursor-pointer">

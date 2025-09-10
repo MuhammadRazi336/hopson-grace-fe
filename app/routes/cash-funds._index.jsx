@@ -7,9 +7,9 @@ import dreamFunds from '/assets/Images/dreamFunds.png';
 import porteTravel from '/assets/Images/porteTravels.png';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
-import youll1 from '/assets/Images/zam-zam.jpg';
-import youll2 from '/assets/Images/zam-zam.jpg';
-import youll3 from '/assets/Images/zam-zam.jpg';
+import youll1 from '/assets/Images/gift-img-collection-1.png';
+import youll2 from '/assets/Images/gift-img-collection-2.png';
+import youll3 from '/assets/Images/gift-img-collection-3.png';
 import {Navigation} from 'swiper/modules';
 
 // Import Swiper styles

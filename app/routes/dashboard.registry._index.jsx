@@ -153,12 +153,16 @@ const index = () => {
   const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
     loaderData;
 
+    console.log('cashfundData', cashfundData);
+
   // Fallback for apiBaseUrl if it's not available from loader
   const finalApiBaseUrl =
     apiBaseUrl || 'http://localhost:3040' || 'https://dev-hopsongrace.codup.io';
 
   // Get the actual registry data from the response
   const registryData = registry?.data?.[0];
+
+  console.log(registryData);
 
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isBackgroundEditPopupOpen, setIsBackgroundEditPopupOpen] =
@@ -340,6 +344,8 @@ const index = () => {
               token={user?.accessToken}
             />
           </div>
+
+<Link to={`/couple/single/${registryData?.userId}`}>
           <div className="w-[260px] min-h-[100px] bg-[#F5F2ED] z-10">
             <div className="container mx-auto pt-3">
               <img
@@ -352,6 +358,7 @@ const index = () => {
               </h2>
             </div>
           </div>
+          </Link>
         </div>
       </div>
 
@@ -811,7 +818,7 @@ const FundPage = ({data}) => {
                           '/assets/Images/placeholder.png'
                         }
                         alt={fund.cashFund?.name || 'Cash Fund'}
-                        className="w-full h-full object-contain mb-4"
+                        className="w-full h-full object-cover mb-4"
                       />
 
                       <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">

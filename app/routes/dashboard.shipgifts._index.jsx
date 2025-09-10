@@ -1,3 +1,4 @@
+import { Link } from '@remix-run/react';
 import React from 'react'
 import { Footer } from '~/components/Footer';
 
@@ -64,9 +65,11 @@ const ShipGifts = () => {
                 live before making you final decisions.
               </p>
               <div>
+              <Link to={"https://calendly.com/concierge-theregistry/30min"}>
                 <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
                   BOOK AN APPOINTMENT
                 </button>
+              </Link>
               </div>
             </div>
           </div>

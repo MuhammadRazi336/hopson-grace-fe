@@ -150,6 +150,9 @@ const CoupleProductCard = ({
     return match ? match[1] : url;
   }
 
+  // Use original image for cash funds to preserve S3 query parameters
+  const finalImageUrl = isCashFund ? image : cleanUrl;
+
   return (
     <div
       className={`${
@@ -162,11 +165,11 @@ const CoupleProductCard = ({
         {image ? (
           <div
             className={`${
-              !cleanUrl ? 'bg-gray-200 ' : ''
+              !finalImageUrl ? 'bg-gray-200 ' : ''
             } h-[380px] w-full mb-4 flex items-center justify-center relative`}
           >
             <img
-              src={cleanUrl}
+              src={finalImageUrl}
               alt={name}
               className="w-full h-full object-cover mb-4"
             />

@@ -95,6 +95,9 @@ const CashFunds = () => {
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
 
   // Filter products based on selected collection
   const filteredProducts = selectedSwiperCollectionId 
@@ -107,6 +110,18 @@ const CashFunds = () => {
 
   const handleButtonClick = (title) => {
     alert(`Button clicked for ${title}`);
+  };
+
+  const handleSuccess = (message) => {
+    setAlertMessage(message);
+    setAlertType('success');
+    setShowAlert(true);
+    
+    // Hide alert after 3 seconds
+    setTimeout(() => {
+      setShowAlert(false);
+      setAlertMessage('');
+    }, 3000);
   };
 
   return (
@@ -274,6 +289,7 @@ const CashFunds = () => {
                 price={card.price}
                 currency={card.currency}
                 handle={card.handle}
+                onSuccess={handleSuccess}
               />
             ))}
           </div>
@@ -462,6 +478,68 @@ const CashFunds = () => {
 
       <GiftAnyAmount />
 
+      {/* Alert Component */}
+      {showAlert && (
+        <div
+          className={`fixed top-4 right-4 ${
+            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+        >
+          <div className="flex items-center">
+            {alertType === 'success' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M5 13l4 4L19 7"></path>
+              </svg>
+            )}
+            {alertType === 'error' && (
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            )}
+            <span>{alertMessage}</span>
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          10% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          90% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+        }
+        .animate-fade-in-out {
+          animation: fadeInOut 3s ease-in-out;
+        }
+      `}</style>
+
       <Footer />
     </>
   );
@@ -522,47 +600,55 @@ const COLLECTION_QUERY = `#graphql
 
 export default CashFunds;
 
-const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId, price, currency, handle}) => {
+const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId, price, currency, handle, onSuccess}) => {
   const fetcher = useFetcher();
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success');
 
-  // Show feedback on fetcher.data change
-  React.useEffect(() => {
-    if (fetcher.data?.success) {
-      setAlertMessage('Cash fund has been added to your registry!');
-      setAlertType('success');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
-    } else if (fetcher.data?.error) {
-      setAlertMessage('There was an error adding the cash fund.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+  const handleAddToRegistry = async () => {
+    try {
+      // Fetch the image from the URL and convert it to a blob
+      const imageResponse = await fetch(image);
+      const imageBlob = await imageResponse.blob();
+
+      const formData = new FormData();
+      formData.append('name', title);
+      formData.append('amount', amount);
+      formData.append('isAnyAmount', 'false');
+      formData.append('isFixedAmount', 'true');
+      formData.append('isAmountHide', 'false');
+      formData.append('registryId', registryId);
+      formData.append('note', 'Added from dashboard cash funds listing');
+      formData.append('file', imageBlob, 'product-image.jpg'); // Add the image file
+
+      fetcher.submit(formData, {
+        method: 'post',
+        encType: 'multipart/form-data',
+      });
+
+      // Show success alert
+      if (onSuccess) {
+        onSuccess(`${title} has been added to your registry!`);
+      }
+    } catch (error) {
+      // Fallback: submit without image if image fetch fails
+      const formData = new FormData();
+      formData.append('name', title);
+      formData.append('amount', amount);
+      formData.append('isAnyAmount', 'false');
+      formData.append('isFixedAmount', 'true');
+      formData.append('isAmountHide', 'false');
+      formData.append('registryId', registryId);
+      formData.append('note', 'Added from dashboard cash funds listing');
+
+      fetcher.submit(formData, {
+        method: 'post',
+        encType: 'multipart/form-data',
+      });
+
+      // Show success alert
+      if (onSuccess) {
+        onSuccess(`${title} has been added to your registry!`);
+      }
     }
-  }, [fetcher.data]);
-
-  const handleAddToRegistry = () => {
-    const formData = new FormData();
-    formData.append('name', title);
-    formData.append('amount', amount);
-    formData.append('isAnyAmount', 'false');
-    formData.append('isFixedAmount', 'true');
-    formData.append('isAmountHide', 'false');
-    formData.append('registryId', registryId);
-    formData.append('note', 'Added from cash funds listing');
-
-    fetcher.submit(formData, {
-      method: 'post',
-      encType: 'multipart/form-data',
-    });
   };
 
   return (
@@ -627,67 +713,6 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
         </div>
       </div>
 
-      {/* Feedback Alert */}
-      {showAlert && (
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
-          </div>
-        </div>
-      )}
-      <style jsx>{`
-        @keyframes fadeInOut {
-          0% {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          10% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-          90% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-          100% {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-        }
-        .animate-fade-in-out {
-          animation: fadeInOut 3s ease-in-out;
-        }
-      `}</style>
     </div>
   );
 };
