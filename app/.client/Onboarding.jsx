@@ -1262,11 +1262,11 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                         data={{
                           url: subCollection.image.url,
                           altText: subCollection.image.altText,
-                          width: subCollection.image.width,
-                          height: subCollection.image.height,
+                          width: 200,
+                          height: 220,
                         }}
                         loading="lazy"
-                        sizes="(min-width: 45em) 400px, 100vw"
+                        sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
                       />
                     </div>
                   ) : (
