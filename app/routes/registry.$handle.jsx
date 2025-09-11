@@ -4,7 +4,7 @@ import { Header } from '~/components/Header'
 import Heading from '~/components/Heading'
 import lineImghead from '/assets/Images/line.png'
 import { useLoaderData, useFetcher, Link } from '@remix-run/react'
-import { json } from '@shopify/remix-oxygen'
+import { json, redirect } from '@shopify/remix-oxygen'
 import WhiteThemeButton from '~/components/WhiteThemeButton'
 
 import { extractShopifyId } from '~/utils/helpers.js'
@@ -15,6 +15,7 @@ import lineImg4 from '/assets/Images/Vector 14.png';
 export async function loader({params, context}) {
   const {handle} = params;
   const user = context?.session?.get('@User');
+  
   if (!handle) {
     throw new Response('Not Found', { status: 404 });
   }
@@ -28,11 +29,18 @@ export async function loader({params, context}) {
       throw new Response('Not Found', { status: 404 });
     }
 
-    // Get registry data from session
-    const registry = await context.ClientGet(
-      `registries/by-userId/${user.user.id}`,
-      context,
-    );
+    // Only fetch registry data if user is logged in
+    let registry = null;
+    if (user && user.user && user.user.id) {
+      try {
+        registry = await context.ClientGet(
+          `registries/by-userId/${user.user.id}`,
+          context,
+        );
+      } catch (error) {
+        console.log('Error fetching registry:', error);
+      }
+    }
 
     // Fetch other ready-made registries (sub-collections) to show below
     const {collections} = await context.storefront.query(OTHER_REGISTRIES_QUERY);
@@ -43,7 +51,7 @@ export async function loader({params, context}) {
       collection.parentCollectionMetafield?.value === 'false'
     ).slice(0, 6) || []; // Limit to 6
 
-    return json({ collection, registry, otherRegistries });
+    return json({ collection, registry, otherRegistries, user });
   } catch (error) {
     console.error('Error loading registry:', error);
     throw new Response('Not Found', { status: 404 });
@@ -69,7 +77,7 @@ export async function action({request, context}) {
 }
 
 const Registry = () => {
-  const { collection, registry, otherRegistries } = useLoaderData();
+  const { collection, registry, otherRegistries, user } = useLoaderData();
   const [quantities, setQuantities] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -105,11 +113,9 @@ const Registry = () => {
   
   const handleAddToRegistry = async (product, selectedQuantity) => {
     try {
-      // Check if user is logged in by looking for token in localStorage
-      const token = localStorage.getItem('@token') || localStorage.getItem('@Token');
-      
-      if (!token) {
-        // No token found, redirect to login
+      // Check if user is logged in
+      if (!user || !user.user || !user.user.id) {
+        // User not logged in, redirect to login
         window.location.href = '/login';
         return;
       }
@@ -127,7 +133,7 @@ const Registry = () => {
       }
 
       // Check if registry exists and has an ID
-      if (!registry || !registry.data[0].id) {
+      if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please create a registry first.');
         setAlertType('error');
         setShowAlert(true);
