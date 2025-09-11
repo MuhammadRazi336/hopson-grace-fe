@@ -9,6 +9,9 @@ import ButtonComponent from '~/components/Button.jsx';
 import {jsonWithError} from 'remix-toast';
 import {Header} from '~/components/Header';
 import {Footer} from '~/components/Footer';
+import StepsAndImage from '~/components/StepsAndImage';
+import Heading from '~/components/Heading.jsx';
+import arrow from '/assets/Images/arrow.png';
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
   const {context} = args;
@@ -96,48 +99,75 @@ const LoginIndex = () => {
 
   return (
     <>
-    <Header />
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold mb-6 text-center">Sign In</h2>
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="mb-4">
-            <Input
-              type="email"
-              required={true}
-              label="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="mb-6">
-            <Input
-              required={true}
-              type="password"
-              label="Password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            <Link to="/forgotpassword">Forgot Password?</Link>
-          </div>
-          <div
-            style={{
-              color: actionData?.statusCode >= 400 ? 'red' : 'inherit',
-            }}
-          >
-            {actionData?.statusCode >= 400 && Array.isArray(actionData?.message)
-              ? actionData?.message[0]
-              : actionData?.message}
-          </div>
-          <ButtonComponent type="submit" className="w-full" text={'Login'} />
-        </form>
+      <Header />
+      <div className="flex justify-center items-center min-h-screen bg-white">
+        <StepsAndImage
+          title="welcome back."
+          stepNo="1"
+          totalSteps="1"
+          showLoginLink={false}
+          content={
+            <div className="flex h-full items-center">
+              <form
+                className="space-y-6 max-w-full w-full mx-auto"
+                onSubmit={handleLogin}
+              >
+                <div className="text-center mt-6">
+                  <Heading
+                    text="LOG IN"
+                    classes="font-normal text-[22px] m-0"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <Input
+                    type="email"
+                    required={true}
+                    placeholder="Email *"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                    error={actionData?.statusCode >= 400 && actionData?.message?.toLowerCase().includes('email') ? actionData?.message : undefined}
+                  />
+                  <Input
+                    required={true}
+                    type="password"
+                    placeholder="Password *"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                    error={actionData?.statusCode >= 400 && actionData?.message?.toLowerCase().includes('password') ? actionData?.message : undefined}
+                  />
+                </div>
+                <div className="text-center">
+                  <Link to="/forgotpassword" className="text-[#446184] hover:underline">
+                    Forgot Password?
+                  </Link>
+                </div>
+                {actionData?.statusCode >= 400 && (
+                  <div className="text-center text-red-500 text-sm">
+                    {Array.isArray(actionData?.message)
+                      ? actionData?.message[0]
+                      : actionData?.message}
+                  </div>
+                )}
+
+                {/* Back and Next buttons */}
+                <div className="flex justify-end mt-4 absolute bottom-6 right-6 steps-btns-hover">
+                  <button
+                    type="submit"
+                    className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10"
+                  >
+                    Sign In <img src={arrow} alt="" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          }
+        />
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </>
   );
 };

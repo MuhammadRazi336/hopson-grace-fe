@@ -92,17 +92,17 @@ const OnboardingIndex = () => {
   const { user } = useLoaderData();
   const [currentStep, setCurrentStep] = useState(1); // Start with step 1 for titles
 
-  // Refresh the page once whenever user goes to onboarding page
-  if (typeof window !== 'undefined') {
-    const hasReloaded = localStorage.getItem('onboarding-reloaded');
+  // // Refresh the page once whenever user goes to onboarding page
+  // if (typeof window !== 'undefined') {
+  //   const hasReloaded = localStorage.getItem('onboarding-reloaded');
     
-    // If we haven't reloaded yet, refresh the page once
-    if (!hasReloaded) {
-      console.log('Refreshing onboarding page...');
-      localStorage.setItem('onboarding-reloaded', 'true');
-      window.location.reload();
-    }
-  }
+  //   // If we haven't reloaded yet, refresh the page once
+  //   if (!hasReloaded) {
+  //     console.log('Refreshing onboarding page...');
+  //     localStorage.setItem('onboarding-reloaded', 'true');
+  //     window.location.reload();
+  //   }
+  // }
 
   // Get user first names for dynamic step title
   const firstName = user?.user?.firstName || '';

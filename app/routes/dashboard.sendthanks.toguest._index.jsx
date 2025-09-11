@@ -7,7 +7,18 @@ import Input from '~/components/Input';
 export async function loader({context}) {
   const user = await context.session.get('@User');
   console.log(user);
-  return {user};
+  
+  // Fetch registry data to get registryId
+  const registry = await context.ClientGet(
+    `registries/by-userId/${user.user.id}`,
+    context,
+  );
+
+  if (!registry || !registry.data[0].id) {
+    throw new Response('Registry not found', {status: 404});
+  }
+
+  return {user, registry: registry.data[0]};
 }
 
 export async function action({request, context}) {
@@ -29,7 +40,7 @@ export async function action({request, context}) {
 
 const ThankYou = () => {
   const actionData = useActionData();
-  const {user} = useLoaderData();
+  const {user, registry} = useLoaderData();
   const submit = useSubmit();
   const [showPreview, setShowPreview] = useState(false);
   const [message, setMessage] = useState('');
@@ -90,6 +101,7 @@ const ThankYou = () => {
       to: formData.to,
       subject: formData.subject,
       message: formData.message,
+      registryId: Number(registry.id),
     };
     submit({payload}, {method: 'post', encType: 'application/json'});
   };

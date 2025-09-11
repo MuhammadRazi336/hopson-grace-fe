@@ -16,7 +16,7 @@ import step8Image from "/assets/Images/AlleyWayBg.png"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
 
-const StepsAndImage = ({ content, title, stepNo, totalSteps, className }) => {
+const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true }) => {
     // Function to get the appropriate image based on step number
     const getStepImage = (step) => {
         switch(step) {
@@ -40,7 +40,9 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className }) => {
                 <div className="relative">
                     <img src={getStepImage(stepNo)} alt={`Step ${stepNo}`} className="w-full h-full object-contain" />
                     <img src={registrylogoSteps} alt="" className="absolute bottom-4 -left-[72px] max-[768px]:left-[initial] max-[768px]:-right-[7px] max-[768px]:w-[71px] max-[768px]:bottom-0 max-[768px]:top-0 max-[768px]:my-auto" />
-                    <h5 className="absolute -bottom-16 max-[768px]:hidden">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>
+                    {showLoginLink && (
+                        <h5 className="absolute -bottom-16 max-[768px]:hidden">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>
+                    )}
                 </div>
             </div>
             <div className={`${className} bg-steel-blue text-white py-[110px] px-[90px] lg:w-[52.083vw] pb-28 pt-[100px] relative -left-[37.5px] top-[59px] max-[768px]:max-w-[100%] max-w-[1000px] max-[1024px]:p-6 max-[768px]:-top-[140px] max-[768px]:left-2.5 max-[768px]:pb-20 max-[768px]:pt-14  max-[768px]:w-full text-center`}>
