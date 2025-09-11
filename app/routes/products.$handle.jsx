@@ -492,10 +492,6 @@ export default function ProductCollection() {
           Browse by category, filter by price, or get inspired with our curated
           edits. Add, update, or switch things up whenever you like.
         </p>
-
-        <Link to={`/couple/single/${userId}`}>
-          <PreviewRegistry />
-        </Link>
       </div>
 
       <section className=" ">
