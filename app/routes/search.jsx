@@ -192,10 +192,20 @@ export async function loader({ request, context }) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('q');
   const user = context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
+  
+  // Only fetch registry data if user is logged in
+  let registry = null;
+  if (user && user.user && user.user.id) {
+    try {
+      const registryResponse = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+      registry = registryResponse?.data?.[0];
+    } catch (error) {
+      console.log('Error fetching registry:', error);
+    }
+  }
 
   if (!searchQuery) {
     return defer({ 
@@ -203,7 +213,7 @@ export async function loader({ request, context }) {
       collections: [], 
       cashFunds: [], 
       searchQuery: null, 
-      registry: registry?.data[0]
+      registry: registry
     });
   }
 
@@ -287,7 +297,7 @@ export async function loader({ request, context }) {
       cashFunds: filteredCashFundProducts, 
       blogs: filteredBlogs,
       searchQuery, 
-      registry: registry?.data[0]
+      registry: registry
     });
   } catch (error) {
     console.error("Error loading search results:", error);
@@ -296,7 +306,7 @@ export async function loader({ request, context }) {
       collections: [], 
       cashFunds: [], 
       searchQuery, 
-      registry: registry?.data[0]
+      registry: registry
     });
   }
 }

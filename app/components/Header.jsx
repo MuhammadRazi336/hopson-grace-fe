@@ -43,6 +43,7 @@ export function Header() {
   const [unreadCount, setUnreadCount] = useState(0);
   const notificationRef = useRef(null);
   const socketRef = useRef(null);
+  const searchInputRef = useRef(null);
 
   // Update status when registry data changes
   useEffect(() => {
@@ -399,6 +400,21 @@ export function Header() {
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Focus the search input after scrolling completes
+    setTimeout(() => {
+      if (searchInputRef.current) {
+        searchInputRef.current.focus();
+        searchInputRef.current.select();
+      }
+    }, 500); // Wait for smooth scroll to complete
+  };
+
   const handleToggle = async () => {
     const newStatus = isDraft ? 'published' : 'draft';
     const token = user;
@@ -499,6 +515,7 @@ export function Header() {
                 </span>
               </button>
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -508,7 +525,11 @@ export function Header() {
             </form>
           )}
           {isFixed && (
-            <button className="text-xl pl-[44px] hover:text-blue-500 max-[1601px]:w-8">
+            <button 
+              className="text-xl pl-[44px] hover:text-blue-500 max-[1601px]:w-8"
+              onClick={scrollToTop}
+              title="Scroll to top"
+            >
               <span role="img" aria-label="Search Icon">
                 <img
                   src={searchImgscroll}
