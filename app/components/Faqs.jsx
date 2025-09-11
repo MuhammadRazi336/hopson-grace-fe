@@ -56,7 +56,7 @@ const Faqs = () => {
       className="max-w-[1560px] px-4 mx-auto flex items-center flex-col"
       id="faq-section"
     >
-      <h2 className="prata text-center text-3xl lg:text-5xl font-normal mb-0">
+      <h2 className="prata text-center text-3xl lg:text-[2.5vw] font-normal mb-0">
         frequently asked questions
       </h2>
       <img
@@ -133,7 +133,7 @@ const Faqs = () => {
             }
           }}
         >
-          <span>{isExpanded ? 'Less' : 'More'}</span>
+          <span className='lg:text-[1.146vw] font-[500] uppercase'>{isExpanded ? 'Less' : 'More'}</span>
           <img
             src={moreImg}
             alt=""

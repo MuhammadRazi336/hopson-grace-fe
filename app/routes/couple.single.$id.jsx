@@ -7,6 +7,7 @@ import SideCart from '~/components/SideCart';
 import {CoupleFooter} from '~/components/CoupleFooter';
 import Input from '~/components/Input';
 import Heading from '~/components/Heading';
+import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -1496,23 +1497,23 @@ export default function CoupleProfile() {
         onCartClick={handleCartClick}
         showCart={hasProducts && registryId}
       />
-      <div className="text-center pt-[80px] container mx-auto font-sans">
+      <div className="text-center pt-[80px] lg:max-w-[93.385vw] mx-auto font-sans">
         <img
           src={
             safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl ||
             '/assets/Images/couple-profile-bg.png'
           }
           alt="Couple"
-          className="w-full h-[400px] lg:h-[600px] object-cover"
+          className="w-full h-[400px] lg:h-[620px] object-cover"
         />
-        <div className="flex flex-wrap xl:flex-nowrap justify-center xl:items-end items-center -mb-10 xl:-translate-y-[200px] ">
-          <div className="xl:w-4/12 w-full">
-            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
+        <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-10 xl:-translate-y-[200px]">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
+            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] font-[400] lowercase prata ml-[3.646vw] lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto">
               {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} &{' '}
               {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
             </h1>
           </div>
-          <div className="xl:w-4/12 w-full">
+          <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[36.979vw] lg:h-[36.979vw] w-full">
             {safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl ? (
               <img
                 src={safeResponse.data[0].events[0].image.fileUrl}
@@ -1523,26 +1524,26 @@ export default function CoupleProfile() {
               <span className="text-gray-500">No Image Available</span>
             )}
           </div>
-          <div className="xl:w-4/12 w-full">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
             <div className="mr-16">
-              <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto">
+              <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto lg:text-[2.5vw] lg:leading-[2.917vw]">
                 {safeResponse?.data?.[0]?.events?.[0]?.eventDate || 'Date TBD'}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
                 alt="Couple"
-                className="max-w-[370px] h-auto ml-auto"
+                className="max-w-[300px] lg:max-w-[19.219vw] h-auto ml-auto"
               />
               <div className="text-right ">
-                <p className="text-lg my-1 uppercase">
+                <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
                   {safeResponse?.data?.[0]?.events?.[0]?.location ||
                     'Location TBD'}
                 </p>
-                <p className="text-lg my-1 uppercase">
+                <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
                   {safeResponse?.data?.[0]?.events?.[0]?.city || 'City'},{' '}
                   {safeResponse?.data?.[0]?.events?.[0]?.province || 'Province'}
                 </p>
-                <p className="text-lg my-1 uppercase">
+                <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
                   {safeResponse?.data?.[0]?.events?.[0]?.weddingTime ||
                     'Time TBD'}
                 </p>
@@ -1550,31 +1551,31 @@ export default function CoupleProfile() {
             </div>
           </div>
         </div>
-        <h2 className="md:text-[42px] xl:mt-0 mt-16 font-normal ivyora">
-          we are looking <span className="font-italic">SO FORWARD</span> to
+        <h2 className="text-[42px] -tracking-[0.3px] mb-[9px] lg:text-[2.917vw] lg:leading-[3.125vw] xl:mt-0 mt-16 font-normal prata">
+          we are looking <span className="font-italic">so forward</span> to
           celebrating with you
         </h2>
 
-        <p className="max-w-2xl mx-auto my-5 leading-relaxed">
+        <p className="w-[58.073vw] max-w-[100%] text-[16px] tracking-[0.5px] lg:text-[1.875vw] lg:leading-[2.604vw] mx-auto mt-5 mb-[7.552vw] leading-relaxed">
           {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage ||
             'Thank you for being part of our special day!'}
         </p>
       </div>
 
-      <div className="container mx-auto bg-[#FAF9F6] py-10 px-6">
-        <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+      <div className="w-[92.135vw] max-w-[100%] mx-auto bg-[#FAF9F6] py-[5.469vw] px-[5.99vw]">
+        <h2 className="mt-0 lg:text-[2.5vw] lg:leading-[1.875vw] text-[24px] prata text-center font-normal mb-5">
           our registry selections
         </h2>
         <img
-          src="/assets/Images/profile-view-page-bdr.png"
+          src={headingBottomCurve}
           alt="Couple"
-          className="max-w-[630px] h-auto mx-auto"
+          className="max-w-[33.021vw] h-auto mx-auto"
         />
 
         {/* Only show filters if there are products and collections */}
         {hasProducts && validChildCollections.length > 0 && registryId && (
           <div className="filters">
-            <div className="filter-item flex gap-x-12 mt-12 justify-center">
+            <div className="filter-item flex gap-x-12 mt-[5.052vw] justify-center">
               <div
                 className="relative"
                 onClick={() => {
@@ -1593,13 +1594,13 @@ export default function CoupleProfile() {
                   setSelectedCategory(nextCategory);
                 }}
               >
-                <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                  <strong>Categories</strong> {selectedCategory || 'All'}
+                <h3 className="text-[18px] leading-[18px] uppercase cursor-pointer">
+                  <strong>Categories: </strong> {selectedCategory || 'All'}
                 </h3>
               </div>
 
               <div
-                className="relative"
+                className="relative text-[18px] leading-[18px]"
                 onClick={() => {
                   const options = ['', 'low-to-high', 'high-to-low'];
                   const currentIndex = options.indexOf(priceSort);
@@ -1607,8 +1608,8 @@ export default function CoupleProfile() {
                   setPriceSort(options[nextIndex]);
                 }}
               >
-                <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                  <strong>price</strong>{' '}
+                <h3 className="text-[18px] leading-[18px] uppercase cursor-pointer">
+                  <strong>price: </strong>{' '}
                   {priceSort === 'low-to-high'
                     ? 'low to high'
                     : priceSort === 'high-to-low'
@@ -1626,8 +1627,8 @@ export default function CoupleProfile() {
                   setAvailability(options[nextIndex]);
                 }}
               >
-                <h3 className="text-lg uppercase border-b-2 border-[#446184] cursor-pointer">
-                  <strong>status</strong>{' '}
+                <h3 className="text-[18px] leading-[18px] uppercase cursor-pointer">
+                  <strong>status: </strong>{' '}
                   {availability === 'in-stock'
                     ? 'Available'
                     : availability === 'out-of-stock'
@@ -1641,7 +1642,7 @@ export default function CoupleProfile() {
 
         {/* Show products if they exist, otherwise show no products message */}
         {hasProducts && registryId && safeData.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] p-0 mt-[5.885vw]">
             {filteredData
               .map((product, index) => {
                 console.log('Product:', product);
@@ -1714,8 +1715,8 @@ export default function CoupleProfile() {
           </div>
         )}
       </div>
-      <div className="py-12 w-full flex justify-center items-center">
-        <div className="py-10 md:py-12 bg-[#446184] flex items-center justify-around flex-row lg:w-[70%] w-full max-[768px]:p-10 lg:mt-20 mt-6 gap-x-16">
+      <div className="pt-[8.073vw] pb-[8.542vw] w-full flex justify-center items-center">
+        <div className="py-[2.917vw] md:py-12 bg-[#446184] flex items-center justify-between flex-row lg:w-[81.354vw] w-full max-[768px]:p-10 mt-6 gap-x-8">
           <div>
             <img
               src="/assets/Images/giftCard.png"
@@ -1723,37 +1724,37 @@ export default function CoupleProfile() {
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="flex flex-col items-center justify-center">
-            <h3 className="text-2xl text-white lg:text-5xl 2xl:text-3xl 3xl:w-full prata max-w-[410px] text-center">
+          <div className="flex flex-col items-center justify-center pr-[10.417vw]">
+            <h3 className="text-2xl text-white lg:text-[2.292vw] 3xl:w-full prata max-w-[410px] text-center">
               gift any amount
             </h3>
             <img
               src="/assets/Images/white-bdr.png"
               alt="couple"
-              className="max-w-[315px] mb-4 mt-4 mx-auto"
+              className="max-w-[315px] lg:max-w-[16.927vw] lg:w-[16.927vw] mb-[1.875vw] mt-4 mx-auto"
             />
-            <h5 className="text-white text-xl text-center font-normal">
+            <h5 className="text-white text-xl lg:text-[1.354vw] text-center font-[500]">
               CONTRIBUTE TO OUR JOURNEY!
             </h5>
-            <p className="text-sm lg:text-xl text-white max-w-[488px] mt-4 mb-7 font-normal text-center">
-             Help us create our dream wedding,  honeymoon or life experience. We’re so grateful.
+            <p className="text-sm lg:text-[1.354vw] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-7 font-normal text-center">
+             Help us create our dream wedding, <br/>honeymoon or life experience. We’re so grateful.
             </p>
-            <div className="flex flex-row items-center justify-center gap-x-4">
+            <div className="flex flex-row items-center justify-center gap-x-[1.557vw]">
               <button
                 type="button"
-                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
+                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
                 $100
               </button>
               <button
                 type="button"
-                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
+                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
                 $200
               </button>
               <button
                 type="button"
-                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
+                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
                 OTHER
               </button>

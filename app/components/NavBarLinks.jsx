@@ -83,12 +83,12 @@ const NavBarLinks = (mobileClasses) => {
           <li className="group">
             <NavLink
               to="/our-brands"
-              className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black mega-menu-triggers hover:no-underline menu-item-hover font-[800] uppercase"
             >
               OUR BRANDS
             </NavLink>
             {/* Nested Menu */}
-            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-999 w-full py-[50px] lg:pb-[5.729vw] lg:pt-[5vw] bg-[#F5F2ED]">
+            <div className="absolute left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full py-[50px] lg:pb-[5.729vw] lg:pt-[5vw] bg-[#F5F2ED]">
               <div className="flex mx-auto justify-between lg:w-[83.333vw]">
                 <div className="mr-[90px]">
                   <h4 className="text-[18px] lg:text-[0.938vw]  font-[500] mb-[26px]">
@@ -134,11 +134,11 @@ const NavBarLinks = (mobileClasses) => {
           <li className="group">
             <NavLink
               to="/products"
-              className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black mega-menu-triggers hover:no-underline menu-item-hover font-[800] uppercase"
             >
               PRODUCTS
             </NavLink>
-            <div className="absolute left-0 mt-2.5 hidden group-hover:flex shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
+            <div className="absolute custom-mega-menu left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
               <div className="flex mx-auto">
                 <div className="mr-[90px]">
                   <ul className="">

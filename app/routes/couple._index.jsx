@@ -42,7 +42,7 @@ export default function FindCoupleForm() {
       ) : (
         <>
           <div
-            className="flex justify-start items-center h-[80vh] mb-16"
+            className="flex justify-start items-center h-[80vh] lg:h-[802px] mb-16"
             style={{
               backgroundImage: " url('/assets/Images/couple-banner-1.png')",
               backgroundSize: 'cover',
@@ -51,20 +51,20 @@ export default function FindCoupleForm() {
           >
             <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
               <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184]">
-                <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
+                <h1 className="mt-0 lg:text-[2.5vw] text-[24px] prata text-center lg:leading-[2.917vw] font-normal mb-5 text-white">
                   find a couple
                 </h1>
                 <img
                   src="/assets/Images/white-bdr.png"
                   alt="couple"
-                  className="max-w-[315px] mb-4"
+                  className="max-w-[315px] lg:max-w-[16.406vw] mb-4"
                 />
-                <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
+                <p className="text-center tracking-[0.8px] lg:text-[1.042vw] lg:leading-[1.354vw] text-white uppercase max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
                 enter couple's first and fiance's first name
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
-                  <div className="flex gap-8 mb-4">
+                  <div className="flex gap-8 lg:gap-[1.458vw] mb-4 lg:mb-[2.448vw]">
                     <div className="w-full">
                       <input
                         id="firstName"
@@ -72,7 +72,7 @@ export default function FindCoupleForm() {
                         type="text"
                         placeholder="First Name*"
                         value={firstName}
-                        className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                        className="w-full border lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] outline-none bg-white border-[#B9B4AE] rounded-none px-3"
                         required
                         onChange={(e) => {
                           const value = e.target.value;
@@ -91,7 +91,7 @@ export default function FindCoupleForm() {
                         type="text"
                         placeholder="Fiance's First Name*"
                         value={fianceFirstName}
-                        className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                        className="w-full border outline-none lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
                         required
                         onChange={(e) => {
                           const value = e.target.value;
@@ -107,7 +107,7 @@ export default function FindCoupleForm() {
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4"
+                      className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4"
                     >
                       Search
                     </button>
@@ -117,7 +117,7 @@ export default function FindCoupleForm() {
             </div>
           </div>
 
-          <div className="mt-20"></div>
+          <div className="mt-20 lg:mt-[9.01vw]"></div>
           <Faqs />
           <div className="mb-16"></div>
           <section className=" my-12 lg:my-[240px]">
@@ -149,7 +149,7 @@ export function FindCoupleFormBanner() {
         backgroundPosition: 'center',
       }}
     >
-      <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
+      <div className="md:ml-20 md:mr-0 ml-auto mr-auto lg:w-[45.885vw]">
         <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
           <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
             find a couple
@@ -172,7 +172,7 @@ export function FindCoupleFormBanner() {
                   type="text"
                   placeholder="First Name*"
                   value={firstName}
-                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 lg:px-[1.042vw] py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
                   required
                   onChange={(e) => setFirstName(e.target.value)}
                 />
@@ -184,7 +184,7 @@ export function FindCoupleFormBanner() {
                   type="text"
                   placeholder="Last Name*"
                   value={lastName}
-                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
+                  className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 lg:px-[1.042vw] py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
                   required
                   onChange={(e) => setLastName(e.target.value)}
                 />
