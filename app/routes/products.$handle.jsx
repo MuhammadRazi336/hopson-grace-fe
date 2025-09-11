@@ -371,8 +371,8 @@ export default function ProductCollection() {
       }
 
       // Check if registry exists and has an id
-      if (!registry || !registry.id) {
-        setAlertMessage('Registry not found. Please try again.');
+      if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
+        setAlertMessage('Registry not found. Please create a registry first.');
         setAlertType('error');
         setShowAlert(true);
         setTimeout(() => {
@@ -397,7 +397,7 @@ export default function ProductCollection() {
       const payload = {
         productId: Number(extractShopifyId(product.id)),
         amount: Number(firstVariant.priceV2.amount),
-        registryId: Number(registry.id),
+        registryId: Number(registry.data[0].id),
         productTypeId: 1,
         quantity: 1,
       };
