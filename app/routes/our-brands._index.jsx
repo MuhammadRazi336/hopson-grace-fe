@@ -58,7 +58,7 @@ const OurBrands = () => {
 
         <div className='w-full flex justify-center py-[100px]'>
             <div className='w-[70%] h-fit px-16'>
-                <BrandImages/>
+                <BrandImages brandCollections={brandCollections}/>
            </div>
            <div className='w-[30%] h-fit px-16'>
                 <BrandNames brandCollections={brandCollections}/>

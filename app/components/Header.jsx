@@ -751,18 +751,33 @@ export function Header() {
                     </div>
                   </div>
                 ) : (
-                  <div className='pt-1'>
-                    <div className={`text-xs font-medium tracking-wide text-center mb-2 ${
-                      isFixed ? 'text-white' : 'text-black'
-                    }`}>
-                      Registry Status
+                <div className='pt-1'>
+                  <button
+                    type="button"
+                    aria-pressed={!isDraft}
+                      aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
+                    onClick={handleToggle}
+                      disabled={isUpdatingStatus}
+                      className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none overflow-hidden ${
+                      isDraft
+                        ? 'bg-white border-black'
+                        : 'bg-white border-black'
+                    }`}
+                  >
+                    <span
+                      className={`rounded-full shadow-md transform w-[2.031vw] h-full transition-transform duration-200 ${
+                        isDraft
+                          ? 'translate-x-0 bg-gray-300'
+                          : 'translate-x-[1.094vw] bg-[#FF6F61]'
+                      }`}
+                    />
+                  </button>
+                    <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] ${
+                    isFixed ? 'text-white' : 'text-black'
+                  }`}>
+                      {isUpdatingStatus ? 'Updating...' : (isDraft ? 'Draft' : 'Published')}
                     </div>
-                    <div className={`text-xs text-center ${
-                      isFixed ? 'text-white' : 'text-black'
-                    }`}>
-                      No registry found
                   </div>
-                </div>
                 )}
                 </div>
               </>

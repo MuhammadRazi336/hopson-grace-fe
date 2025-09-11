@@ -49,11 +49,23 @@ export async function loader({request, context, params}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const user = context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
-  const userData = await context?.session?.get('@User'); // No user data for public pages
+  
+  let registry = null;
+  let userData = null;
+  
+  // Only fetch registry if user is logged in
+  if (user && user.user && user.user.id) {
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+      userData = user;
+    } catch (error) {
+      console.error('Error fetching registry:', error);
+      // Continue without registry data
+    }
+  }
 
   return defer({products, collections, registry, userData});
 }
@@ -340,8 +352,8 @@ export default function ProductCollection() {
       // Check if user is logged in by looking for token in localStorage
       const token = localStorage.getItem('@token') || localStorage.getItem('@Token');
       
-      if (!token) {
-        // No token found, redirect to login
+      if (!token || !userData) {
+        // No token or user data found, redirect to login
         navigate('/login');
         return;
       }

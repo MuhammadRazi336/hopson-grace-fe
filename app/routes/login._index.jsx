@@ -26,6 +26,14 @@ export async function action({request, context}) {
       const user = response.data;
       context.session.set('@User', user);
       const cookie = await context.session.commit();
+
+      if(user?.user?.isOnboard === false){
+        return redirect('/onboarding', {
+          headers: {
+            'Set-Cookie': cookie,
+          },
+        });
+      }
       
       // Return the user data so it can be saved to localStorage before redirect
       return json({ 

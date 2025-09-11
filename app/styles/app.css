@@ -846,7 +846,7 @@ button > p {
   top: 20px;
   left: 0;
   opacity: 0;
-  transition: 300ms ease-in-out;
+  /* transition: 0ms ease-in-out; */
 }
 
 .menu-item-hover:hover::after {

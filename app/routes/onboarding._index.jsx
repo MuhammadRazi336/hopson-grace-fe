@@ -4,7 +4,9 @@ import { requireAuth } from '~/utils/auth-guard.js';
 import { redirect } from '@shopify/remix-oxygen';
 import { useLoaderData } from '@remix-run/react';
 import StepsAndImage from '~/components/StepsAndImage';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Header } from '~/components/Header';
+import { Footer } from '~/components/Footer';
 
 // GraphQL query for collections
 const COLLECTIONS_QUERY = `#graphql
@@ -90,6 +92,18 @@ const OnboardingIndex = () => {
   const { user } = useLoaderData();
   const [currentStep, setCurrentStep] = useState(1); // Start with step 1 for titles
 
+  // Refresh the page once whenever user goes to onboarding page
+  if (typeof window !== 'undefined') {
+    const hasReloaded = localStorage.getItem('onboarding-reloaded');
+    
+    // If we haven't reloaded yet, refresh the page once
+    if (!hasReloaded) {
+      console.log('Refreshing onboarding page...');
+      localStorage.setItem('onboarding-reloaded', 'true');
+      window.location.reload();
+    }
+  }
+
   // Get user first names for dynamic step title
   const firstName = user?.user?.firstName || '';
   const fianceFirstName = user?.user?.fianceFirstName || '';
@@ -110,7 +124,8 @@ const OnboardingIndex = () => {
   };
 
   return (
-    <div> 
+    <div>
+      <Header />
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
         stepNo={currentStep + 1} // Start from step 3 and increment
@@ -118,6 +133,7 @@ const OnboardingIndex = () => {
         content={hydrated && <Onboarding onStepChange={setCurrentStep} />} 
         className={currentStep === 6 || currentStep === 7 ? 'px-12' : ''} // Add className prop
       />
+      <Footer />
     </div>
   );
 };

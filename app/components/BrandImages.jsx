@@ -1,29 +1,21 @@
 import React from 'react'
-import brand1 from '/assets/Images/brands/image_9.png';
-import brand2 from '/assets/Images/brands/1456ead1987f9ff92eaa25a31ac01721cc0ba3d7.png';
-import brand3 from '/assets/Images/brands/image_8.png';
-import brand4 from '/assets/Images/brands/image_11.png';
 
-const BrandImages = () => {
-  // Create an array of brand images
-  const brands = [brand1, brand2, brand3, brand4];
+const BrandImages = ({ brandCollections = [] }) => {
+  // If no brand collections, return empty div
+  if (!brandCollections || brandCollections.length === 0) {
+    return <div></div>;
+  }
   
-  // Generate the repeated images using map
+  // Generate images for each brand (no repetition)
   const generateBrandImages = () => {
-    const images = [];
-    for (let i = 0; i < 13; i++) {
-      brands.forEach((brand, index) => {
-        images.push(
-          <img 
-            key={`${i}-${index}`} 
-            src={brand} 
-            alt={`brand${index + 1}`} 
-            className='w-52'
-          />
-        );
-      });
-    }
-    return images;
+    return brandCollections.map((brand, index) => (
+      <img 
+        key={brand.id || index} 
+        src={brand.image?.url || '/assets/Images/placeholder.png'} 
+        alt={brand.image?.altText || brand.title || `brand${index + 1}`} 
+        className='w-52'
+      />
+    ));
   };
 
   return (

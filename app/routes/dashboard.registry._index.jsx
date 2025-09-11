@@ -4,10 +4,10 @@ import {Link, useLoaderData, json} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
-import {CoupleFooter} from '~/components/CoupleFooter';
 import {useState} from 'react';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
 import PreviewRegistry from '~/components/PreviewRegistry';
+import { Footer } from '~/components/Footer';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
@@ -570,7 +570,7 @@ const index = () => {
         </div>
       </div>
 
-      <CoupleFooter />
+      <Footer />
     </>
   );
 };
