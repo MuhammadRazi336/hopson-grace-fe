@@ -32,11 +32,19 @@ export async function loader({params, context}) {
       throw new Response('Not Found', {status: 404});
     }
 
-    // Get registry data from session
-    const registry = await context.ClientGet(
-      `registries/by-userId/${user.user.id}`,
-      context,
-    );
+    // Only fetch registry data if user is logged in
+    let registry = null;
+    if (user && user.user && user.user.id) {
+      try {
+        registry = await context.ClientGet(
+          `registries/by-userId/${user.user.id}`,
+          context,
+        );
+      } catch (error) {
+        console.log('Error fetching registry:', error);
+        // Continue without registry data
+      }
+    }
 
     // Filter brand collections for the marquee
     const brands =
@@ -44,7 +52,7 @@ export async function loader({params, context}) {
         (collection) => collection.metafield?.value === 'true',
       ) || [];
 
-    return json({collection, registry, brands});
+    return json({collection, registry, brands, user});
   } catch (error) {
     throw new Response('Not Found', {status: 404});
   }
@@ -68,7 +76,7 @@ export async function action({request, context}) {
 }
 
 const Brand = () => {
-  const {collection, registry, brands} = useLoaderData();
+  const {collection, registry, brands, user} = useLoaderData();
   const [quantities, setQuantities] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -104,12 +112,9 @@ const Brand = () => {
 
   const handleAddToRegistry = async (product, selectedQuantity) => {
     try {
-      // Check if user is logged in by looking for token in localStorage
-      const token =
-        localStorage.getItem('@token') || localStorage.getItem('@Token');
-
-      if (!token) {
-        // No token found, redirect to login
+      // Check if user is logged in - check both session data and localStorage
+      if (!user || !user.user || !user.user.id) {
+        // No user found, redirect to login
         window.location.href = '/login';
         return;
       }
@@ -127,7 +132,7 @@ const Brand = () => {
       }
 
       // Check if registry exists and has an ID
-      if (!registry || !registry.data[0].id) {
+      if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please create a registry first.');
         setAlertType('error');
         setShowAlert(true);

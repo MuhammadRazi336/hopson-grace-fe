@@ -46,12 +46,19 @@ const tabsData = [
 ];
 
 export async function loader({request, context, params}) {
+  const {handle} = params;
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const user = context?.session?.get('@User');
   
   let registry = null;
   let userData = null;
+  let selectedCollection = null;
+  
+  // Find the selected collection based on the handle from URL
+  if (handle) {
+    selectedCollection = collections.find(col => col.handle === handle);
+  }
   
   // Only fetch registry if user is logged in
   if (user && user.user && user.user.id) {
@@ -67,7 +74,7 @@ export async function loader({request, context, params}) {
     }
   }
 
-  return defer({products, collections, registry, userData});
+  return defer({products, collections, registry, userData, selectedCollection, handle});
 }
 
 export async function action({request, context}) {
@@ -118,6 +125,7 @@ function SidebarFilter({
   collections,
   checkedCollectionIds,
   setCheckedCollectionIds,
+  selectedCollectionId,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
@@ -132,6 +140,13 @@ function SidebarFilter({
   const subCollection = collections.filter(
     (col) => col.parentMetafield?.value === 'false',
   );
+
+  // Pre-select the collection if selectedCollectionId is provided
+  useEffect(() => {
+    if (selectedCollectionId && !checkedCollectionIds.includes(selectedCollectionId)) {
+      setCheckedCollectionIds([selectedCollectionId]);
+    }
+  }, [selectedCollectionId, checkedCollectionIds, setCheckedCollectionIds]);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
@@ -272,18 +287,15 @@ export default function ProductCollection() {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
 
-  const {products, collections, registry, userData} = useLoaderData();
+  const {products, collections, registry, userData, selectedCollection, handle} = useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const params = useParams();
 
   const userId = userData?.user?.id;
 
-  // Get the collection from URL parameter
-  const currentCollection = collections.find(col => col.handle === params.handle);
-
   // State for checked collections and displayed products
-  const [checkedCollectionIds, setCheckedCollectionIds] = useState(currentCollection ? [currentCollection.id] : []);
+  const [checkedCollectionIds, setCheckedCollectionIds] = useState(selectedCollection ? [selectedCollection.id] : []);
   const [displayedProducts, setDisplayedProducts] = useState([]);
   const initialPreferencesApplied = useRef(false);
   const [productsToShow, setProductsToShow] = useState(12);
@@ -465,8 +477,8 @@ export default function ProductCollection() {
             <span className="prata uppercase">
               {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
             </span>
-          ) : currentCollection ? (
-            <span className="prata uppercase">{currentCollection.title}</span>
+          ) : selectedCollection ? (
+            <span className="prata uppercase">{selectedCollection.title}</span>
           ) : (
             <span className="prata uppercase">Browse Products</span>
           )}
@@ -588,6 +600,7 @@ export default function ProductCollection() {
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
+            selectedCollectionId={selectedCollection?.id}
           />
           <div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10 flex-1"

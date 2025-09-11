@@ -527,7 +527,7 @@ export default function CoupleProfile() {
               registryProductId: registryProduct.id, // Keep registry product ID for reference
               requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
               isGroupPayment: registryProduct.isGroupPayment || false,
-             };
+            };
           },
         );
         console.log('Transformed Items:', transformedItems);
@@ -1996,9 +1996,9 @@ export default function CoupleProfile() {
                 </h3>
                 <div className="mb-10">
                   <div className="flex h-full items-center">
-                    <form
+          <form
                       className="space-y-6 max-w-full w-full mx-auto"
-                      onSubmit={handleEmailSubmit}
+            onSubmit={handleEmailSubmit}
                     >
                       <div className="text-center mt-6">
                         <Heading
@@ -2008,9 +2008,9 @@ export default function CoupleProfile() {
                       </div>
                       <div className="max-w-md mx-auto">
                         <Input
-                          ref={emailInputRef}
-                          value={guestEmail}
-                          onChange={(e) => setGuestEmail(e.target.value)}
+              ref={emailInputRef}
+              value={guestEmail}
+              onChange={(e) => setGuestEmail(e.target.value)}
                           placeholder="Email Address *"
                           name="email"
                           type="email"
@@ -2021,17 +2021,17 @@ export default function CoupleProfile() {
                               ? 'Please enter a valid email address'
                               : undefined
                           }
-                          onBlur={(e) => {
-                            const email = e.target.value.trim();
-                            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                              setAlertMessage('Please enter a valid email address');
-                              setAlertType('error');
-                              setShowAlert(true);
-                              setTimeout(() => setShowAlert(false), 3000);
-                            }
-                          }}
-                          required
-                        />
+              onBlur={(e) => {
+                const email = e.target.value.trim();
+                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                  setAlertMessage('Please enter a valid email address');
+                  setAlertType('error');
+                  setShowAlert(true);
+                  setTimeout(() => setShowAlert(false), 3000);
+                }
+              }}
+              required
+            />
                       </div>
 
                       {/* Back and Next buttons */}
@@ -2044,16 +2044,16 @@ export default function CoupleProfile() {
                           <img src="" alt="" className="rotate-180" />
                           
                         </button>
-                        <button
-                          type="submit"
+            <button
+              type="submit"
                           className="flex items-center uppercase font-bold gap-2 z-10"
-                          disabled={isApiLoading}
-                        >
-                          {isApiLoading ? 'Processing...' : 'Continue'}
+              disabled={isApiLoading}
+            >
+              {isApiLoading ? 'Processing...' : 'Continue'}
                           <img src="/assets/Images/arrow.png" alt="" />
-                        </button>
+            </button>
                       </div>
-                    </form>
+          </form>
                   </div>
                 </div>
                 {/* <div className="step absolute bottom-6 max-[768px]:bottom-2.5 right-0 left-0 text-center flex items-center gap-2 justify-center">

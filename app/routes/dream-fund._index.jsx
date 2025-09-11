@@ -17,24 +17,28 @@ import {Link, useLoaderData, useFetcher, redirect} from '@remix-run/react';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
-
-  // Check for user/token authentication
-  if (!user || !user.accessToken) {
-    return redirect('/login');
-  }
-
-  if (!registry || !registry.data[0].id) {
-    throw new Response('Registry not found in session', {status: 404});
+  
+  // Only fetch registry data if user is logged in
+  let registry = null;
+  let registryId = null;
+  
+  if (user && user.user && user.user.id) {
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+      registryId = registry?.data?.[0]?.id;
+    } catch (error) {
+      console.log('Error fetching registry:', error);
+      // Continue without registry data
+    }
   }
 
   const cashFunds = await loadCashFunds({context});
   return {
     cashFunds,
-    registryId: registry?.data[0].id,
+    registryId,
     user,
   };
 }
@@ -89,7 +93,7 @@ async function loadCashFunds({context}) {
 
 // ProductCard component with Add to Registry functionality - moved outside to prevent recreation
 const ProductCard = React.memo(
-  ({product, collection, registryId, onSuccess, onError}) => {
+  ({product, collection, registryId, onSuccess, onError, user}) => {
     const fetcher = useFetcher();
     const hasShownFeedback = React.useRef(false);
     const previousFetcherData = React.useRef(null);
@@ -144,6 +148,19 @@ const ProductCard = React.memo(
 
     const handleAddToRegistry = async () => {
       try {
+        // Check if user is logged in
+        if (!user || !user.user || !user.user.id) {
+          // No user found, redirect to login
+          window.location.href = '/login';
+          return;
+        }
+
+        // Check if registry exists
+        if (!registryId) {
+          onError('Registry not found. Please create a registry first.');
+          return;
+        }
+
         // Fetch the image from the URL and convert it to a blob
         const imageResponse = await fetch(firstImage);
         const imageBlob = await imageResponse.blob();
@@ -237,7 +254,7 @@ const ProductCard = React.memo(
 );
 
 const DreamFund = () => {
-  const {cashFunds, registryId} = useLoaderData();
+  const {cashFunds, registryId, user} = useLoaderData();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
@@ -316,6 +333,7 @@ const DreamFund = () => {
                       registryId={registryId}
                       onSuccess={handleSuccess}
                       onError={handleError}
+                      user={user}
                     />
                   );
                 }) || [],

@@ -1,12 +1,18 @@
 import React, {useState, useRef} from 'react';
 import {useFetcher, useLoaderData} from '@remix-run/react';
-import {defer} from '@shopify/remix-oxygen';
+import {defer, redirect} from '@shopify/remix-oxygen';
 import Input from '~/components/Input';
 import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context} = args;
   const user = await context?.session?.get('@User');
+
+  // Check if user is logged in - redirect to login if not
+  if (!user || !user.user || !user.user.id) {
+    return redirect('/login');
+  }
+
   const registry = await context.ClientGet(
     `registries/by-userId/${user.user.id}`,
     context,

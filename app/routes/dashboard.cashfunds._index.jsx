@@ -630,19 +630,19 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
       }
     } catch (error) {
       // Fallback: submit without image if image fetch fails
-      const formData = new FormData();
-      formData.append('name', title);
-      formData.append('amount', amount);
-      formData.append('isAnyAmount', 'false');
-      formData.append('isFixedAmount', 'true');
-      formData.append('isAmountHide', 'false');
-      formData.append('registryId', registryId);
+    const formData = new FormData();
+    formData.append('name', title);
+    formData.append('amount', amount);
+    formData.append('isAnyAmount', 'false');
+    formData.append('isFixedAmount', 'true');
+    formData.append('isAmountHide', 'false');
+    formData.append('registryId', registryId);
       formData.append('note', 'Added from dashboard cash funds listing');
 
-      fetcher.submit(formData, {
-        method: 'post',
-        encType: 'multipart/form-data',
-      });
+    fetcher.submit(formData, {
+      method: 'post',
+      encType: 'multipart/form-data',
+    });
 
       // Show success alert
       if (onSuccess) {
