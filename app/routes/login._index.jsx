@@ -106,6 +106,7 @@ const LoginIndex = () => {
           stepNo="1"
           totalSteps="1"
           showLoginLink={false}
+          showPagination={false}
           content={
             <div className="flex h-full items-center">
               <form
@@ -157,9 +158,9 @@ const LoginIndex = () => {
                 <div className="flex justify-end mt-4 absolute bottom-6 right-6 steps-btns-hover">
                   <button
                     type="submit"
-                    className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10"
+                    className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10 whitespace-nowrap"
                   >
-                    Sign In <img src={arrow} alt="" />
+                    Log In <img src={arrow} alt="" />
                   </button>
                 </div>
               </form>

@@ -16,7 +16,7 @@ import step8Image from "/assets/Images/AlleyWayBg.png"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
 
-const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true }) => {
+const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true }) => {
     // Function to get the appropriate image based on step number
     const getStepImage = (step) => {
         switch(step) {
@@ -51,11 +51,13 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                 <div className="mb-10">
                     {content}
                 </div>
-                <div className="step absolute bottom-6 max-[768px]:bottom-2.5 right-0 left-0 text-center flex items-center gap-2 justify-center">
-                    <span className="text-6xl max-[768px]:text-4xl">{stepNo}</span>
-                    <span className="text-3xl max-[768px]:text-lg font-normal">/</span>
-                    <span className="text-3xl max-[768px]:text-lg font-normal">{totalSteps}</span>
-                </div>
+                {showPagination && (
+                    <div className="step absolute bottom-6 max-[768px]:bottom-2.5 right-0 left-0 text-center flex items-center gap-2 justify-center">
+                        <span className="text-6xl max-[768px]:text-4xl">{stepNo}</span>
+                        <span className="text-3xl max-[768px]:text-lg font-normal">/</span>
+                        <span className="text-3xl max-[768px]:text-lg font-normal">{totalSteps}</span>
+                    </div>
+                )}
             </div>
         </div>
      );
