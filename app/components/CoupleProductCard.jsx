@@ -77,7 +77,7 @@ const CoupleProductCard = ({
           {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
           <button
             onClick={handleButtonClick}
-            className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
+            className=" bg-white w-full cursor-pointer border px-4 py-2 lg:h-[4.063vw] tracking-[0.8px] uppercase text-[18px] leading-[18px] font-semibold mt-4 hover:bg-black hover:text-white"
           >
             Contribute
           </button>
@@ -112,7 +112,7 @@ const CoupleProductCard = ({
       return (
         <button
           onClick={handleButtonClick}
-          className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
+          className=" bg-white w-full cursor-pointer border px-4 py-2 lg:h-[4.063vw] tracking-[0.8px] uppercase text-[18px] leading-[18px] font-semibold mt-4 hover:bg-black hover:text-white"
         >
           Add to Cart
         </button>
@@ -125,7 +125,7 @@ const CoupleProductCard = ({
         <>
           <button
             onClick={handleButtonClick}
-            className=" bg-white w-full border px-4 py-4 uppercase text-sm font-semibold mt-4 hover:bg-black hover:text-white"
+            className=" bg-white w-full border px-4 py-2 lg:h-[4.063vw] tracking-[0.8px] uppercase text-[18px] leading-[18px] font-semibold mt-4 hover:bg-black hover:text-white"
           >
             Add to Cart
           </button>
@@ -159,14 +159,14 @@ const CoupleProductCard = ({
         (!isCashFund && !isGroupGift && status === 'purchased') || 
         ((isCashFund || isGroupGift) && !isAnyAmount && maxContribution - contributedAmount === 0) || 
         (!isCashFund && !isGroupGift && isFullyGifted) ? 'overlay-gifted' : ''
-      } p-4 flex flex-col justify-between`}
+      } p-0 flex flex-col justify-between`}
     >
       <div className="flex flex-col justify-between">
         {image ? (
           <div
             className={`${
               !finalImageUrl ? 'bg-gray-200 ' : ''
-            } h-[380px] w-full mb-4 flex items-center justify-center relative`}
+            } h-[360px] lg:h-[19.792vw] w-full mb-4 flex items-center justify-center relative`}
           >
             <img
               src={finalImageUrl}
@@ -188,7 +188,7 @@ const CoupleProductCard = ({
           </div>
         )}
         <h2
-          className={`text-lg font-semibold ${
+          className={`text-lg lg:text-[1.25vw] font-[500] mb-[8px] ${
             (isCashFund || isGroupGift) 
               ? (isAnyAmount ? 'cursor-pointer' : (maxContribution - contributedAmount === 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'))
               : (isFullyGifted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer')
@@ -206,17 +206,17 @@ const CoupleProductCard = ({
           {name}
         </h2>
         <div className="flex justify-between items-center">
-         {isAnyAmount ? "" : <p className="font-semibold text-md">${price}</p>}
+         {isAnyAmount ? "" : <p className="font-normal text-lg lg:text-[1.25vw]">${price}</p>}
 
           {(isCashFund || isGroupGift) && !isAnyAmount && (
-            <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
-              Remaining: ${maxContribution - contributedAmount}
+            <p className="text-sm ivyora lg:text-[1.042vw] italic mt-2 text-right w-full ivyora mb-2 text-[#000000]">
+              ${maxContribution - contributedAmount} Remaining
             </p>
           )}
         </div>
         {(isGroupGift || isCashFund) && !isAnyAmount && (
-          <div className="mt-2">
-            <p className="text-sm text-gray-500">
+          <div className="mt-[1.146vw]">
+            <p className="text-sm ivyora lg:text-[1.042vw] text-[#000000]">
               Contributed: ${contributedAmount.toFixed(2)} / $
               {maxContribution.toFixed(2)}
             </p>
@@ -225,10 +225,10 @@ const CoupleProductCard = ({
       </div>
       {(!isGroupGift && !isCashFund) && (
           <div className="mt-2 flex flex-row items-center gap-6">
-            <p className="text-sm text-gray-500 italic">
+            <p className="text-sm italic ivyora lg:text-[1.042vw] text-[#000000]">
               Requested: {quantity}
             </p>
-            <p className="text-sm text-gray-500 italic">
+            <p className="text-sm ivyora lg:text-[1.042vw] text-[#000000] italic">
               Still Needs: {stillNeeds}
             </p>
           </div>
