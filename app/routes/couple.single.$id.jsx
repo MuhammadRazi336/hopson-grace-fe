@@ -4,10 +4,10 @@ import CoupleProductCard from '~/components/CoupleProductCard';
 import {useState, useRef, useEffect} from 'react';
 import {CoupleProfileViewHeader} from './couple.test._index';
 import SideCart from '~/components/SideCart';
-import {CoupleFooter} from '~/components/CoupleFooter';
 import Input from '~/components/Input';
 import Heading from '~/components/Heading';
 import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
+import { Footer } from '~/components/Footer';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -2068,7 +2068,7 @@ export default function CoupleProfile() {
         </div>
       )}
 
-      <CoupleFooter />
+     <Footer />
     </>
   );
 }

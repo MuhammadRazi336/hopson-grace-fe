@@ -7,7 +7,7 @@ import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {useNavigate} from 'react-router-dom';
 import {Header} from '~/components/Header';
-import {CoupleFooter} from '~/components/CoupleFooter';
+import { Footer } from '~/components/Footer';
 
 export async function loader({request, context}) {
   const url = new URL(request.url);
@@ -134,7 +134,7 @@ export default function FindCoupleForm() {
         </>
       )}
 
-      <CoupleFooter />
+      <Footer />
     </div>
   );
 }

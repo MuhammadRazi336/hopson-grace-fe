@@ -103,7 +103,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/virtual-appointment">
+                      <Link className="text-white" to="/contact-us">
                         BOOK A VIRTUAL APPOINTMENT
                       </Link>
                     </li>
@@ -113,7 +113,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/readymade-registries">
+                      <Link className="text-white" to="/ready-made-registries">
                         READY MADE REGISTRIES
                       </Link>
                     </li>
@@ -177,9 +177,9 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 >
                   <ul className="text-white text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
-                      <Link className="text-white" to="/live-chat">
+                      <p className="text-white">
                         LIVE CHAT
-                      </Link>
+                      </p>
                     </li>
                   </ul>
                 </nav>
