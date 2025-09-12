@@ -178,18 +178,18 @@ const Brand = () => {
       <Header />
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-[500px] lg:h-[800px] flex flex-row items-center justify-center">
+      <div className="w-full h-[500px] lg:h-[39.58vw] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
             <Heading
               text={collection.title}
               classes={
-                'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-4xl lg:text-[2.29vw] lg:leading-[1.88vw] font-normal text-center max-[1024px]:m-0 text-black'
               }
               image={lineImghead}
-              imageClasses={'w-[150px] lg:w-[330px]'}
+              imageClasses={'w-[150px] lg:w-[22.14vw]'}
             />
-            <p className="text-base sm:text-lg lg:text-xl text-black leading-relaxed mx-auto mt-10">
+            <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.35vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-10">
               {collection.description}
             </p>
           </div>
@@ -197,7 +197,7 @@ const Brand = () => {
         <div className="w-[50%] h-full">
           <img
             src={collection.image?.url || '/assets/Images/dreamFunds.png'}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain object-center"
             alt={collection.image?.altText || collection.title}
           />
         </div>
