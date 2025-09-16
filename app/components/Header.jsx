@@ -35,7 +35,7 @@ export function Header() {
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = "https://dev-hopsongrace.codup.io" || 'http://localhost:3040';
+  const apiBaseUrl = 'https://dev-hopsongrace.codup.io';
 
   // Notification system state
   const [notifications, setNotifications] = useState([]);
@@ -44,6 +44,7 @@ export function Header() {
   const notificationRef = useRef(null);
   const socketRef = useRef(null);
   const searchInputRef = useRef(null);
+
 
   // Update status when registry data changes
   useEffect(() => {
@@ -123,6 +124,15 @@ export function Header() {
     }
   }, []);
 
+  // Fetch unread count when user data is available
+  useEffect(() => {
+    if (userData?.id && user) {
+      console.log('User data loaded, fetching unread count...');
+      fetchUnreadCount();
+    }
+  }, [userData?.id, user]);
+
+
   // Socket connection and notification handling
   useEffect(() => {
     console.log('Socket useEffect triggered:', {
@@ -149,6 +159,7 @@ export function Header() {
         console.log('New notification received:', notification);
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(prev => prev + 1);
+        console.log('Incremented unread count to:', unreadCount + 1);
       });
 
       // Listen for connection status
@@ -164,9 +175,10 @@ export function Header() {
         console.error('Socket connection error:', error);
       });
 
-      // Fetch existing notifications
+      // Fetch existing notifications and unread count
       console.log('Calling fetchNotifications...');
       fetchNotifications();
+      fetchUnreadCount();
 
       // TEMPORARY: Create a test notification (remove this after testing)
       setTimeout(() => {
@@ -219,21 +231,21 @@ export function Header() {
       });
 
       console.log('Notifications API response status:', response.status);
-      console.log('Notifications API response headers:', Object.fromEntries(response.headers.entries()));
 
       if (response.ok) {
-        const notifications = await response.json();
-        console.log('Raw notifications response:', notifications);
+        const result = await response.json();
+        console.log('Raw notifications response:', result);
         
-        // Handle direct array response
-        if (Array.isArray(notifications)) {
-          console.log('Setting notifications:', notifications);
-          setNotifications(notifications);
-          const unreadNotifications = notifications.filter(n => n.status === 'unread');
-          console.log('Unread notifications count:', unreadNotifications.length);
+        // Handle new API structure with data wrapper
+        if (result.code === 200 && result.data && Array.isArray(result.data)) {
+          console.log('Setting notifications:', result.data);
+          setNotifications(result.data);
+          // Calculate unread count from notifications
+          const unreadNotifications = result.data.filter(n => n.status === 'unread');
+          console.log('Unread notifications count from notifications API:', unreadNotifications.length);
           setUnreadCount(unreadNotifications.length);
         } else {
-          console.log('Notifications response is not an array:', typeof notifications);
+          console.log('Notifications response structure unexpected:', result);
         }
       } else {
         const errorText = await response.text();
@@ -248,11 +260,54 @@ export function Header() {
     }
   };
 
+  // Fetch unread count from API
+  const fetchUnreadCount = async () => {
+    if (!userData?.id || !user) {
+      console.log('Cannot fetch unread count - missing userData.id or user token:', {
+        userDataId: userData?.id,
+        hasUser: !!user
+      });
+      return;
+    }
+
+    console.log('Fetching unread count for user:', userData.id);
+    console.log('API URL:', `${apiBaseUrl}/api/notifications/unread/count`);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/notifications/unread/count`, {
+        headers: {
+          'Authorization': `Bearer ${user}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Unread count API response status:', response.status);
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Unread count API response:', result);
+        if (result.code === 200 && result.data) {
+          console.log('Setting unread count to:', result.data.count);
+          setUnreadCount(result.data.count || 0);
+        }
+      } else {
+        const errorText = await response.text();
+        console.error('Unread count API error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  };
+
   // Mark notification as read
   const markNotificationAsRead = async (notificationId) => {
     try {
       const response = await fetch(`${apiBaseUrl}/api/notifications/${notificationId}/read`, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${user}`,
           'Content-Type': 'application/json'
@@ -276,7 +331,7 @@ export function Header() {
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/notifications/read-all`, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${user}`,
           'Content-Type': 'application/json'

@@ -1,7 +1,7 @@
 import CustomSelect from '~/components/CustomSelect.jsx';
 import Card from '~/components/Card.jsx';
 import ButtonComponent from '~/components/Button.jsx';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {Link, useFetcher, useLoaderData, useNavigate, Form} from '@remix-run/react';
 import RegistryChecklist from '~/components/RegistryChecklist';
 import {json, redirect} from '@shopify/remix-oxygen';
@@ -122,6 +122,82 @@ const index = () => {
   const fetcher = useFetcher();
 
   const [selected, setSelected] = useState(registry);
+  
+  // Notification state
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  
+  const apiBaseUrl = 'https://dev-hopsongrace.codup.io';
+
+  // Fetch notifications function
+  const fetchNotifications = async (isRefresh = false) => {
+    if (!user?.user?.id) {
+      setLoading(false);
+      return;
+    }
+
+    if (isRefresh) {
+      setRefreshing(true);
+    }
+
+    try {
+      const token = localStorage.getItem('@Token') || localStorage.getItem('@token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch(`${apiBaseUrl}/api/notifications`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.code === 200 && result.data && Array.isArray(result.data)) {
+          setNotifications(result.data);
+          const unreadNotifications = result.data.filter(n => n.status === 'unread');
+          setUnreadCount(unreadNotifications.length);
+          console.log(`Notifications refreshed. Unread count: ${unreadNotifications.length}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  // Fetch notifications on component mount
+  useEffect(() => {
+    fetchNotifications();
+  }, [user?.user?.id]);
+
+  // Set up polling to check for new notifications every 30 seconds
+  useEffect(() => {
+    if (!user?.user?.id) return;
+
+    const interval = setInterval(() => {
+      console.log('Polling for new notifications...');
+      fetchNotifications();
+    }, 30000); // Check every 30 seconds
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [user?.user?.id]);
+
+  // Handle notification card click
+  const handleNotificationView = () => {
+    // Refresh notifications when user clicks view
+    console.log('View notifications clicked - refreshing notifications...');
+    fetchNotifications(true); // Pass true to indicate this is a refresh
+    // You can navigate to a notifications page or show a modal here
+  };
 
   // Handle case where registry is null
   if (!registry) {
@@ -271,7 +347,12 @@ const index = () => {
         </div>
         <div className="w-full xl:w-3/12 flex flex-col gap-y-4">
           <div>
-            <NotificationCard />
+            <NotificationCard 
+              count={unreadCount} 
+              onView={handleNotificationView}
+              loading={loading}
+              refreshing={refreshing}
+            />
           </div>
           <div>
             <RegistryStatusCard status={registry?.status} registryId={registry?.id} token={user?.accessToken}/>
