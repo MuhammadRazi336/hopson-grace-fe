@@ -685,8 +685,11 @@ button.reset:hover:not(:has(> *)) {
 }
 
 button > p {
-  font-size: 18px !important;
   letter-spacing: 0.08em;
+}
+
+.button-typography{
+  font-size: 18px;
 }
 
 .bastardogrotesk > * {
@@ -1024,6 +1027,14 @@ td.rdp-day.rdp-outside {
     font-size: 16px;
   }
 }
+
+@media screen and (min-width: 1025px) {
+  .button-typography{
+    font-size: 0.833vw !important;
+    line-height: 0.938vw !important;
+  }
+}
+
 @media screen and (max-width: 1024px) {
   .insetshadow::before {
     display: none;

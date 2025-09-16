@@ -4,11 +4,11 @@ import lonelingImg from '/assets/Images/longline.png';
 const Textandbutton = () => {
   return (
     <div className="max-w-[1258px] mx-auto px-3">
-      <h2 className=" lg:text-[68px] xl:text-[68px] 2xl:text-[68px] text-[28px] prata text-center lg:leading-[74px] font-normal mb-7">
+      <h2 className=" lg:text-[3.542vw] text-[28px] prata text-center lg:leading-[3.854vw] font-normal mb-7">
         your wedding <span className="italic ivyora font-normal">isn't</span>{' '}ordinary,
          <br /> your registry<span className="italic ivyora font-normal"> shouldn't be either</span>
       </h2>
-      <p className="text-center md:text-lg lg:text-2xl 2xl:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[40px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+      <p className="text-center lg:text-[1.563vw] lg:leading-[2.083vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[2.083vw] mb-8">
         From iconic homeware to bespoke travel experiences and custom cash
         funds, <br className="min-[767px]:hidden" /> The Registry is for modern
         couples who value style, sustainability and service.

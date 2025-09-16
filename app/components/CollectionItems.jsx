@@ -5,6 +5,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
 import vectorImg from '/assets/Images/Vector 14.png';
+import headingCurve1 from '../assets/Images/heading-curve1.svg';
 import Button from '~/components/Button.jsx';
 import iconitem from '/assets/Images/collectionitems.png';
 import WorldBestBrands from '/assets/Images/WORLDSBESTBRANDS.png';
@@ -18,13 +19,13 @@ const CollectionItems = () => {
   return (
     <div className="relative">
       <div className="max-w-[80%] max-[1024px]:max-w-[1400px] mx-auto relative collection-slider">
-        <h2 className="text-3xl leading-normal lg:text-5xl prata text-center lg:leading-[48px] font-normal mb-2 lg:mb-5">
+        <h2 className="text-3xl leading-normal lg:text-[2.5vw] prata text-center lg:leading-[1.875vw] font-normal mb-2 lg:mb-5">
           why the registry?
         </h2>
         <img
-          src={vectorImg}
+          src={headingCurve1}
           alt=""
-          className="w-[350px] lg:w-[500px] m-auto mb-12"
+          className="w-[350px] lg:w-[20.521vw] m-auto mb-12"
         />
         <p className="text-center md:text-lg lg:text-[26px] 2xl:text-[26px] md:leading-[38px] lg:leading-[38px] xl:leading-[38px] 2xl:leading-[38px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
         A smarter, more stylish way to register—curated for how couples live now.

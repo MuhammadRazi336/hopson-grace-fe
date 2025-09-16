@@ -206,10 +206,10 @@ const Home = () => {
   return (
     <div className="overflow-x-hidden">
       <Header />
-      <section className="hero-slider lg:h-[940px]">
+      <section className="hero-slider lg:h-[48.958vw]">
         <HeroSlider />
       </section>
-      <section className="text-and-button-section py-14 lg:py-36">
+      <section className="text-and-button-section py-14 lg:py-[7.76vw]">
         <Textandbutton />
       </section>
       <section className="lg:mb-[240px]">

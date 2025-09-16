@@ -347,6 +347,31 @@ export type GetSubCollectionsQuery = {
   >;
 };
 
+export type GetNavigationBrandsQueryVariables = StorefrontAPI.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetNavigationBrandsQuery = {
+  collections: {
+    nodes: Array<
+      Pick<
+        StorefrontAPI.Collection,
+        'id' | 'title' | 'handle' | 'description'
+      > & {
+        image?: StorefrontAPI.Maybe<
+          Pick<
+            StorefrontAPI.Image,
+            'id' | 'url' | 'altText' | 'width' | 'height'
+          >
+        >;
+        metafield?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'id' | 'value'>
+        >;
+      }
+    >;
+  };
+};
+
 export type GetNavigationCollectionsQueryVariables = StorefrontAPI.Exact<{
   [key: string]: never;
 }>;
@@ -479,6 +504,31 @@ export type GetBrandQuery = {
       };
     }
   >;
+};
+
+export type GetBrandsForMarqueeQueryVariables = StorefrontAPI.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetBrandsForMarqueeQuery = {
+  collections: {
+    nodes: Array<
+      Pick<
+        StorefrontAPI.Collection,
+        'id' | 'title' | 'handle' | 'description'
+      > & {
+        image?: StorefrontAPI.Maybe<
+          Pick<
+            StorefrontAPI.Image,
+            'id' | 'url' | 'altText' | 'width' | 'height'
+          >
+        >;
+        metafield?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'id' | 'value'>
+        >;
+      }
+    >;
+  };
 };
 
 export type GetCashFundsForCashFundsQueryVariables = StorefrontAPI.Exact<{
@@ -730,6 +780,79 @@ export type GetProductByHandleQuery = {
   >;
 };
 
+export type GetRealRegistriesQueryVariables = StorefrontAPI.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetRealRegistriesQuery = {
+  collections: {
+    nodes: Array<
+      Pick<
+        StorefrontAPI.Collection,
+        'id' | 'title' | 'handle' | 'description'
+      > & {
+        image?: StorefrontAPI.Maybe<
+          Pick<
+            StorefrontAPI.Image,
+            'id' | 'url' | 'altText' | 'width' | 'height'
+          >
+        >;
+        readyMadeMetafield?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'id' | 'value'>
+        >;
+        parentCollectionMetafield?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'id' | 'value'>
+        >;
+        subCollectionMetafield?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'id' | 'value'>
+        >;
+      }
+    >;
+  };
+};
+
+export type GetDashboardSubCollectionQueryVariables = StorefrontAPI.Exact<{
+  id: StorefrontAPI.Scalars['ID']['input'];
+}>;
+
+export type GetDashboardSubCollectionQuery = {
+  collection?: StorefrontAPI.Maybe<
+    Pick<
+      StorefrontAPI.Collection,
+      'id' | 'title' | 'handle' | 'description'
+    > & {
+      image?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
+      >;
+      products: {
+        edges: Array<{
+          node: Pick<
+            StorefrontAPI.Product,
+            'id' | 'title' | 'handle' | 'description' | 'createdAt'
+          > & {
+            images: {
+              edges: Array<{node: Pick<StorefrontAPI.Image, 'id' | 'url'>}>;
+            };
+            variants: {
+              edges: Array<{
+                node: Pick<
+                  StorefrontAPI.ProductVariant,
+                  'id' | 'availableForSale'
+                > & {
+                  priceV2: Pick<
+                    StorefrontAPI.MoneyV2,
+                    'amount' | 'currencyCode'
+                  >;
+                };
+              }>;
+            };
+          };
+        }>;
+      };
+    }
+  >;
+};
+
 export type GetGiftCardsQueryVariables = StorefrontAPI.Exact<{
   [key: string]: never;
 }>;
@@ -840,6 +963,73 @@ export type GetCashFundsForDreamFundQuery = {
   };
 };
 
+export type GetHomeSubCollectionQueryVariables = StorefrontAPI.Exact<{
+  id: StorefrontAPI.Scalars['ID']['input'];
+}>;
+
+export type GetHomeSubCollectionQuery = {
+  collection?: StorefrontAPI.Maybe<
+    Pick<
+      StorefrontAPI.Collection,
+      'id' | 'title' | 'handle' | 'description'
+    > & {
+      image?: StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
+      >;
+      products: {
+        edges: Array<{
+          node: Pick<
+            StorefrontAPI.Product,
+            'id' | 'title' | 'handle' | 'description'
+          > & {
+            images: {
+              edges: Array<{node: Pick<StorefrontAPI.Image, 'id' | 'url'>}>;
+            };
+            variants: {
+              edges: Array<{
+                node: Pick<
+                  StorefrontAPI.ProductVariant,
+                  'id' | 'availableForSale'
+                > & {
+                  priceV2: Pick<
+                    StorefrontAPI.MoneyV2,
+                    'amount' | 'currencyCode'
+                  >;
+                };
+              }>;
+            };
+          };
+        }>;
+      };
+    }
+  >;
+};
+
+export type GetHomeBrandsQueryVariables = StorefrontAPI.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetHomeBrandsQuery = {
+  collections: {
+    nodes: Array<
+      Pick<
+        StorefrontAPI.Collection,
+        'id' | 'title' | 'handle' | 'description'
+      > & {
+        image?: StorefrontAPI.Maybe<
+          Pick<
+            StorefrontAPI.Image,
+            'id' | 'url' | 'altText' | 'width' | 'height'
+          >
+        >;
+        metafield?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'id' | 'value'>
+        >;
+      }
+    >;
+  };
+};
+
 export type GetAllBlogsAndArticlesForInspirationQueryVariables =
   StorefrontAPI.Exact<{[key: string]: never}>;
 
@@ -880,16 +1070,19 @@ export type CollectionsQuery = {
         subCollections?: StorefrontAPI.Maybe<
           Pick<StorefrontAPI.Metafield, 'value'>
         >;
+        readyMadeMetafield?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'id' | 'value'>
+        >;
       }
     >;
   };
 };
 
-export type GetBrandsQueryVariables = StorefrontAPI.Exact<{
+export type GetOurBrandsQueryVariables = StorefrontAPI.Exact<{
   [key: string]: never;
 }>;
 
-export type GetBrandsQuery = {
+export type GetOurBrandsQuery = {
   collections: {
     nodes: Array<
       Pick<
@@ -1103,11 +1296,11 @@ export type GetReadyMadeRegistriesQuery = {
   };
 };
 
-export type GetSubCollectionQueryVariables = StorefrontAPI.Exact<{
+export type GetReadyMadeSubCollectionQueryVariables = StorefrontAPI.Exact<{
   id: StorefrontAPI.Scalars['ID']['input'];
 }>;
 
-export type GetSubCollectionQuery = {
+export type GetReadyMadeSubCollectionQuery = {
   collection?: StorefrontAPI.Maybe<
     Pick<
       StorefrontAPI.Collection,
@@ -1326,6 +1519,10 @@ interface GeneratedQueryTypes {
     return: GetSubCollectionsQuery;
     variables: GetSubCollectionsQueryVariables;
   };
+  '#graphql\n        query getNavigationBrands {\n          collections(first: 50) {\n            nodes {\n              id\n              title\n              handle\n              description\n              image {\n                id\n                url\n                altText\n                width\n                height\n              }\n              metafield(namespace: "custom", key: "brand") {\n                id\n                value\n              }\n            }\n          }\n        }\n      ': {
+    return: GetNavigationBrandsQuery;
+    variables: GetNavigationBrandsQueryVariables;
+  };
   '#graphql\n        query getNavigationCollections {\n          collections(first: 50) {\n            nodes {\n              id\n              title\n              handle\n              description\n              image {\n                id\n                url\n                altText\n                width\n                height\n              }\n              parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {\n                id\n                value\n              }\n              readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {\n                id\n                value\n              }\n            }\n          }\n        }\n      ': {
     return: GetNavigationCollectionsQuery;
     variables: GetNavigationCollectionsQueryVariables;
@@ -1341,6 +1538,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query getBrand($handle: String!) {\n    collection(handle: $handle) {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "brand") {\n        id\n        value\n      }\n      products(first: 20) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: GetBrandQuery;
     variables: GetBrandQueryVariables;
+  };
+  '#graphql\nquery getBrandsForMarquee {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "brand") {\n        id\n        value\n      }\n    }\n  }\n}': {
+    return: GetBrandsForMarqueeQuery;
+    variables: GetBrandsForMarqueeQueryVariables;
   };
   '#graphql\nquery getCashFundsForCashFunds {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "cashfund") {\n        id\n        value\n      }\n      products(first: 10) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n': {
     return: GetCashFundsForCashFundsQuery;
@@ -1362,6 +1563,14 @@ interface GeneratedQueryTypes {
     return: GetProductByHandleQuery;
     variables: GetProductByHandleQueryVariables;
   };
+  '#graphql\n  query getRealRegistries {\n    collections(first: 50) {\n      nodes {\n        id\n        title\n        handle\n        description\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {\n          id\n          value\n        }\n        parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {\n          id\n          value\n        }\n        subCollectionMetafield: metafield(namespace: "sub", key: "collection") {\n          id\n          value\n        }\n      }\n    }\n  }': {
+    return: GetRealRegistriesQuery;
+    variables: GetRealRegistriesQueryVariables;
+  };
+  '#graphql\n  query getDashboardSubCollection($id: ID!) {\n    collection(id: $id) {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      products(first: 10) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            createdAt\n            images(first: 1) {\n              edges {\n                node {\n                  id\n                  url\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }': {
+    return: GetDashboardSubCollectionQuery;
+    variables: GetDashboardSubCollectionQueryVariables;
+  };
   '#graphql\nquery getGiftCards {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "giftcard") {\n        id\n        value\n      }\n      products(first: 10) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n': {
     return: GetGiftCardsQuery;
     variables: GetGiftCardsQueryVariables;
@@ -1370,17 +1579,29 @@ interface GeneratedQueryTypes {
     return: GetCashFundsForDreamFundQuery;
     variables: GetCashFundsForDreamFundQueryVariables;
   };
+  '#graphql\nquery getRealRegistries {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n       readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {\n        id\n        value\n      }\n       parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {\n        id\n        value\n      }\n       subCollectionMetafield: metafield(namespace: "sub", key: "collection") {\n        id\n        value\n      }\n     }\n   }\n }\n': {
+    return: GetRealRegistriesQuery;
+    variables: GetRealRegistriesQueryVariables;
+  };
+  '#graphql\nquery getHomeSubCollection($id: ID!) {\n  collection(id: $id) {\n    id\n    title\n    handle\n    description\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n    products(first: 10) {\n      edges {\n        node {\n          id\n          title\n          handle\n          description\n          images(first: 1) {\n            edges {\n              node {\n                id\n                url\n              }\n            }\n          }\n          variants(first: 1) {\n            edges {\n              node {\n                id\n                availableForSale\n                priceV2 {\n                  amount\n                  currencyCode\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}': {
+    return: GetHomeSubCollectionQuery;
+    variables: GetHomeSubCollectionQueryVariables;
+  };
+  '#graphql\nquery getHomeBrands {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "brand") {\n        id\n        value\n      }\n    }\n  }\n}': {
+    return: GetHomeBrandsQuery;
+    variables: GetHomeBrandsQueryVariables;
+  };
   '#graphql\nquery GetAllBlogsAndArticlesForInspiration {\n  blogs(first: 10) {\n    nodes {\n      title\n      handle\n      articles(first: 20) {\n        nodes {\n          id\n          title\n          handle\n          publishedAt\n          contentHtml\n          image {\n            url\n          }\n        }\n      }\n    }\n  }\n}\n': {
     return: GetAllBlogsAndArticlesForInspirationQuery;
     variables: GetAllBlogsAndArticlesForInspirationQueryVariables;
   };
-  '#graphql\n  query Collections {\n    collections(first: 20) {\n      nodes {\n        id\n        title\n        description\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        metafield(namespace: "parent", key: "collection") {\n          key\n          value\n          namespace\n          type\n        }\n        subCollections: metafield(namespace: "sub", key: "collection") {\n          value\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query Collections {\n    collections(first: 20) {\n      nodes {\n        id\n        title\n        description\n        image {\n          id\n          url\n          altText\n          width\n          height\n        }\n        metafield(namespace: "parent", key: "collection") {\n          key\n          value\n          namespace\n          type\n        }\n        subCollections: metafield(namespace: "sub", key: "collection") {\n          value\n        }\n        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {\n          id\n          value\n        }\n      }\n    }\n  }\n': {
     return: CollectionsQuery;
     variables: CollectionsQueryVariables;
   };
-  '#graphql\nquery getBrands {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "brand") {\n        id\n        value\n      }\n      products(first: 10) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n': {
-    return: GetBrandsQuery;
-    variables: GetBrandsQueryVariables;
+  '#graphql\nquery getOurBrands {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "brand") {\n        id\n        value\n      }\n      products(first: 10) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}': {
+    return: GetOurBrandsQuery;
+    variables: GetOurBrandsQueryVariables;
   };
   '#graphql\n  query Page(\n    $language: LanguageCode,\n    $country: CountryCode,\n    $handle: String!\n  )\n  @inContext(language: $language, country: $country) {\n    page(handle: $handle) {\n      id\n      title\n      body\n      seo {\n        description\n        title\n      }\n    }\n  }\n': {
     return: PageQuery;
@@ -1398,13 +1619,13 @@ interface GeneratedQueryTypes {
     return: GetCashFundsForPorteTravelQuery;
     variables: GetCashFundsForPorteTravelQueryVariables;
   };
-  '#graphql\nquery getReadyMadeRegistries {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n       readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {\n        id\n        value\n      }\n       parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {\n        id\n        value\n      }\n       subCollectionMetafield: metafield(namespace: "sub", key: "collection") {\n        id\n        value\n      }\n     }\n   }\n }\n ': {
+  '#graphql\nquery getReadyMadeRegistries {\n  collections(first: 50) {\n    nodes {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n       readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {\n        id\n        value\n      }\n       parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {\n        id\n        value\n      }\n       subCollectionMetafield: metafield(namespace: "sub", key: "collection") {\n        id\n        value\n      }\n     }\n   }\n }\n': {
     return: GetReadyMadeRegistriesQuery;
     variables: GetReadyMadeRegistriesQueryVariables;
   };
-  '#graphql\n query getSubCollection($id: ID!) {\n   collection(id: $id) {\n     id\n     title\n     handle\n     description\n     image {\n       id\n       url\n       altText\n       width\n       height\n     }\n     products(first: 50) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n': {
-    return: GetSubCollectionQuery;
-    variables: GetSubCollectionQueryVariables;
+  '#graphql\n query getReadyMadeSubCollection($id: ID!) {\n   collection(id: $id) {\n     id\n     title\n     handle\n     description\n     image {\n       id\n       url\n       altText\n       width\n       height\n     }\n     products(first: 50) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n': {
+    return: GetReadyMadeSubCollectionQuery;
+    variables: GetReadyMadeSubCollectionQueryVariables;
   };
   '#graphql\n query getRegistry($handle: String!) {\n   collection(handle: $handle) {\n     id\n     title\n     handle\n     description\n     image {\n       id\n       url\n       altText\n       width\n       height\n     }\n     products(first: 50) {\n       edges {\n         node {\n           id\n           title\n           handle\n           description\n           images(first: 10) {\n             edges {\n               node {\n                 id\n                 url\n                 altText\n                 width\n                 height\n               }\n             }\n           }\n           variants(first: 1) {\n             edges {\n               node {\n                 id\n                 availableForSale\n                 priceV2 {\n                   amount\n                   currencyCode\n                 }\n               }\n             }\n           }\n         }\n       }\n     }\n   }\n }\n': {
     return: GetRegistryQuery;
