@@ -65,7 +65,7 @@ const Steps = () => {
         {stepsData.map((step, idx) => (
           <SwiperSlide key={idx}>
             <div className="flex items-start py-6">
-              <div className="text-[56px] prata font-normal leading-9 mr-2 max-[1024px]:hidden">
+              <div className="text-[40px] lg:text-[2.917vw] lg:leading-[1.875vw] prata font-normal leading-[40px] mr-2 max-[1024px]:hidden">
                 {idx + 1}.
               </div>
               <div>
@@ -73,11 +73,11 @@ const Steps = () => {
                   <div className="text-3xl 2xl:text-[56px] lg:text-[42px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
                     {idx + 1}.
                   </div>
-                  <h2 className="uppercase text-lg 2xl:text-[1.25vw] lg:text-[1.25vw] font-80 mb-6 leading-[1.458vw] tracking-[10%]">
+                  <h2 className="uppercase text-lg lg:text-[1.25vw] lg:leading-[1.458vw] font-80 mb-6 leading-lg tracking-[10%]">
                     {step.title}
                   </h2>
                 </div>
-                <p className="text-sm leading-normal lg:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.979vw] 2xl:leading-[1.979vw] text-gray-700 w-[90%]">
+                <p className="text-sm leading-normal lg:text-[1.25vw] lg:leading-[1.979vw] text-gray-700 w-[90%]">
                   {step.description}
                 </p>
               </div>

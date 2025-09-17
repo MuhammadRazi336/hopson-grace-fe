@@ -828,7 +828,7 @@ button > p {
 }
 
 .testimonialSlider .swiper-wrapper {
-  padding-bottom: 200px;
+  padding-bottom: 5.698vw;
 }
 
 .testimonialSlider .swiper-pagination {
@@ -890,13 +890,13 @@ button > p {
 
 .line-vertical {
   background: url('/assets/Images/faqline.png') no-repeat;
-  background-position: center;
+  background-position: top;
   background-size: 1.1vh;
 }
 
 .line-vertical-extend {
   background: url('/assets/Images/faqlineextend.png') no-repeat;
-  background-position: center;
+  background-position: top;
   background-size: 1.8vh;
 }
 
@@ -1030,7 +1030,7 @@ td.rdp-day.rdp-outside {
 
 @media screen and (min-width: 1025px) {
   .button-typography{
-    font-size: 0.833vw !important;
+    font-size: 0.938vw !important;
     line-height: 0.938vw !important;
   }
 }

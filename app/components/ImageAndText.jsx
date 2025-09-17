@@ -23,29 +23,29 @@ const ImageAndText = ({
 
   return (
     <div
-      className={`flex lg:gap-[34px] gap-2 ${
+      className={`flex lg:gap-[2.083vw] gap-2 ${
         direction === 'left'
           ? 'items-stretch'
           : 'items-stretch flex-row-reverse'
       }`}
     >
       <div
-        className={`bg-[#F5F2ED] py-16 relative flex justify-center flex-col lg:w-[35%] w-1/2 lg:px-[81px] max-[768px]:p-10 ${
+        className={`bg-[#F5F2ED] py-16 relative flex justify-center flex-col lg:w-[36.406vw] w-1/2 lg:px-[4.219vw] max-[768px]:p-10 ${
           direction === 'left' ? 'lg:mb-20 mb-6' : 'lg:mt-20 mt-6'
         }`}
       >
-        <h3 className="text-2xl lg:text-[2.5vw] 2xl:text-[2.5vw] lg:mx-auto lg:leading-[3.125vw] 3xl:w-full prata max-w-[410px]">
+        <h3 className="text-2xl lg:text-[2.5vw] lg:mx-auto lg:leading-[3.125vw] prata max-w-[410px]">
           {title}
         </h3>
 
-        <svg className='mx-auto my-[20px]' width="287" height="14" viewBox="0 0 287 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2 12C46.8148 12 91.6296 12 136.444 12C183.082 12 322.638 2 276 2" stroke="black" stroke-width="3" stroke-linecap="round"/>
+        <svg className='mx-auto my-[20px] lg:w-[18.542vw] lg:h-[0.521vw]' width="360" height="10" viewBox="0 0 360 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 2C79.5717 2 157.143 2 234.715 2C275.718 2 317.587 8 358 8" stroke="black" stroke-width="3" stroke-linecap="round"/>
         </svg>
 
         {stepsCheck ? (
           <Steps className="max-w-[520px]" />
         ) : (
-          <p className="text-sm font-[400] lg:text-[26px] leading-normal lg:leading-[44px] max-w-[488px] mt-4 mb-12 text-center">
+          <p className="text-sm font-[400] lg:text-[1.354vw] leading-normal lg:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-12 text-center">
             {description}
           </p>
         )}
@@ -54,7 +54,7 @@ const ImageAndText = ({
           <NavLink to={buttonLink}>
             <Button
               text={buttontext}
-              className={`text-[18px] py-4 lg:py-[23.5px] w-full lg:w-[320px] mt-4 lg:mt-0 bastardogrotesk button-cs 
+              className={`text-[18px] cursor-pointer py-4 lg:py-[5px] w-full lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
                 ${
                   stepsCheck
                     ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[768px]:p-3.5'
