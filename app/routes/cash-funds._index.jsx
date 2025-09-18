@@ -2,6 +2,7 @@ import React, {useState, useCallback} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
+import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import Heading from '~/components/Heading';
 import dreamFunds from '/assets/Images/dreamFunds.png';
 import porteTravel from '/assets/Images/porteTravels.png';
@@ -216,45 +217,45 @@ const ProductCard = React.memo(
           <img
             src={firstImage}
             alt={product.title}
-            className="w-full h-[360px] object-cover"
+            className="w-full h-[18.75vw] object-cover"
           />
-          <h3 className="text-sm font-semibold uppercase mt-3">
+          <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
-          <p className="text-sm mt-1">${price}</p>
+          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw]">${price}</p>
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute lg:h-[27.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.24vw] py-[2vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
             <img
               src={firstImage}
               alt={product.title}
-              className="w-full h-[220px] mx-auto object-cover mb-2"
+              className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
             />
-            <h4 className="text-xs font-medium uppercase text-left mb-1">
+            <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {collection.title || 'BRAND NAME'}
             </h4>
-            <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.354vw] uppercase text-left leading-snug">
+            <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 lg:text-[1.25vw] text-left">${price}</p>
+            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">${price}</p>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-[2.813vw]">
             <div className="flex flex-col w-full items-center text-xs">
               <Link
                 to={`/dashboard/cashfunds/${product.id}`}
                 className="w-full"
               >
-                <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+                <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] lg:mb-[0.729vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
                   personalize fund
                 </button>
               </Link>
               <button
                 onClick={handleAddToRegistry}
                 disabled={fetcher.state === 'submitting'}
-                className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
               >
                 {fetcher.state === 'submitting'
                   ? 'Adding...'
@@ -314,7 +315,7 @@ const CashFund = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-fit pt-[100px]">
+      <div className="w-full h-fit pt-[5.313vw]">
         <Heading
           text={
             searchQuery
@@ -324,8 +325,8 @@ const CashFund = () => {
           classes={
             'prata text-4xl lg:text-[2.5vw] lg:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
           }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] lg:h-[0.417vw]'}
         />
         {searchQuery && (
           <p className="text-center my-5 text-lg">
@@ -333,7 +334,7 @@ const CashFund = () => {
             {allProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
         )}
-        <p className="text-center my-[1.979vw] font-[500] text-2xl lg:text-[1.25vw]">
+        <p className="text-center my-[1.875vw] font-[500] text-2xl lg:text-[1.25vw] lg:leading-[1.25vw]">
           ASK FOR WHAT YOU REALLY WANT
         </p>
         <p className="text-center text-2xl lg:text-[1.25vw] lg:leading-[1.667vw] font-normal w-[80%] lg:w-[60%] mx-auto">
@@ -357,7 +358,7 @@ const CashFund = () => {
       {/* Regular Cash Funds Content - Only show when no search query */}
       {!searchQuery && (
         <>
-          <div className="w-full flex flex-row justify-center items-center gap-[4.167vw] mt-8 mb-[11.042vw] md:mt-16 px-4 md:px-16">
+          <div className="w-full flex flex-row justify-center items-center gap-[4.167vw] mt-[3.906vw] mb-[10.833vw] px-4 md:px-16">
             <div className="rounded-full w-[100px] h-[100px] md:w-[200px] md:h-[200px] lg:w-[23.958vw] lg:h-[23.958vw]">
               <Link to="/dream-fund">
                 <img
@@ -367,7 +368,7 @@ const CashFund = () => {
                 />
               </Link>
             </div>
-            <div className="rounded-full w-[100px] h-[100px] md:w-[200px] md:h-[200px] lg:w-[23.958vw] lg:h-[23.958vw] bg-[#F5F2ED] relative">
+            <div className="rounded-full w-[100px] h-[100px] lg:w-[23.958vw] lg:h-[23.958vw] bg-[#F5F2ED] relative">
               <Link
                 to="/dashboard/cashfunds/create-new"
                 className="block w-full h-full"
@@ -392,10 +393,10 @@ const CashFund = () => {
         </>
       )}
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-[3.75vw] w-[81.198vw] mx-auto">
+      <section className="px-[8.594vw] mx-auto">
+        <div className="flex flex-col md:flex-row gap-[3.75vw] w-full mx-auto">
           <SidebarFilter />
-          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.083vw] pt-0 p-0 relative z-0">
+          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0">
             {safeCashFunds.flatMap(
               (collection) =>
                 collection.products?.edges?.map((edge) => {
@@ -419,7 +420,7 @@ const CashFund = () => {
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px]">LOADING 12 of 427</p>
+            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">LOADING 12 of 427</p>
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
@@ -430,17 +431,17 @@ const CashFund = () => {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+      <section className="bg-[#FAF9F6] py-[5.26vw] mb-[9.323vw]">
         <Heading
           text="we think you’ll love"
           classes={
             'prata text-2xl lg:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw] lg:h-[0.417vw]'}
         />
 
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+        <div className=" relative items-start mt-[5.573vw] max-[1024px]:my-10">
           <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
             <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
               <img src={nextitem} alt="" className="rotate-180 " />
@@ -481,43 +482,43 @@ const CashFund = () => {
                   centeredSlides: true,
                 },
                 1600: {
-                  spaceBetween: 72,
+                  spaceBetween: 66,
                   centeredSlides: true,
                 },
               }}
             >
               {/* slides here */}
               <SwiperSlide>
-                <img src={youll1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                <img src={youll1} alt="New Arrival" className="w-full rounded-none" />
+                <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                <img src={youll2} alt="Tableware" className="w-full rounded-none" />
+                <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[1.146vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll1} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                <img src={youll1} alt="New arrivals" className="w-full rounded-none" />
+                <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[1.146vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
@@ -617,10 +618,10 @@ function SidebarFilter() {
   };
 
   return (
-    <div className="w-full lg:w-[17.031vw] p-6 h-fit bg-[#FAF9F6] ">
-      <div className="mb-6">
+    <div className="w-full lg:w-[17.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6] ">
+      <div>
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-sm lg:text-[0.938vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center gap-[0.677vw]"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -629,52 +630,52 @@ function SidebarFilter() {
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HONEYMOON
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HOME
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 DATE NIGHTS
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>

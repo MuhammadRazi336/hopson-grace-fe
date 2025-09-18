@@ -39,16 +39,16 @@ const OurBrands = () => {
 
       <div className='w-full h-[2px] bg-black'></div>
 
-      <div className="w-full h-fit bg-[#FAF9F6] pt-[100px]">
+      <div className="w-full h-fit bg-[#FAF9F6] pt-[8.177vw]">
         <Heading
           text="our brands"
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[22.135vw] h-[0.521vw]'}
         />
-        <p className="text-center text-2xl lg:text-3xl font-normal mt-16 w-[80%] lg:w-[60%] mx-auto">
+        <p className="text-center text-2xl lg:text-[1.25vw] lg:leading-[1.875vw] font-normal mt-[2.396vw] w-[80%] lg:w-[56.875vw] max-w-full mx-auto">
           Only the best make the list. From iconic heritage names to local
           artisans and emerging designers, every brand on The Registry is chosen
           for quality, craftsmanship and lasting appeal. Our curated collection
@@ -56,7 +56,7 @@ const OurBrands = () => {
           functional products. Browse our A-Z brand directory below.
         </p>
 
-        <div className='w-full flex justify-center py-[100px]'>
+        <div className='w-full flex justify-center pt-[4.531vw] pb-[8.646vw]'>
             <div className='w-[70%] h-fit px-16'>
                 <BrandImages brandCollections={brandCollections}/>
            </div>

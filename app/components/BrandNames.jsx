@@ -7,10 +7,10 @@ const BrandNames = ({ brandCollections = [] }) => {
   return (
     <div className='flex flex-col flex-wrap'>
         <div>
-            <h2 className='prata text-4xl lg:text-7xl font-normal tracking-widest text-[#446184] text-left'>A-F</h2>
+            <h2 className='prata text-4xl lg:text-[3.542vw] lg:mb-[1.771vw] font-normal tracking-widest text-[#446184] text-left'>A-F</h2>
             {brandCollections.map((collection) => (
                 <Link to={`/brand/${collection.handle}`} key={collection.id}>
-                    <p className='font-medium text-xl uppercase' key={collection.id}>{collection.title}</p>
+                    <p className='font-medium text-xl lg:text-[0.938vw] lg:leading-[2.083vw] tracking-[0.8px] uppercase' key={collection.id}>{collection.title}</p>
                 </Link>
             ))}
             {/* <p className='font-medium text-xl'>ADDISON ROSS</p>
