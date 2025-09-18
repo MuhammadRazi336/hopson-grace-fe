@@ -88,7 +88,7 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
-                className={`px-6 py-3 text-[18px] transition-colors duration-200 relative ${
+                className={`px-6 py-3 text-[18px] cursor-pointer transition-colors duration-200 relative ${
                   activeTab === tab.value
                     ? 'text-black font-bold'
                     : 'font-normal hover:text-gray-700'

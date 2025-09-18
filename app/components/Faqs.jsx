@@ -56,13 +56,13 @@ const Faqs = () => {
       className="max-w-[1560px] px-4 mx-auto flex items-center flex-col"
       id="faq-section"
     >
-      <h2 className="prata text-center text-3xl lg:text-[2.5vw] font-normal mb-0">
+      <h2 className="prata text-center text-3xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal mb-0">
         frequently asked questions
       </h2>
       <img
         src={vector14}
         alt=""
-        className="mt-11 mb-24 max-[1024px]:my-2 max-[1024px]:w-[410px] max-[440px]:w-[250px]"
+        className="mt-11 mb-[4.792vw] lg:w-[43.125vw] max-[1024px]:my-2 max-[1024px]:w-[410px] max-[440px]:w-[250px]"
       />
       <div className="faq-section flex flex-col max-[1024px]:gap-2">
         <div
@@ -72,17 +72,17 @@ const Faqs = () => {
         >
           {faqs.slice(0, 4).map((faq) => (
             <div
-              className="flex w-full lg:w-1/2 mt-20 max-[1024px]:mt-10 px-10 max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center "
+              className="flex w-full lg:w-1/2 mt-0 max-[1024px]:mt-10 px-[3.906vw] max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center "
               key={faq.number}
             >
-              <div className="prata font-normal text-[98px] leading-[36px] text-center vertical-align-middle mr-10 max-[1024px]:text-[44px] max-[1024px]:m-0 max-[1024px]:mb-2">
+              <div className="prata font-normal text-[5.104vw] lg:w-[4.427vw] lg:min-w-[4.427vw] leading-[5.104vw] text-center vertical-align-middle mr-10 max-[1024px]:text-[44px] max-[1024px]:m-0 max-[1024px]:mb-2">
                 {faq.number}.
               </div>
               <div className="max-[1024px]:w-[300px]">
-                <h4 className="font-medium text-[28px] leading-[36px] tracking-[5%] vertical-align-middle mb-[50px] max-[1024px]:text-lg max-[1024px]:mb-3 max-[1024px]:text-center">
+                <h4 className="font-medium text-[1.458vw] leading-[1.875vw] tracking-[5%] vertical-align-middle mb-[2.604vw] mt-[1vw] max-[1024px]:text-lg max-[1024px]:mb-3 max-[1024px]:text-center">
                   {faq.heading}
                 </h4>
-                <p className="font-normal text-2xl leading-[36px] tracking-normal vertical-align-middle max-[1024px]:text-sm max-[1024px]:text-center">
+                <p className="font-normal text-[1.25vw] leading-[1.875vw] mb-[4.583vw] tracking-normal vertical-align-middle max-[1024px]:text-sm max-[1024px]:text-center">
                   {faq.paragraph}
                 </p>
               </div>
@@ -91,17 +91,17 @@ const Faqs = () => {
           {isExpanded &&
             faqs.slice(4).map((faq) => (
               <div
-                className="flex w-full lg:w-1/2 mt-20 max-[1024px]:mt-10 px-10 max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center"
+                className="flex w-full lg:w-1/2 mt-0 max-[1024px]:mt-10 px-[3.906vw] max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center"
                 key={faq.number}
               >
-                <div className="prata font-normal text-[98px] leading-[36px] text-center vertical-align-middle mr-10 max-[1024px]:text-[44px] max-[1024px]:m-0 max-[1024px]:mb-2">
+                <div className="prata font-normal text-[5.104vw] lg:w-[4.427vw] lg:min-w-[4.427vw] leading-[5.104vw] text-center vertical-align-middle mr-10 max-[1024px]:text-[44px] max-[1024px]:m-0 max-[1024px]:mb-2">
                   {faq.number}.
                 </div>
                 <div className="max-[1024px]:w-[300px]">
-                  <h4 className="font-medium text-[28px] leading-[36px] tracking-[5%] vertical-align-middle mb-[50px] max-[1024px]:text-lg max-[1024px]:mb-3 max-[1024px]:text-center">
+                  <h4 className="font-medium text-[1.458vw] leading-[1.875vw] tracking-[5%] vertical-align-middle mb-[2.604vw] max-[1024px]:text-lg max-[1024px]:mb-3 max-[1024px]:text-center">
                     {faq.heading}
                   </h4>
-                  <p className="font-normal text-2xl leading-[36px] tracking-normal vertical-align-middle max-[1024px]:text-sm max-[1024px]:text-center">
+                  <p className="font-normal text-[1.25vw] leading-[1.875vw] mb-0 tracking-normal vertical-align-middle max-[1024px]:text-sm max-[1024px]:text-center">
                     {faq.paragraph}
                   </p>
                 </div>
@@ -112,7 +112,7 @@ const Faqs = () => {
           <div className="w-full text-center">
             <Link to="/faq">
             <ButtonComponent
-              className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-[15px] bg-transparent rounded-none mt-2 lg:mt-11 w-80 max-[1024px]:w-40 max-[1024px]:mt-8"
+              className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[15px] bg-transparent rounded-none mt-2 cursor-pointer lg:mt-[4.688vw] w-80 lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:w-40 max-[1024px]:mt-8"
               text={'SEE ALL FAQS'}
             />
             </Link>

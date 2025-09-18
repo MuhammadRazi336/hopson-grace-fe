@@ -5,6 +5,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
 import vectorImg from '/assets/Images/Vector 14.png';
+import headingCurve1 from '../assets/Images/heading-curve1.svg';
 import Button from '~/components/Button.jsx';
 import iconitem from '/assets/Images/collectionitems.png';
 import WorldBestBrands from '/assets/Images/WORLDSBESTBRANDS.png';
@@ -18,15 +19,15 @@ const CollectionItems = () => {
   return (
     <div className="relative">
       <div className="max-w-[80%] max-[1024px]:max-w-[1400px] mx-auto relative collection-slider">
-        <h2 className="text-3xl leading-normal lg:text-5xl prata text-center lg:leading-[48px] font-normal mb-2 lg:mb-5">
+        <h2 className="text-3xl leading-normal lg:text-[2.5vw] prata text-center lg:leading-[1.875vw] font-normal mb-2 lg:mb-5">
           why the registry?
         </h2>
         <img
-          src={vectorImg}
+          src={headingCurve1}
           alt=""
-          className="w-[350px] lg:w-[500px] m-auto mb-12"
+          className="w-[350px] lg:w-[20.521vw] m-auto mb-[1.771vw]"
         />
-        <p className="text-center md:text-lg lg:text-[26px] 2xl:text-[26px] md:leading-[38px] lg:leading-[38px] xl:leading-[38px] 2xl:leading-[38px] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
+        <p className="text-center lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-10 mb-8">
         A smarter, more stylish way to register—curated for how couples live now.
       </p>
         <Swiper
@@ -62,9 +63,9 @@ const CollectionItems = () => {
               <img
                 src={WorldBestBrands}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 THE WORLD'S <br />
                 BEST BRANDS
               </h3>
@@ -75,9 +76,9 @@ const CollectionItems = () => {
               <img
                 src={CashTravel}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 <>CASH <br/>FUNDS</>
               </h3>
             </div>
@@ -87,9 +88,9 @@ const CollectionItems = () => {
               <img
                 src={BespokeTravel}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 <>BESPOKE <br/>TRAVEL</>
               </h3>
             </div>
@@ -99,9 +100,9 @@ const CollectionItems = () => {
               <img
                 src={TyNote}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 THANK YOU NOTE TRACKER
               </h3>
             </div>
@@ -111,9 +112,9 @@ const CollectionItems = () => {
               <img
                 src={ReadyMadeRegistries}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 <>READY-MADE <br/>REGISTRIES</>
               </h3>
             </div>
@@ -123,9 +124,9 @@ const CollectionItems = () => {
               <img
                 src={iconitem}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 <>EXCLUSIVE <br/>OFFERS</>
               </h3>
             </div>
@@ -135,9 +136,9 @@ const CollectionItems = () => {
               <img
                 src={iconitem}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 <>PERSONALIZED <br/>GIFTING</>
               </h3>
             </div>
@@ -147,9 +148,9 @@ const CollectionItems = () => {
               <img
                 src={iconitem}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 <>TRAVEL <br/>VOUCHERS</>
               </h3>
             </div>
@@ -159,9 +160,9 @@ const CollectionItems = () => {
               <img
                 src={iconitem}
                 alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[139px] p-7"
+                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[1.042vw]"
               />
-              <h3 className="text-center font-bold text-sm lg:text-[20px] leading-normal lg:leading-[28px] tracking-[10%]">
+              <h3 className="text-center font-bold text-sm lg:text-[1.042vw] lg:leading-[1.458vw] leading-normal tracking-[10%]">
                 <>GIFT CARDS <br/>GALORE</>
               </h3>
             </div>
@@ -180,7 +181,7 @@ const CollectionItems = () => {
         <Link to="/why-the-registry">
         <Button
           text="IT’S ALL IN THE DETAILS"
-          className="button-cs text-[#1F1D1B] bg-white border-3 border-[#1F1D1B]  py-[16px] lg:py-[26px] lg:w-[360px] w-[280px] rounded-none max-[768px]:text-lg hover:bg-gray-100"
+          className="button-cs text-[#1F1D1B] cursor-pointer bg-white lg:text-[0.938vw] lg:leading-[0.938vw] border-3 border-[#1F1D1B]  py-[5px] lg:h-[4.583vw] lg:w-[18.75vw] w-[280px] rounded-none max-[768px]:text-lg hover:bg-gray-100"
         />
         </Link>
       </div>

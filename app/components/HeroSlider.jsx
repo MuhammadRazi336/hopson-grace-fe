@@ -13,9 +13,9 @@ const HeroSlider = () => {
     {
       id: 1,
       type: 'content',
-      content: <>elevated. effortless.<br /><span style={{fontFamily: 'ivyora'}}>Yours</span>.</>,
+      content: <>elevated. effortless.<br /><span style={{fontFamily: 'ivyora'}}>yours</span>.</>,
       description:
-        'A modern registry for gifts, travel & everything in between.',
+        <>A modern registry for gifts, travel & <br/>everything in between.</>,
       image: heroImg,
     },
     {
@@ -138,36 +138,36 @@ const HeroSlider = () => {
       slidesPerView={1}
       autoplay={{delay: 14000}} // Autoplay every 14 seconds
       pagination={{clickable: true}} // Show dots
-      className='lg:h-[940px]'
+      className='lg:h-[48.958vw]'
     >
       {slides.map((slide) => (
         <SwiperSlide key={slide.id}>
           {slide.type === 'content' ? (
-            <div className='lg:h-[940px]'>
+            <div className='lg:h-[48.958vw]'>
               <img
                 src={slide.image}
                 alt="Slide"
                 className="w-full h-[510px] lg:h-[1000px] object-cover"
               />
-              <div className="absolute flex flex-col items-center top-0 max-w-[50%] max-[1024px]:max-w-[70%] h-full justify-center text-white px-12 gap-8">
-                <h3 className="text-5xl leading-[60px] lg:text-[106px] text-center prata lg:leading-[112px] text-shadow">
+              <div className="absolute flex flex-col items-center top-0 max-w-[50%] max-[1024px]:max-w-[70%] h-full justify-center text-white px-12">
+                <h3 className="text-5xl leading-[60px] lg:text-[5.521vw] text-center prata lg:leading-[5.833vw] text-shadow">
                   {slide.content}
                 </h3>
-                <img src={vectorImg} alt="line" className="w-72" />
-                <p className="text-sm w-full leading-6 lg:text-2xl text-center font-semibold uppercase lg:w-2xl lg;leading-10">
+                <img src={vectorImg} alt="line" className="w-72 mt-[2vw]" />
+                <p className="text-sm w-full leading-6 lg:text-[1.25vw] mt-[2.604vw] text-center font-semibold uppercase lg:w-2xl lg;leading-[2.083vw]">
                   {slide.description}
                 </p>
-              <div className="mx-auto flex lg:flex-row flex-col gap-6 justify-center items-center ">
+              <div className="mx-auto flex lg:flex-row flex-col gap-6 mt-[2.604vw] justify-center items-center ">
                 <NavLink to="/register">
                 <Button
                   text="Begin Your Journey"
-                  className="text-white text-[16px] min-h-[78px] lg:px-[10px] leading-[18px] bg-[#446184] py-[21.5px] lg:py-[21.5px] lg:w-[275.58px] w-[275.58px] rounded-none button-cs max-[768px]:text-lg"
+                  className="text-white tracking-[0px] cursor-pointer text-[16px] lg:px-[5px] !lg:text-[0.833vw] !lg:leading-[0.938vw] leading-[18px] bg-[#446184] py-[10px] lg:h-[4.063vw] lg:w-[14.353vw] w-[275.58px] rounded-none button-cs max-[768px]:text-lg"
                 />
                 </NavLink>
                 <NavLink to="/couple">
                 <Button
                   text="Find a Couple"
-                  className="button-cs text-[#1F1D1B] min-h-[78px] text-[16px] leading-[18px] lg:px-[10px] bg-white border-3 border-[#1F1D1B]  py-[21.5px] lg:py-[21.5px] lg:w-[275.58px] w-[275.58px] rounded-none max-[768px]:text-lg"
+                  className="button-cs tracking-[0px] cursor-pointer text-[#1F1D1B] text-[16px] !lg:text-[0.833vw] !lg:leading-[0.938vw] leading-[18px] lg:px-[5px] lg:h-[4.063vw] bg-white border-3 border-[#1F1D1B]  py-[10px] lg:w-[14.353vw] w-[275.58px] rounded-none max-[768px]:text-lg"
                 />
                 </NavLink>
               </div>
