@@ -443,20 +443,31 @@ const BlogDetails = () => {
                 alt=""
                 className="w-[100px] h-[4px] mx-auto mb-10"
               />
-              <p className="text-lg font-semibold">PHOTOGRAPHER:</p>
-              <p className="text-lg mb-7">
-                {metafields.photographer || 'Not specified'}
-              </p>
-              <p className="text-lg font-semibold">WEDDING PLANNER:</p>
-              <p className="text-lg mb-7">
-                {metafields.wedding_planner || 'Not specified'}
-              </p>
-              <p className="text-lg font-semibold">FLOWERS:</p>
-              <p className="text-lg mb-7">
-                {metafields.flowers || 'Not specified'}
-              </p>
-              <p className="text-lg font-semibold">VENUE:</p>
-              <p className="text-lg">{metafields.venue || 'Not specified'}</p>
+              {metafields.photographer && (
+                <>
+                  <p className="text-lg font-semibold">PHOTOGRAPHER:</p>
+                  <p className="text-lg mb-7">{metafields.photographer}</p>
+                </>
+              )}
+              {metafields.wedding_planner && (
+                <>
+                  <p className="text-lg font-semibold">WEDDING PLANNER:</p>
+                  <p className="text-lg mb-7">{metafields.wedding_planner}</p>
+                </>
+              )}
+
+              {metafields.flowers && (
+                <>
+                  <p className="text-lg font-semibold">FLOWERS:</p>
+                  <p className="text-lg mb-7">{metafields.flowers}</p>
+                </>
+              )}
+              {metafields.venue && (
+                <>
+                  <p className="text-lg font-semibold">VENUE:</p>
+                  <p className="text-lg">{metafields.venue}</p>
+                </>
+              )}
             </div>
           </div>
 
