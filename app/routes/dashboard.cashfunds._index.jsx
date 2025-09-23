@@ -16,6 +16,7 @@ import PreviewRegistry from '~/components/PreviewRegistry';
 import {Navigation} from 'swiper/modules';
 import Heading from '~/components/Heading';
 import lineImghead from '/assets/Images/line.png';
+import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -126,8 +127,8 @@ const CashFunds = () => {
 
   return (
     <>
-      <div className="pt-[80px] relative p-4 mt-[80px]">
-        <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+      <div className="relative px-4 mt-[5.573vw]">
+        <h2 className="mt-0 ivyora lg:text-[2.5vw] text-[24px] tracking-0 prata text-center lg:leading-[3.333vw] font-normal mb-0">
           {selectedSwiperCollectionId ? (
             <span className="prata uppercase">
               {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
@@ -137,11 +138,11 @@ const CashFunds = () => {
           )}
         </h2>
         <img
-          src="/assets/Images/profile-view-page-bdr.png"
+          src={headingBottomCurve}
           alt="Couple"
-          className="max-w-[630px] mt-5 h-auto mx-auto"
+          className="max-w-[630px] lg:w-[39.219vw] lg:h-[0.417vw] mt-[1.771vw] h-auto mx-auto"
         />
-        <p className="max-w-5xl mx-auto text-center text-[24px] my-5 font-normal leading-relaxed">
+        <p className="max-w-[49.01vw] mx-auto text-center text-[24px] lg:text-[1.25vw] lg:leading-[1.667vw] mt-[1.927vw] font-normal leading-relaxed">
           {selectedSwiperCollectionId 
             ? `Browse products from ${collections.find(col => col.id === selectedSwiperCollectionId)?.title || 'this collection'}.`
             : 'Browse honeymoon destinations, pick from curated cash funds, choose a gift card, or create something totally unique—like a spa day on your honeymoon or a wine subscription from your favourite vineyard. Whatever your dream, this is the place to make it happen.'
@@ -150,7 +151,7 @@ const CashFunds = () => {
       </div>
 
       <section className=" ">
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+        <div className=" relative items-start mt-[3.125vw] mb-0 max-[1024px]:my-10">
           <div className=" ">
             {!selectedSwiperCollectionId && (
               <>
@@ -192,12 +193,12 @@ const CashFunds = () => {
                     },
                     1366: {
                       slidesPerView: 3.25,
-                      spaceBetween: 39,
+                      spaceBetween: 37,
                       centeredSlides: true,
                     },
                     1600: {
-                      slidesPerView: 3.5,
-                      spaceBetween: 39,
+                      slidesPerView: 3.7,
+                      spaceBetween: 37,
                       centeredSlides: true,
                     },
                   }}
@@ -212,14 +213,14 @@ const CashFunds = () => {
                     style={{ cursor: 'pointer'}}
                   >
                     <Link to="/dashboard/cashfunds/create-new">
-                    <div className="w-[550px] h-[440px] overflow-hidden bg-[#F5F2ED] flex items-center justify-center">
+                    <div className="w-full h-[440px] overflow-hidden bg-[#F5F2ED] flex items-center justify-center">
                       <img
                         src="/assets/Images/registrylogoSteps.png"
                         alt="Create Your Own Cash Fund"
                         className="object-fit w-[50%] mx-auto"
                       />
                     </div>
-                    <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                    <h3 className="mt-2.5 text-center lg:mt-[1.927vw] uppercase lg:text-[1.25vw] text-sm font-medium tracking-[0.5px]">
                       CREATE YOUR OWN
                     </h3>
                     </Link>
@@ -236,14 +237,14 @@ const CashFunds = () => {
                         }}
                         style={{ cursor: 'pointer'}}
                       >
-                        <div className="w-[550px] h-[440px] overflow-hidden">
+                        <div className="w-full h-[440px] overflow-hidden">
                           <img
                             src={col.image?.url || '/assets/Images/placeholder.png'}
                             alt={col.title}
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                        <h3 className="mt-2.5 text-center lg:mt-[1.927vw] uppercase lg:text-[1.25vw] text-sm font-medium tracking-[0.5px]">
                           {col.title}
                         </h3>
                       </SwiperSlide>
@@ -269,11 +270,11 @@ const CashFunds = () => {
         </div>
       </section>
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
+      <section className="px-[8.594vw] mx-auto">
+        <div className="flex flex-col md:flex-row gap-[3.75vw] pt-[7.083vw]">
           <SidebarFilter />
           <div 
-            className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0"
+            className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0"
             ref={productGridRef}
           >
             {displayedProducts.map((card, index) => (
@@ -298,7 +299,7 @@ const CashFunds = () => {
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">
+            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">
               LOADING {Math.min(productsToShow, sortedProducts.length)} of{' '}
               {sortedProducts.length}
             </p>
@@ -307,7 +308,7 @@ const CashFunds = () => {
               productsToShow < sortedProducts.length && (
                 <WhiteThemeButton
                   Text="VIEW MORE"
-                  buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
+                  buttonClassName="border cursor-pointer mb-[2.344vw] lg:w-[18.75vw] uppercase text-center justify-center lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold bg-white text-black px-2 mt-0 py-0 text-[18px] leading-[18px] hover:bg-gray-100 flex items-center gap-2"
                   link="#"
                   onClick={() =>
                     setProductsToShow((prev) =>
@@ -319,7 +320,7 @@ const CashFunds = () => {
 
             {productsToShow > 12 && (
               <button 
-                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+                className="border-b mx-auto cursor-pointer mb-[9.167vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] hover:bg-gray-100"
                 onClick={() => {
                   setProductsToShow(12);
                   if (productGridRef.current) {
@@ -373,21 +374,21 @@ const CashFunds = () => {
         </div>
       </section> */}
 
-      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+      <section className="bg-[#FAF9F6] py-[5.26vw] mb-[9.323vw]">
         <Heading
           text="we think you’ll love"
           classes={
-            'prata text-2xl lg:text-[40px] font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw] lg:h-[0.417vw]'}
         />
 
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[5%] left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+        <div className=" relative items-start mt-[5.573vw] max-[1024px]:my-10">
+          <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
+            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
               <img src={nextitem} alt="" className="rotate-180 " />
-              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+              <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
                 more
               </span>
             </div>
@@ -424,50 +425,50 @@ const CashFunds = () => {
                   centeredSlides: true,
                 },
                 1600: {
-                  spaceBetween: 39,
+                  spaceBetween: 66,
                   centeredSlides: true,
                 },
               }}
             >
               {/* slides here */}
               <SwiperSlide>
-                <img src={product1} alt="New Arrival" className="w-[455px] h-[455px]" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                <img src={product1} alt="New Arrival" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={product2} alt="Tableware" className="w-[455px] h-[455px]" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                <img src={product2} alt="Tableware" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={product3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
+                <img src={product3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={product4} alt="New arrivals" className="w-[455px] h-[455px]" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                <img src={product4} alt="New arrivals" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={product3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
+                <img src={product3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
               </SwiperSlide>
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-[5%] right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                 more
               </span>
               <img src={nextitem} className="" alt="" />
@@ -652,60 +653,60 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
   };
 
   return (
-    <div className="relative group h-[460px]">
+    <div className="relative group mb-[4.844vw]">
       {/* Product Image and Info */}
-      <div className="p-4 z-10 relative">
+      <div className="p-0 z-10 relative">
         {image ? (
           <img
             src={image}
             alt="Cash Fund"
-            className="w-[360px] h-[360px] object-cover"
+            className="w-full h-[18.75vw] object-cover"
           />
         ) : (
           <div className="w-full h-[300px] flex items-center justify-center bg-gray-200 text-gray-400">
             No Image
           </div>
         )}
-        <h3 className="text-[22px] font-semibold uppercase mt-3">
+        <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
           {title}
         </h3>
-        <p className="text-[24px] mt-1">${amount}</p>
+        <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw]">${amount}</p>
       </div>
 
       {/* Expanding Overlay */}
-      <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+      <div className="absolute lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
         <div>
           {image ? (
             <img
               src={image}
               alt="Cash Fund"
-              className="w-full h-[220px] mx-auto object-cover mb-2"
+              className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
             />
           ) : (
             <div className="w-full h-[220px] flex items-center justify-center bg-gray-200 text-gray-400 mb-2">
               No Image
             </div>
           )}
-          <h4 className="text-xs font-medium uppercase text-left mb-1">
+          <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
             CASH FUND
           </h4>
-          <h3 className="text-sm font-bold uppercase text-left leading-snug">
+          <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
             {title}
           </h3>
-          <p className="text-sm mt-2 text-left">${amount}</p>
+          <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">${amount}</p>
         </div>
 
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-[2.813vw]">
           <div className="flex flex-col w-full items-center text-xs">
             <Link to={`/dashboard/cashfunds/${id}`} className='w-full'>
-              <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+              <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] lg:mb-[0.729vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
                 personalize fund
               </button>
             </Link>
             <button 
               onClick={handleAddToRegistry}
               disabled={fetcher.state === 'submitting'}
-              className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+              className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
             >
               {fetcher.state === 'submitting' ? 'Adding...' : 'Add to registry'}
             </button>
@@ -732,10 +733,10 @@ function SidebarFilter() {
   };
 
   return (
-    <div className="w-full xl:w-3/12 p-6 h-fit bg-[#FAF9F6]">
+    <div className="w-full lg:w-[17.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-[18px] font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-[18px] lg:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -744,13 +745,13 @@ function SidebarFilter() {
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw] rotate-90"
               />
             )}
           </span>
@@ -758,26 +759,26 @@ function SidebarFilter() {
         {openSections.categories && (
           <ul className="space-y-2 text-[16px]">
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HONEYMOON
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HOME
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 DATE NIGHTS
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
@@ -790,9 +791,9 @@ function SidebarFilter() {
 
 function ProductGrid({products}) {
   return (
-    <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
+    <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0">
       {products.map((product) => (
-        <div key={product.id} className="relative group h-[460px]">
+        <div key={product.id} className="relative group mb-[4.844vw]">
           {/* Product Image and Info */}
           <div className="p-4 z-10 relative">
             <img
