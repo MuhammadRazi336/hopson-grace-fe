@@ -212,7 +212,7 @@ const Registry = () => {
         <div className="w-[50%] h-full flex items-center justify-center">
           <img
             src={collection.image?.url || '/assets/Images/dreamFunds.png'}
-            className="mx-auto object-contain object-center"
+            className="mx-auto object-cover object-center"
             alt={collection.image?.altText || collection.title}
           />
         </div>
