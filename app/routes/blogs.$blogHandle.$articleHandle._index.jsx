@@ -529,7 +529,7 @@ const BlogDetails = () => {
                 Whether it’s a single photo for Instagram or a longer story for
                 our blog, we love seeing how couples celebrated their wedding. 
               </p>
-              <Link to={`/couple/single/${metafields.userId || ''}`}>
+              <Link to={'/submit-wedding'}>
                 <button className="h-[70px] w-[280px] text-[17px] max-[1601px]:text-[14px] text-black bg-[#F5F2ED] border border-black hover:opacity-90 uppercase font-[800] max-[1601px]:w-[200px] text-center">
                   SUBMIT HERE
                 </button>
