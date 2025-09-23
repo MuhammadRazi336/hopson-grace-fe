@@ -193,33 +193,33 @@ const Registry = () => {
         <Header/>
         <div className="w-full h-[2px] bg-black"></div>
 
-        <div className="w-full h-[500px] lg:h-[800px] flex flex-row items-center justify-center">
+        <div className="w-full h-[500px] lg:h-[39.58vw] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
             <Heading
               text={collection.title}
               classes={
-                'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-4xl lg:text-[2.29vw] lowercase lg:leading-[1.88vw] font-normal text-center max-[1024px]:m-0 lg:mb-[0.833vw] text-black'
               }
               image={lineImghead}
-              imageClasses={'w-[150px] lg:w-[330px]'}
+              imageClasses={'w-[150px] lg:w-[22.14vw]'}
             />
-            <p className="text-base sm:text-lg lg:text-xl text-black leading-relaxed mx-auto mt-10">
+            <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw]">
               {collection.description}
             </p>
           </div>
         </div>
-        <div className="w-[50%] h-full">
+        <div className="w-[50%] h-full flex items-center justify-center">
           <img
             src={collection.image?.url || '/assets/Images/dreamFunds.png'}
-            className="w-full h-full object-cover"
+            className="mx-auto object-cover object-center"
             alt={collection.image?.altText || collection.title}
           />
         </div>
       </div>
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
+      <section className="px-[8.802vw] mx-auto">
+        <div className="flex flex-col md:flex-row gap-12 pt-[6.302vw]">
           <SidebarFilter />
                      <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
              {collection.products?.edges?.map(edge => {
@@ -453,7 +453,7 @@ function SidebarFilter() {
     <div className="w-full xl:w-3/12 p-6 h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('categories')}
         >
           Categories

@@ -473,6 +473,10 @@ export type GetBrandQuery = {
         Pick<StorefrontAPI.Metafield, 'id' | 'value'>
       >;
       products: {
+        pageInfo: Pick<
+          StorefrontAPI.PageInfo,
+          'hasNextPage' | 'hasPreviousPage'
+        >;
         edges: Array<{
           node: Pick<
             StorefrontAPI.Product,
@@ -1535,7 +1539,7 @@ interface GeneratedQueryTypes {
     return: BlogsQuery;
     variables: BlogsQueryVariables;
   };
-  '#graphql\n  query getBrand($handle: String!) {\n    collection(handle: $handle) {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "brand") {\n        id\n        value\n      }\n      products(first: 20) {\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+  '#graphql\n  query getBrand($handle: String!) {\n    collection(handle: $handle) {\n      id\n      title\n      handle\n      description\n      image {\n        id\n        url\n        altText\n        width\n        height\n      }\n      metafield(namespace: "custom", key: "brand") {\n        id\n        value\n      }\n      products(first: 20) {\n        pageInfo {\n          hasNextPage\n          hasPreviousPage\n        }\n        edges {\n          node {\n            id\n            title\n            handle\n            description\n            images(first: 10) {\n              edges {\n                node {\n                  id\n                  url\n                  altText\n                  width\n                  height\n                }\n              }\n            }\n            variants(first: 1) {\n              edges {\n                node {\n                  id\n                  availableForSale\n                  priceV2 {\n                    amount\n                    currencyCode\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
     return: GetBrandQuery;
     variables: GetBrandQueryVariables;
   };

@@ -211,7 +211,7 @@ const Brand = () => {
         </div>
       </div>
 
-      <section className="container mx-auto">
+      <section className="px-[8.802vw] mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-[6.302vw]">
           <SidebarFilter />
           <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
@@ -462,7 +462,7 @@ function SidebarFilter() {
     <div className="w-full xl:w-3/12 px-[1.979vw] py-[2.5vw] h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center justify-between"
+          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -486,37 +486,37 @@ function SidebarFilter() {
           <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
             <li>
               <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HONEYMOON
               </label>
             </li>
             <li>
               <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HOME
               </label>
             </li>
             <li>
               <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 DATE NIGHTS
               </label>
             </li>
             <li>
               <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
               <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
               <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
