@@ -245,17 +245,17 @@ const Products = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-fit pt-[100px]">
+      <div className="w-full h-fit pt-[6.771vw]">
         <Heading
           text={searchQuery ? `Search Results for "${searchQuery}"` : "products"}
           classes={
-            'prata text-4xl lg:text-[2.5vw] font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[13.542vw] h-[6px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[13.542vw] h-[0.417vw] object-contain'}
         />
         {searchQuery && (
-          <p className="text-center my-5 text-lg">
+          <p className="text-center mt-[1.615vw] lg:text-[1.25vw] lg:leading-[1.875vw] text-lg">
             Found {collections.length} collection{collections.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
         )}
@@ -317,30 +317,30 @@ const Products = () => {
       {/* Regular Products Page Content - Only show when no search query */}
       {!searchQuery && (
         <>
-          <div className="pt-[20px] lg:w-[80.625vw] lg:px-0 lg:mx-auto px-16 pb-[100px]">
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-[24px] mt-16 mx-10">
+          <div className="lg:px-[9.583vw] w-full lg:mx-auto px-16 pb-[12.448vw]">
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-x-[1.25vw] lg:gap-y-[3.958vw] gap-y-16 gap-x-[24px] mt-[4.167vw]">
               <div className="flex flex-col items-center justify-center">
                 <img src={newArrivals} alt="" className="w-full lg:h-[25.417vw]" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-medium tracking-wider">
+                <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                   NEW ARRIVALS
                 </h3>
               </div>
               <div className="flex flex-col items-center justify-center">
                 <img src={bestSellers} alt="" className="w-full lg:h-[25.417vw]" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                   BESTSELLERS
                 </h3>
               </div>
               <div className="flex flex-col items-center justify-center">
                 <img src={giftCards} alt="" className="w-full lg:h-[25.417vw] bg-[#446184]" />
-                <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                   GIFT CARDS
                 </h3>
               </div>
               {parentCollections.map((col) => (
                 <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
                   <img src={col.image.url} alt={col.title} className="w-full lg:h-[25.417vw]" />
-                  <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                  <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                     {col.title}
                   </h3>
                 </Link>
@@ -348,20 +348,20 @@ const Products = () => {
             </div>
       </div>
 
-      <section className="pt-[70px] pb-[160px] my-12 lg:my-[240px] container">
+      <section className="pt-0 pb-[9.531vw] my-12 container">
         <Heading
           text="the registry bestsellers"
           classes={
-            'prata text-3xl lg:text-[2.5vw] font-normal text-center  max-[1024px]:m-0'
+            'prata text-3xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
           }
           image={brandline}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw] lg:h-[0.417vw]'}
         />
             <ProductSlider />
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"
-            className="button-cs text-[#1F1D1B] text-[18px] leading-[18px] lg:w-[360px] lg:h-[78px] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+            className="button-cs text-[#1F1D1B] bastardogrotesk lg:text-[0.938vw] lg:leading-[0.938vw] text-[18px] leading-[18px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.271vw]"
           />
         </div>
       </section>

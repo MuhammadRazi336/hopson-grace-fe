@@ -83,6 +83,14 @@ const Brand = () => {
   const [alertType, setAlertType] = useState('success');
   const fetcher = useFetcher();
 
+  // Calculate displayed products count and total
+  const displayedProductsCount = collection?.products?.edges?.length || 0;
+  // For now, show the displayed count. In a real scenario, you'd need to get total from API
+  // or implement proper pagination with total count
+  const totalProductsCount = collection?.products?.pageInfo?.hasNextPage 
+    ? `${displayedProductsCount}+` // Show + if there are more pages
+    : displayedProductsCount;
+
   // Handle fetcher responses
   useEffect(() => {
     if (fetcher.data) {
@@ -184,27 +192,27 @@ const Brand = () => {
             <Heading
               text={collection.title}
               classes={
-                'prata text-4xl lg:text-[2.29vw] lg:leading-[1.88vw] font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-4xl lg:text-[2.29vw] lowercase lg:leading-[1.88vw] font-normal text-center max-[1024px]:m-0 lg:mb-[0.833vw] text-black'
               }
               image={lineImghead}
               imageClasses={'w-[150px] lg:w-[22.14vw]'}
             />
-            <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.35vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-10">
+            <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw]">
               {collection.description}
             </p>
           </div>
         </div>
-        <div className="w-[50%] h-full">
+        <div className="w-[50%] h-full flex items-center justify-center">
           <img
             src={collection.image?.url || '/assets/Images/dreamFunds.png'}
-            className="w-full h-full object-contain object-center"
+            className="mx-auto object-contain object-center"
             alt={collection.image?.altText || collection.title}
           />
         </div>
       </div>
 
       <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
+        <div className="flex flex-col md:flex-row gap-12 pt-[6.302vw]">
           <SidebarFilter />
           <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
             {collection.products?.edges?.map((edge) => {
@@ -216,7 +224,7 @@ const Brand = () => {
               const price = firstVariant?.priceV2?.amount || 'N/A';
 
               return (
-                <div key={product.id} className="relative group h-[460px]">
+                <div key={product.id} className="relative group h-[25vw]">
                   {/* Product Image and Info */}
                   <div className="p-4 z-10 relative">
                     <img
@@ -224,30 +232,30 @@ const Brand = () => {
                       alt={product.title}
                       className="w-full h-[300px] object-cover"
                     />
-                    <h3 className="text-sm font-semibold uppercase mt-3">
+                    <h3 className="text-sm font-[500] lg:text-[1.146vw] uppercase mt-3">
                       {product.title}
                     </h3>
                     <p className="text-sm mt-1">${price}</p>
                   </div>
 
                   {/* Expanding Overlay */}
-                  <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+                  <div className="absolute inset-0 z-40 bg-[#FAF9F6] lg:h-[35.313vw] px-[2.24vw] py-[2vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
                     <div>
                       <img
                         src={firstImage}
                         alt={product.title}
-                        className="w-full h-[220px] mx-auto object-cover mb-2"
+                        className="w-full h-[220px] mx-auto object-cover mb-0"
                       />
-                      <h4 className="text-xs font-medium uppercase text-left mb-1">
+                      <h4 className="text-xs font-[400] lg:text-[0.833vw] lg:leading-[0.833vw] uppercase lg:mt-[1.25vw] lg:mb-[0.521vw] text-left mb-1">
                         {collection.title || 'BRAND NAME'}
                       </h4>
-                      <h3 className="text-sm font-bold uppercase text-left leading-snug">
+                      <h3 className="text-sm lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-2 font-[500] uppercase text-left leading-snug">
                         {product.title}
                       </h3>
-                      <p className="text-sm mt-2 text-left">${price}</p>
+                      <p className="text-sm mt-2 lg:mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw] text-left">${price}</p>
                     </div>
 
-                    <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-center justify-between mt-[3.906vw]">
                       {/* Quantity Controls */}
                       <div className="flex items-center justify-around w-full mb-4">
                         <p className="text-xs font-bold uppercase text-left mb-1">
@@ -306,7 +314,7 @@ const Brand = () => {
                             )
                           }
                           disabled={fetcher.state === 'submitting'}
-                          className={`text-white text-xs font-bold py-4 px-6 ${
+                          className={`text-white text-xs lg:text-[0.729vw] cursor-pointer lg:h-[4.01vw] lg:w-[10.156vw] font-bold py-[5px] px-[5px] ${
                             fetcher.state === 'submitting'
                               ? 'bg-gray-400 cursor-not-allowed'
                               : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
@@ -333,32 +341,34 @@ const Brand = () => {
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">LOADING 12 of 427</p>
+            <p className="text-center text-md lg:text-[0.938vw] lg:leading-[0.938vw] mt-[8.073vw] mb-[2.083vw]">
+              LOADING {displayedProductsCount} of {totalProductsCount}
+            </p>
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
+            <button className="border-b-2 mx-auto cursor-pointer mb-0 font-bold bg-white text-black uppercase px-0 mt-0 lg:text-[0.938vw] lg:leading-[0.938vw] text-sm">
               Back to Top
             </button>
           </div>
         </div>
       </section>
 
-      <section className="py-[30px] bg-[#F5F2ED80] my-12 lg:my-[140px]">
+      <section className="pt-[5.26vw] pb-[3.49vw] bg-[#F5F2ED80] my-12 lg:my-[7.083vw]">
         <Heading
           text="other brands we think you’ll love"
           classes={
-            'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
+            'prata text-3xl lg:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
           }
           image={lineImg4}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw] lg:h-[0.370vw]'}
         />
         <Marquee brands={brands} />
         <div className="text-center">
           <Link to="/our-brands">
             <ButtonComponent
               text="EXPLORE ALL BRANDS"
-              className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-4 lg:py-[30px] bg-transparent rounded-none mt-2 lg:mt-11"
+              className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] lg:text-[0.938vw] lg:leading-[0.938vw] py-4 lg:py-[5px] lg:w-[18.75vw] lg:h-[4.01vw] bg-transparent rounded-none mt-2 lg:mt-11"
             />
           </Link>
         </div>
@@ -449,10 +459,10 @@ function SidebarFilter() {
   };
 
   return (
-    <div className="w-full xl:w-3/12 p-6 h-fit bg-[#FAF9F6]">
+    <div className="w-full xl:w-3/12 px-[1.979vw] py-[2.5vw] h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center justify-between"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -461,52 +471,52 @@ function SidebarFilter() {
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HONEYMOON
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HOME
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
                 DATE NIGHTS
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className='flex items-center'>
+                <input type="checkbox" className="mr-2 lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
@@ -536,6 +546,10 @@ const BRAND_QUERY = `#graphql
         value
       }
       products(first: 20) {
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+        }
         edges {
           node {
             id
