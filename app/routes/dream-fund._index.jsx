@@ -2,6 +2,7 @@ import React, {useState, useCallback} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
+import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import Heading from '~/components/Heading';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
@@ -198,48 +199,48 @@ const ProductCard = React.memo(
     };
 
     return (
-      <div key={product.id} className="relative group h-[460px]">
+      <div key={product.id} className="relative group mb-[4.844vw]">
         {/* Product Image and Info */}
-        <div className="p-4 z-10 relative">
+        <div className="p-0 z-10 relative">
           <img
             src={firstImage}
             alt={product.title}
-            className="w-full h-[300px] object-cover"
+            className="w-full h-[18.75vw] object-cover"
           />
-          <h3 className="text-sm font-semibold uppercase mt-3">
+          <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
-          <p className="text-sm mt-1">${price}</p>
+          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw]">${price}</p>
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
             <img
               src={firstImage}
               alt={product.title}
-              className="w-full h-[220px] mx-auto object-cover mb-2"
+              className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
             />
-            <h4 className="text-xs font-medium uppercase text-left mb-1">
+            <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {collection.title || 'BRAND NAME'}
             </h4>
-            <h3 className="text-sm font-bold uppercase text-left leading-snug">
+            <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 text-left">${price}</p>
+            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">${price}</p>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-[2.813vw]">
             <div className="flex flex-col w-full items-center text-xs">
-              <Link to={`/dashboard/cashfunds/${product.id}`}>
-                <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+              <Link to={`/dashboard/cashfunds/${product.id}`} className='w-full'>
+                <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] lg:mb-[0.729vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
                   personalize fund
                 </button>
               </Link>
               <button
                 onClick={handleAddToRegistry}
                 disabled={fetcher.state === 'submitting'}
-                className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
               >
                 {fetcher.state === 'submitting'
                   ? 'Adding...'
@@ -290,18 +291,18 @@ const DreamFund = () => {
       <Header />
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-[500px] lg:h-[800px] flex flex-row items-center justify-center">
+      <div className="w-full h-[500px] lg:h-[39.583vw] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
             <Heading
               text={'dream funds'}
               classes={
-                'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-4xl lg:text-[2.292vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black'
               }
               image={lineImghead}
-              imageClasses={'w-[150px] lg:w-[330px]'}
+              imageClasses={'w-[150px] lg:w-[22.135vw] lg:h-[0.417vw]'}
             />
-            <p className="text-base sm:text-lg lg:text-xl text-black leading-relaxed mx-auto mt-10">
+            <p className="text-base sm:text-lg lg:text-[1.25vw] lg:w-[28.542vw] lg:max-w-full lg:leading-[2.083vw] text-black leading-relaxed mx-auto mt-10">
               Think: flight upgrades, home projects, or a honeymoon you'll
               actually remember. These ready-to-go funds make it easy for guests
               to chip in on the good stuff.
@@ -317,10 +318,10 @@ const DreamFund = () => {
         </div>
       </div>
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
+      <section className="px-[8.594vw] mx-auto">
+        <div className="flex flex-col md:flex-row gap-[3.75vw] pt-[8.229vw]">
           <SidebarFilter />
-          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
+          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0">
             {safeCashFunds.flatMap(
               (collection) =>
                 collection.products?.edges?.map((edge) => {
@@ -344,32 +345,32 @@ const DreamFund = () => {
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">LOADING 12 of 427</p>
+            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">LOADING 12 of 427</p>
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
+            <button className="border-b mx-auto cursor-pointer mb-[9.167vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] hover:bg-gray-100">
               Back to Top
             </button>
           </div>
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+      <section className="bg-[#FAF9F6] py-[5.26vw] mb-[9.323vw]">
         <Heading
           text="we think you'll love"
           classes={
-            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw] lg:h-[0.417vw]'}
         />
 
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+        <div className="relative items-start mt-[5.573vw] max-[1024px]:my-10">
+          <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
+            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
               <img src={nextitem} alt="" className="rotate-180 " />
-              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+              <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
                 more
               </span>
             </div>
@@ -406,50 +407,50 @@ const DreamFund = () => {
                   centeredSlides: true,
                 },
                 1600: {
-                  spaceBetween: 39,
+                  spaceBetween: 66,
                   centeredSlides: true,
                 },
               }}
             >
               {/* slides here */}
               <SwiperSlide>
-                <img src={youll1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={youll1} alt="New Arrival" className="w-full rounded-none" />
+                <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={youll2} alt="Tableware" className="w-full rounded-none" />
+                <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll1} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={youll1} alt="New arrivals" className="w-full rounded-none" />
+                <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
+                <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                 more
               </span>
               <img src={nextitem} className="" alt="" />
@@ -542,10 +543,10 @@ function SidebarFilter() {
   };
 
   return (
-    <div className="w-full xl:w-3/12 p-6 h-fit bg-[#FAF9F6]">
+    <div className="w-full lg:w-[17.031vw] lg:py-[2.865vw] lg:px-[1.979vw] p-6 h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-sm lg:text-[0.938vw] lg:leading-[0.938vw] lg:mb-[2.292vw] font-bold uppercase mb-2 cursor-pointer flex items-center gap-[0.677vw]"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -554,52 +555,52 @@ function SidebarFilter() {
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HONEYMOON
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 HOME
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 DATE NIGHTS
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
             <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
                 LOREM IPSUM
               </label>
             </li>
