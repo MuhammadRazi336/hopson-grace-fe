@@ -9,11 +9,47 @@ import {
   useNavigate,
 } from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
-import lineImghead from '/assets/Images/WhiteLine.png';
+import lineImghead from '/assets/Images/inspirationLine.png';
 import BlackLine from '/assets/Images/line.png';
 import regLogo from '/assets/Images/reglogo.png';
 import Heading from '~/components/Heading';
 import {extractShopifyId} from '~/utils/helpers.js';
+import heart from '/assets/Images/heart.png';
+import lineImgWhiteHead from '/assets/Images/WhiteLine.png';
+import readMoreIcon from '/assets/Images/readMoreIcon.png';
+import WhiteThemeButton from '~/components/WhiteThemeButton';
+import ImageAndText from '~/components/ImageAndText';
+import teaImg from '/assets/Images/tea.png';
+import lineImg3 from '/assets/Images/line.png';
+import {Swiper, SwiperSlide} from 'swiper/react';
+import {Navigation} from 'swiper/modules';
+import nextitem from '/assets/Images/next.png';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import BlogArticle from '~/components/BlogArticle';
+
+const BLOGS_QUERY = `#graphql
+query GetAllBlogsAndArticlesForInspiration {
+  blogs(first: 10) {
+    nodes {
+      title
+      handle
+      articles(first: 20) {
+        nodes {
+          id
+          title
+          handle
+          publishedAt
+          contentHtml
+          image {
+            url
+          }
+        }
+      }
+    }
+  }
+}
+`;
 
 const ARTICLE_QUERY = `#graphql
   query Article(
@@ -172,7 +208,7 @@ export async function loader({context, params}) {
 
       const result = await context.storefront.query(PRODUCTS_QUERY);
       console.log('Query result:', result);
-
+      
       // Convert the data object to an array, with proper null checks
       if (result) {
         // The result is directly the data object, not wrapped in a 'data' property
@@ -219,6 +255,37 @@ export async function loader({context, params}) {
     // Continue without registry data
   }
 
+  // Process content to remove first paragraph using regex
+  const removeFirstParagraph = (htmlContent) => {
+    // Split content by H2 tags to find the first section
+    const h2Split = htmlContent.split(/<h2[^>]*>/i);
+    
+    if (h2Split.length > 1) {
+      // Get everything before the first H2
+      const beforeFirstH2 = h2Split[0];
+      
+      // Remove all <p> tags from the beginning section
+      let cleanedBeforeH2 = beforeFirstH2.replace(/<p[^>]*>[\s\S]*?<\/p>/gi, '');
+      
+      // Clean up any remaining empty content
+      cleanedBeforeH2 = cleanedBeforeH2.replace(/^\s*/, '');
+      
+      // Reconstruct the content
+      const afterFirstH2 = htmlContent.substring(htmlContent.indexOf('<h2'));
+      return cleanedBeforeH2 + afterFirstH2;
+    }
+    
+    // If no H2 found, remove the first paragraph
+    return htmlContent.replace(/<p[^>]*>[\s\S]*?<\/p>/i, '');
+  };
+
+  const processedContent = removeFirstParagraph(blog.articleByHandle.contentHtml);
+  
+  console.log('Original content:', blog.articleByHandle.contentHtml);
+  console.log('Processed content:', processedContent);
+
+  const {blogs} = await context.storefront.query(BLOGS_QUERY);
+
   return json({
     article: blog.articleByHandle,
     metafields,
@@ -226,6 +293,9 @@ export async function loader({context, params}) {
     registry: registry?.data || [],
     registryProduct: registryProduct?.data || [],
     user: user || null,
+    processedContent,
+    blogs: blogs?.nodes || [],
+    currentArticleHandle: articleHandle,
   });
 }
 
@@ -245,7 +315,7 @@ export async function action({request, context}) {
 }
 
 const BlogDetails = () => {
-  const {article, metafields, products, registry, registryProduct, user} =
+  const {article, metafields, products, registry, registryProduct, user, processedContent, blogs, currentArticleHandle} =
     useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -253,22 +323,14 @@ const BlogDetails = () => {
   const [alertMessage, setAlertMessage] = React.useState('');
   const [alertType, setAlertType] = React.useState('success');
 
-  console.log('article', article);
-  console.log('metafields', metafields);
-  console.log('products', products);
-  console.log('registry', registry);
-  console.log('registryProduct', registryProduct);
-
   const [firstParagraph, setFirstParagraph] = React.useState('');
-  const [sections, setSections] = React.useState([]);
 
-  // Function to extract first paragraph and sections with H2 headings
-  const extractContentSections = (htmlContent) => {
+  // Function to extract first paragraph for hero section
+  const extractFirstParagraph = (htmlContent) => {
     // Create a temporary div to parse HTML
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlContent;
 
-    const sections = [];
     let firstParagraph = '';
 
     // Get all child nodes
@@ -285,25 +347,7 @@ const BlogDetails = () => {
       }
     }
 
-    // Extract H2 sections
-    const h2Elements = tempDiv.querySelectorAll('h2');
-    h2Elements.forEach((h2) => {
-      const title = h2.textContent;
-      let content = '';
-
-      // Get content until next h2 or end
-      let nextElement = h2.nextElementSibling;
-      while (nextElement && nextElement.tagName !== 'H2') {
-        if (nextElement.tagName === 'P') {
-          content += nextElement.textContent + ' ';
-        }
-        nextElement = nextElement.nextElementSibling;
-      }
-
-      sections.push({title, content: content.trim()});
-    });
-
-    return {firstParagraph: firstParagraph.trim(), sections};
+    return firstParagraph.trim();
   };
 
   const handleAddToRegistry = (product, quantity) => {
@@ -379,11 +423,8 @@ const BlogDetails = () => {
   // Use useEffect to parse content on client side
   React.useEffect(() => {
     if (article.contentHtml) {
-      const {firstParagraph: fp, sections: sec} = extractContentSections(
-        article.contentHtml,
-      );
+      const fp = extractFirstParagraph(article.contentHtml);
       setFirstParagraph(fp);
-      setSections(sec);
     }
   }, [article.contentHtml]);
 
@@ -400,7 +441,7 @@ const BlogDetails = () => {
               classes={
                 'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0 text-white'
               }
-              image={lineImghead}
+              image={lineImgWhiteHead}
               imageClasses={'max-[1024px]:max-w-[330px]'}
             />
             <p className="text-base sm:text-lg lg:text-xl text-white leading-relaxed mx-auto mt-10">
@@ -418,20 +459,9 @@ const BlogDetails = () => {
       </div>
 
       <div className="w-full flex flex-row">
-        {/* H2 Sections */}
+        {/* Full Content Display */}
         <div className="w-[70%] px-[80px] py-16">
-          {sections.map((section, index) => (
-            <div key={index} className="mb-12">
-              <div className="mb-6">
-                <h2 className="text-4xl font-semibold">{section.title}</h2>
-              </div>
-              <div className="">
-                <p className="text-2xl text-gray-700 leading-relaxed">
-                  {section.content}
-                </p>
-              </div>
-            </div>
-          ))}
+          <BlogArticle article={article} processedContent={processedContent} />
         </div>
 
         <div className="w-[30%] px-[80px] py-16">
@@ -445,26 +475,26 @@ const BlogDetails = () => {
               />
               {metafields.photographer && (
                 <>
-                  <p className="text-lg font-semibold">PHOTOGRAPHER:</p>
+              <p className="text-lg font-semibold">PHOTOGRAPHER:</p>
                   <p className="text-lg mb-7">{metafields.photographer}</p>
                 </>
               )}
               {metafields.wedding_planner && (
                 <>
-                  <p className="text-lg font-semibold">WEDDING PLANNER:</p>
+              <p className="text-lg font-semibold">WEDDING PLANNER:</p>
                   <p className="text-lg mb-7">{metafields.wedding_planner}</p>
                 </>
               )}
 
               {metafields.flowers && (
                 <>
-                  <p className="text-lg font-semibold">FLOWERS:</p>
+              <p className="text-lg font-semibold">FLOWERS:</p>
                   <p className="text-lg mb-7">{metafields.flowers}</p>
                 </>
               )}
               {metafields.venue && (
                 <>
-                  <p className="text-lg font-semibold">VENUE:</p>
+              <p className="text-lg font-semibold">VENUE:</p>
                   <p className="text-lg">{metafields.venue}</p>
                 </>
               )}
@@ -480,8 +510,8 @@ const BlogDetails = () => {
               alt=""
               className="w-[100px] h-[4px] mx-auto mb-10"
             />
-            <div className="flex flex-col">
-              {products.slice(0, 3).map((product, index) => (
+             <div className="flex flex-col">
+               {products.slice(0, 3).map((product, index) => (
                 <ProductCard
                   key={product.id || index}
                   product={product}
@@ -490,8 +520,8 @@ const BlogDetails = () => {
                     handleAddToRegistry(product, quantity)
                   }
                 />
-              ))}
-            </div>
+               ))}
+             </div>
           </div>
 
           <div className="h-[370px] w-[400px] bg-[#FAF9F6] relative mx-auto">
@@ -536,6 +566,123 @@ const BlogDetails = () => {
               </Link>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div>
+        <img src={heart} alt="" className='mx-auto w-[250px]'/>
+
+        <Heading
+          text="more wedding stories"
+          classes={'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 mt-10'}
+          image={lineImghead}
+          imageClasses={'max-w-[430px]'}
+        />
+
+        <div className="relative items-start mt-16">
+          <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
+            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <img src={nextitem} alt="" className="rotate-180" />
+              <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+            </div>
+
+            <Swiper
+              spaceBetween={20}
+              slidesPerView={4}
+              loop={true}
+              modules={[Navigation]}
+              navigation={{
+                nextEl: '.swiper-button-next-prod',
+                prevEl: '.swiper-button-prev-prod',
+              }}
+              className="px-[50px]"
+              breakpoints={{
+                345: {
+                  spaceBetween: 10,
+                  slidesPerView: 1,
+                  centeredSlides: false,
+                },
+                475: {
+                  spaceBetween: 15,
+                  slidesPerView: 2,
+                  centeredSlides: false,
+                },
+                768: {
+                  spaceBetween: 20,
+                  slidesPerView: 3,
+                  centeredSlides: false,
+                },
+                1024: {
+                  spaceBetween: 20,
+                  slidesPerView: 4,
+                  centeredSlides: false,
+                },
+                1366: {
+                  spaceBetween: 25,
+                  slidesPerView: 4,
+                  centeredSlides: false,
+                },
+                1600: {
+                  spaceBetween: 30,
+                  slidesPerView: 4,
+                  centeredSlides: false,
+                },
+              }}
+            >
+              {blogs.flatMap(blog => 
+                blog.articles.nodes
+                  .filter(article => article.handle !== currentArticleHandle) // Exclude current article
+                  .map(article => (
+                    <SwiperSlide key={article.id}>
+                      <div className="w-full">
+                        <img src={article.image.url} alt="" className='w-full h-[390px] object-cover'/>
+                        <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
+                          {article.title}
+                        </h4>
+                        <p className="text-sm mt-2 mb-3 ivyora italic lg:text-[20px] lg:leading-[1.1vw] font-normal">
+                          {article.contentHtml.replace(/<[^>]*>/g, '').slice(0, 95)}
+                          ...
+                        </p>
+                        <div className="flex items-center justify-start">
+                          <Link to={`/blogs/${blog.handle}/${article.handle}`}>
+                            <p className="font-bold flex items-center lg:text-[18px] uppercase gap-2">
+                              Read More
+                              <img src={readMoreIcon} alt="" />
+                            </p>
+                          </Link>
+                        </div>
+                      </div>
+                    </SwiperSlide>
+                  ))
+                ).slice(0, 12)}
+            </Swiper>
+            
+            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+              <img src={nextitem} className="" alt="" />
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full flex flex-col items-center mt-16">
+            <WhiteThemeButton Text="Back To All Stories" link="/inspiration" />
+          </div>
+
+          <div className="w-full py-16">
+        <ImageAndText
+          direction={'right'}
+          imgBanner={teaImg}
+          lineimg={lineImg3}
+          title="are you ready?"
+          description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
+          buttontext={'GET STARTED'}
+          buttontype={'Color'}
+          buttonLink={'/register'}
+        />
         </div>
       </div>
 
@@ -610,7 +757,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
                 product.title ||
                 'Product'
               }
-              className="w-[320px] h-[320px] object-cover rounded mb-2"
+              className="w-[320px] h-[320px] object-cover rounded mb-2 mx-auto"
             />
           )}
           <p className="font-semibold text-[22px]">
