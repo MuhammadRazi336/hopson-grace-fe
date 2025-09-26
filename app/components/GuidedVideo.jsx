@@ -24,7 +24,7 @@ const GuidedVideo = () => {
       >
       </video>
       <button 
-        className="guided-video__close-button w-[36px] h-[36px] flex items-center justify-center absolute -top-3 cursor-pointer -right-3 rounded-full p-1 shadow-lg bg-[#000000] hover:bg-gray-100" 
+        className="guided-video__close-button w-[36px] h-[36px] flex items-center justify-center absolute -top-3 cursor-pointer -right-3 rounded-full p-1 shadow-lg bg-[#000000]" 
         id="close-guided-video-button" 
         aria-label="Close guided video button"
         onClick={handleClose}
