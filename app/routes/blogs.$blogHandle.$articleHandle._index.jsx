@@ -405,7 +405,7 @@ const BlogDetails = () => {
           <BlogArticle article={article} processedContent={article.contentHtml} />
         </div>
 
-        <div className="w-[28%] h-[709px] px-[80px] py-16">
+        <div className="w-[28%] px-[80px] py-16">
           <div className="h-[550px] bg-[#FAF9F6] relative">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
               <p className="text-[24px] bastardogrotesk font-semibold">IT'S ALL IN THE DETAILS</p>
@@ -510,7 +510,7 @@ const BlogDetails = () => {
         </div>
       </div>
 
-      <div className='mt-16'>
+      <div>
         <img src={heart} alt="" className='mx-auto w-[250px]'/>
 
         <Heading
