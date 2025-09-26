@@ -25,6 +25,7 @@ import {Header} from '~/components/Header';
 import {useState, useEffect} from 'react';
 import arrowUp from '/assets/Images/arrowDown.png';
 import { Link, useLoaderData, json } from '@remix-run/react';
+import GuidedVideo from '~/components/GuidedVideo';
 
 export async function loader({ context }) {
   try {
@@ -365,6 +366,9 @@ const Home = () => {
         />
       </section>
       <Footer />
+      
+      {/* Guided Video Component */}
+      <GuidedVideo />
       
       {/* Back to Top Button */}
       <button
