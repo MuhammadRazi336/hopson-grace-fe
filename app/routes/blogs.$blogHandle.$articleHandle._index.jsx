@@ -94,6 +94,9 @@ const ARTICLE_QUERY = `#graphql
         coupleMetafield: metafield(namespace: "custom", key: "couple_name") {
           value
         }
+          paraMetafield: metafield(namespace: "custom", key: "first_para") {
+          value
+        }
         seo {
           description
           title
@@ -131,6 +134,7 @@ export async function loader({context, params}) {
     flowers: blog.articleByHandle.flowersMetafield?.value,
     venue: blog.articleByHandle.venueMetafield?.value,
     couple_name: blog.articleByHandle.coupleMetafield?.value,
+    first_para: blog.articleByHandle.paraMetafield?.value,
   };
 
   // Parse products from metafield (assuming it's stored as JSON string)
@@ -255,34 +259,6 @@ export async function loader({context, params}) {
     // Continue without registry data
   }
 
-  // Process content to remove first paragraph using regex
-  const removeFirstParagraph = (htmlContent) => {
-    // Split content by H2 tags to find the first section
-    const h2Split = htmlContent.split(/<h2[^>]*>/i);
-    
-    if (h2Split.length > 1) {
-      // Get everything before the first H2
-      const beforeFirstH2 = h2Split[0];
-      
-      // Remove all <p> tags from the beginning section
-      let cleanedBeforeH2 = beforeFirstH2.replace(/<p[^>]*>[\s\S]*?<\/p>/gi, '');
-      
-      // Clean up any remaining empty content
-      cleanedBeforeH2 = cleanedBeforeH2.replace(/^\s*/, '');
-      
-      // Reconstruct the content
-      const afterFirstH2 = htmlContent.substring(htmlContent.indexOf('<h2'));
-      return cleanedBeforeH2 + afterFirstH2;
-    }
-    
-    // If no H2 found, remove the first paragraph
-    return htmlContent.replace(/<p[^>]*>[\s\S]*?<\/p>/i, '');
-  };
-
-  const processedContent = removeFirstParagraph(blog.articleByHandle.contentHtml);
-  
-  console.log('Original content:', blog.articleByHandle.contentHtml);
-  console.log('Processed content:', processedContent);
 
   const {blogs} = await context.storefront.query(BLOGS_QUERY);
 
@@ -293,7 +269,6 @@ export async function loader({context, params}) {
     registry: registry?.data || [],
     registryProduct: registryProduct?.data || [],
     user: user || null,
-    processedContent,
     blogs: blogs?.nodes || [],
     currentArticleHandle: articleHandle,
   });
@@ -315,40 +290,13 @@ export async function action({request, context}) {
 }
 
 const BlogDetails = () => {
-  const {article, metafields, products, registry, registryProduct, user, processedContent, blogs, currentArticleHandle} =
+  const {article, metafields, products, registry, registryProduct, user, blogs, currentArticleHandle} =
     useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState('');
   const [alertType, setAlertType] = React.useState('success');
-
-  const [firstParagraph, setFirstParagraph] = React.useState('');
-
-  // Function to extract first paragraph for hero section
-  const extractFirstParagraph = (htmlContent) => {
-    // Create a temporary div to parse HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-
-    let firstParagraph = '';
-
-    // Get all child nodes
-    const childNodes = Array.from(tempDiv.childNodes);
-
-    // Find first paragraph (before first H2)
-    for (let i = 0; i < childNodes.length; i++) {
-      const node = childNodes[i];
-      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'H2') {
-        break;
-      }
-      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'P') {
-        firstParagraph += node.textContent + ' ';
-      }
-    }
-
-    return firstParagraph.trim();
-  };
 
   const handleAddToRegistry = (product, quantity) => {
     try {
@@ -420,13 +368,6 @@ const BlogDetails = () => {
     }
   };
 
-  // Use useEffect to parse content on client side
-  React.useEffect(() => {
-    if (article.contentHtml) {
-      const fp = extractFirstParagraph(article.contentHtml);
-      setFirstParagraph(fp);
-    }
-  }, [article.contentHtml]);
 
   return (
     <>
@@ -435,17 +376,17 @@ const BlogDetails = () => {
       <div className="w-full lg:h-[960px] sm:h-[600px] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#446184] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
-            <p className="text-white text-lg mb-10">WEDDING STORIES</p>
+            <p className="text-white text-[20px] font-bold mb-10">WEDDING STORIES</p>
             <Heading
               text={article.title}
               classes={
-                'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0 text-white'
+                'prata text-[56px] font-normal text-center max-[1024px]:m-0 text-white'
               }
               image={lineImgWhiteHead}
               imageClasses={'max-[1024px]:max-w-[330px]'}
             />
-            <p className="text-base sm:text-lg lg:text-xl text-white leading-relaxed mx-auto mt-10">
-              {firstParagraph}
+            <p className="ivyora italic text-[32px] text-white leading-relaxed mx-auto mt-10">
+              {metafields.first_para}
             </p>
           </div>
         </div>
@@ -460,14 +401,14 @@ const BlogDetails = () => {
 
       <div className="w-full flex flex-row">
         {/* Full Content Display */}
-        <div className="w-[70%] px-[80px] py-16">
-          <BlogArticle article={article} processedContent={processedContent} />
+        <div className="w-[72%] px-[80px] py-16">
+          <BlogArticle article={article} processedContent={article.contentHtml} />
         </div>
 
-        <div className="w-[30%] px-[80px] py-16">
+        <div className="w-[28%] h-[709px] px-[80px] py-16">
           <div className="h-[550px] bg-[#FAF9F6] relative">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
-              <p className="text-xl font-semibold">IT'S ALL IN THE DETAILS</p>
+              <p className="text-[24px] bastardogrotesk font-semibold">IT'S ALL IN THE DETAILS</p>
               <img
                 src={BlackLine}
                 alt=""
@@ -475,34 +416,34 @@ const BlogDetails = () => {
               />
               {metafields.photographer && (
                 <>
-              <p className="text-lg font-semibold">PHOTOGRAPHER:</p>
-                  <p className="text-lg mb-7">{metafields.photographer}</p>
+              <p className="text-[20px] bastardogrotesk font-semibold">PHOTOGRAPHER:</p>
+                  <p className="text-[20px] font-normal mb-7">{metafields.photographer}</p>
                 </>
               )}
               {metafields.wedding_planner && (
                 <>
-              <p className="text-lg font-semibold">WEDDING PLANNER:</p>
-                  <p className="text-lg mb-7">{metafields.wedding_planner}</p>
+              <p className="text-[20px] bastardogrotesk font-semibold">WEDDING PLANNER:</p>
+                  <p className="text-[20px] font-normal mb-7">{metafields.wedding_planner}</p>
                 </>
               )}
 
               {metafields.flowers && (
                 <>
-              <p className="text-lg font-semibold">FLOWERS:</p>
-                  <p className="text-lg mb-7">{metafields.flowers}</p>
+              <p className="text-[20px] bastardogrotesk font-semibold">FLOWERS:</p>
+                  <p className="text-[20px] font-normal mb-7">{metafields.flowers}</p>
                 </>
               )}
               {metafields.venue && (
                 <>
-              <p className="text-lg font-semibold">VENUE:</p>
-                  <p className="text-lg">{metafields.venue}</p>
+              <p className="text-[20px] bastardogrotesk font-semibold">VENUE:</p>
+                  <p className="text-[20px] font-normal">{metafields.venue}</p>
                 </>
               )}
             </div>
           </div>
 
           <div className="text-center mt-16">
-            <p className="text-xl font-semibold w-[50%] mx-auto mb-2 uppercase">
+            <p className="text-[24px] font-semibold mx-auto mb-2 uppercase">
               {metafields.couple_name || 'THEIR'} FAVOURITE GIFTS
             </p>
             <img
@@ -524,9 +465,9 @@ const BlogDetails = () => {
              </div>
           </div>
 
-          <div className="h-[370px] w-[400px] bg-[#FAF9F6] relative mx-auto">
+          <div className="h-[370px] w-full bg-[#FAF9F6] relative mx-auto">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
-              <p className="text-xl font-semibold uppercase">
+              <p className="text-[20px] font-bold uppercase">
                 LOVING {metafields.couple_name || 'THEIR'} GIFTS
               </p>
               <img
@@ -534,23 +475,23 @@ const BlogDetails = () => {
                 alt=""
                 className="w-[100px] h-[4px] mx-auto mb-10"
               />
-              <p className="text-lg mb-7">
+              <p className="text-[18px] font-normal mb-7">
                 Explore their registry for more inspo and ideas.
               </p>
               <Link to={`/couple/single/${metafields.userId || ''}`}>
-                <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center">
+                <button className="w-[286px] h-[68px] text-[14px] font-bold bg-[#446184] hover:opacity-90 uppercase text-white text-center">
                   VIEW THE REGISTRY
                 </button>
               </Link>
             </div>
           </div>
 
-          <div className="h-[620px] w-[400px] bg-[#446184] relative mt-10 mx-auto">
+          <div className="h-[620px] w-full bg-[#446184] relative mt-10 mx-auto">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
               <img
                 src={regLogo}
                 alt=""
-                className="w-[100px] h-[100px] mx-auto mb-10"
+                className="w-[104px] mx-auto mb-10"
               />
               <h2 className="text-white text-[22px] font-semibold">
                 WOULD YOU LIKE YOUR SPECIAL DAY TO BE FEATURED?
@@ -560,7 +501,7 @@ const BlogDetails = () => {
                 our blog, we love seeing how couples celebrated their wedding. 
               </p>
               <Link to={'/submit-wedding'}>
-                <button className="h-[70px] w-[280px] text-[17px] max-[1601px]:text-[14px] text-black bg-[#F5F2ED] border border-black hover:opacity-90 uppercase font-[800] max-[1601px]:w-[200px] text-center">
+                <button className="h-[68px] w-[286px] text-[14px] font-bold max-[1601px]:text-[14px] text-black bg-[#F5F2ED] border border-black hover:opacity-90 uppercase max-[1601px]:w-[200px] text-center">
                   SUBMIT HERE
                 </button>
               </Link>
@@ -569,7 +510,7 @@ const BlogDetails = () => {
         </div>
       </div>
 
-      <div>
+      <div className='mt-16'>
         <img src={heart} alt="" className='mx-auto w-[250px]'/>
 
         <Heading
@@ -589,7 +530,7 @@ const BlogDetails = () => {
             </div>
 
             <Swiper
-              spaceBetween={20}
+              spaceBetween={15}
               slidesPerView={4}
               loop={true}
               modules={[Navigation]}
@@ -637,7 +578,7 @@ const BlogDetails = () => {
                   .map(article => (
                     <SwiperSlide key={article.id}>
                       <div className="w-full">
-                        <img src={article.image.url} alt="" className='w-full h-[390px] object-cover'/>
+                        <img src={article.image.url} alt="" className='w-[372px] h-[388px] object-cover'/>
                         <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
                           {article.title}
                         </h4>
@@ -647,9 +588,9 @@ const BlogDetails = () => {
                         </p>
                         <div className="flex items-center justify-start">
                           <Link to={`/blogs/${blog.handle}/${article.handle}`}>
-                            <p className="font-bold flex items-center lg:text-[18px] uppercase gap-2">
+                            <p className="font-bold flex items-center justify-center lg:text-[18px] uppercase gap-2">
                               Read More
-                              <img src={readMoreIcon} alt="" />
+                              <img src={readMoreIcon} className='w-[16px] h-[16px] pl-0.5' alt="" />
                             </p>
                           </Link>
                         </div>
@@ -745,7 +686,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
 
   return (
     <>
-      <p className="text-[60px] text-center prata">{index + 1}.</p>
+      <p className="text-[72px] text-center prata">{index + 1}.</p>
       <div className="p-3 bg-white mx-auto relative group h-[460px]">
         {/* Product Image and Info */}
         <div className="relative">
@@ -780,16 +721,16 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
                   product.title ||
                   'Product'
                 }
-                className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-cover mb-[20px] rounded"
+                className="w-[300px] h-[300px] lg:h-[13.542vw] mx-auto object-cover mb-[20px] rounded"
               />
             )}
-            <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
+            <h4 className="text-[16px] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
               PRODUCT
             </h4>
-            <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
+            <h3 className="text-[22px] lg:leading-[1.146vw] font-semibold uppercase text-left leading-[22px] m-0">
               {product.title || `Product ${index + 1}`}
             </h3>
-            <p className="text-[20px] lg:text-[1.25vw] leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
+            <p className="text-[24px] font-normal leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
               ${product.priceRange?.minVariantPrice?.amount || '0.00'}{' '}
               {product.priceRange?.minVariantPrice?.currencyCode || ''}
             </p>
@@ -816,7 +757,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
 
                 <input
                   value={quantity}
-                  className="w-16 lg:text-[1.458vw] lg:leading-[1.25vw] lg:h-[1.563vw] relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-28px"
+                  className="w-16 text-[28px] font-normal relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-28px"
                   readOnly
                 />
 

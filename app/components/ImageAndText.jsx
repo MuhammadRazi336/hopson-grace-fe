@@ -34,7 +34,7 @@ const ImageAndText = ({
           direction === 'left' ? 'lg:mb-20 mb-6' : 'lg:mt-20 mt-6'
         }`}
       >
-        <h3 className="text-2xl lg:text-[2.5vw] lg:mx-auto lg:leading-[3.125vw] prata max-w-[410px]">
+        <h3 className="text-[48px] text-center lg:mx-auto lg:leading-[3.125vw] prata max-w-[410px]">
           {title}
         </h3>
 
@@ -45,7 +45,7 @@ const ImageAndText = ({
         {stepsCheck ? (
           <Steps className="max-w-[520px]" />
         ) : (
-          <p className="text-sm font-[400] lg:text-[1.354vw] leading-normal lg:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-12 text-center">
+          <p className="text-[22px] font-semibold leading-normal lg:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-12 text-center">
             {description}
           </p>
         )}
@@ -54,7 +54,7 @@ const ImageAndText = ({
           <NavLink to={buttonLink}>
             <Button
               text={buttontext}
-              className={`text-[18px] cursor-pointer py-4 lg:py-[5px] w-full lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
+              className={`text-[18px] cursor-pointer w-[288px] h-[77px] lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
                 ${
                   stepsCheck
                     ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[768px]:p-3.5'
