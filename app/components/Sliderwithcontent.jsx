@@ -8,7 +8,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import nextitem from '/assets/Images/next.png';
 
-const Sliderwithcontent = ({ featuredRegistryData }) => {
+const Sliderwithcontent = ({ featuredRegistryData, user = null }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   
   // Debug logging
@@ -79,7 +79,8 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
                 featuredRegistryData={{
                   parentCollection: parentCollection,
                   subCollection: subCollection
-                }} 
+                }}
+                user={user}
               />
             </SwiperSlide>
           ))}

@@ -65,7 +65,7 @@ export async function loader({context}) {
     console.error('Error fetching collections:', error);
   }
 
-  return {products: allProducts, registryId: registry?.data[0]?.id, collections};
+  return {products: allProducts, registryId: registry?.data[0]?.id, collections, user};
 }
 
 export async function action({request, context}) {
@@ -92,7 +92,7 @@ export async function action({request, context}) {
   }
 }
 const CashFunds = () => {
-  const {products, registryId, collections} = useLoaderData();
+  const {products, registryId, collections, user} = useLoaderData();
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
@@ -365,7 +365,7 @@ const CashFunds = () => {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <ProductSlider />
+        <ProductSlider user={user} />
         <div className="text-center">
           <ButtonComponent
             text="browse bestsellers"

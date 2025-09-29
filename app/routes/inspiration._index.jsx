@@ -57,7 +57,17 @@ const Inspiration = () => {
   const {blogs} = useLoaderData();
   console.log('blogs', blogs);
 
-  const [clickedSection, setClickedSection] = React.useState(null);
+  const [clickedSection, setClickedSection] = React.useState('wedding');
+  const [articlesToShow, setArticlesToShow] = React.useState(12);
+  const articlesGridRef = React.useRef(null);
+
+  // Flatten all articles from all blogs
+  const allArticles = blogs.flatMap(blog => 
+    blog.articles.nodes.map(article => ({
+      ...article,
+      blogHandle: blog.handle
+    }))
+  );
 
   return (
     <div>
@@ -80,9 +90,7 @@ const Inspiration = () => {
         <div className="flex flex-row justify-around items-center mt-16">
           <div
             className="relative cursor-pointer"
-            onClick={() =>
-              setClickedSection(clickedSection === 'wedding' ? null : 'wedding')
-            }
+            onClick={() => setClickedSection('wedding')}
           >
             <img src={weddingStoryImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -91,9 +99,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() =>
-              setClickedSection(clickedSection === 'ready' ? null : 'ready')
-            }
+            onClick={() => setClickedSection('ready')}
           >
             <img src={readyMadeImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -102,11 +108,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() =>
-              setClickedSection(
-                clickedSection === 'planning' ? null : 'planning',
-              )
-            }
+            onClick={() => setClickedSection('planning')}
           >
             <img src={planningTipsImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -115,9 +117,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() =>
-              setClickedSection(clickedSection === 'design' ? null : 'design')
-            }
+            onClick={() => setClickedSection('design')}
           >
             <img src={designNotesImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -126,9 +126,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() =>
-              setClickedSection(clickedSection === 'taste' ? null : 'taste')
-            }
+            onClick={() => setClickedSection('taste')}
           >
             <img src={tasteTravelImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -169,55 +167,111 @@ const Inspiration = () => {
 
       <div className="py-16 mx-auto">
         <h3 className="text-center text-[1.458vw] font-[500]">
-          WEDDING STORIES
+          {clickedSection === 'wedding' ? 'WEDDING STORIES' : 
+           clickedSection === 'ready' ? 'READY-MADE REGISTRIES' :
+           clickedSection === 'planning' ? 'REGISTRY & PLANNING TIPS' :
+           clickedSection === 'design' ? 'DESIGN NOTES' :
+           clickedSection === 'taste' ? 'TASTE & TRAVEL' :
+           'WEDDING STORIES'}
         </h3>
         <p className="text-center lg:text-[1.25vw] lg:leading-[1.875vw] text-xl lg:w-[50%] mx-auto mt-5">
-          Real couples, real style. Go behind the scenes of some of our
-          favourite celebrations and get <br />
-          inspired by how real couples infused style and heart into their day.
+          {clickedSection === 'wedding' ? 
+            "Real couples, real style. Go behind the scenes of some of our favourite celebrations and get inspired by how real couples infused style and heart into their day." :
+            clickedSection === 'ready' ?
+            "Discover our curated collection of ready-made registries designed to make your wedding planning effortless and stylish." :
+            clickedSection === 'planning' ?
+            "Expert tips and advice to help you plan the perfect registry and wedding celebration." :
+            clickedSection === 'design' ?
+            "Explore design inspiration and styling tips for your special day." :
+            clickedSection === 'taste' ?
+            "Culinary inspiration and travel ideas for your wedding journey." :
+            "Real couples, real style. Go behind the scenes of some of our favourite celebrations and get inspired by how real couples infused style and heart into their day."
+          }
         </p>
 
-        <div className="grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-4 mt-16 px-[9.375vw]">
-          {blogs.flatMap(blog => 
-            blog.articles.nodes.map(article => (
-              <div key={article.id} className="mb-[5.156vw]">
-                <div className="w-full">
-                  <img src={article.image.url} alt="" className='w-[370px] h-[390px]'/>
-                  <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
-                    {article.title}
-                  </h4>
-                  <p className="text-sm mt-2 mb-3 ivyora italic lg:text-[20px] lg:leading-[1.1vw] font-normal">
-                    {article.contentHtml.replace(/<[^>]*>/g, '').slice(0, 95)}
-                    ...
-                  </p>
-                  <div className="flex items-center justify-start">
-                    <Link to={`/blogs/${blog.handle}/${article.handle}`}>
-                      <p className="font-bold flex items-center lg:text-[18px] uppercase gap-2">
-                        Read More
-                        <img src={readMoreIcon} alt="" />
+        {/* Only show content for wedding stories */}
+        {clickedSection === 'wedding' && (
+          <>
+            <div ref={articlesGridRef} className="grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-4 mt-16 px-[9.375vw]">
+              {allArticles.slice(0, articlesToShow).map(article => {
+                const cleanTitle = article.title.replace(/<[^>]*>/g, '');
+                const maxTitleLength = 50;
+                const isTitleLong = cleanTitle.length > maxTitleLength;
+                const displayedTitle = isTitleLong
+                  ? cleanTitle.slice(0, maxTitleLength) + '...'
+                  : cleanTitle;
+                return (
+                  <div key={article.id} className="mb-[5.156vw]">
+                    <div className="w-full">
+                      <img src={article.image.url} alt="" className='w-[370px] h-[390px]'/>
+                      <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
+                        {displayedTitle}
+                      </h4>
+                      <p className="text-sm mt-2 mb-3 ivyora italic lg:text-[20px] lg:leading-[1.1vw] font-normal">
+                        {article.contentHtml.replace(/<[^>]*>/g, '').slice(0, 80)}
+                        ...
                       </p>
-                    </Link>
+                      <div className="flex items-center justify-start">
+                        <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
+                          <p className="font-bold flex items-center lg:text-[18px] uppercase gap-2">
+                            Read More
+                            <img src={readMoreIcon} alt="" />
+                          </p>
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                );
+              })}
+            </div>
+
+            <div className="">
+              <div className="w-full"> </div>
+              <div className="w-full flex flex-col items-center">
+                <p className="text-center text-[18px] font-[500] tracking-[0.8px] leading-[18px] my-[2.083vw]">
+                  LOADING {Math.min(articlesToShow, allArticles.length)} of {allArticles.length}
+                </p>
+
+                {allArticles.length > 12 && articlesToShow < allArticles.length && (
+                  <WhiteThemeButton 
+                    Text="View more" 
+                    onClick={() => setArticlesToShow(prev => Math.min(prev + 12, allArticles.length))}
+                  />
+                )}
+
+                {articlesToShow > 12 && (
+                  <button 
+                    className="border-b mx-auto cursor-pointer mb-[9.167vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] hover:bg-gray-100"
+                    onClick={() => {
+                      setArticlesToShow(12);
+                      if (articlesGridRef.current) {
+                        articlesGridRef.current.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'start',
+                        });
+                      }
+                    }}
+                  >
+                    Back to Top
+                  </button>
+                )}
               </div>
-            ))
-          ).slice(0, 12)}
-        </div>
+            </div>
+          </>
+        )}
 
-        <div className="">
-          <div className="w-full"> </div>
-          <div className="w-full flex flex-col items-center">
-            <p className="text-center text-[18px] font-[500] tracking-[0.8px] leading-[18px] my-[2.083vw]">
-              LOADING 12 of 24
+        {/* Show empty state for other sections */}
+        {clickedSection && clickedSection !== 'wedding' && (
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-lg">
+              {clickedSection === 'ready' ? 'Ready-made registries coming soon...' :
+               clickedSection === 'planning' ? 'Planning tips coming soon...' :
+               clickedSection === 'design' ? 'Design notes coming soon...' :
+               clickedSection === 'taste' ? 'Taste & travel content coming soon...' :
+               'Content coming soon...'}
             </p>
-
-            <WhiteThemeButton Text="View more" />
-
-            <button className="border-b mx-auto cursor-pointer mb-[9.167vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] hover:bg-gray-100">
-              Back to Top
-            </button>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="w-full py-16">

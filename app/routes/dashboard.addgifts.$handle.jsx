@@ -29,15 +29,20 @@ const images = [
   ];
 
 export async function loader(args) {
-  const {request, context} = args;
-  const {collections} = await loadCollectionData({context});
-  const {product} = await loadProductData(args);
-  const user = await requireAuth(context);
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
-  return defer({collections, product, user, registry});
+  try {
+    const {request, context} = args;
+    const {collections} = await loadCollectionData({context});
+    const {product} = await loadProductData(args);
+    const user = await requireAuth(context);
+    const registry = await context.ClientGet(
+      `registries/by-userId/${user.user.id}`,
+      context,
+    );
+    return defer({collections, product, user, registry});
+  } catch (error) {
+    console.error('Error in dashboard.addgifts.$handle loader:', error);
+    throw error;
+  }
 }
 
 export async function action({request, context}) {
@@ -69,28 +74,44 @@ async function loadCollectionData({context}) {
   };
 }
 async function loadProductData({context, params, request}) {
-  const {handle} = params;
-  const {storefront} = context;
+  try {
+    const {handle} = params;
+    const {storefront} = context;
 
-  if (!handle) {
-    throw new Error('Expected product handle to be defined');
+    if (!handle) {
+      throw new Error('Expected product handle to be defined');
+    }
+    
+    const [{productByHandle}] = await Promise.all([
+      storefront.query(PRODUCT_QUERY, {
+        variables: {handle},
+      }),
+    ]);
+    
+    if (!productByHandle) {
+      throw new Error(`Product with handle "${handle}" not found`);
+    }
+    
+    return {
+      product: productByHandle,
+    };
+  } catch (error) {
+    console.error('Error loading product data:', error);
+    throw error;
   }
-  const [{productByHandle}] = await Promise.all([
-    storefront.query(PRODUCT_QUERY, {
-      variables: {handle},
-    }),
-  ]);
-  return {
-    product: productByHandle,
-  };
 }
 
 const GiftDetailHandle = () => {
   const fetcher = useFetcher();
-  const {collections, product, registry} = useLoaderData();
+  const {collections, product, registry, user} = useLoaderData();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  
+  // Debug logging
+  console.log('Product data:', product);
+  console.log('Product variants:', product?.variants);
+  console.log('Product priceRange:', product?.priceRange);
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
@@ -162,13 +183,15 @@ const GiftDetailHandle = () => {
           <div className=" grid grid-cols-1  gap-4 flex-1">
           <GiftDetail
         productTitle={product.title}
-        productPrice={product.variants.edges[0].node.price}
+        productPrice={product.variants?.edges?.[0]?.node?.priceV2 || product.priceRange?.minVariantPrice || {amount: '0', currencyCode: 'USD'}}
         productDescription={product.description}
         productImages={product.images.edges}
         onRegistryPress={({quantity, isGroupGift}) => {
+          const variant = product.variants?.edges?.[0]?.node;
+          const price = variant?.priceV2?.amount || product.priceRange?.minVariantPrice?.amount || 0;
           handleAddtoRegistry({
             id: Number(extractShopifyId(product.id)),
-            price: product.variants.edges[0].node.price.amount,
+            price: price,
             quantity,
             isGroupPayment: isGroupGift
           });
@@ -377,7 +400,7 @@ const GiftDetailHandle = () => {
             image={brandline}
             imageClasses={'max-[1024px]:max-w-[330px]'}
           />
-          <ProductSlider />
+          <ProductSlider user={user} />
           {/* <div className="text-center">
             <ButtonComponent
               text="browse bestsellers"
@@ -470,25 +493,33 @@ query getProductByHandle($handle: String!) {
   productByHandle(handle: $handle) {
     id
     title
+    handle
     descriptionHtml
     description
-    images(first:10) {
-            edges {
-            node {
-            id
-            src
-            }
-            }
-            }
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 10) {
+      edges {
+        node {
+          id
+          url
+          altText
+        }
+      }
+    }
     variants(first: 10) {
       edges {
         node {
           id
           title
-           price {
-      amount
-      currencyCode
-    }
+          priceV2 {
+            amount
+            currencyCode
+          }
         }
       }
     }
