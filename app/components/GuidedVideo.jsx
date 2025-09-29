@@ -12,7 +12,7 @@ const GuidedVideo = () => {
   }
 
   return (
-    <div className="guided-video fixed bottom-4 right-4 z-40 z-index-[99] hidden sm:block">
+    <div className="guided-video fixed bottom-4 right-4 z-index-[99] hidden sm:block">
       <video 
         className="guided-video__video rounded-lg shadow-lg w-[143px] h-[250px] object-cover" 
         src="/assets/videos/guided-video.mov" 

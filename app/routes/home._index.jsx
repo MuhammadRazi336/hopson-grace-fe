@@ -29,9 +29,13 @@ import GuidedVideo from '~/components/GuidedVideo';
 
 export async function loader({ context }) {
   try {
-    const [{ collections }, { collections: brandCollections }] = await Promise.all([
+    // Get user session if available (optional for non-logged in users)
+    const user = context?.session?.get('@User');
+    
+    const [{ collections }, { collections: brandCollections }, { products: bestsellerProducts }] = await Promise.all([
       context.storefront.query(REAL_REGISTRIES_QUERY),
-      context.storefront.query(BRAND_QUERY)
+      context.storefront.query(BRAND_QUERY),
+      context.storefront.query(BESTSELLER_PRODUCTS_QUERY, { variables: { first: 8 } })
     ]);
     
     // Filter collections where both ready_made AND parent_collection metafields are true
@@ -149,20 +153,25 @@ export async function loader({ context }) {
     
     console.log('Featured registry data:', featuredRegistryData);
     
-    return json({ realRegistries, featuredRegistryData, brands });
+    return json({ realRegistries, featuredRegistryData, brands, user, bestsellerProducts: bestsellerProducts?.edges || [] });
   } catch (error) {
     console.error('Error loading real registries:', error);
-    return json({ realRegistries: [], featuredRegistryData: null });
+    return json({ realRegistries: [], featuredRegistryData: null, brands: [], user: null, bestsellerProducts: [] });
   }
 }
 
 const Home = () => {
-  const { realRegistries, featuredRegistryData, brands } = useLoaderData();
+  const { realRegistries, featuredRegistryData, brands, user, bestsellerProducts } = useLoaderData();
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Debug logging for brands
   console.log('Home page received brands:', brands);
   console.log('Brands length:', brands?.length || 0);
+  
+  // Debug logging for bestseller products
+  console.log('Home page received bestsellerProducts:', bestsellerProducts);
+  console.log('Bestseller products length:', bestsellerProducts?.length || 0);
+  console.log('First bestseller product:', bestsellerProducts?.[0]);
   if (brands && brands.length > 0) {
     console.log('First brand sample:', brands[0]);
   }
@@ -243,7 +252,7 @@ const Home = () => {
         <p className="text-center lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[3.802vw] mb-8">
         From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
       </p>
-        <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} />
+        <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} user={user} />
         <div className="text-center">
         <Link to="/ready-made-registries">
           <ButtonComponent
@@ -283,7 +292,7 @@ const Home = () => {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw] lg:h-[0.450vw]'}
         />
-        <ProductSlider />
+        <ProductSlider products={bestsellerProducts} user={user} />
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"
@@ -322,7 +331,7 @@ const Home = () => {
           description={
             <>
               There's no question too small or request too big for our Registry
-              advisors.We're always at your service.
+              advisors. We're always at your service.
             </>
           }
           buttontext={'CONTACT US'}
@@ -503,3 +512,32 @@ query getHomeBrands {
     }
   }
 }`;
+
+const BESTSELLER_PRODUCTS_QUERY = `#graphql
+  query GetBestsellerProducts($first: Int!) {
+    products(first: $first, query: "tag:bestseller") {
+      edges {
+        node {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;

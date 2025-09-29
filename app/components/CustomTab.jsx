@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Sliderwithcontent from './Sliderwithcontent';
 
-const CustomTab = ({ tabsData, featuredRegistryData }) => {
+const CustomTab = ({ tabsData, featuredRegistryData, user = null }) => {
   const [activeTab, setActiveTab] = useState(tabsData?.[0]?.value || 1);
 
   // Transform the data structure based on active tab
@@ -107,7 +107,7 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
 
       {/* Show content based on active tab */}
       {transformedData ? (
-        <Sliderwithcontent featuredRegistryData={transformedData} />
+        <Sliderwithcontent featuredRegistryData={transformedData} user={user} />
       ) : (
         <div className="text-center py-12">
           <p className="text-gray-500 mb-4">

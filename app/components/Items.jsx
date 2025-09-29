@@ -1,8 +1,11 @@
+import { Link, useNavigate } from '@remix-run/react';
 import kyleanderik from '/assets/Images/KYLE-ERIK-EDITS-20 1.png';
 import kyleanderikmobile from '/assets/Images/kyleerikmobile.png';
 import img1 from '/assets/Images/Mask group.png';
 
-const Items = ({ featuredRegistryData = null }) => {
+const Items = ({ featuredRegistryData = null, user = null }) => {
+  const navigate = useNavigate();
+  
   // Debug logging
   console.log('🔍 DEBUG: Items component received:', featuredRegistryData);
   
@@ -14,6 +17,18 @@ const Items = ({ featuredRegistryData = null }) => {
       </div>
     );
   }
+
+  const handleProductClick = (productHandle) => {
+    // Check if user is logged in
+    if (!user || !user.user || !user.user.id) {
+      // User not logged in, redirect to login
+      navigate('/login');
+      return;
+    }
+    
+    // User is logged in, navigate to product detail page
+    navigate(`/dashboard/addgifts/${productHandle}`);
+  };
 
   const { parentCollection, subCollection } = featuredRegistryData;
   
@@ -55,7 +70,11 @@ const Items = ({ featuredRegistryData = null }) => {
 
         {/* Dynamic products from the first 6 products */}
         {products.slice(0, 6).map((product, index) => (
-          <div key={product.node.id || index} className="item flex-1 ">
+          <div 
+            key={product.node.id || index} 
+            className="item flex-1 cursor-pointer"
+            onClick={() => handleProductClick(product.node.handle)}
+          >
             <img 
               src={product.node.images?.edges?.[0]?.node?.url || img1} 
               alt={product.node.title || `Product ${index + 1}`} 

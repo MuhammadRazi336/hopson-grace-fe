@@ -243,7 +243,7 @@ export default function ProductSection() {
             image={brandline}
             imageClasses={'max-[1024px]:max-w-[330px]'}
           />
-          <ProductSlider />
+          <ProductSlider user={null} />
           <div className="text-center">
             <ButtonComponent
               text="browse bestsellers"
