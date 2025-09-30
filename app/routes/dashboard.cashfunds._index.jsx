@@ -365,7 +365,7 @@ const CashFunds = () => {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <ProductSlider user={user} />
+        <ProductSlider />
         <div className="text-center">
           <ButtonComponent
             text="browse bestsellers"

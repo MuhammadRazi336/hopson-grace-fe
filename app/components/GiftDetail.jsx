@@ -13,7 +13,7 @@ const GiftDetail = ({
   const safeProductImages =
     Array.isArray(productImages) && productImages.length > 0
       ? productImages
-      : [{node: {src: '/fallback-image.jpg'}}];
+      : [{node: {url: '/fallback-image.jpg', altText: 'Fallback image'}}];
   const [selectedImage, setSelectedImage] = useState(safeProductImages[0]); // Default to the first image
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
@@ -41,8 +41,8 @@ const GiftDetail = ({
           {/* Main Product Image */}
           <div className="w-[690px] h-[690px] aspect-square bg-gray-50 rounded-lg overflow-hidden mb-6">
             <img
-              src={selectedImage?.node?.src || '/fallback-image.jpg'}
-              alt={productTitle || 'Product image'}
+              src={selectedImage?.node?.url || '/fallback-image.jpg'}
+              alt={selectedImage?.node?.altText || productTitle || 'Product image'}
               className="w-[690px] h-[690px] object-contain"
             />
           </div>
@@ -54,15 +54,15 @@ const GiftDetail = ({
                 <div
                   key={index}
                   className={`cursor-pointer w-[125px] h-[125px] overflow-hidden border-b-2 transition-all ${
-                    selectedImage?.node?.src === image?.node?.src
+                    selectedImage?.node?.url === image?.node?.url
                       ? 'border-b-gray-800'
                       : 'border-b-gray-200 hover:border-b-gray-400'
                   }`}
                   onClick={() => setSelectedImage(image)}
                 >
                   <img
-                    src={image?.node?.src || '/fallback-image.jpg'}
-                    alt={`Thumbnail ${index + 1}`}
+                    src={image?.node?.url || '/fallback-image.jpg'}
+                    alt={image?.node?.altText || `Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </div>

@@ -391,11 +391,15 @@ const BlogDetails = () => {
           </div>
         </div>
         <div className="w-[50%] h-full">
+          {article.image?.url ? (
           <img
             src={article.image.url}
             className="w-full h-full object-cover"
             alt=""
           />
+          ) : (
+            <img src="/assets/Images/couple-logo.png" alt="" className="w-full h-full object-cover" />
+          )}
         </div>
       </div>
 

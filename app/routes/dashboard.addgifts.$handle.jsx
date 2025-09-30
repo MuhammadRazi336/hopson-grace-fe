@@ -33,11 +33,24 @@ export async function loader(args) {
     const {request, context} = args;
     const {collections} = await loadCollectionData({context});
     const {product} = await loadProductData(args);
-    const user = await requireAuth(context);
-    const registry = await context.ClientGet(
-      `registries/by-userId/${user.user.id}`,
-      context,
-    );
+    
+    // Try to get user, but don't require authentication
+    let user = null;
+    let registry = null;
+    
+    try {
+      user = await requireAuth(context);
+      if (user && user.user && user.user.id) {
+        registry = await context.ClientGet(
+          `registries/by-userId/${user.user.id}`,
+          context,
+        );
+      }
+    } catch (authError) {
+      // User is not logged in, continue without user data
+      console.log('User not authenticated, allowing access to product page');
+    }
+    
     return defer({collections, product, user, registry});
   } catch (error) {
     console.error('Error in dashboard.addgifts.$handle loader:', error);
@@ -107,15 +120,34 @@ const GiftDetailHandle = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
-  
-  // Debug logging
+
   console.log('Product data:', product);
   console.log('Product variants:', product?.variants);
   console.log('Product priceRange:', product?.priceRange);
+
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
   };
   const handleAddtoRegistry = ({id, price, quantity, isGroupPayment}) => {
+    // Check if user is logged in
+    if (!user || !user.user || !user.user.id) {
+      // User not logged in, redirect to login
+      window.location.href = '/login';
+      return;
+    }
+    
+    // Check if registry exists
+    if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
+      setAlertMessage('No registry found. Please create a registry first.');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage('');
+      }, 3000);
+      return;
+    }
+    
     const payload = {
       productId: id,
       amount: Number(price),
@@ -196,6 +228,7 @@ const GiftDetailHandle = () => {
             isGroupPayment: isGroupGift
           });
         }}
+        isLoggedIn={user && user.user && user.user.id}
       />
           </div>
 
@@ -400,7 +433,7 @@ const GiftDetailHandle = () => {
             image={brandline}
             imageClasses={'max-[1024px]:max-w-[330px]'}
           />
-          <ProductSlider user={user} />
+          <ProductSlider products={[]} />
           {/* <div className="text-center">
             <ButtonComponent
               text="browse bestsellers"

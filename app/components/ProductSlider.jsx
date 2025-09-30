@@ -6,30 +6,12 @@ import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
 import {useNavigate} from '@remix-run/react';
 
-const ProductSlider = ({products = [], user = null}) => {
-  // Ensure user has a default value
-  const safeUser = user || null;
+const ProductSlider = ({products = []}) => {
   const navigate = useNavigate();
 
   const handleProductClick = (productHandle) => {
-    try {
-      
-      // More robust user check using safeUser
-      if (!safeUser || typeof safeUser !== 'object' || !safeUser.user || !safeUser.user.id) {
-        
-        // User not logged in, redirect to login
-        navigate('/login');
-        return;
-      }
-      
-      
-      // User is logged in, navigate to product detail page
-      navigate(`/dashboard/addgifts/${productHandle}`);
-    } catch (error) {
-      console.error('Error in handleProductClick:', error);
-      // Fallback to login page if there's an error
-      navigate('/login');
-    }
+    // Navigate to product detail page (accessible to everyone)
+    navigate(`/dashboard/addgifts/${productHandle}`);
   };
   if (products.length === 0) {
     return (

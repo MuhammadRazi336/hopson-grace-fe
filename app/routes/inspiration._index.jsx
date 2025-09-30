@@ -203,7 +203,11 @@ const Inspiration = () => {
                 return (
                   <div key={article.id} className="mb-[5.156vw]">
                     <div className="w-full">
-                      <img src={article.image.url} alt="" className='w-[370px] h-[390px]'/>
+                      {article.image?.url ? (
+                        <img src={article.image.url} alt="" className='w-[370px] h-[390px]'/>
+                      ) : (
+                        <img src="/assets/Images/couple-logo.png" alt="" className='w-[370px] h-[390px]'/>
+                      )}
                       <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
                         {displayedTitle}
                       </h4>

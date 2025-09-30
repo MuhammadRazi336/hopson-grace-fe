@@ -1181,7 +1181,7 @@ export default function AddGifts() {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[286px]'}
         />
-        <ProductSlider user={user} />
+        <ProductSlider />
         <div className="text-center">
           <ButtonComponent
             text="browse bestsellers"

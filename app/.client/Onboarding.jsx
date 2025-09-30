@@ -1147,6 +1147,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [subCollectionsData, setSubCollectionsData] = useState([]);
   const [error, setError] = useState(null);
+  const [swiper, setSwiper] = useState(null);
 
   useEffect(() => {
     const fetchSubCollections = async () => {
@@ -1186,6 +1187,13 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
     fetchSubCollections();
   }, [selectedCollections]);
 
+  // Update Swiper when data changes
+  useEffect(() => {
+    if (swiper && subCollectionsData.length > 0) {
+      swiper.update();
+    }
+  }, [subCollectionsData, swiper]);
+
   const handleOptionClick = (subCollection) => {
     setSelectedOptions((prev) => {
       const isSelected = prev.some((item) => item.id === subCollection.id);
@@ -1217,21 +1225,41 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
       </p>
       {error && <p className="text-red-500 mb-4">Error: {error}</p>}
       <div className="relative">
-        <div className="swiper-button-prev-subcollection absolute top-[90px] -left-16  cursor-pointer text-white uppercase flex ">
+        <div className="swiper-button-prev-subcollection absolute top-[60px] -left-16  cursor-pointer text-white uppercase flex ">
           <img src={nextitem} alt="" className="rotate-180 invert-100" />
           <span className="-rotate-90 text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>
         </div>
         <Swiper
+          key={subCollectionsData.length}
           spaceBetween={20}
           slidesPerView={4}
           loop={true}
-          className=""
+          className="subcollection-swiper"
           modules={[Navigation]}
           navigation={{
             nextEl: '.swiper-button-next-subcollection',
             prevEl: '.swiper-button-prev-subcollection',
+          }}
+          onSwiper={setSwiper}
+          breakpoints={{
+            320: {
+              slidesPerView: 1,
+              spaceBetween: 10,
+            },
+            640: {
+              slidesPerView: 2,
+              spaceBetween: 15,
+            },
+            768: {
+              slidesPerView: 3,
+              spaceBetween: 20,
+            },
+            1024: {
+              slidesPerView: 4,
+              spaceBetween: 20,
+            },
           }}
         >
           {subCollectionsData.length > 0 ? (
@@ -1307,7 +1335,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
             </p>
           )}
         </Swiper>
-        <div className="swiper-button-next-subcollection absolute top-[90px] -right-16 cursor-pointer text-white uppercase flex">
+        <div className="swiper-button-next-subcollection absolute top-[60px] -right-16 cursor-pointer text-white uppercase flex">
           <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>

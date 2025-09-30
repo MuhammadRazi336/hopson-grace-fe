@@ -252,7 +252,7 @@ const Home = () => {
         <p className="text-center lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[3.802vw] mb-8">
         From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
       </p>
-        <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} user={user} />
+        <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} />
         <div className="text-center">
         <Link to="/ready-made-registries">
           <ButtonComponent
@@ -292,7 +292,7 @@ const Home = () => {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw] lg:h-[0.450vw]'}
         />
-        <ProductSlider products={bestsellerProducts} user={user} />
+        <ProductSlider products={bestsellerProducts} />
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"

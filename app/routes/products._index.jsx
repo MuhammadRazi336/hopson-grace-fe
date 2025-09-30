@@ -357,7 +357,7 @@ const Products = () => {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw] lg:h-[0.417vw]'}
         />
-            <ProductSlider user={user} />
+            <ProductSlider />
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"

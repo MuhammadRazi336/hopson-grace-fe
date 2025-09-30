@@ -59,6 +59,8 @@ const DatePicker = ({
             onSelect={(date) => onDateChange(date)}
             showOutsideDays
             disabled={disabledDates}
+            fromYear={2025}
+            toYear={2045}
             styles={{
               caption: {textAlign: 'center', marginBottom: '1rem'},
               nav: {display: 'flex', justifyContent: 'space-between'},

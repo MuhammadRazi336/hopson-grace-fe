@@ -3,7 +3,7 @@ import kyleanderik from '/assets/Images/KYLE-ERIK-EDITS-20 1.png';
 import kyleanderikmobile from '/assets/Images/kyleerikmobile.png';
 import img1 from '/assets/Images/Mask group.png';
 
-const Items = ({ featuredRegistryData = null, user = null }) => {
+const Items = ({ featuredRegistryData = null }) => {
   const navigate = useNavigate();
   
   // Debug logging
@@ -19,14 +19,7 @@ const Items = ({ featuredRegistryData = null, user = null }) => {
   }
 
   const handleProductClick = (productHandle) => {
-    // Check if user is logged in
-    if (!user || !user.user || !user.user.id) {
-      // User not logged in, redirect to login
-      navigate('/login');
-      return;
-    }
-    
-    // User is logged in, navigate to product detail page
+    // Navigate to product detail page (accessible to everyone)
     navigate(`/dashboard/addgifts/${productHandle}`);
   };
 
