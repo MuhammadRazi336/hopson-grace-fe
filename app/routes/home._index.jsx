@@ -249,8 +249,8 @@ const Home = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px] mb-[3.177vw]'}
         />
-        <p className="text-center lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[3.802vw] mb-8">
-        From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.
+        <p className="text-center lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[4.323vw] mb-8">
+        From real couples to curated style edits, our ready-made registries are personal, <br/>shoppable, and designed to make choosing easy.
       </p>
         <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} />
         <div className="text-center">
@@ -380,7 +380,7 @@ const Home = () => {
       <GuidedVideo />
       
       {/* Back to Top Button */}
-      <button
+      {/* <button
         onClick={scrollToTop}
         className={`fixed bottom-8 p-2 right-8 z-50 w-[85px] h-[85px] bg-black hover:bg-[#272727] text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 ${
           showBackToTop 
@@ -389,22 +389,9 @@ const Home = () => {
         }`}
         aria-label="Back to top"
       >
-        {/* <svg 
-          className="w-6 h-6 mx-auto" 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M5 10l7-7m0 0l7 7m-7-7v18" 
-          />
-        </svg> */}
         <img src={arrowUp} className='text-white invert rotate-180 mx-auto w-[15px] h-[13px] mb-1' alt="arrowUp" />
         <span className="text-white text-sm">Back to Top</span>
-      </button>
+      </button> */}
     </div>
   );
 };

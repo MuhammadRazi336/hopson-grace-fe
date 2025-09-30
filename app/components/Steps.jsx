@@ -98,8 +98,8 @@ const Steps = () => {
             className="rotate-180 max-[768px]:w-[12px] "
           />
         </button>
-        <div className="text-sm font-light my-1 absolute left-[-40px] top-[46px] flex items-center gap-[5px]">
-          <span className="lg:text-[40px] max-[1024px]:text-[24px] lg:leading-6 font-normal">
+        <div className="text-sm font-light my-1 absolute w-[max-content] left-[-40px] top-[46px] flex items-center gap-[5px]">
+          <span className="lg:text-[2.083vw] max-[1024px]:text-[24px] lg:leading-[1.25vw] font-normal">
             {currentStep + 1}
           </span>{' '}
           <span className="text-gray-950 font-normal lg:text-lg text-sm">

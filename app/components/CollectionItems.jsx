@@ -170,12 +170,12 @@ const CollectionItems = () => {
         </Swiper>
       </div>
       <div className="swiper-button-prev-collection absolute flex left-[10px] top-10.5/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
-        <img src={nextitem} alt="" className="rotate-180" />
+        <img src={nextitem} alt="" className="rotate-180 w-[20px] h-[20px]" />
         <span className="rotate-90 text-black max-[1024px]:text-sm">more</span>
       </div>
       <div className="swiper-button-next-collection absolute flex right-[10px] top-10.5/20 transform -translate-y-full z-10 cursor-pointer text-black uppercase">
         <span className="rotate-90 text-black max-[1024px]:text-sm">more</span>
-        <img src={nextitem} alt="" />
+        <img src={nextitem} alt="" className="w-[20px] h-[20px]" />
       </div>
       <div className="flex justify-center items-center">
         <Link to="/why-the-registry">

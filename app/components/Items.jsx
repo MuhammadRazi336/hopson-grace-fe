@@ -43,16 +43,13 @@ const Items = ({ featuredRegistryData = null }) => {
             <img 
               src={subCollection?.image?.url || parentCollection?.image?.url || img1} 
               alt={subCollection?.title || parentCollection?.title || "Registry Collection"} 
-              className="max-[1024px]:hidden h-full w-full object-cover" 
+              className="max-[1024px]:hidden h-full w-full object-cover rounded-none" 
             />
             <img
               src={subCollection?.image?.url || parentCollection?.image?.url || img1}
               alt={subCollection?.title || parentCollection?.title || "Registry Collection"}
-              className="hidden max-[1024px]:block w-full h-full object-cover"
+              className="hidden max-[1024px]:block w-full h-full object-cover rounded-none"
             />
-            <h4 className="max-[1024px]:hidden absolute top-9 left-9 text-[28px] lg:leading-[1.458vw] lg:text-[1.458vw] text-white uppercase tracking-widest font-semibold my-0 z-10">
-              {subCollection?.title || parentCollection?.title || "Registry Collection"}
-            </h4>
             
             {/* Mobile title */}
             <h4 className="max-[1024px]:block hidden absolute top-4 left-4 text-lg text-white uppercase tracking-widest font-semibold z-10 px-2">

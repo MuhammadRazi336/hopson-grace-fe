@@ -10,7 +10,7 @@ const Textandbutton = () => {
       </h2>
       <p className="text-center lg:text-[1.563vw] lg:leading-[2.083vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[2.083vw] mb-8">
         From iconic homeware to bespoke travel experiences and custom cash
-        funds, <br className="min-[767px]:hidden" /> The Registry is for modern
+        funds, <br className="max-[767px]:hidden" /> The Registry is for modern
         couples who value style, sustainability and service.
       </p>
       <img

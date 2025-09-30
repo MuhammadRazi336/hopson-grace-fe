@@ -130,8 +130,8 @@ const ReadyMade = () => {
                         <div key={subCollection.id} className="w-[19.375vw] mb-[5.469vw]">
                           <div className="">
                             <img src={subCollection.image?.url || '/assets/Images/placeholder.png'} alt={subCollection.image?.altText || subCollection.title} className='rounded-none' />
-                            <h4 className="text-xl text-[#000000] lg:mb-[0.573vw] font-medium tracking-[0.5px] mt-[1.667vw] uppercase lg:text-[1.146vw] lg:leading-[1.458vw]">{subCollection.title}</h4>
-                            <p className="text-sm ivyora lg:text-[1.042vw] lg:leading-[1.042vw] text-[#000000] mb-3 lg:mb-[0.99vw] italic">{subCollection.description?.slice(0, 95)}...</p>
+                            <h4 className="text-xl text-[#1F1D1B] lg:mb-[0.573vw] font-medium tracking-[0.5px] mt-[1.667vw] uppercase lg:text-[1.146vw] lg:leading-[1.458vw]">{subCollection.title}</h4>
+                            <p className="text-sm ivyora lg:text-[1.042vw] lg:leading-[1.042vw] text-[#1F1D1B] mb-3 lg:mb-[0.99vw] italic">{subCollection.description?.slice(0, 95)}...</p>
                             
                             <div className='flex items-center justify-start mt-3'>
                               <Link to={`/registry/${subCollection.handle}`}>

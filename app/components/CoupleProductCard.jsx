@@ -209,14 +209,14 @@ const CoupleProductCard = ({
          {isAnyAmount ? "" : <p className="font-normal text-lg lg:text-[1.25vw]">${price}</p>}
 
           {(isCashFund || isGroupGift) && !isAnyAmount && (
-            <p className="text-sm ivyora lg:text-[1.042vw] italic mt-2 text-right w-full ivyora mb-2 text-[#000000]">
+            <p className="text-sm ivyora lg:text-[1.042vw] italic mt-2 text-right w-full ivyora mb-2 text-[#1F1D1B]">
               ${maxContribution - contributedAmount} Remaining
             </p>
           )}
         </div>
         {(isGroupGift || isCashFund) && !isAnyAmount && (
           <div className="mt-[1.146vw]">
-            <p className="text-sm ivyora lg:text-[1.042vw] text-[#000000]">
+            <p className="text-sm ivyora lg:text-[1.042vw] text-[#1F1D1B]">
               Contributed: ${contributedAmount.toFixed(2)} / $
               {maxContribution.toFixed(2)}
             </p>
@@ -225,10 +225,10 @@ const CoupleProductCard = ({
       </div>
       {(!isGroupGift && !isCashFund) && (
           <div className="mt-2 flex flex-row items-center gap-6">
-            <p className="text-sm italic ivyora lg:text-[1.042vw] text-[#000000]">
+            <p className="text-sm italic ivyora lg:text-[1.042vw] text-[#1F1D1B]">
               Requested: {quantity}
             </p>
-            <p className="text-sm ivyora lg:text-[1.042vw] text-[#000000] italic">
+            <p className="text-sm ivyora lg:text-[1.042vw] text-[#1F1D1B] italic">
               Still Needs: {stillNeeds}
             </p>
           </div>

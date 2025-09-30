@@ -27,7 +27,7 @@ const FAQ = () => {
         <Heading
           text="frequently asked questions"
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
