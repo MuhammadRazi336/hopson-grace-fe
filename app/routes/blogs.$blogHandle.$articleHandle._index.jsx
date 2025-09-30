@@ -43,6 +43,7 @@ query GetAllBlogsAndArticlesForInspiration {
           contentHtml
           image {
             url
+            altText
           }
         }
       }
@@ -262,6 +263,19 @@ export async function loader({context, params}) {
 
   const {blogs} = await context.storefront.query(BLOGS_QUERY);
 
+  // Ensure blogs data is properly structured
+  const safeBlogs = blogs?.nodes?.map(blog => ({
+    ...blog,
+    articles: {
+      ...blog.articles,
+      nodes: blog.articles?.nodes?.map(article => ({
+        ...article,
+        image: article.image || null,
+        contentHtml: article.contentHtml || ''
+      })) || []
+    }
+  })) || [];
+
   return json({
     article: blog.articleByHandle,
     metafields,
@@ -269,7 +283,7 @@ export async function loader({context, params}) {
     registry: registry?.data || [],
     registryProduct: registryProduct?.data || [],
     user: user || null,
-    blogs: blogs?.nodes || [],
+    blogs: safeBlogs,
     currentArticleHandle: articleHandle,
   });
 }
@@ -582,12 +596,16 @@ const BlogDetails = () => {
                   .map(article => (
                     <SwiperSlide key={article.id}>
                       <div className="w-full">
-                        <img src={article.image.url} alt="" className='w-[372px] h-[388px] object-cover'/>
+                        {article.image?.url ? (
+                          <img src={article.image.url} alt={article.image.altText || article.title || 'Blog image'} className='w-[372px] h-[388px] object-cover'/>
+                        ) : (
+                          <img src="/assets/Images/couple-logo.png" alt="Default blog image" className='w-[372px] h-[388px] object-cover'/>
+                        )}
                         <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
                           {article.title}
                         </h4>
                         <p className="text-sm mt-2 mb-3 ivyora italic lg:text-[20px] lg:leading-[1.1vw] font-normal">
-                          {article.contentHtml.replace(/<[^>]*>/g, '').slice(0, 95)}
+                          {article.contentHtml?.replace(/<[^>]*>/g, '').slice(0, 95) || 'No content available'}
                           ...
                         </p>
                         <div className="flex items-center justify-start">
