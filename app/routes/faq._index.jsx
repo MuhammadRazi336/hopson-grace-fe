@@ -10,6 +10,7 @@ import { Navigate } from '@remix-run/react';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png'; 
+import { NavLink } from '@remix-run/react';
 
 const FAQ = () => {
   return (
@@ -204,11 +205,12 @@ const FAQ = () => {
         READY TO START YOUR REGISTRY?
         </p>
         <div className="flex justify-center">
-          <Button
-            text="LET'S GO"
-            className="text-white bg-[#446184] py-[22px] lg:py-[30px] lg:w-[320px] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
-            link='/register'
-          />
+        <NavLink to="/register">
+            <Button
+              text="Let's Go"
+              className="text-white font-[500] tracking-[0.8px] text-[18px] leading-[18px] bg-[#446184] py-0 lg:w-[332px] lg:h-[78px] mx-auto w-[280px] rounded-none button-cs"
+            />
+          </NavLink>
         </div>
         </div>
 
