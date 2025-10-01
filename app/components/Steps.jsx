@@ -23,15 +23,30 @@ const stepsData = [
     ),
   },
   {
-    title: "Let's Connect",
+    title: "Personalize Your Registry Page",
     description:
-      "Enter your names and wedding details and start adding gifts and funds. It's that easy! If you'd prefer to talk to us first or set up your registry in our Toronto showroom, we can do that as well.",
+      "Upload a photo, choose a background (or pick one of ours), and add a personal message for your guests. Your registry page is yours to make your own.",
   },
   {
-    title: "Let's Connect",
+    title: " Add Gifts",
     description:
-      "Enter your names and wedding details and start adding gifts and funds. It's that easy! If you'd prefer to talk to us first or set up your registry in our Toronto showroom, we can do that as well.",
+      `From group gifting and cash funds to one-of-a-kind travel experiences, we make it easy to register for what you really want.
+      Browse our curated collections, add gift cards, or start with one of our ready-made registries.
+      When you're ready, publish your registry, link it to your wedding website, and share it with guests.`,
   },
+  {
+    title: "Along the Way",
+    description:
+      `our private dashboard is your command centre. You can add or edit gifts, track messages from our team, and stay up to date as guests shop your registry.
+      Each time a gift is purchased, you’ll be notified but instead of receiving it right away, the value is added to your registry account. This gives you the freedom to adjust quantities or make changes before your final order.
+      The easiest part? You can track gifts and send thank-you notes, all at your own pace.`,
+  },
+  {
+    title: "After the Wedding",
+    description:
+      `Finalize your selections, and we’ll take care of the rest. Enjoy 15% off anything left on your list.`,
+  },
+  
 ];
 
 const Steps = () => {

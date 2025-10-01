@@ -74,7 +74,7 @@ const YourRegistryAdvisor = () => {
           direction={'left'}
           imgBanner={DinnerSetImg}
           lineimg={lineImg3}
-          title="book a virtual appointment"
+          title="Work one-on-one with your registry concierge to build, refine, or complete your registry."
           description="There’s no question too small or request too big for our Registry advisors.  We’re always at your service."
           buttontext={'CONTACT US'}
           buttontype={'Color'}

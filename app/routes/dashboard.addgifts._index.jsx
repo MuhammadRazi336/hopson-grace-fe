@@ -279,6 +279,8 @@ export async function loader({request, context}) {
 
   // Extract products only from parent collections (parentMetafield.value === 'true' and readyMadeMetafield.value !== 'true')
   let allProducts = [];
+  const productMap = new Map(); // Use Map to track unique products by ID
+  
   try {
     // First, find all parent collections
     const parentCollections = collections.filter(
@@ -312,28 +314,79 @@ export async function loader({request, context}) {
         if (subCollection.products?.edges) {
           subCollection.products.edges.forEach((edge) => {
             const product = edge.node;
-            allProducts.push({
-              id: product.id,
-              title: product.title,
-              handle: product.handle,
-              description: product.description,
-              image: product.images?.edges?.[0]?.node?.url || null,
-              price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
-              currency:
-                product.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
-                'USD',
-              availableForSale:
-                product.variants?.edges?.[0]?.node?.availableForSale || false,
-              collectionId: subCollection.id, // Use sub-collection ID
-              parentCollectionId: parentCollection.id, // Also track parent collection ID
-              parentCollectionTitle: parentCollection.title, // Track parent collection title
-            });
+            
+            // Only add product if it hasn't been added before (deduplication)
+            if (!productMap.has(product.id)) {
+              const productData = {
+                id: product.id,
+                title: product.title,
+                handle: product.handle,
+                description: product.description,
+                image: product.images?.edges?.[0]?.node?.url || null,
+                price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+                currency:
+                  product.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+                  'USD',
+                availableForSale:
+                  product.variants?.edges?.[0]?.node?.availableForSale || false,
+                createdAt: product.createdAt,
+                collectionId: subCollection.id, // Use sub-collection ID
+                parentCollectionId: parentCollection.id, // Also track parent collection ID
+                parentCollectionTitle: parentCollection.title, // Track parent collection title
+              };
+              
+              productMap.set(product.id, productData);
+              allProducts.push(productData);
+            } else {
+              // If product already exists, update the collection info to include this sub-collection
+              const existingProduct = productMap.get(product.id);
+              if (existingProduct) {
+                // Add this sub-collection info to the existing product
+                if (!existingProduct.collectionIds) {
+                  existingProduct.collectionIds = [existingProduct.collectionId];
+                }
+                if (!existingProduct.collectionIds.includes(subCollection.id)) {
+                  existingProduct.collectionIds.push(subCollection.id);
+                }
+              }
+            }
           });
         }
       });
     });
   } catch (error) {
     // Handle any errors in extracting products from collections
+    console.error('Error extracting products from collections:', error);
+  }
+
+  // Log deduplication results
+  console.log('Product deduplication results:', {
+    totalProductsBeforeDedup: productMap.size,
+    totalProductsAfterDedup: allProducts.length,
+    uniqueProductIds: Array.from(productMap.keys()),
+    duplicateProducts: allProducts.filter((product, index, self) => 
+      self.findIndex(p => p.id === product.id) !== index
+    ).length
+  });
+
+  // Fetch bestseller products
+  let bestsellerProducts = [];
+  try {
+    const {products: bestsellerData} = await context.storefront.query(BESTSELLER_PRODUCTS_QUERY);
+    bestsellerProducts = bestsellerData?.edges?.map(edge => ({
+      node: {
+        id: edge.node.id,
+        title: edge.node.title,
+        handle: edge.node.handle,
+        description: edge.node.description,
+        images: edge.node.images,
+        priceRange: edge.node.priceRange,
+        variants: edge.node.variants,
+      }
+    })) || [];
+  } catch (error) {
+    console.error('Error fetching bestseller products:', error);
+    bestsellerProducts = [];
   }
 
   console.log('Loader returning data:', {
@@ -379,6 +432,7 @@ export async function loader({request, context}) {
     registry,
     userData,
     readyMadeRegistries: featuredRegistryData,
+    bestsellerProducts,
   };
 
   console.log('Final return data:', returnData);
@@ -604,7 +658,7 @@ export default function AddGifts() {
   console.log('Raw loaderData received:', loaderData);
   console.log('Raw loaderData keys:', Object.keys(loaderData || {}));
 
-  const {products, collections, registry, user, userData, readyMadeRegistries} =
+  const {products, collections, registry, user, userData, readyMadeRegistries, bestsellerProducts} =
     loaderData || {};
 
   // Debug logging for ready-made registries
@@ -613,12 +667,7 @@ export default function AddGifts() {
     'Dashboard addgifts received readyMadeRegistries:',
     readyMadeRegistries,
   );
-  console.log('Ready-made registries structure:', {
-    hasData: !!readyMadeRegistries,
-    hasSubCollections: !!readyMadeRegistries?.subCollections,
-    subCollectionsCount: readyMadeRegistries?.subCollections?.length || 0,
-    parentCollection: readyMadeRegistries?.parentCollection?.title || 'None',
-  });
+
   if (
     readyMadeRegistries &&
     readyMadeRegistries.subCollections &&
@@ -690,6 +739,11 @@ export default function AddGifts() {
             return true;
           }
 
+          // Check if the product exists in any of the selected collections (for products in multiple collections)
+          if (product.collectionIds && product.collectionIds.some(id => checkedCollectionIds.includes(id))) {
+            return true;
+          }
+
           return false;
         })
       : products;
@@ -701,18 +755,21 @@ export default function AddGifts() {
     }
 
     return [...filteredProducts].sort((a, b) => {
-      const priceA = parseFloat(a.price || 0);
-      const priceB = parseFloat(b.price || 0);
-      const createdAtA = new Date(a.createdAt || 0).getTime();
-      const createdAtB = new Date(b.createdAt || 0).getTime();
-
       if (priceSort === 'low-to-high') {
+        const priceA = parseFloat(a.price || 0);
+        const priceB = parseFloat(b.price || 0);
         return priceA - priceB;
       } else if (priceSort === 'high-to-low') {
+        const priceA = parseFloat(a.price || 0);
+        const priceB = parseFloat(b.price || 0);
         return priceB - priceA;
       } else if (dateSort === 'newest') {
+        const createdAtA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const createdAtB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return createdAtB - createdAtA;
       } else if (dateSort === 'oldest') {
+        const createdAtA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const createdAtB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return createdAtA - createdAtB;
       }
       return 0;
@@ -1181,7 +1238,7 @@ export default function AddGifts() {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[286px]'}
         />
-        <ProductSlider />
+        <ProductSlider products={bestsellerProducts} />
         <div className="text-center">
           <ButtonComponent
             text="browse bestsellers"
@@ -1481,6 +1538,47 @@ const READY_MADE_REGISTRIES_QUERY = `#graphql
         subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
           id
           value
+        }
+      }
+    }
+  }`;
+
+const BESTSELLER_PRODUCTS_QUERY = `#graphql
+  query getBestsellerProducts {
+    products(first: 20, query: "tag:bestseller") {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                availableForSale
+                priceV2 {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -29,7 +29,7 @@ const Faqs = () => {
       number: 3,
       heading: 'CAN WE REGISTER IN PERSON?',
       paragraph:
-        'Absolutely. You can set up your registry online, book a virtual appointment with one of our advisors, or visit us in person at our Toronto showroom. Ready to start your registry? Click Here.',
+        'Absolutely. You can set up your registry online, Let our concierge help set up, manage or fulfill your registry. with one of our advisors, or visit us in person at our Toronto showroom. Ready to start your registry? Click Here.',
     },
     {
       number: 4,

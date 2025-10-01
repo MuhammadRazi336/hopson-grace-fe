@@ -114,6 +114,7 @@ export async function action({request, context}) {
       lastName: body.lastName,
       fianceFirstName: body.fianceFirstName,
       fianceLastName: body.fianceLastName,
+      email: body.email,
     };
 
     apiCalls.push(
@@ -193,6 +194,7 @@ export default function Index() {
     yourLastName: userData.user.lastName || '',
     fianceFirstName: userData.user.fianceFirstName || '',
     fianceLastName: userData.user.fianceLastName || '',
+    email: userData.user.email || '',
     // Shipping Details (assuming these are stored on the user object)
     shippingAddress: shippingData.address || '',
     shippingPhone: shippingData.phoneNumber || '',
@@ -346,6 +348,7 @@ export default function Index() {
       lastName: formState.yourLastName,
       fianceFirstName: formState.fianceFirstName,
       fianceLastName: formState.fianceLastName,
+      email: formState.email,
       // Shipping data
       shippingAddress: formState.shippingAddress,
       shippingPhone: formState.shippingPhone,
@@ -492,6 +495,20 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
         {validationErrors.fianceLastName && (
           <p className="text-red-500 text-sm mt-1">{validationErrors.fianceLastName}</p>
         )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1 text-base" htmlFor="email">
+          YOUR EMAIL*
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={state.email}
+          onChange={onStateChange}
+          disabled
+          className="outline-none text-black w-full border border-gray-300 bg-gray-100 rounded-none px-4 py-4 cursor-not-allowed"
+        />
       </div>
 
       {/* Event Details */}
@@ -678,6 +695,10 @@ function ViewForm({state}) {
           <div className="text-lg ">
             {state.fianceFirstName} {state.fianceLastName}
           </div>
+        </div>
+        <div>
+          <div className="text-xs tracking-widest mb-1">YOUR EMAIL</div>
+          <div className="text-lg ">{state.email || '-'}</div>
         </div>
         <div>
           <div className="text-xs tracking-widest mb-1">

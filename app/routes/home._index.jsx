@@ -256,7 +256,7 @@ const Home = () => {
         <div className="text-center">
         <Link to="/ready-made-registries">
           <ButtonComponent
-            text="EXPLORE"
+            text="BROWSE READY-MADE REGISTRIES"
             className="button-cs text-black cursor-pointer border-3 w-[224px] h-[44px] lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-black py-[2px] lg:py-[5px] bg-transparent rounded-none mt-11 lg:mt-[3.125vw] hover:bg-gray-100"
           />
           </Link>
@@ -327,7 +327,7 @@ const Home = () => {
           direction={'left'}
           imgBanner={flowerImg}
           lineimg={lineImg}
-          title="at your service"
+          title="questions?"
           description={
             <>
               There's no question too small or request too big for our Registry
@@ -361,7 +361,7 @@ const Home = () => {
           direction={'right'}
           imgBanner={teaImg}
           lineimg={lineImg3}
-          title="are you ready?"
+          title="ready?"
           description={
             <>
               TIMELESS GIFTS.<br />

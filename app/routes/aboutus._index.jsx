@@ -78,7 +78,7 @@ const AboutUs = () => {
           READY TO START BUILDING A REGISTRY?
         </h2>
         <p className="text-center text-2xl lg:text-3xl font-normal pt-2">
-          Create your account or book a virtual appointment to get started.
+          Create your account or Let our concierge help set up, manage or fulfill your registry. to get started.
         </p>
         <div className="flex justify-center py-16">
           <NavLink to="/register">
@@ -95,9 +95,9 @@ const AboutUs = () => {
         direction={'left'}
         imgBanner={BottleImg}
         lineimg={lineImg3}
-        title="at your service"
-        description="There’s no question too small or request too big for our Registry advisors.  We’re always at your service."
-        buttontext={'CONTACT US'}
+        title="questions?"
+        description="We’ve got answers."
+        buttontext={'PHONE, EMAIL OR LIVE CHAT'}
         buttontype={'Color'}
         buttonLink={'/contact-us'}
         />

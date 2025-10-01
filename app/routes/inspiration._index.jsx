@@ -32,6 +32,9 @@ query GetAllBlogsAndArticlesForInspiration {
           image {
             url
           }
+          categoryMetafield: metafield(namespace: "custom", key: "category") {
+            value
+          }
         }
       }
     }
@@ -65,9 +68,24 @@ const Inspiration = () => {
   const allArticles = blogs.flatMap(blog => 
     blog.articles.nodes.map(article => ({
       ...article,
-      blogHandle: blog.handle
+      blogHandle: blog.handle,
+      category: (article?.categoryMetafield?.value || '').toLowerCase().trim(),
     }))
   );
+
+  // Map clicked section keys to category values in metafield
+  const sectionToCategory = {
+    wedding: 'wedding',
+    ready: 'ready',
+    planning: 'planning',
+    design: 'design',
+    taste: 'taste',
+  };
+
+  const activeCategory = sectionToCategory[clickedSection] || 'wedding';
+
+  // Filter articles by selected category
+  const filteredArticles = allArticles.filter((a) => a.category === activeCategory);
 
   return (
     <div>
@@ -90,7 +108,7 @@ const Inspiration = () => {
         <div className="flex flex-row justify-around items-center mt-16">
           <div
             className="relative cursor-pointer"
-            onClick={() => setClickedSection('wedding')}
+            onClick={() => { setClickedSection('wedding'); setArticlesToShow(12); }}
           >
             <img src={weddingStoryImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -99,7 +117,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() => setClickedSection('ready')}
+            onClick={() => { setClickedSection('ready'); setArticlesToShow(12); }}
           >
             <img src={readyMadeImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -108,7 +126,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() => setClickedSection('planning')}
+            onClick={() => { setClickedSection('planning'); setArticlesToShow(12); }}
           >
             <img src={planningTipsImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -117,7 +135,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() => setClickedSection('design')}
+            onClick={() => { setClickedSection('design'); setArticlesToShow(12); }}
           >
             <img src={designNotesImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -126,7 +144,7 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() => setClickedSection('taste')}
+            onClick={() => { setClickedSection('taste'); setArticlesToShow(12); }}
           >
             <img src={tasteTravelImg} alt="" className="brightness-70" />
             <p className="text-white text-center text-2xl lg:text-[1.25vw] font-[500] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -189,11 +207,11 @@ const Inspiration = () => {
           }
         </p>
 
-        {/* Only show content for wedding stories */}
-        {clickedSection === 'wedding' && (
+        {/* Render filtered articles grid for any selected category. If none, show coming soon. */}
+        {filteredArticles.length > 0 ? (
           <>
             <div ref={articlesGridRef} className="grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-4 mt-16 px-[9.375vw]">
-              {allArticles.slice(0, articlesToShow).map(article => {
+              {filteredArticles.slice(0, articlesToShow).map(article => {
                 const cleanTitle = article.title.replace(/<[^>]*>/g, '');
                 const maxTitleLength = 50;
                 const isTitleLong = cleanTitle.length > maxTitleLength;
@@ -233,13 +251,13 @@ const Inspiration = () => {
               <div className="w-full"> </div>
               <div className="w-full flex flex-col items-center">
                 <p className="text-center text-[18px] font-[500] tracking-[0.8px] leading-[18px] my-[2.083vw]">
-                  LOADING {Math.min(articlesToShow, allArticles.length)} of {allArticles.length}
+                  LOADING {Math.min(articlesToShow, filteredArticles.length)} of {filteredArticles.length}
                 </p>
 
-                {allArticles.length > 12 && articlesToShow < allArticles.length && (
+                {filteredArticles.length > 12 && articlesToShow < filteredArticles.length && (
                   <WhiteThemeButton 
                     Text="View more" 
-                    onClick={() => setArticlesToShow(prev => Math.min(prev + 12, allArticles.length))}
+                    onClick={() => setArticlesToShow(prev => Math.min(prev + 12, filteredArticles.length))}
                   />
                 )}
 
@@ -262,10 +280,7 @@ const Inspiration = () => {
               </div>
             </div>
           </>
-        )}
-
-        {/* Show empty state for other sections */}
-        {clickedSection && clickedSection !== 'wedding' && (
+        ) : (
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg">
               {clickedSection === 'ready' ? 'Ready-made registries coming soon...' :
@@ -283,7 +298,7 @@ const Inspiration = () => {
           direction={'right'}
           imgBanner={teaImg}
           lineimg={lineImg3}
-          title="are you ready?"
+          title="ready?"
           description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
           buttontext={'GET STARTED'}
           buttontype={'Color'}
