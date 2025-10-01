@@ -7,7 +7,7 @@ import SideCart from '~/components/SideCart';
 import Input from '~/components/Input';
 import Heading from '~/components/Heading';
 import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
-import { Footer } from '~/components/Footer';
+import {Footer} from '~/components/Footer';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -408,15 +408,6 @@ export default function CoupleProfile() {
   const safeCashfundData = Array.isArray(cashfundData) ? cashfundData : [];
   const safeCollections = Array.isArray(collections) ? collections : [];
   const safeResponse = response || {};
-
-  console.log('Component: Safe data:', {
-    safeData: safeData.length,
-    safeCashfundData: safeCashfundData.length,
-    safeCollections: safeCollections.length,
-    hasProducts,
-    registryId,
-    coupleId,
-  });
 
   const [selectedCategory, setSelectedCategory] = useState('');
   const [availability, setAvailability] = useState('');
@@ -1543,10 +1534,6 @@ export default function CoupleProfile() {
                   {safeResponse?.data?.[0]?.events?.[0]?.city || 'City'},{' '}
                   {safeResponse?.data?.[0]?.events?.[0]?.province || 'Province'}
                 </p>
-                <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
-                  {safeResponse?.data?.[0]?.events?.[0]?.weddingTime ||
-                    'Time TBD'}
-                </p>
               </div>
             </div>
           </div>
@@ -1737,7 +1724,8 @@ export default function CoupleProfile() {
               CONTRIBUTE TO OUR JOURNEY!
             </h5>
             <p className="text-sm lg:text-[1.354vw] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-7 font-normal text-center">
-             Help us create our dream wedding, <br/>honeymoon or life experience. We’re so grateful.
+               Help us create our dream wedding, <br />
+              honeymoon or life experience. We’re so grateful.
             </p>
             <div className="flex flex-row items-center justify-center gap-x-[1.557vw]">
               <button
@@ -1989,7 +1977,10 @@ export default function CoupleProfile() {
 
       {showEmailModal && hasProducts && registryId && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="w-full max-w-4xl mx-4" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="w-full max-w-4xl mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex py-32 max-[768px]:py-10 justify-center max-[768px]:flex-col max-[768px]:items-center max-[768px]:px-4 container">
               <div className="bg-steel-blue text-white py-[110px] px-[90px] lg:w-[52.083vw] pb-28 pt-[100px] relative max-[768px]:max-w-[100%] max-w-[1000px] max-[1024px]:p-6 max-[768px]:pb-20 max-[768px]:pt-14 max-[768px]:w-full text-center">
                 <h3 className="text-5xl font-[400] lg:text-[2.292vw] lg:leading-[3.125vw] prata text-center max-[768px]:text-2xl afterimg">
@@ -1997,9 +1988,9 @@ export default function CoupleProfile() {
                 </h3>
                 <div className="mb-10">
                   <div className="flex h-full items-center">
-          <form
+                    <form
                       className="space-y-6 max-w-full w-full mx-auto"
-            onSubmit={handleEmailSubmit}
+                      onSubmit={handleEmailSubmit}
                     >
                       <div className="text-center mt-6">
                         <Heading
@@ -2009,30 +2000,36 @@ export default function CoupleProfile() {
                       </div>
                       <div className="max-w-md mx-auto">
                         <Input
-              ref={emailInputRef}
-              value={guestEmail}
-              onChange={(e) => setGuestEmail(e.target.value)}
+                          ref={emailInputRef}
+                          value={guestEmail}
+                          onChange={(e) => setGuestEmail(e.target.value)}
                           placeholder="Email Address *"
                           name="email"
                           type="email"
                           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                           classNameLabel="text-center"
                           error={
-                            guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)
+                            guestEmail &&
+                            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)
                               ? 'Please enter a valid email address'
                               : undefined
                           }
-              onBlur={(e) => {
-                const email = e.target.value.trim();
-                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                  setAlertMessage('Please enter a valid email address');
-                  setAlertType('error');
-                  setShowAlert(true);
-                  setTimeout(() => setShowAlert(false), 3000);
-                }
-              }}
-              required
-            />
+                          onBlur={(e) => {
+                            const email = e.target.value.trim();
+                            if (
+                              email &&
+                              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                            ) {
+                              setAlertMessage(
+                                'Please enter a valid email address',
+                              );
+                              setAlertType('error');
+                              setShowAlert(true);
+                              setTimeout(() => setShowAlert(false), 3000);
+                            }
+                          }}
+                          required
+                        />
                       </div>
 
                       {/* Back and Next buttons */}
@@ -2043,18 +2040,17 @@ export default function CoupleProfile() {
                           className="flex items-center uppercase font-bold gap-2 z-10"
                         >
                           <img src="" alt="" className="rotate-180" />
-                          
                         </button>
-            <button
-              type="submit"
+                        <button
+                          type="submit"
                           className="flex items-center uppercase font-bold gap-2 z-10"
-              disabled={isApiLoading}
-            >
-              {isApiLoading ? 'Processing...' : 'Continue'}
+                          disabled={isApiLoading}
+                        >
+                          {isApiLoading ? 'Processing...' : 'Continue'}
                           <img src="/assets/Images/arrow.png" alt="" />
-            </button>
+                        </button>
                       </div>
-          </form>
+                    </form>
                   </div>
                 </div>
                 {/* <div className="step absolute bottom-6 max-[768px]:bottom-2.5 right-0 left-0 text-center flex items-center gap-2 justify-center">
@@ -2068,7 +2064,7 @@ export default function CoupleProfile() {
         </div>
       )}
 
-     <Footer />
+      <Footer />
     </>
   );
 }
