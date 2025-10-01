@@ -16,7 +16,7 @@ const ContactUs = () => {
 
       <div className="w-full h-fit bg-[#FAF9F6] pt-[100px]">
         <Heading
-          text="book a virtual appointment"
+          text="Work one-on-one with your registry concierge to build, refine, or complete your registry."
           classes={
             'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
@@ -48,7 +48,7 @@ const ContactUs = () => {
                   className="mb-2 mt-2 lg:w-[15.365vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
                 />
                 <p className="text-sm lg:text-[1.146vw] lg:leading-[1.667vw] max-w-[500px] mt-4 mb-4 text-center text-white">
-                  Need a hand getting started? Book a virtual appointment with
+                  Need a hand getting started? Let our concierge help set up, manage or fulfill your registry. with
                   our Registry Concierge. We’ll walk you through the process,
                   answer your questions, and help you build a registry that
                   reflects your style, your life, and your wishlist.

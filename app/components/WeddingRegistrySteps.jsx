@@ -9,7 +9,7 @@ export default function WeddingRegistrySteps() {
       number: '1.',
       title: "LET'S CONNECT",
       description:
-        "Enter your names and wedding details and start adding gifts and funds—it's that easy. Want to talk first or book a virtual appointment? Just click here to connect.",
+        "Enter your names and wedding details and start adding gifts and funds - it's that easy. Want to talk to us first or set up a virtual appointment?",
     },
     {
       number: '2.',

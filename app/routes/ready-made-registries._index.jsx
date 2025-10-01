@@ -156,7 +156,7 @@ const ReadyMade = () => {
           direction={'right'}
           imgBanner={teaImg}
           lineimg={lineImg3}
-          title="are you ready?"
+          title="ready?"
           description={
             <>
               TIMELESS GIFTS.<br />

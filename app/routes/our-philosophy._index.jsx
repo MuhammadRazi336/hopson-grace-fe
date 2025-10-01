@@ -72,7 +72,7 @@ const OurPhilosophy = () => {
           direction={'right'}
           imgBanner={teaImg}
           lineimg={lineImg3}
-          title="are you ready?"
+          title="ready?"
           description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
           buttontext={'GET STARTED'}
           buttontype={'Color'}

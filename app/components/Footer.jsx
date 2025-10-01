@@ -76,7 +76,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                     <li>
                       <Link className="text-white" to="/meet-our-team">
-                      MEET OUR SISTER STORE  HOPSON GRACE
+                      MEET OUR SISTER STORE HOPSON GRACE
                       </Link>
                     </li>
                   </ul>
