@@ -11,6 +11,7 @@ import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {NavLink} from '@remix-run/react';
+import LiveChat from '~/components/LiveChat';
 
 const FAQ = () => {
   return (
@@ -251,9 +252,14 @@ const FAQ = () => {
             imgBanner={teaImg}
             lineimg={lineImg3}
             title=" questions?"
-            description="We’ve got answers."
-            buttontext={'PHONE, EMAIL OR LIVE CHAT '}
-            buttontype={'Color'}
+            description="We've got answers."
+            showLiveChat={true}
+            liveChatProps={{
+              buttonText: "PHONE, EMAIL OR LIVE CHAT",
+              showTitle: false,
+              showDescription: false,
+              className: "bg-[#446184] text-white hover:bg-[#3a4f6b]"
+            }}
           />
         </div>
       </div>
