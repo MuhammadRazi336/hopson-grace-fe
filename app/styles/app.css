@@ -4,8 +4,14 @@
   --cart-aside-summary-height: 250px;
   --grid-item-width: 355px;
   --header-height: 64px;
-  --color-dark: #000;
+  --color-dark: #1F1D1B;
   --color-light: #fff;
+  --color-black: #1F1D1B !important;
+}
+
+.text-black,
+body{
+  color: #1F1D1B;
 }
 
 @font-face {
@@ -689,7 +695,8 @@ button > p {
 }
 
 .button-typography{
-  font-size: 18px;
+  font-size: 0.833vw;
+  line-height: 0.938vw;
 }
 
 .bastardogrotesk > * {
@@ -754,7 +761,7 @@ button > p {
 
 .button-cs > * {
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 1.28px;
 }
 
 .tabactive {
@@ -809,8 +816,8 @@ button > p {
 .tabandslider .swiper-pagination-bullet,
 .testimonialSlider .swiper-pagination-bullet {
   background: #999898;
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
 }
 
 .tabandslider .swiper-pagination,
@@ -1030,7 +1037,7 @@ td.rdp-day.rdp-outside {
 
 @media screen and (min-width: 1025px) {
   .button-typography{
-    font-size: 0.938vw !important;
+    font-size: 0.833vw !important;
     line-height: 0.938vw !important;
   }
 }

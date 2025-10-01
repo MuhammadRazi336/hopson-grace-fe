@@ -137,7 +137,7 @@ const HeroSlider = () => {
       modules={[Pagination, Autoplay]}
       slidesPerView={1}
       autoplay={{delay: 14000}} // Autoplay every 14 seconds
-      pagination={{clickable: true}} // Show dots
+      pagination={ false } // Show dots
       className='lg:h-[48.958vw]'
     >
       {slides.map((slide) => (
@@ -161,13 +161,13 @@ const HeroSlider = () => {
                 <NavLink to="/register">
                 <Button
                   text="Begin Your Journey"
-                  className="text-white tracking-[0px] cursor-pointer text-[16px] lg:px-[5px] !lg:text-[0.833vw] !lg:leading-[0.938vw] leading-[18px] bg-[#446184] py-[10px] lg:h-[4.063vw] lg:w-[14.353vw] w-[275.58px] rounded-none button-cs max-[768px]:text-lg"
+                  className="text-white tracking-[1.28px] cursor-pointer text-[16px] lg:px-[5px] lg:text-[0.833vw] lg:leading-[0.938vw] leading-[18px] bg-[#446184] py-[10px] lg:h-[4.063vw] lg:w-[14.353vw] w-[275.58px] rounded-none button-cs max-[768px]:text-lg"
                 />
                 </NavLink>
                 <NavLink to="/couple">
                 <Button
                   text="Find a Couple"
-                  className="button-cs tracking-[0px] cursor-pointer text-[#1F1D1B] text-[16px] !lg:text-[0.833vw] !lg:leading-[0.938vw] leading-[18px] lg:px-[5px] lg:h-[4.063vw] bg-white border-3 border-[#1F1D1B]  py-[10px] lg:w-[14.353vw] w-[275.58px] rounded-none max-[768px]:text-lg"
+                  className="button-cs tracking-[1.28px] cursor-pointer text-[#1F1D1B] text-[16px] lg:text-[0.833vw] lg:leading-[0.938vw] leading-[18px] lg:px-[5px] lg:h-[4.063vw] bg-white py-[10px] lg:w-[14.353vw] w-[275.58px] rounded-none max-[768px]:text-lg"
                 />
                 </NavLink>
               </div>

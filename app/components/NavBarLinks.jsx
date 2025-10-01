@@ -83,15 +83,15 @@ const NavBarLinks = (mobileClasses) => {
           <li className="group">
             <NavLink
               to="/our-brands"
-              className="text-black mega-menu-triggers hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black mega-menu-triggers hover:no-underline tracking-[1.44px] menu-item-hover font-[800] uppercase"
             >
               OUR BRANDS
             </NavLink>
             {/* Nested Menu */}
-            <div className="absolute left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full py-[50px] lg:pb-[5.729vw] lg:pt-[5vw] bg-[#F5F2ED]">
-              <div className="flex mx-auto justify-between lg:w-[83.333vw]">
+            <div className="absolute custom-mega-menu left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
+              <div className="flex mx-auto justify-between">
                 <div className="mr-[90px]">
-                  <h4 className="text-[18px] lg:text-[0.938vw]  font-[500] mb-[26px]">
+                  <h4 className="text-[18px] lg:text-[0.938vw] tracking-[1.44px] font-[800] mb-[26px]">
                     TOP TRENDING BRANDS
                   </h4>
                   <ul className="">
@@ -102,7 +102,7 @@ const NavBarLinks = (mobileClasses) => {
                         <li key={brand.id}>
                           <NavLink
                             to={`/brand/${brand.handle}`}
-                            className="block mb-[26px] font-[500] uppercase text-black hover:bg-gray-200"
+                            className="block uppercase mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
                           >
                             {brand.title}
                           </NavLink>
@@ -115,7 +115,7 @@ const NavBarLinks = (mobileClasses) => {
                   <div className="flex items-center gap-2 mt-4">
                     <NavLink
                       to="/our-brands"
-                      className="text-black font-semibold underline hover:bg-gray-200 flex items-center gap-2"
+                      className="text-black font-[800] tracking-[1.44px] text-[18px] lg:text-[0.938vw] underline hover:bg-gray-200 flex items-center gap-2"
                     >
                       VIEW ALL BRANDS
                       <img src={arrowImg} className='text-black brightness-0' alt="" />
@@ -134,7 +134,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="group">
             <NavLink
               to="/products"
-              className="text-black mega-menu-triggers hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black mega-menu-triggers hover:no-underline menu-item-hover font-[800] tracking-[1.44px] uppercase"
             >
               PRODUCTS
             </NavLink>
@@ -146,7 +146,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/products/new-arrivals"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
                       >
                         NEW ARRIVALS
                       </NavLink>
@@ -154,7 +154,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/products/bestsellers"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
                       >
                         BESTSELLERS
                       </NavLink>
@@ -162,20 +162,20 @@ const NavBarLinks = (mobileClasses) => {
                     
                     {/* Dynamic collections */}
                     {loading ? (
-                      <li className="block mb-[26px] text-gray-500">Loading collections...</li>
+                      <li className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-gray-500">Loading collections...</li>
                     ) : collections.length > 0 ? (
                       collections.map((collection) => (
                         <li key={collection.id}>
                           <NavLink
                             to={`/products/${collection.handle}`}
-                            className="block mb-[26px] text-black hover:bg-gray-200"
+                            className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
                           >
                             {collection.title.toUpperCase()}
                           </NavLink>
                         </li>
                       ))
                     ) : (
-                      <li className="block mb-[26px] text-gray-500">No collections available</li>
+                      <li className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-gray-500">No collections available</li>
                     )}
                     
                     <li>
@@ -212,7 +212,7 @@ const NavBarLinks = (mobileClasses) => {
               to="/cash-funds"
               className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
             >
-              CASH FUNDS
+              CASH + TRAVEL FUNDS
             </NavLink>
           </li>
           <li className="">

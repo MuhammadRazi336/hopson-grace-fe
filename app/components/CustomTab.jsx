@@ -81,7 +81,7 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
   return (
     <div className="container mx-auto px-4">
       {/* Render tabs if tabsData is provided */}
-      {tabsData && tabsData.length > 0 && (
+      {/* {tabsData && tabsData.length > 0 && (
         <div className="flex justify-center mb-8">
           <div className="flex gap-8">
             {tabsData.map((tab) => (
@@ -103,7 +103,7 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Show content based on active tab */}
       {transformedData ? (
