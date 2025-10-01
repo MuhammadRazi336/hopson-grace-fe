@@ -327,7 +327,7 @@ const Home = () => {
           direction={'left'}
           imgBanner={flowerImg}
           lineimg={lineImg}
-          title="at your service"
+          title="questions?"
           description={
             <>
               There's no question too small or request too big for our Registry

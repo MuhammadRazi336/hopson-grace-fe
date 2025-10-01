@@ -1,6 +1,7 @@
 import { Link, NavLink, useLocation } from '@remix-run/react';
 import Button from '~/components/Button.jsx';
 import Steps from './Steps';
+import LiveChat from './LiveChat';
 
 const ImageAndText = ({
   title,
@@ -16,6 +17,8 @@ const ImageAndText = ({
   buttonLink,
   disabled = false,
   className,
+  showLiveChat = false,
+  liveChatProps = {},
 }) => {
   const location = useLocation();
 
@@ -51,24 +54,28 @@ const ImageAndText = ({
         )}
 
         <div className="lg:mx-auto">
-          <NavLink to={buttonLink}>
-            <Button
-              text={buttontext}
-              className={`text-[18px] cursor-pointer w-[288px] h-[77px] lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
-                ${
-                  stepsCheck
-                    ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[768px]:p-3.5'
-                    : ''
-                }  
-                ${
-                  buttontype == 'link'
-                    ? 'text-[#1F1D1B] border-3 border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                    : 'text-white bg-[#446184] rounded-none font-mono'
-                }
-                ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
-              `}
-            />
-          </NavLink>
+          {showLiveChat ? (
+            <LiveChat {...liveChatProps} />
+          ) : (
+            <NavLink to={buttonLink}>
+              <Button
+                text={buttontext}
+                className={`text-[18px] cursor-pointer w-[288px] h-[77px] lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
+                  ${
+                    stepsCheck
+                      ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[768px]:p-3.5'
+                      : ''
+                  }  
+                  ${
+                    buttontype == 'link'
+                      ? 'text-[#1F1D1B] border-3 border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
+                      : 'text-white bg-[#446184] rounded-none font-mono'
+                  }
+                  ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
+                `}
+              />
+            </NavLink>
+          )}
         </div>
       </div>
 
