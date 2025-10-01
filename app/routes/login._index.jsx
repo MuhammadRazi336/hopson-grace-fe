@@ -141,8 +141,8 @@ const LoginIndex = () => {
                     error={actionData?.statusCode >= 400 && actionData?.message?.toLowerCase().includes('password') ? actionData?.message : undefined}
                   />
                 </div>
-                <div className="text-center">
-                  <Link to="/forgotpassword" className="text-[#446184] hover:underline">
+                <div className="text-left">
+                  <Link to="/forgotpassword" className="text-white hover:underline">
                     Forgot Password?
                   </Link>
                 </div>
