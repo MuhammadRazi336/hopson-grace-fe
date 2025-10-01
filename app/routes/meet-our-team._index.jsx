@@ -1,7 +1,7 @@
 import {Header} from '~/components/Header';
 import {Footer} from '~/components/Footer';
 import Heading from '~/components/Heading';
- import lineImg3 from '/assets/Images/line.png';
+import lineImg3 from '/assets/Images/line.png';
 import RegistryLogo from '/assets/Images/registry-monogram.png';
 import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
@@ -32,32 +32,23 @@ const MeetOurTeam = () => {
           HOPSON GRACE
         </h2>
         <p className="text-center text-2xl lg:text-3xl font-normal">
-          The Registry was born out of Hopson Grace, Toronto’s destination for
-          beautifully curated homewares, design-forward essentials, and timeless
-          gifts. Hopson Grace is where modern entertaining meets considered
-          design. Whether you're looking for an espresso cup, a serving platter,
-          or a Belgian modular sofa—this is where you'll find it.
+          The Registry was born out of Hopson
+          Grace, Toronto’s destination for beautifully curated homewares,
+          design-forward essentials, and timeless gifts. Hopson Grace is where
+          modern entertaining meets considered design. Whether you're looking
+          for an espresso cup, a serving platter, or a Belgian modular sofa this
+          is where you'll find it.
         </p>
       </div>
-      <div className="w-full container mx-auto py-16">
-        <img
-          src={RegistryLogo}
-          alt=""
-          className="w-[100px] object-cover mx-auto"
-        />
-        <img
-          src={lineImghead}
-          alt=""
-          width={100}
-          height={100}
-          className="object-cover mx-auto"
-        />
-
+      <div className="w-full container mx-auto py-4">
         <h2 className="text-center font-semibold text-2xl lg:text-4xl pt-16">
-        PERFECT FOR POST-WEDDING LIFE
+          BEYOND THE WEDDING
         </h2>
         <p className="text-center text-2xl lg:text-3xl font-normal pt-2">
-        Visit Hopson Grace for beautiful home essentials and timeless gifts.
+          Like what you see? Many of the pieces featured on The Registry are
+          also available at Hopson Grace. Discover beautiful home essentials and
+          timeless gifts perfect for post-wedding life and every chapter that
+          follows.
         </p>
         <div className="flex justify-center py-16">
           <Button
@@ -79,10 +70,10 @@ const MeetOurTeam = () => {
           buttonLink={'/contact-us'}
           sx={{
             button: {
-              backgroundColor: "transparent",
-              color: "#1F1D1B",
-              border: "2px solid #1F1D1B"
-            }
+              backgroundColor: 'transparent',
+              color: '#1F1D1B',
+              border: '2px solid #1F1D1B',
+            },
           }}
         />
       </div>
