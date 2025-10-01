@@ -36,10 +36,10 @@ const Items = ({ featuredRegistryData = null }) => {
 
   return (
     <div>
-      <div className="grid h-[740px] lg:justify-center grid-cols-2 lg:grid-cols-[27.083vw_18.49vw_18.49vw_18.49vw] lg:grid-rows-2 lg:gap-[1.146vw] max-[1024px]:gap-y-5 max-[1024px]:gap-x-2">
+      <div className="grid h-[740px] max-[1024px]:h-[212vw] lg:justify-center grid-cols-2 lg:grid-cols-[27.083vw_18.49vw_18.49vw_18.49vw] lg:grid-rows-2 lg:gap-[1.146vw] max-[1024px]:gap-y-[20px] max-[1024px]:gap-x-[7px]">
         {/* First item spans full width */}
-        <div className="lg:row-span-2 max-[768px]:col-span-2">
-          <div className="featureImage relative insetshadow registrytag h-full">
+        <div className="lg:row-span-2 max-[768px]:col-span-2 w-full max-[1024px]:h-[51vw]">
+          <div className="featureImage relative insetshadow registrytag h-full max-[1024px]:h-[51vw]">
             <img 
               src={subCollection?.image?.url || parentCollection?.image?.url || img1} 
               alt={subCollection?.title || parentCollection?.title || "Registry Collection"} 
@@ -48,11 +48,11 @@ const Items = ({ featuredRegistryData = null }) => {
             <img
               src={subCollection?.image?.url || parentCollection?.image?.url || img1}
               alt={subCollection?.title || parentCollection?.title || "Registry Collection"}
-              className="hidden max-[1024px]:block w-full h-full object-cover rounded-none"
+              className="hidden max-[1024px]:block w-full h-full object-top object-cover rounded-none"
             />
             
             {/* Mobile title */}
-            <h4 className="max-[1024px]:block hidden absolute top-4 left-4 text-lg text-white uppercase tracking-widest font-semibold z-10 px-2">
+            <h4 className="max-[1024px]:hidden hidden absolute top-4 left-4 text-lg text-white uppercase tracking-widest font-semibold z-10 px-2">
               {subCollection?.title || parentCollection?.title || "Registry Collection"}
             </h4>
           </div>
@@ -68,12 +68,12 @@ const Items = ({ featuredRegistryData = null }) => {
             <img 
               src={product.node.images?.edges?.[0]?.node?.url || img1} 
               alt={product.node.title || `Product ${index + 1}`} 
-              className="rounded-none w-[350px] h-[280px]" 
+              className="rounded-none w-[350px] h-[280px] max-[1024px]:h-[30vw] object-cover" 
             />
-            <h3 className="mt-2 lg:mt-[21px] bastardogrotesk lg:leading-[1.146vw] lg:mb-[4px] font-[500] text-sm lg:text-[1.146vw] uppercase">
+            <h3 className="mt-2 lg:mt-[21px] bastardogrotesk lg:leading-[1.146vw] lg:mb-[4px] font-[500] text-[11px] lg:text-[1.146vw] uppercase">
               {product.node.title || `Product ${index + 1}`}
             </h3>
-            <p className="text-sm mt-[9px] lg:text-[1.146vw] lg:leading-[1.146vw] bastardogrotesk">
+            <p className="text-[11px] mt-[9px] max-[1024px]:mt-[5px] lg:text-[1.146vw] lg:leading-[1.146vw] bastardogrotesk">
               {product.node.description ? 
                 product.node.description.slice(0, 20) + (product.node.description.length > 20 ? '...' : '') : 
                 'Product Description'

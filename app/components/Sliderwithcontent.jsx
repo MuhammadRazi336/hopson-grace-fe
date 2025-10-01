@@ -54,7 +54,7 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
     <div>
       <Heading
         text={subCollections[activeSlideIndex]?.title || 'Registry'}
-        classes={`text-xl lg:text-[1.458vw] lg:leading-[1.458vw] font-bold uppercase tracking-[0.1em] mt-0 mb-4 lg:mb-[2.083vw]`}
+        classes={`text-[14px] leading-[28px] lg:text-[1.458vw] lg:leading-[1.458vw] font-bold uppercase tracking-[0.1em] mt-0 mb-2 lg:mb-[2.083vw]`}
       />
 
       <div className="tabandslider relative">
