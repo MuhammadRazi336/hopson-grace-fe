@@ -5,9 +5,10 @@ import lineImghead from '/assets/Images/line.png';
 import Heading from '~/components/Heading';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
-import youll1 from '/assets/Images/zam-zam.jpg';
-import youll2 from '/assets/Images/zam-zam.jpg';
-import youll3 from '/assets/Images/zam-zam.jpg';
+import product3 from '/assets/Images/gift-img-collection-1.png';
+import product2 from '/assets/Images/gift-img-collection-2.png';
+import product1 from '/assets/Images/gift-img-collection-3.png';
+import product4 from '/assets/Images/gift-img-collection-4.png';
 import {Navigation} from 'swiper/modules';
 
 import 'swiper/css';
@@ -35,9 +36,45 @@ export async function loader({request, context}) {
     }
   }
 
-  const cashFunds = await loadCashFunds({context});
+  // Fetch collections data for the swiper and products - same as cash-funds
+  let collections = [];
+  let allProducts = [];
+  try {
+    const [{collections: collectionsData}] = await Promise.all([
+      context.storefront.query(COLLECTION_QUERY),
+    ]);
+    collections = collectionsData?.nodes || [];
+    
+    // Extract products from collections: include cashfund=true OR titles matching categories (Honeymoon/Home/Date Night)
+    collections.forEach(collection => {
+      const titleLc = (collection?.title || '').trim().toLowerCase();
+      const isCategoryMatch = titleLc.includes('honeymoon') || titleLc.includes('home') || titleLc.includes('date night') || titleLc.includes('date nights');
+      const includeCollection = collection.cashfundMetafield?.value === 'true' || isCategoryMatch;
+      if (includeCollection && collection.products?.edges) {
+        collection.products.edges.forEach(edge => {
+          const product = edge.node;
+          allProducts.push({
+            id: product.id,
+            title: product.title,
+            handle: product.handle,
+            description: product.description,
+            image: product.images?.edges?.[0]?.node?.url || null,
+            price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+            currency: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
+            availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
+            collectionId: collection.id, // Add collection ID to track which collection the product belongs to
+            collectionTitle: collection.title
+          });
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching collections:', error);
+  }
+
   return {
-    cashFunds,
+    products: allProducts,
+    collections,
     registryId,
     user,
   };
@@ -72,24 +109,7 @@ export async function action({request, context}) {
   }
 }
 
-async function loadCashFunds({context}) {
-  try {
-    const [{collections}] = await Promise.all([
-      context.storefront.query(CASH_FUND_QUERY),
-    ]);
 
-    // Filter collections that have cashfund metafield set to true
-    const cashFundCollections =
-      collections?.nodes?.filter(
-        (collection) => collection.metafield?.value === 'true',
-      ) || [];
-
-    return cashFundCollections;
-  } catch (error) {
-    console.error('Error loading cash funds:', error);
-    throw error;
-  }
-}
 
 // ProductCard component with Add to Registry functionality - moved outside to prevent recreation
 const ProductCard = React.memo(
@@ -98,10 +118,8 @@ const ProductCard = React.memo(
     const hasShownFeedback = React.useRef(false);
     const previousFetcherData = React.useRef(null);
 
-    const firstImage =
-      product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
-    const firstVariant = product.variants?.edges?.[0]?.node;
-    const price = firstVariant?.priceV2?.amount || 'N/A';
+    const firstImage = product.image || '/assets/Images/placeholder.png';
+    const price = product.price || 'N/A';
 
     // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
@@ -254,15 +272,57 @@ const ProductCard = React.memo(
 );
 
 const PorteTravel = () => {
-  const {cashFunds, registryId, user} = useLoaderData();
+  const {products, collections, registryId, user} = useLoaderData();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
+  const [checkedCategories, setCheckedCategories] = useState([]); // ['Honeymoon','Home','Date Night']
 
-  const porteTravelFunds = cashFunds.filter(
-    (cashFund) => cashFund.title === 'Porte Travel Cash Fund',
-  );
-  const safeCashFunds = Array.isArray(porteTravelFunds) ? porteTravelFunds : [];
+  // Build a mapping of category labels to collection IDs (by collection title, fuzzy includes)
+  const categoryToCollectionIds = React.useMemo(() => {
+    const map = {
+      Honeymoon: [],
+      Home: [],
+      'Date Night': [],
+    };
+    collections.forEach((c) => {
+      const title = (c?.title || '').trim().toLowerCase();
+      if (title.includes('honeymoon')) map.Honeymoon.push(c.id);
+      if (title.includes('home')) map.Home.push(c.id);
+      if (title.includes('date night')) map['Date Night'].push(c.id);
+      if (title.includes('date nights')) map['Date Night'].push(c.id);
+    });
+    return map;
+  }, [collections]);
+
+  // First filter for porte travel products only
+  const porteTravelProducts = products.filter((product) => {
+    const title = (product.collectionTitle || '').toLowerCase();
+    return title.includes('porte') || title.includes('travel') || title.includes('porte travel');
+  });
+
+  // Then apply category filtering if categories are selected
+  let filteredProducts = porteTravelProducts;
+  if (checkedCategories.length > 0) {
+    // Build strict matching set: exact title match per selected category
+    const exactIds = new Set();
+    const selectedLower = checkedCategories.map((c) => c.toLowerCase());
+    collections.forEach((c) => {
+      const title = (c?.title || '').trim().toLowerCase();
+      selectedLower.forEach((cat) => {
+        if (cat === 'honeymoon' && title === 'honeymoon') exactIds.add(c.id);
+        if (cat === 'home' && title === 'home') exactIds.add(c.id);
+        if (cat === 'date night' && (title === 'date night' || title === 'date nights')) exactIds.add(c.id);
+      });
+    });
+
+    // If no exact ids (titles may vary), fall back to fuzzy includes
+    const allowedIds = exactIds.size > 0 ? exactIds : new Set(
+      checkedCategories.flatMap((label) => categoryToCollectionIds[label] || [])
+    );
+
+    filteredProducts = porteTravelProducts.filter((product) => allowedIds.has(product.collectionId));
+  }
 
   // Alert handlers
   const handleSuccess = useCallback((message) => {
@@ -319,25 +379,27 @@ const PorteTravel = () => {
 
       <section className="container mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-10">
-          <SidebarFilter />
+          <SidebarFilter 
+            collections={collections}
+            checkedCategories={checkedCategories}
+            setCheckedCategories={setCheckedCategories}
+          />
           <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
-            {safeCashFunds.flatMap(
-              (collection) =>
-                collection.products?.edges?.map((edge) => {
-                  const product = edge.node;
-                  return (
-                    <ProductCard
-                      key={`${product.id}-${collection.id}`}
-                      product={product}
-                      collection={collection}
-                      registryId={registryId}
-                      onSuccess={handleSuccess}
-                      onError={handleError}
-                      user={user}
-                    />
-                  );
-                }) || [],
-            )}
+            {filteredProducts.map((product) => {
+              // Find the collection for this product
+              const collection = collections.find(col => col.id === product.collectionId);
+              return (
+                <ProductCard
+                  key={`${product.id}-${product.collectionId}`}
+                  product={product}
+                  collection={collection}
+                  registryId={registryId}
+                  onSuccess={handleSuccess}
+                  onError={handleError}
+                  user={user}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -413,35 +475,35 @@ const PorteTravel = () => {
             >
               {/* slides here */}
               <SwiperSlide>
-                <img src={youll1} alt="New Arrival" className="w-full" />
+                <img src={product1} alt="New Arrival" className="w-full" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Tableware" className="w-full" />
+                <img src={product2} alt="Tableware" className="w-full" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
+                <img src={product3} alt="Staub Cast Iron Q4" className="w-full" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll1} alt="New arrivals" className="w-full" />
+                <img src={product4} alt="New arrivals" className="w-full" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
                 <p className="lg:text-2xl text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
-                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
+                <img src={product1} alt="Staub Cast Iron Q4" className="w-full" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
@@ -527,7 +589,7 @@ const PorteTravel = () => {
 
 export default PorteTravel;
 
-function SidebarFilter() {
+function SidebarFilter({collections = [], checkedCategories = [], setCheckedCategories}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
@@ -545,7 +607,7 @@ function SidebarFilter() {
     <div className="w-full xl:w-3/12 p-6 h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-[18px] lg:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -554,55 +616,38 @@ function SidebarFilter() {
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm">
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                HONEYMOON
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                HOME
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                DATE NIGHTS
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
-              </label>
-            </li>
+          <ul className="space-y-2 text-[16px]">
+            {['Honeymoon','Home','Date Night'].map((label) => (
+              <li key={label}>
+                <label className='flex items-center'>
+                  <input 
+                    type="checkbox" 
+                    className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" 
+                    checked={checkedCategories.includes(label)}
+                    onChange={(e) => {
+                      if (!setCheckedCategories) return;
+                      const next = e.target.checked 
+                        ? [...checkedCategories, label]
+                        : checkedCategories.filter((l) => l !== label);
+                      setCheckedCategories(next);
+                    }}
+                  />
+                  {label.toUpperCase()}
+                </label>
+              </li>
+            ))}
           </ul>
         )}
       </div>
@@ -665,4 +710,57 @@ query getCashFundsForPorteTravel {
     }
   }
 }
+`;
+
+const COLLECTION_QUERY = `#graphql
+  query {
+    collections(first: 50) {
+      nodes {
+        description
+        title
+        id
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        cashfundMetafield: metafield(namespace: "custom", key: "cashfund") {
+          id
+          value
+        }
+        products(first: 10){
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              images(first: 10) {
+                edges {
+                  node {
+                    id
+                    url
+                  }
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 `;

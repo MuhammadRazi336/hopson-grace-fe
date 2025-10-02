@@ -509,7 +509,7 @@ const BlogDetails = () => {
               <img
                 src={regLogo}
                 alt=""
-                className="w-[104px] mx-auto mb-10"
+                className="w-[104px] h-[92px] mx-auto mb-10"
               />
               <h2 className="text-white text-[22px] font-semibold">
                 WOULD YOU LIKE YOUR SPECIAL DAY TO BE FEATURED?
