@@ -42,9 +42,12 @@ export async function loader({context}) {
     ]);
     collections = collectionsData?.nodes || [];
     
-    // Extract products from collections where cashfund metafield is true
+    // Extract products from collections: include cashfund=true OR titles matching categories (Honeymoon/Home/Date Night)
     collections.forEach(collection => {
-      if (collection.cashfundMetafield?.value === 'true' && collection.products?.edges) {
+      const titleLc = (collection?.title || '').trim().toLowerCase();
+      const isCategoryMatch = titleLc.includes('honeymoon') || titleLc.includes('home') || titleLc.includes('date night') || titleLc.includes('date nights');
+      const includeCollection = collection.cashfundMetafield?.value === 'true' || isCategoryMatch;
+      if (includeCollection && collection.products?.edges) {
         collection.products.edges.forEach(edge => {
           const product = edge.node;
           allProducts.push({
@@ -56,7 +59,8 @@ export async function loader({context}) {
             price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
             currency: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
             availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
-            collectionId: collection.id // Add collection ID to track which collection the product belongs to
+            collectionId: collection.id, // Add collection ID to track which collection the product belongs to
+            collectionTitle: collection.title
           });
         });
       }
@@ -93,17 +97,70 @@ export async function action({request, context}) {
 }
 const CashFunds = () => {
   const {products, registryId, collections, user} = useLoaderData();
+  // Debug: initial payload
+  console.log('[CashFunds] loader data counts', {
+    products: products?.length || 0,
+    collections: collections?.length || 0,
+    hasUser: !!user,
+    registryId,
+  });
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
+  const [checkedCategories, setCheckedCategories] = useState([]); // ['Honeymoon','Home','Date Night']
   const productGridRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
 
-  // Filter products based on selected collection
-  const filteredProducts = selectedSwiperCollectionId 
+  // Build a mapping of category labels to collection IDs (by collection title, fuzzy includes)
+  const categoryToCollectionIds = React.useMemo(() => {
+    const map = {
+      Honeymoon: [],
+      Home: [],
+      'Date Night': [],
+    };
+    collections.forEach((c) => {
+      const title = (c?.title || '').trim().toLowerCase();
+      if (title.includes('honeymoon')) map.Honeymoon.push(c.id);
+      if (title.includes('home')) map.Home.push(c.id);
+      if (title.includes('date night')) map['Date Night'].push(c.id);
+      if (title.includes('date nights')) map['Date Night'].push(c.id);
+    });
+    console.log('[CashFunds] categoryToCollectionIds map', map);
+    return map;
+  }, [collections]);
+
+  // Filter products based on selected collection and selected categories
+  console.log('[CashFunds] selectedSwiperCollectionId', selectedSwiperCollectionId);
+  console.log('[CashFunds] checkedCategories', checkedCategories);
+  let filteredProducts = selectedSwiperCollectionId 
     ? products.filter(product => product.collectionId === selectedSwiperCollectionId)
     : products;
+
+  if (checkedCategories.length > 0) {
+    // Build strict matching set: exact title match per selected category
+    const exactIds = new Set();
+    const selectedLower = checkedCategories.map((c) => c.toLowerCase());
+    collections.forEach((c) => {
+      const title = (c?.title || '').trim().toLowerCase();
+      selectedLower.forEach((cat) => {
+        if (cat === 'honeymoon' && title === 'honeymoon') exactIds.add(c.id);
+        if (cat === 'home' && title === 'home') exactIds.add(c.id);
+        if (cat === 'date night' && (title === 'date night' || title === 'date nights')) exactIds.add(c.id);
+      });
+    });
+
+    // If no exact ids (titles may vary), fall back to fuzzy includes
+    const allowedIds = exactIds.size > 0 ? exactIds : new Set(
+      checkedCategories.flatMap((label) => categoryToCollectionIds[label] || [])
+    );
+    console.log('[CashFunds] allowedIds (final)', Array.from(allowedIds));
+
+    const next = filteredProducts.filter((p) => allowedIds.has(p.collectionId));
+    filteredProducts = next;
+    console.log('[CashFunds] filtered count after categories', filteredProducts.length);
+    console.log('[CashFunds] filtered sample', filteredProducts.slice(0,3).map(p => ({title: p.title, collectionTitle: p.collectionTitle, collectionId: p.collectionId})));
+  }
 
   // Sort products and limit display
   const sortedProducts = filteredProducts.sort((a, b) => a.title.localeCompare(b.title));
@@ -272,7 +329,14 @@ const CashFunds = () => {
 
       <section className="px-[8.594vw] mx-auto">
         <div className="flex flex-col md:flex-row gap-[3.75vw] pt-[7.083vw]">
-          <SidebarFilter />
+          <SidebarFilter 
+            collections={collections}
+            checkedCategories={checkedCategories}
+            setCheckedCategories={(next) => {
+              setCheckedCategories(next);
+              setProductsToShow(12);
+            }}
+          />
           <div 
             className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0"
             ref={productGridRef}
@@ -698,7 +762,7 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
 
         <div className="flex items-center justify-between mt-[2.813vw]">
           <div className="flex flex-col w-full items-center text-xs">
-            <Link to={`/dashboard/cashfunds/${id}`} className='w-full'>
+            <Link to={`/dashboard/cashfunds/create-new`} className='w-full'>
               <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] lg:mb-[0.729vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
                 personalize fund
               </button>
@@ -718,7 +782,7 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
   );
 };
 
-function SidebarFilter() {
+function SidebarFilter({collections = [], checkedCategories = [], setCheckedCategories}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
@@ -758,30 +822,25 @@ function SidebarFilter() {
         </h2>
         {openSections.categories && (
           <ul className="space-y-2 text-[16px]">
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                HONEYMOON
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                HOME
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                DATE NIGHTS
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                LOREM IPSUM
-              </label>
-            </li>
+            {['Honeymoon','Home','Date Night'].map((label) => (
+              <li key={label}>
+                <label className='flex items-center'>
+                  <input 
+                    type="checkbox" 
+                    className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" 
+                    checked={checkedCategories.includes(label)}
+                    onChange={(e) => {
+                      if (!setCheckedCategories) return;
+                      const next = e.target.checked 
+                        ? [...checkedCategories, label]
+                        : checkedCategories.filter((l) => l !== label);
+                      setCheckedCategories(next);
+                    }}
+                  />
+                  {label.toUpperCase()}
+                </label>
+              </li>
+            ))}
           </ul>
         )}
       </div>

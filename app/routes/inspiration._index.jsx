@@ -59,7 +59,7 @@ export async function loader({context}) {
 const Inspiration = () => {
   const {blogs} = useLoaderData();
   console.log('blogs', blogs);
-
+  
   const [clickedSection, setClickedSection] = React.useState('wedding');
   const [articlesToShow, setArticlesToShow] = React.useState(12);
   const articlesGridRef = React.useRef(null);
@@ -152,7 +152,7 @@ const Inspiration = () => {
             </p>
           </div>
         </div>
-
+        
         {/* Arrow Down Icons */}
         <div className="flex justify-around items-center mt-4">
           <div className="w-[200px] flex justify-center">
@@ -239,24 +239,24 @@ const Inspiration = () => {
                             Read More
                             <img src={readMoreIcon} alt="" />
                           </p>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                    </Link>
+            </div>
+            </div>
+            </div>
                 );
               })}
             </div>
 
-            <div className="">
-              <div className="w-full"> </div>
-              <div className="w-full flex flex-col items-center">
-                <p className="text-center text-[18px] font-[500] tracking-[0.8px] leading-[18px] my-[2.083vw]">
+        <div className="">
+          <div className="w-full"> </div>
+          <div className="w-full flex flex-col items-center">
+            <p className="text-center text-[18px] font-[500] tracking-[0.8px] leading-[18px] my-[2.083vw]">
                   LOADING {Math.min(articlesToShow, filteredArticles.length)} of {filteredArticles.length}
-                </p>
+            </p>
 
                 {filteredArticles.length > 12 && articlesToShow < filteredArticles.length && (
-                  <WhiteThemeButton 
-                    Text="View more" 
+            <WhiteThemeButton
+              Text="View more" 
                     onClick={() => setArticlesToShow(prev => Math.min(prev + 12, filteredArticles.length))}
                   />
                 )}
@@ -274,8 +274,8 @@ const Inspiration = () => {
                       }
                     }}
                   >
-                    Back to Top
-                  </button>
+              Back to Top
+            </button>
                 )}
               </div>
             </div>
@@ -289,9 +289,9 @@ const Inspiration = () => {
                clickedSection === 'taste' ? 'Taste & travel content coming soon...' :
                'Content coming soon...'}
             </p>
-          </div>
+        </div>
         )}
-      </div>
+    </div>
 
       <div className="w-full py-16">
         <ImageAndText
@@ -302,7 +302,7 @@ const Inspiration = () => {
           description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
           buttontext={'GET STARTED'}
           buttontype={'Color'}
-          buttonLink={'/register'}
+          buttonLink={'/register'} 
         />
       </div>
 
