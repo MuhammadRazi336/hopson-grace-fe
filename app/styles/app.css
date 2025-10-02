@@ -703,6 +703,10 @@ button > p {
   font-family: 'bastardogrotesk' !important;
 }
 
+.collection-slider .swiper-wrapper {
+  transition-timing-function: linear !important;
+}
+
 .slide-left {
   transition: transform 0.5s ease-in-out;
   transform: translateX(-100%);
@@ -1069,7 +1073,17 @@ td.rdp-day.rdp-outside {
     display: none;
   }
   .testimonialSlider .swiper-pagination {
-    bottom: 70px !important;
+    bottom: 10px !important;
+  }
+  .testimonialSlider .swiper.swiper-initialized.swiper-horizontal.swiper-backface-hidden {
+    padding-bottom: 50px;
+  }
+  .steps-check-btn p{
+    font-size: 10px !important;
+    line-height: 12px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block;
   }
 }
 
@@ -1085,7 +1099,7 @@ td.rdp-day.rdp-outside {
   }
 
   .button-cs > p {
-    font-size: 12px !important;
+    font-size: 12px;
   }
 
   .step-slider .swiper-button-next-steps {

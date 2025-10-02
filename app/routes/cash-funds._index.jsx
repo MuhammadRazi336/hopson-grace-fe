@@ -42,29 +42,56 @@ export async function loader({request, context}) {
     }
   }
 
-  const cashFunds = await loadCashFunds({context});
+  // Fetch collections data for the swiper and products
+  let collections = [];
+  let allProducts = [];
+  try {
+    const [{collections: collectionsData}] = await Promise.all([
+      context.storefront.query(COLLECTION_QUERY),
+    ]);
+    collections = collectionsData?.nodes || [];
+    
+    // Extract products from collections: include cashfund=true OR titles matching categories (Honeymoon/Home/Date Night)
+    collections.forEach(collection => {
+      const titleLc = (collection?.title || '').trim().toLowerCase();
+      const isCategoryMatch = titleLc.includes('honeymoon') || titleLc.includes('home') || titleLc.includes('date night') || titleLc.includes('date nights');
+      const includeCollection = collection.cashfundMetafield?.value === 'true' || isCategoryMatch;
+      if (includeCollection && collection.products?.edges) {
+        collection.products.edges.forEach(edge => {
+          const product = edge.node;
+          allProducts.push({
+            id: product.id,
+            title: product.title,
+            handle: product.handle,
+            description: product.description,
+            image: product.images?.edges?.[0]?.node?.url || null,
+            price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+            currency: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
+            availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
+            collectionId: collection.id, // Add collection ID to track which collection the product belongs to
+            collectionTitle: collection.title
+          });
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching collections:', error);
+  }
 
-  // If there's a search query, filter cash funds
-  let filteredCashFunds = cashFunds;
+  // If there's a search query, filter products
+  let filteredProducts = allProducts;
   if (searchQuery) {
-    filteredCashFunds = cashFunds.filter(
-      (collection) =>
-        collection.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        collection.description
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        collection.products?.edges?.some(
-          (edge) =>
-            edge.node.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            edge.node.description
-              ?.toLowerCase()
-              .includes(searchQuery.toLowerCase()),
-        ),
+    filteredProducts = allProducts.filter(
+      (product) =>
+        product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.collectionTitle.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }
 
   return {
-    cashFunds: filteredCashFunds,
+    products: filteredProducts,
+    collections,
     searchQuery,
     registryId,
     user: user || null,
@@ -100,23 +127,6 @@ export async function action({request, context}) {
   }
 }
 
-async function loadCashFunds({context}) {
-  try {
-    const [{collections}] = await Promise.all([
-      context.storefront.query(CASH_FUND_QUERY),
-    ]);
-
-    // Filter collections that have cashfund metafield set to true
-    const cashFundCollections =
-      collections?.nodes?.filter(
-        (collection) => collection.metafield?.value === 'true',
-      ) || [];
-
-    return cashFundCollections;
-  } catch (error) {
-    throw error;
-  }
-}
 
 // ProductCard component with Add to Registry functionality - moved outside to prevent recreation
 const ProductCard = React.memo(
@@ -125,10 +135,8 @@ const ProductCard = React.memo(
     const hasShownFeedback = React.useRef(false);
     const previousFetcherData = React.useRef(null);
 
-    const firstImage =
-      product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
-    const firstVariant = product.variants?.edges?.[0]?.node;
-    const price = firstVariant?.priceV2?.amount || 'N/A';
+    const firstImage = product.image || '/assets/Images/placeholder.png';
+    const price = product.price || 'N/A';
 
     // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
@@ -270,23 +278,51 @@ const ProductCard = React.memo(
 );
 
 const CashFund = () => {
-  const {cashFunds, searchQuery, registryId, user} = useLoaderData();
+  const {products, collections, searchQuery, registryId, user} = useLoaderData();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
+  const [checkedCategories, setCheckedCategories] = useState([]); // ['Honeymoon','Home','Date Night']
 
-  // Ensure cashFunds is an array
-  const safeCashFunds = Array.isArray(cashFunds) ? cashFunds : [];
+  // Build a mapping of category labels to collection IDs (by collection title, fuzzy includes)
+  const categoryToCollectionIds = React.useMemo(() => {
+    const map = {
+      Honeymoon: [],
+      Home: [],
+      'Date Night': [],
+    };
+    collections.forEach((c) => {
+      const title = (c?.title || '').trim().toLowerCase();
+      if (title.includes('honeymoon')) map.Honeymoon.push(c.id);
+      if (title.includes('home')) map.Home.push(c.id);
+      if (title.includes('date night')) map['Date Night'].push(c.id);
+      if (title.includes('date nights')) map['Date Night'].push(c.id);
+    });
+    return map;
+  }, [collections]);
 
-  // Get all products from all collections for search results
-  const allProducts = safeCashFunds.flatMap(
-    (collection) =>
-      collection.products?.edges?.map((edge) => ({
-        ...edge.node,
-        collectionTitle: collection.title,
-        collectionHandle: collection.handle,
-      })) || [],
-  );
+  // Filter products based on selected categories
+  let filteredProducts = products;
+  if (checkedCategories.length > 0) {
+    // Build strict matching set: exact title match per selected category
+    const exactIds = new Set();
+    const selectedLower = checkedCategories.map((c) => c.toLowerCase());
+    collections.forEach((c) => {
+      const title = (c?.title || '').trim().toLowerCase();
+      selectedLower.forEach((cat) => {
+        if (cat === 'honeymoon' && title === 'honeymoon') exactIds.add(c.id);
+        if (cat === 'home' && title === 'home') exactIds.add(c.id);
+        if (cat === 'date night' && (title === 'date night' || title === 'date nights')) exactIds.add(c.id);
+      });
+    });
+
+    // If no exact ids (titles may vary), fall back to fuzzy includes
+    const allowedIds = exactIds.size > 0 ? exactIds : new Set(
+      checkedCategories.flatMap((label) => categoryToCollectionIds[label] || [])
+    );
+
+    filteredProducts = products.filter((product) => allowedIds.has(product.collectionId));
+  }
 
   // Alert handlers
   const handleSuccess = useCallback((message) => {
@@ -330,8 +366,8 @@ const CashFund = () => {
         />
         {searchQuery && (
           <p className="text-center my-5 text-lg">
-            Found {allProducts.length} cash fund
-            {allProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
+            Found {filteredProducts.length} cash fund
+            {filteredProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
         )}
         <p className="text-center my-[1.875vw] font-[500] text-2xl lg:text-[1.25vw] lg:leading-[1.25vw]">
@@ -345,7 +381,7 @@ const CashFund = () => {
       </div>
 
       {/* No Search Results */}
-      {searchQuery && allProducts.length === 0 && (
+      {searchQuery && filteredProducts.length === 0 && (
         <section className="container mx-auto py-16 text-center">
           <h3 className="text-2xl font-semibold mb-4">No cash funds found</h3>
           <p className="text-gray-600 mb-8">
@@ -395,25 +431,27 @@ const CashFund = () => {
 
       <section className="px-[8.594vw] mx-auto">
         <div className="flex flex-col md:flex-row gap-[3.75vw] w-full mx-auto">
-          <SidebarFilter />
+          <SidebarFilter 
+            collections={collections}
+            checkedCategories={checkedCategories}
+            setCheckedCategories={setCheckedCategories}
+          />
           <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0">
-            {safeCashFunds.flatMap(
-              (collection) =>
-                collection.products?.edges?.map((edge) => {
-                  const product = edge.node;
-                  return (
-                    <ProductCard
-                      key={`${product.id}-${collection.id}`}
-                      product={product}
-                      collection={collection}
-                      registryId={registryId}
-                      user={user}
-                      onSuccess={handleSuccess}
-                      onError={handleError}
-                    />
-                  );
-                }) || [],
-            )}
+            {filteredProducts.map((product) => {
+              // Find the collection for this product
+              const collection = collections.find(col => col.id === product.collectionId);
+              return (
+                <ProductCard
+                  key={`${product.id}-${product.collectionId}`}
+                  product={product}
+                  collection={collection}
+                  registryId={registryId}
+                  user={user}
+                  onSuccess={handleSuccess}
+                  onError={handleError}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -603,7 +641,7 @@ const CashFund = () => {
 
 export default CashFund;
 
-function SidebarFilter() {
+function SidebarFilter({collections = [], checkedCategories = [], setCheckedCategories}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
@@ -618,10 +656,10 @@ function SidebarFilter() {
   };
 
   return (
-    <div className="w-full lg:w-[17.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6] ">
-      <div>
+    <div className="w-full lg:w-[17.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6]">
+      <div className="mb-6">
         <h2
-          className="text-sm lg:text-[0.938vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center gap-[0.677vw]"
+          className="text-[18px] lg:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -630,55 +668,38 @@ function SidebarFilter() {
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-90"
+                className="w-[0.833vw] h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                HONEYMOON
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                HOME
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                DATE NIGHTS
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                LOREM IPSUM
-              </label>
-            </li>
+          <ul className="space-y-2 text-[16px]">
+            {['Honeymoon','Home','Date Night'].map((label) => (
+              <li key={label}>
+                <label className='flex items-center'>
+                  <input 
+                    type="checkbox" 
+                    className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" 
+                    checked={checkedCategories.includes(label)}
+                    onChange={(e) => {
+                      if (!setCheckedCategories) return;
+                      const next = e.target.checked 
+                        ? [...checkedCategories, label]
+                        : checkedCategories.filter((l) => l !== label);
+                      setCheckedCategories(next);
+                    }}
+                  />
+                  {label.toUpperCase()}
+                </label>
+              </li>
+            ))}
           </ul>
         )}
       </div>
@@ -741,51 +762,48 @@ function SidebarFilter() {
 //     );
 //   }
 
-const CASH_FUND_QUERY = `#graphql
-query getCashFundsForCashFunds {
-  collections(first: 50) {
-    nodes {
-      id
-      title
-      handle
-      description
-      image {
+const COLLECTION_QUERY = `#graphql
+  query {
+    collections(first: 50) {
+      nodes {
+        description
+        title
         id
-        url
-        altText
-        width
-        height
-      }
-      metafield(namespace: "custom", key: "cashfund") {
-        id
-        value
-      }
-      products(first: 10) {
-        edges {
-          node {
-            id
-            title
-            handle
-            description
-            images(first: 10) {
-              edges {
-                node {
-                  id
-                  url
-                  altText
-                  width
-                  height
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        cashfundMetafield: metafield(namespace: "custom", key: "cashfund") {
+          id
+          value
+        }
+        products(first: 10){
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              images(first: 10) {
+                edges {
+                  node {
+                    id
+                    url
+                  }
                 }
               }
-            }
-            variants(first: 1) {
-              edges {
-                node {
-                  id
-                  availableForSale
-                  priceV2 {
-                    amount
-                    currencyCode
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
                   }
                 }
               }
@@ -795,5 +813,4 @@ query getCashFundsForCashFunds {
       }
     }
   }
-}
 `;
