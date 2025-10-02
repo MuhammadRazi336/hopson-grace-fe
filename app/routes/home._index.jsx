@@ -219,14 +219,14 @@ const Home = () => {
       <section className="hero-slider lg:h-[48.958vw]">
         <HeroSlider />
       </section>
-      <section className="text-and-button-section py-14 lg:py-[7.76vw]">
+      <section className="text-and-button-section pt-12 pb-0 lg:py-[7.76vw]">
         <Textandbutton />
       </section>
       <section className="lg:mb-[10.417vw]">
         <CollectionItems />
       </section>
 
-      <section className="mb-[10.417vw]">
+      <section className="mb-[10.417vw] max-[1024px]:mb-[80px]">
         <ImageAndText
           direction={'right'}
           imgBanner={cupImg}
@@ -244,73 +244,73 @@ const Home = () => {
         <Heading
           text="ready-made registries"
           classes={
-            'prata text-2xl lg:text-[2.5vw] lg:leading-[3.542vw] font-normal text-center max-[1024px]:m-0'
+            'prata text-[20px] leading-[36px] lg:text-[2.5vw] lg:leading-[3.542vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] mb-[3.177vw]'}
+          imageClasses={'max-[1024px]:max-w-[220px] mb-[3.177vw] mb-[20px]'}
         />
-        <p className="text-center lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[4.323vw] mb-8">
-        From real couples to curated style edits, our ready-made registries are personal, <br/>shoppable, and designed to make choosing easy.
+        <p className="text-center text-[12px] leading-[16px] lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[1024px]:max-w-[291px] mx-auto lg:mb-[4.323vw] mb-8">
+        From real couples to curated style edits, our ready-made registries are personal, <br className="max-[1024px]:hidden"/>shoppable, and designed to make choosing easy.
       </p>
         <CustomTab tabsData={tabsData} featuredRegistryData={featuredRegistryData} />
         <div className="text-center">
         <Link to="/ready-made-registries">
           <ButtonComponent
             text="BROWSE READY-MADE REGISTRIES"
-            className="button-cs text-black cursor-pointer border-3 w-[360px] lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-black py-4 lg:py-[5px] bg-transparent rounded-none mt-11 lg:mt-[3.125vw] hover:bg-gray-100"
+            className="button-cs text-black cursor-pointer border-3 w-[224px] h-[44px] lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-black py-[2px] lg:py-[5px] bg-transparent rounded-none mt-11 lg:mt-[3.125vw] hover:bg-gray-100"
           />
           </Link>
         </div>
       </section>
 
-      <section className="py-[70px] bg-[#F5F2ED80] my-[3.958vw] lg:mb-0 lg:mt-[8.281vw]">
+      <section className="py-[70px] mt-[81px] max-[1024px]:py-[28px] bg-[#F5F2ED80] my-[3.958vw] lg:mb-0 lg:mt-[8.281vw]">
         <Heading
           text="a few of our brands"
           classes={
-            'prata text-3xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
+            'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
           }
           image={lineImg4}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[27.344vw] lg:h-[0.311vw]'}
+          imageClasses={'max-[1024px]:max-w-[220px] lg:w-[27.344vw] lg:h-[0.311vw]'}
         />
         <Marquee brands={brands} />
         <div className="text-center">
           <Link to="/our-brands">
           <ButtonComponent
             text="EXPLORE ALL BRANDS"
-            className="button-cs text-[#1F1D1B] cursor-pointer lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-3 border-[#1F1D1B] py-4 lg:py-[5px] bg-transparent rounded-none mt-2 lg:mt-11 hover:bg-gray-200"
+            className="button-cs text-[#1F1D1B] cursor-pointer lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-3 border-[#1F1D1B] py-[2px] w-[224px] h-[44px] lg:py-[5px] bg-transparent rounded-none mt-2 lg:mt-11 hover:bg-gray-200"
           />
           </Link>
         </div>
       </section>
 
-      <section className="py-[70px] my-12 lg:py-[10.625vw] lg:my-0 container">
+      <section className="py-[80px] my-12 lg:py-[10.625vw] max-[1024px]:px-0 lg:my-0 container">
         <Heading
           text="the registry bestsellers"
           classes={
-            'prata text-3xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
+            'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
           }
           image={brandline}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw] lg:h-[0.450vw]'}
+          imageClasses={'max-[1024px]:max-w-[220px] lg:w-[33.021vw] lg:h-[0.450vw]'}
         />
         <ProductSlider products={bestsellerProducts} />
         <div className="text-center">
           <ButtonComponent
             text="BROWSE BESTSELLERS"
-            className="button-cs text-[#1F1D1B] lg:w-[18.75vw] lg:h-[4.01vw] cursor-pointer border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.271vw] hover:bg-gray-100"
+            className="button-cs w-[224px] h-[44px] text-[#1F1D1B] lg:w-[18.75vw] lg:h-[4.01vw] cursor-pointer border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 lg:mt-[4.271vw] hover:bg-gray-100"
           />
         </div>
       </section>
 
-      <section className="mb-[70px] mt-0 lg:mb-0">
+      <section className="mb-[80px] mt-0 lg:mb-0">
         <Heading
           text="inspiration"
           classes={
-            'prata text-3xl lg:text-[2.5vw] lg:leading-[1.875vw] lg:mb-[0.833vw] font-normal text-center  max-[1024px]:m-0'
+            'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] lg:mb-[0.833vw] font-normal text-center  max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[230px] lg:w-[17.604vw] lg:h-[0.400vw]'}
+          imageClasses={'max-[1024px]:max-w-[220px] lg:w-[17.604vw] lg:h-[0.400vw]'}
         />
-        <p className="text-center mt-5 lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mt-[2.135vw] lg:mb-0 mb-8">
+        <p className="text-center max-[1024px]:hidden mt-5 lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mt-[2.135vw] lg:mb-0 mb-8">
           A peek inside some of our most-loved celebrations.
         </p>
         <Testimonialslider />
@@ -322,7 +322,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className=" my-12 lg:my-[10.417vw]">
+      <section className="my-[80px] lg:my-[10.417vw]">
         <ImageAndText
           direction={'left'}
           imgBanner={flowerImg}
@@ -340,11 +340,11 @@ const Home = () => {
         />
       </section>
 
-      <section className="max-[1024px]:py-10">
+      <section className="">
         <Faqs />
       </section>
 
-      <section className=" my-12 lg:my-[10.417vw]">
+      <section className="my-[80px] lg:my-[10.417vw]">
         <ImageAndText
           direction={'left'}
           imgBanner={showroomImg}
@@ -356,7 +356,7 @@ const Home = () => {
         />
       </section>
 
-      <section className=" my-12 lg:my-[10.417vw]">
+      <section className="mb-[80px] lg:my-[10.417vw]">
         <ImageAndText
           direction={'right'}
           imgBanner={teaImg}

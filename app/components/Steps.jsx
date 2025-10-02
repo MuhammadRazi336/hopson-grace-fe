@@ -79,20 +79,20 @@ const Steps = () => {
       >
         {stepsData.map((step, idx) => (
           <SwiperSlide key={idx}>
-            <div className="flex items-start py-6">
+            <div className="flex items-start py-6 max-[1024px]:py-0">
               <div className="text-[40px] lg:text-[2.917vw] lg:leading-[1.875vw] prata font-normal leading-[40px] mr-2 max-[1024px]:hidden">
                 {idx + 1}.
               </div>
               <div>
                 <div className="flex ">
-                  <div className="text-3xl 2xl:text-[56px] lg:text-[42px] prata font-normal leading-9 mr-2 min-[1024px]:hidden">
+                  <div className="text-[32px] 2xl:text-[56px] lg:text-[42px] prata font-normal leading-[36px] mr-[14px] min-[1024px]:hidden">
                     {idx + 1}.
                   </div>
-                  <h2 className="uppercase text-lg lg:text-[1.25vw] lg:leading-[1.458vw] font-80 mb-6 leading-lg tracking-[10%]">
+                  <h2 className="uppercase max-[1024px]:w-[100px] text-[12px] leading-[14px] lg:text-[1.25vw] lg:leading-[1.458vw] font-80 mb-6 max-[1024px]:mb-0 leading-lg tracking-[1px]">
                     {step.title}
                   </h2>
                 </div>
-                <p className="text-sm leading-normal lg:text-[1.25vw] lg:leading-[1.979vw] text-gray-700 w-[90%]">
+                <p className="text-[11px] leading-[18px] lg:text-[1.25vw] lg:leading-[1.979vw] text-gray-700 w-[90%] max-[1024px]:mt-[10px] mb-[14px]">
                   {step.description}
                 </p>
               </div>

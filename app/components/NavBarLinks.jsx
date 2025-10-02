@@ -102,7 +102,7 @@ const NavBarLinks = (mobileClasses) => {
                         <li key={brand.id}>
                           <NavLink
                             to={`/brand/${brand.handle}`}
-                            className="block uppercase mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
+                            className="block uppercase mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                           >
                             {brand.title}
                           </NavLink>
@@ -115,7 +115,7 @@ const NavBarLinks = (mobileClasses) => {
                   <div className="flex items-center gap-2 mt-4">
                     <NavLink
                       to="/our-brands"
-                      className="text-black font-[800] tracking-[1.44px] text-[18px] lg:text-[0.938vw] underline hover:bg-gray-200 flex items-center gap-2"
+                      className="text-black font-[800] tracking-[1.44px] text-[18px] lg:text-[0.938vw] underline flex items-center gap-2"
                     >
                       VIEW ALL BRANDS
                       <img src={arrowImg} className='text-black brightness-0' alt="" />
@@ -124,7 +124,7 @@ const NavBarLinks = (mobileClasses) => {
                 </div>
                 <div className="relative">
                   <img src={brandImg} alt="Our brands" />
-                  <h3 className="absolute top-14 left-14 prata text-white 2xl:text-6xl xl:text-4xl lg:text-2xl">
+                  <h3 className="absolute top-14 lowercase left-14 prata text-white 2xl:text-6xl xl:text-4xl lg:text-2xl">
                     Our Brands
                   </h3>
                 </div>
@@ -146,7 +146,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/products/new-arrivals"
-                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                       >
                         NEW ARRIVALS
                       </NavLink>
@@ -154,7 +154,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/products/bestsellers"
-                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                       >
                         BESTSELLERS
                       </NavLink>
@@ -168,7 +168,7 @@ const NavBarLinks = (mobileClasses) => {
                         <li key={collection.id}>
                           <NavLink
                             to={`/products/${collection.handle}`}
-                            className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black hover:bg-gray-200"
+                            className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                           >
                             {collection.title.toUpperCase()}
                           </NavLink>
@@ -181,7 +181,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/dashboard/giftcards"
-                        className="block mb-[26px] text-black hover:bg-gray-200"
+                        className="block mb-[26px] text-black"
                       >
                         GIFT CARDS
                       </NavLink>
@@ -189,7 +189,7 @@ const NavBarLinks = (mobileClasses) => {
                     <li className='flex items-center gap-2'>
                       <NavLink
                         to="/dashboard/giftcards"
-                        className="mb-[26px] text-black font-semibold underline hover:bg-gray-200 flex items-center gap-2"
+                        className="mb-[26px] text-black font-semibold underline flex items-center gap-2"
                       >
                         SHOP ALL
                         <img src={arrowImg} className='text-black brightness-0' alt="" />

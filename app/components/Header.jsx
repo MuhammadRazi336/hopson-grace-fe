@@ -624,7 +624,7 @@ export function Header() {
         {/* Icons and CTA */}
         <div className={`flex max-md:order-3 justify-end lg:w-[33%] ${isFixed ? 'mt-[0] items-center' : 'mt-[-0.625vw] items-start'}`}>
           {!user && (
-            <div className="flex items-center gap-[0.573vw]">
+            <div className="flex items-center gap-[1.406vw]">
                 {!isFixed && (
                   <div className="bg-[#F5F2ED] rounded-full p-2 w-[2.917vw] h-[2.917vw] max-md:h-[40px] max-md:w-[40px] flex items-center justify-center">
                     <NavLink
@@ -653,8 +653,8 @@ export function Header() {
                   {/* link Button */}
                   <NavLink
                     to="/couple"
-                    className={`text-center text-[0.833vw] leading-[0.938vw] max-[1601px]:text-[15px] font-[800] uppercase tracking-[2px] max-[1601px]:w-[200px] ${
-                      isFixed ? 'text-white' : 'text-[#1F1D1B]'
+                    className={`text-center flex justify-center items-center hover:opacity-90 lg:text-[0.833vw] lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] ${
+                      isFixed ? 'text-white mr-[15px]' : 'text-[#1F1D1B] bg-[#F5F2ED] lg:w-[11.719vw] lg:h-[3.095vw]'
                     }`}
                   >
                     FIND A COUPLE
