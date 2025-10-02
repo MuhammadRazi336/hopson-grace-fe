@@ -79,22 +79,21 @@ const FAQ = () => {
             <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
               You can choose from curated products, digital gift cards, cash
               funds (like a honeymoon or home reno), and bespoke travel
-              experiences—all in one place. Our curated edit means no
-              overwhelm—just intentional choices. When you're ready to share
-              your registry, simply make it visible and add the link to your
-              wedding website. As gifts are purchased, you’ll be notified, and
-              your dashboard will update automatically with gift values and
-              thank-you reminders. After your wedding, enjoy 15% off remaining
-              items on your list. We’ll help you finalize your order, and
-              nothing ships without your approval.
-            </p> <br />
-            <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
+              experiences all in one place. Our curated edit means no overwhelm
+              just intentional choices.
+            </p>{' '}
+            <br />
+            <p className="text-xl lg:text-2xl">
               When you're ready to share your registry, simply make it visible
               and add the link to your wedding website. As gifts are purchased,
               you’ll be notified, and your dashboard will update automatically
-              with gift values and thank-you reminders. After your wedding,
-              enjoy 15% off remaining items on your list. We’ll help you
-              finalize your order, and nothing ships without your approval.
+              with gift values and thank-you reminders.
+            </p>{' '}
+            <br />
+            <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
+              After your wedding, enjoy 15% off remaining items on your list.
+              We’ll help you finalize your order, and nothing ships without your
+              approval.
             </p>
           </div>
         </div>
@@ -155,7 +154,11 @@ const FAQ = () => {
           <div>
             <h2 className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] tracking-[1.2px] mb-[1.25vw] font-[600]">Can we Exchange Our Gifts?</h2>
             <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
-            Yes, this is one of the best features of our registry. You can edit your list anytime before confirming your final order. Since we don’t ship gifts until after the wedding, you have the flexibility to swap items, adjust quantities, or choose something entirely different once the celebrations are over.
+              Yes, this is one of the best features of our registry. You can
+              edit your list anytime before confirming your final order. Since
+              we don’t ship gifts until after the wedding, you have the
+              flexibility to swap items, adjust quantities, or choose something
+              entirely different once the celebrations are over.
             </p>
             <br />
             <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
@@ -220,22 +223,21 @@ const FAQ = () => {
         </div>
 
         <div className="w-full py-[9.375vw]">
-        <ImageAndText
-          direction={'right'}
-          imgBanner={teaImg}
-          lineimg={lineImg3}
-          title=" questions?"
-          description="We've got answers."
-          showLiveChat={true}
-          liveChatProps={{
-            buttonText: "PHONE, EMAIL OR LIVE CHAT",
-            showTitle: false,
-            showDescription: false,
-            className: "bg-[#446184] text-white hover:bg-[#3a4f6b]"
-          }}
-        />
-      </div>
-
+          <ImageAndText
+            direction={'right'}
+            imgBanner={teaImg}
+            lineimg={lineImg3}
+            title=" questions?"
+            description="We've got answers."
+            showLiveChat={true}
+            liveChatProps={{
+              buttonText: 'PHONE, EMAIL OR LIVE CHAT',
+              showTitle: false,
+              showDescription: false,
+              className: 'bg-[#446184] text-white hover:bg-[#3a4f6b]',
+            }}
+          />
+        </div>
       </div>
 
       <Footer />
