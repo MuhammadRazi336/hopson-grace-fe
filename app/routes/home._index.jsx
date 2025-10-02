@@ -26,6 +26,7 @@ import {useState, useEffect} from 'react';
 import arrowUp from '/assets/Images/arrowDown.png';
 import { Link, useLoaderData, json } from '@remix-run/react';
 import GuidedVideo from '~/components/GuidedVideo';
+import LiveChat from '~/components/LiveChat';
 
 export async function loader({ context }) {
   try {
@@ -323,21 +324,20 @@ const Home = () => {
       </section>
 
       <section className=" my-12 lg:my-[10.417vw]">
-        <ImageAndText
-          direction={'left'}
-          imgBanner={flowerImg}
-          lineimg={lineImg}
-          title="questions?"
-          description={
-            <>
-              There's no question too small or request too big for our Registry
-              advisors. We're always at your service.
-            </>
-          }
-          buttontext={'CONTACT US'}
-          buttontype={'link'}
-          buttonLink={'/contact-us'}
-        />
+      <ImageAndText
+            direction={'left'}
+            imgBanner={flowerImg}
+            lineimg={lineImg}
+            title=" questions?"
+            description="We've got answers."
+            showLiveChat={true}
+            liveChatProps={{
+              buttonText: "PHONE, EMAIL OR LIVE CHAT",
+              showTitle: false,
+              showDescription: false,
+              className: "bg-[#446184] text-white hover:bg-[#3a4f6b]"
+            }}
+          />
       </section>
 
       <section className="max-[1024px]:py-10">

@@ -79,14 +79,21 @@ const FAQ = () => {
             <p className="text-xl lg:text-2xl">
               You can choose from curated products, digital gift cards, cash
               funds (like a honeymoon or home reno), and bespoke travel
-              experiences all in one place. Our curated edit means no
-              overwhelm just intentional choices. When you're ready to share
-              your registry, simply make it visible and add the link to your
-              wedding website. As gifts are purchased, you’ll be notified, and
-              your dashboard will update automatically with gift values and
-              thank-you reminders. After your wedding, enjoy 15% off remaining
-              items on your list. We’ll help you finalize your order, and
-              nothing ships without your approval.
+              experiences all in one place. Our curated edit means no overwhelm
+              just intentional choices.
+            </p>{' '}
+            <br />
+            <p className="text-xl lg:text-2xl">
+              When you're ready to share your registry, simply make it visible
+              and add the link to your wedding website. As gifts are purchased,
+              you’ll be notified, and your dashboard will update automatically
+              with gift values and thank-you reminders.
+            </p>{' '}
+            <br />
+            <p className="text-xl lg:text-2xl">
+              After your wedding, enjoy 15% off remaining items on your list.
+              We’ll help you finalize your order, and nothing ships without your
+              approval.
             </p>
           </div>
         </div>
@@ -153,11 +160,11 @@ const FAQ = () => {
           <div>
             <h2 className="text-xl lg:text-2xl">Can we Exchange Our Gifts?</h2>
             <p className="text-xl lg:text-2xl">
-              Yes, this is one of the best features of our registry. You can edit
-              your list anytime before confirming your final order. Since we
-              don’t ship gifts until after the wedding, you have the flexibility
-              to swap items, adjust quantities, or choose something entirely
-              different once the celebrations are over.
+              Yes, this is one of the best features of our registry. You can
+              edit your list anytime before confirming your final order. Since
+              we don’t ship gifts until after the wedding, you have the
+              flexibility to swap items, adjust quantities, or choose something
+              entirely different once the celebrations are over.
             </p>
             <br />
             <p className="text-xl lg:text-2xl">
@@ -255,10 +262,10 @@ const FAQ = () => {
             description="We've got answers."
             showLiveChat={true}
             liveChatProps={{
-              buttonText: "PHONE, EMAIL OR LIVE CHAT",
+              buttonText: 'PHONE, EMAIL OR LIVE CHAT',
               showTitle: false,
               showDescription: false,
-              className: "bg-[#446184] text-white hover:bg-[#3a4f6b]"
+              className: 'bg-[#446184] text-white hover:bg-[#3a4f6b]',
             }}
           />
         </div>

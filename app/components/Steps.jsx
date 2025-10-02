@@ -11,7 +11,7 @@ const stepsData = [
     title: "Let's Connect",
     description: (
       <>
-        Enter your names and wedding details and start adding gifts and funds - it's that easy. If you'd prefer to talk to us first or set up a virtual appointment, just{' '}
+        Enter your names and wedding details and start adding gifts and funds - it's that easy. Want to talk to us first or set up a virtual appointment? just {' '}
         <Link 
           to="https://calendly.com/concierge-theregistry/setting-up-your-registry" 
           className="text-black hover:text-black underline cursor-pointer font-medium"
@@ -29,17 +29,27 @@ const stepsData = [
   },
   {
     title: " Add Gifts",
-    description:
-      `From group gifting and cash funds to one-of-a-kind travel experiences, we make it easy to register for what you really want.
-      Browse our curated collections, add gift cards, or start with one of our ready-made registries.
-      When you're ready, publish your registry, link it to your wedding website, and share it with guests.`,
+    description: (
+      <>
+        From group gifting and cash funds to one-of-a-kind travel experiences, we make it easy to register for what you really want.
+        <br />
+        Browse our curated collections, add gift cards, or start with one of our ready-made registries.
+        <br />
+        When you're ready, publish your registry, link it to your wedding website, and share it with guests.
+      </>
+    ),
   },
   {
     title: "Along the Way",
-    description:
-      `our private dashboard is your command centre. You can add or edit gifts, track messages from our team, and stay up to date as guests shop your registry.
-      Each time a gift is purchased, you’ll be notified but instead of receiving it right away, the value is added to your registry account. This gives you the freedom to adjust quantities or make changes before your final order.
-      The easiest part? You can track gifts and send thank-you notes, all at your own pace.`,
+    description:(
+      <>
+        our private dashboard is your command centre. You can add or edit gifts, track messages from our team, and stay up to date as guests shop your registry.
+        <br />
+        Each time a gift is purchased, you’ll be notified—but instead of receiving it right away, the value is added to your registry account. This gives you the freedom to adjust quantities or make changes before your final order.
+        <br />
+        The easiest part? You can track gifts and send thank-you notes, all at your own pace.
+      </>
+    ),
   },
   {
     title: "After the Wedding",
