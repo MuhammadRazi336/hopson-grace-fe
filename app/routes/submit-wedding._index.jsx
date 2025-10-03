@@ -54,44 +54,44 @@ const SubmitWedding = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-fit bg-[#FAF9F6] py-[100px]">
+      <div className="w-full h-fit bg-[#FAF9F6] py-[8.177vw]">
         <Heading
           text="submit your wedding"
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[22.135vw]'}
         />
 
         <div>
           <div
-            className={`flex py-32 max-[768px]:py-10 justify-center max-[768px]:flex-col max-[768px]:items-center max-[768px]:px-4 container`}
+            className={`flex py-[4.74vw] max-[768px]:py-10 justify-center max-[768px]:flex-col max-[768px]:items-center max-[768px]:px-4 container`}
           >
-            <div className="relative left-[37.5px] max-w-[50%] max-[768px]:max-w-[100%] max-[768px]:left-[initial]">
+            <div className="relative left-[37.5px] w-[36.458vw] max-[768px]:max-w-[100%] max-[768px]:left-[initial]">
               <div className="relative">
                 <img src={SubmitWeddingImg} alt="" />
                 <img
                   src={registrylogoSteps}
                   alt=""
-                  className="absolute bottom-4 -left-[72px] max-[768px]:left-[initial] max-[768px]:-right-[7px] max-[768px]:w-[71px] max-[768px]:bottom-0 max-[768px]:top-0 max-[768px]:my-auto"
+                  className="absolute lg:w-[7.968vw] bottom-4 -left-[72px] max-[768px]:left-[initial] max-[768px]:-right-[7px] max-[768px]:w-[71px] max-[768px]:bottom-0 max-[768px]:top-0 max-[768px]:my-auto"
                 />
               </div>
             </div>
             <div
-              className={`bg-steel-blue text-white py-[110px] px-[90px] max-[1601px]:max-w-[60%] pb-28 pt-[130px] relative -left-[37.5px] top-[59px] max-[768px]:max-w-[100%] max-w-[1000px] max-[1024px]:p-6 max-[768px]:-top-[140px] max-[768px]:left-2.5 max-[768px]:pb-20 max-[768px]:pt-14  max-[768px]:w-full`}
+              className={`bg-steel-blue text-white py-[110px] px-[90px] pb-28 pt-[130px] relative -left-[37.5px] top-[59px] max-[768px]:max-w-[100%] w-[52.083vw] max-[1024px]:p-6 max-[768px]:-top-[140px] max-[768px]:left-2.5 max-[768px]:pb-20 max-[768px]:pt-14  max-[768px]:w-full`}
             >
-              <h3 className="text-3xl text-center max-[768px]:text-2xl afterimg w-full">
+              <h3 className="text-3xl lg:text-[1.25vw] lg:leading-[3.125vw] text-center max-[768px]:text-2xl afterimg w-full">
                 WE’D LOVE TO FEATURE YOUR WEDDING
               </h3>
-              <p className='text-center pt-10 text-xl'>
+              <p className='text-center pt-5 text-xl lg:text-[1.146vw] lg:leading-[1.667vw]'>
                 Whether it’s a single photo for Instagram or a longer story for
                 our blog, we love seeing how couples celebrated their wedding.
                 Submit your wedding details below — we’ll be in touch if we’d
                 like to feature you.
               </p>
               <div className="mb-10">
-              <form onSubmit={handleSubmit} className="space-y-6 pt-10">
+              <form onSubmit={handleSubmit} className="space-y-6 pt-[3.646vw]">
           {/* Top row - Name and Date */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -102,7 +102,7 @@ const SubmitWedding = () => {
                 value={formData.coupleName}
                 onChange={handleInputChange}
                 required
-                className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
             </div>
             <div>
@@ -113,7 +113,7 @@ const SubmitWedding = () => {
                 value={formData.weddingDate}
                 onChange={handleInputChange}
                 required
-                className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
             </div>
           </div>
@@ -128,7 +128,7 @@ const SubmitWedding = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
             </div>
             <div>
@@ -138,7 +138,7 @@ const SubmitWedding = () => {
                 placeholder="Instagram Handle (Optional)"
                 value={formData.instagram}
                 onChange={handleInputChange}
-                className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
             </div>
           </div>
@@ -152,7 +152,7 @@ const SubmitWedding = () => {
               onChange={handleInputChange}
               maxLength={1000}
               rows={8}
-              className="w-full p-4 bg-white border-0 text-gray-700 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="w-full lg:h-[15.052vw] p-4 bg-white border-0 text-gray-700 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
             />
             <div className="text-white/70 text-sm italic">{characterCount}/1000 Characters</div>
           </div>
@@ -218,7 +218,7 @@ const SubmitWedding = () => {
                 </label>
               </div>
             </div>
-            <label htmlFor="share-permission" className="text-white text-sm italic leading-relaxed cursor-pointer">
+            <label htmlFor="share-permission" className="text-white ivyora text-[16px] lg:text-[0.833vw] lg:leading-[0.833vw] italic leading-relaxed cursor-pointer">
               I give The Registry permission to share these images on social media and the website, with proper credit
               to the photographer.
             </label>

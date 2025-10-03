@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
-import lineImghead from '/assets/Images/line.png';
+import lineImghead from '../assets/Images/heading-bottom-curve.png';
 import { Button } from '@material-tailwind/react';
 import { Check } from 'lucide-react';
 import { Upload } from 'lucide-react';
@@ -56,16 +56,16 @@ const Returns = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-fit pt-[100px]">
+      <div className="w-full h-fit pt-[5.313vw]">
         <Heading
           text="returns & exchanges"
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl mb-0 lg:text-[2.5vw] lg:leading-[3.333vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[21.875vw]'}
         />
-        <p className="text-1xl lg:text-2xl font-normal text-center py-16 w-[40%] lg:w-[60%]  mx-auto">
+        <p className="text-1xl lg:text-[1.25vw] lg:leading-[1.667vw] font-normal text-center pt-[3.073vw] w-[40%] lg:w-[49.01vw]  mx-auto">
           If any of your gifts arrive damaged or defective, we’ll replace them
           and cover the return shipping—at no cost to  you. For all other
           returns, shipping fees will apply.  Items must be returned within 60
@@ -73,13 +73,14 @@ const Returns = () => {
         </p>
 
         <div
-              className={`bg-steel-blue mb-[200px] mx-auto text-white py-[110px] px-[90px] max-[1601px]:max-w-[60%] pb-28 pt-[130px] relative -left-[37.5px] top-[59px] max-[768px]:max-w-[100%] max-w-[1000px] max-[1024px]:p-6 max-[768px]:-top-[140px] max-[768px]:left-2.5 max-[768px]:pb-20 max-[768px]:pt-14  max-[768px]:w-full`}
+              className={`bg-steel-blue mb-[200px] mx-auto mt-[5.833vw] text-white px-[8vw] w-[60.104vw] pb-28 py-[4.635vw] relative -left-[37.5px] max-[768px]:max-w-[100%] max-[1024px]:p-6 max-[768px]:-top-[140px] max-[768px]:left-2.5 max-[768px]:pb-20 max-[768px]:pt-14  max-[768px]:w-full`}
             >
               {/* <h3 className="text-3xl text-center max-[768px]:text-2xl afterimg w-full">
                 REQUEST A RETURN OR REPLACEMENT
               </h3> */}
-              <p className='text-center text-xl afterimg'>
+              <p className='text-center text-xl lg:text-[1.146vw] lg:leading-[1.667vw] afterimg'>
                 To request a return or replacement, please complete the form below and our team will get back to you within 2 business days. If your item arrived damaged, you can upload a photo so we can resolve it quickly. We'll also send you a return shipping label.
+                <br/><br/>
               </p>
               <div className="mb-10">
               <form className="space-y-6 pt-10" onSubmit={handleSubmit}>
@@ -94,7 +95,7 @@ const Returns = () => {
                 value={formData.firstName}
                 onChange={handleInputChange}
                 required
-                className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
               <input
                 type="text"
@@ -103,7 +104,7 @@ const Returns = () => {
                 value={formData.lastName}
                 onChange={handleInputChange}
                 required
-                className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
               />
             </div>
           </div>
@@ -117,7 +118,7 @@ const Returns = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
             />
           </div>
 
@@ -130,7 +131,7 @@ const Returns = () => {
               placeholder="Include if known; this helps us process your request faster"
               value={formData.orderNumber}
               onChange={handleInputChange}
-              className="w-full rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/20"
             />
           </div>
 
@@ -144,7 +145,7 @@ const Returns = () => {
               onChange={handleInputChange}
               maxLength={500}
               rows={4}
-              className="w-full p-4 bg-white border-0 text-gray-700 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="w-full lg:h-[15.052vw] p-4 bg-white border-0 text-gray-700 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
             />
             <div className="text-white/70 text-sm italic text-left">{itemsCharacterCount}/500 Characters</div>
           </div>
@@ -157,7 +158,7 @@ const Returns = () => {
               value={formData.requestType}
               onChange={handleInputChange}
               required
-              className="w-full rounded-none p-4 bg-white border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               <option value="" className='font-semibold bg-[#FAF9F6]'>Please select from the dropdown</option>
               <option value="damaged-item" className='font-semibold bg-[#F5F2ED]'>DAMAGED OR DEFECTIVE ITEM</option>
@@ -169,7 +170,7 @@ const Returns = () => {
           {/* PHOTO UPLOAD */}
           <div className="space-y-2">
             <label className="text-white font-semibold">PHOTO UPLOAD</label>
-            <div className="bg-white border-2 border-dashed border-gray-300 p-8 pt-5 mt-2">
+            <div className="bg-white border-2 border-dashed border-gray-300 p-8 pt-5 mt-2 lg:h-[15.573vw]">
             <p className="text-black/70 text-sm">If your item arrived damaged, please upload a photo so we can take care of it quickly.</p>
               <div className="space-y-4 text-center">
                 <div className="mx-auto w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mt-3">
@@ -207,7 +208,7 @@ const Returns = () => {
               onChange={handleInputChange}
               maxLength={500}
               rows={4}
-              className="w-full p-4 bg-white border-0 text-gray-700 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
+              className="w-full lg:h-[15.052vw] p-4 bg-white border-0 text-gray-700 placeholder-gray-500 resize-none focus:outline-none focus:ring-2 focus:ring-white/20"
             />
             <div className="text-white/70 text-sm italic text-left">{detailsCharacterCount}/500 Characters</div>
           </div>
@@ -237,7 +238,7 @@ const Returns = () => {
                 </label>
               </div>
             </div>
-            <label htmlFor="return-agreement" className="text-white text-sm italic leading-relaxed cursor-pointer">
+            <label htmlFor="return-agreement" className="text-white text-[16px] lg:text-[0.833vw] lg:leading-[0.833vw] italic ivyora font-[400] cursor-pointer">
               I understand that returns must be requested within 60 days of receiving my item.
             </label>
           </div>
@@ -246,7 +247,7 @@ const Returns = () => {
           <div className="pt-7 w-full flex justify-center">
             <Button
               type="submit"
-              className="w-full mx-auto md:w-auto px-[90px] py-5 rounded-none bg-[#F5F2ED] hover:bg-gray-100 text-black text-xl font-bold tracking-wider uppercase transition-colors"
+              className="w-full lg:h-[4.063vw] lg:w-[18.073vw] mx-auto md:w-auto px-[10px] py-5 rounded-none bg-[#F5F2ED] hover:bg-gray-100 text-black text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold tracking-wider uppercase transition-colors"
             >
               REQUEST A RETURN LABEL
             </Button>

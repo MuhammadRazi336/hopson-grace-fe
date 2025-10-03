@@ -1005,9 +1005,11 @@ td.rdp-day.rdp-outside {
   height: 12px;
   /* width: 100%; */
   display: block;
-  margin-top: 15px;
-  width: 39.375vw;
+  margin-top: 10px;
+  width: 35.313vw;
   margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* .steps-btns-hover:hover {
