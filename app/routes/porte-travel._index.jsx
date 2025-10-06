@@ -388,17 +388,17 @@ const PorteTravel = () => {
             {filteredProducts.map((product) => {
               // Find the collection for this product
               const collection = collections.find(col => col.id === product.collectionId);
-              return (
-                <ProductCard
+                  return (
+                    <ProductCard
                   key={`${product.id}-${product.collectionId}`}
-                  product={product}
-                  collection={collection}
-                  registryId={registryId}
-                  onSuccess={handleSuccess}
-                  onError={handleError}
-                  user={user}
-                />
-              );
+                      product={product}
+                      collection={collection}
+                      registryId={registryId}
+                      onSuccess={handleSuccess}
+                      onError={handleError}
+                      user={user}
+                    />
+                  );
             })}
           </div>
         </div>
@@ -645,8 +645,8 @@ function SidebarFilter({collections = [], checkedCategories = [], setCheckedCate
                     }}
                   />
                   {label.toUpperCase()}
-                </label>
-              </li>
+              </label>
+            </li>
             ))}
           </ul>
         )}
@@ -742,18 +742,17 @@ const COLLECTION_QUERY = `#graphql
                   node {
                     id
                     url
-                  }
                 }
               }
-              variants(first: 1) {
-                edges {
-                  node {
-                    id
-                    availableForSale
-                    priceV2 {
-                      amount
-                      currencyCode
-                    }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
                   }
                 }
               }
@@ -763,4 +762,5 @@ const COLLECTION_QUERY = `#graphql
       }
     }
   }
+}
 `;
