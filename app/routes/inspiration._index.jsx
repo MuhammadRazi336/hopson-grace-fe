@@ -60,7 +60,7 @@ const Inspiration = () => {
   const {blogs} = useLoaderData();
   console.log('blogs', blogs);
   
-  const [clickedSection, setClickedSection] = React.useState('wedding');
+  const [clickedSection, setClickedSection] = React.useState(null);
   const [articlesToShow, setArticlesToShow] = React.useState(12);
   const articlesGridRef = React.useRef(null);
 
@@ -82,10 +82,12 @@ const Inspiration = () => {
     taste: 'taste',
   };
 
-  const activeCategory = sectionToCategory[clickedSection] || 'wedding';
+  const activeCategory = clickedSection ? sectionToCategory[clickedSection] : null;
 
-  // Filter articles by selected category
-  const filteredArticles = allArticles.filter((a) => a.category === activeCategory);
+  // Filter articles by selected category, or show all if no category selected
+  const filteredArticles = activeCategory 
+    ? allArticles.filter((a) => a.category === activeCategory)
+    : allArticles;
 
   return (
     <div>
@@ -190,7 +192,7 @@ const Inspiration = () => {
            clickedSection === 'planning' ? 'REGISTRY & PLANNING TIPS' :
            clickedSection === 'design' ? 'DESIGN NOTES' :
            clickedSection === 'taste' ? 'TASTE & TRAVEL' :
-           'WEDDING STORIES'}
+           'ALL ARTICLES'}
         </h3>
         <p className="text-center lg:text-[1.25vw] lg:leading-[1.875vw] text-xl lg:w-[50%] mx-auto mt-5">
           {clickedSection === 'wedding' ? 
@@ -203,7 +205,7 @@ const Inspiration = () => {
             "Explore design inspiration and styling tips for your special day." :
             clickedSection === 'taste' ?
             "Culinary inspiration and travel ideas for your wedding journey." :
-            "Real couples, real style. Go behind the scenes of some of our favourite celebrations and get inspired by how real couples infused style and heart into their day."
+            "Explore our complete collection of articles covering wedding stories, planning tips, design inspiration, and more. Click on any category above to filter by topic."
           }
         </p>
 
