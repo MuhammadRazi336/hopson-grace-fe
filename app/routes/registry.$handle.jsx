@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Footer } from '~/components/Footer'
 import { Header } from '~/components/Header'
 import Heading from '~/components/Heading'
@@ -51,7 +51,21 @@ export async function loader({params, context}) {
       collection.parentCollectionMetafield?.value === 'false'
     ).slice(0, 6) || []; // Limit to 6
 
-    return json({ collection, registry, otherRegistries, user });
+    // Also fetch all collections and products for category filtering (like dashboard addgifts)
+    let allCollections = [];
+    let allProducts = [];
+    try {
+      const [{collections: collectionsData}, {products: productsData}] = await Promise.all([
+        context.storefront.query(COLLECTION_QUERY),
+        context.storefront.query(PRODUCT_QUERY),
+      ]);
+      allCollections = collectionsData?.nodes || [];
+      allProducts = productsData?.edges || [];
+    } catch (error) {
+      console.error('Error fetching collections and products for category filtering:', error);
+    }
+
+    return json({ collection, registry, otherRegistries, collections: allCollections, products: allProducts, user });
   } catch (error) {
     console.error('Error loading registry:', error);
     throw new Response('Not Found', { status: 404 });
@@ -77,11 +91,14 @@ export async function action({request, context}) {
 }
 
 const Registry = () => {
-  const { collection, registry, otherRegistries, user } = useLoaderData();
+  const { collection, registry, otherRegistries, collections, products, user } = useLoaderData();
   const [quantities, setQuantities] = useState({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
+  const [productsToShow, setProductsToShow] = useState(12);
+  const productGridRef = useRef(null);
   const fetcher = useFetcher();
   
   // Handle fetcher responses
@@ -111,6 +128,105 @@ const Registry = () => {
     }
   }, [fetcher.data]);
   
+  // Reset productsToShow when filtered products change (when categories are selected/deselected)
+  useEffect(() => {
+    setProductsToShow(12);
+  }, [checkedCollectionIds]);
+  
+  // Process products like dashboard addgifts (add collection relationships)
+  const processedProducts = React.useMemo(() => {
+    const productMap = new Map();
+    
+    // Get parent collections
+    const parentCollections = collections.filter(col => 
+      col.parentMetafield?.value === 'true' && 
+      col.readyMadeMetafield?.value !== 'true'
+    );
+    
+    
+    // Process products from sub-collections (exactly like dashboard addgifts)
+    parentCollections.forEach(parentCollection => {
+      // Get sub-collection GIDs from the parent's subMetafield
+      let subCollectionGids = [];
+      if (parentCollection.subMetafield?.value) {
+        try {
+          subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
+        } catch (error) {
+          // Handle parsing error silently
+        }
+      }
+      
+      // Find sub-collections by GID (exactly like dashboard addgifts)
+      const subCollections = collections.filter(
+        (col) =>
+          col.parentMetafield?.value === 'false' &&
+          col.readyMadeMetafield?.value !== 'true' &&
+          subCollectionGids.includes(col.id),
+      );
+      
+      // Process products from sub-collections (exactly like dashboard addgifts)
+      subCollections.forEach(subCollection => {
+        subCollection.products?.edges?.forEach(edge => {
+          const product = edge.node;
+          const productData = {
+            ...product,
+            price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+            currencyCode: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
+            availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
+            createdAt: product.createdAt,
+            collectionId: subCollection.id,
+            parentCollectionId: parentCollection.id,
+            parentCollectionTitle: parentCollection.title,
+          };
+          
+          if (!productMap.has(product.id)) {
+            productMap.set(product.id, productData);
+          } else {
+            const existingProduct = productMap.get(product.id);
+            if (!existingProduct.collectionIds) {
+              existingProduct.collectionIds = [existingProduct.collectionId];
+            }
+            if (!existingProduct.collectionIds.includes(subCollection.id)) {
+              existingProduct.collectionIds.push(subCollection.id);
+            }
+          }
+        });
+      });
+    });
+    
+    const processedProductsArray = Array.from(productMap.values());
+    return processedProductsArray;
+  }, [collections]);
+  
+  // Filter products based on selected collections (like dashboard addgifts)
+  const filteredProducts = React.useMemo(() => {
+    if (checkedCollectionIds.length === 0) {
+      return collection.products?.edges || [];
+    }
+    
+    // Filter processed products based on selected collection IDs (like dashboard addgifts)
+    const filtered = processedProducts.filter((product) => {
+      // Check if the product's collection is directly selected
+      if (checkedCollectionIds.includes(product.collectionId)) {
+        return true;
+      }
+
+      // Check if the product's parent collection is selected
+      if (checkedCollectionIds.includes(product.parentCollectionId)) {
+        return true;
+      }
+
+      // Check if the product exists in any of the selected collections
+      if (product.collectionIds && product.collectionIds.some(id => checkedCollectionIds.includes(id))) {
+        return true;
+      }
+
+      return false;
+    });
+    
+    return filtered;
+  }, [checkedCollectionIds, processedProducts, collection.products?.edges]);
+  
   const handleAddToRegistry = async (product, selectedQuantity) => {
     try {
       // Check if user is logged in
@@ -120,7 +236,9 @@ const Registry = () => {
         return;
       }
 
-      const firstVariant = product?.variants?.edges?.[0]?.node;
+      // Handle both processed products and edge structure
+      const productNode = product.node || product;
+      const firstVariant = productNode?.variants?.edges?.[0]?.node;
       if (!firstVariant) {
         setAlertMessage('Product variant not found.');
         setAlertType('error');
@@ -146,7 +264,7 @@ const Registry = () => {
       
              // Prepare the payload for adding to registry
        const payload = {
-         productId: Number(extractShopifyId(product.id)),
+         productId: Number(extractShopifyId(productNode.id)),
          amount: Number(firstVariant.priceV2.amount),
          registryId: Number(registry.data[0].id),
          productTypeId: 1,
@@ -220,13 +338,21 @@ const Registry = () => {
 
       <section className="px-[8.802vw] mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-[6.302vw]">
-          <SidebarFilter />
-                     <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
-             {collection.products?.edges?.map(edge => {
-               const product = edge.node;
-               const firstImage = product.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
-               const firstVariant = product.variants?.edges?.[0]?.node;
-               const price = firstVariant?.priceV2?.amount || 'N/A';
+          <SidebarFilter 
+            collections={collections}
+            checkedCollectionIds={checkedCollectionIds}
+            setCheckedCollectionIds={setCheckedCollectionIds}
+          />
+                     <div 
+                       className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0"
+                       ref={productGridRef}
+                     >
+             {filteredProducts.slice(0, productsToShow).map((product, index) => {
+               // Handle both processed products and edge structure
+               const productNode = product.node || product;
+               const firstImage = productNode.images?.edges?.[0]?.node?.url || productNode.images?.edges?.[0]?.node?.src || '/assets/Images/placeholder.png';
+               const firstVariant = productNode.variants?.edges?.[0]?.node;
+               const price = firstVariant?.priceV2?.amount || product.price || 'N/A';
                
                return (
                  <div key={product.id} className="relative group h-[460px]">
@@ -234,11 +360,11 @@ const Registry = () => {
                    <div className="p-4 z-10 relative">
                      <img
                        src={firstImage}
-                       alt={product.title}
+                       alt={productNode.title}
                        className="w-full h-[300px] object-cover"
                      />
                      <h3 className="text-sm font-semibold uppercase mt-3">
-                       {product.title}
+                       {productNode.title}
                      </h3>
                      <p className="text-sm mt-1">${price}</p>
                    </div>
@@ -248,14 +374,14 @@ const Registry = () => {
                      <div>
                        <img
                          src={firstImage}
-                         alt={product.title}
+                         alt={productNode.title}
                          className="w-full h-[220px] mx-auto object-cover mb-2"
                        />
                        <h4 className="text-xs font-medium uppercase text-left mb-1">
-                         {collection.title || 'REGISTRY NAME'}
+                         {product.parentCollectionTitle || collection.title || 'REGISTRY NAME'}
                        </h4>
                        <h3 className="text-sm font-bold uppercase text-left leading-snug">
-                         {product.title}
+                         {productNode.title}
                        </h3>
                        <p className="text-sm mt-2 text-left">${price}</p>
                      </div>
@@ -322,15 +448,43 @@ const Registry = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="w-full xl:w-1/4 "> </div>
+          <div className="w-full xl:w-1/4"> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">LOADING 12 of 427</p>
+            <p className="text-center text-[18px] font-semibold mb-10">
+              LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
+              {filteredProducts.length}
+            </p>
 
-            <WhiteThemeButton Text="View more" link="/quick-start-guide" />
+            {filteredProducts.length > 12 &&
+              productsToShow < filteredProducts.length && (
+                <WhiteThemeButton
+                  Text="VIEW MORE"
+                  buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
+                  link="#"
+                  onClick={() =>
+                    setProductsToShow((prev) =>
+                      Math.min(prev + 12, filteredProducts.length),
+                    )
+                  }
+                />
+              )}
 
-            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
+            {productsToShow > 12 && (
+              <button
+                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+                onClick={() => {
+                  setProductsToShow(12);
+                  if (productGridRef.current) {
+                    productGridRef.current.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    });
+                  }
+                }}
+              >
               Back to Top
             </button>
+            )}
           </div>
                  </div>
        </section>
@@ -435,18 +589,40 @@ const Registry = () => {
 
 export default Registry;
 
-function SidebarFilter() {
+function SidebarFilter({
+  collections,
+  checkedCollectionIds,
+  setCheckedCollectionIds,
+}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
     styles: true,
   });
 
+  // Get parent collections for Product Categories (exactly like dashboard addgifts)
+  const parentCollection = collections.filter(
+    (col) =>
+      col.parentMetafield?.value === 'true' &&
+      col.readyMadeMetafield?.value !== 'true',
+  );
+  
+
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
       ...prev,
       [section]: !prev[section],
     }));
+  };
+
+  const handleSidebarCheckbox = (colId) => {
+    let newChecked;
+    if (checkedCollectionIds.includes(colId)) {
+      newChecked = checkedCollectionIds.filter((id) => id !== colId);
+    } else {
+      newChecked = [...checkedCollectionIds, colId];
+    }
+    setCheckedCollectionIds(newChecked);
   };
 
   return (
@@ -456,7 +632,7 @@ function SidebarFilter() {
           className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('categories')}
         >
-          Categories
+          Product Categories
           <span className="text-lg">
             {openSections.categories ? (
               <img
@@ -475,42 +651,19 @@ function SidebarFilter() {
         </h2>
         {openSections.categories && (
           <ul className="space-y-2 text-sm">
-            <li>
+            {parentCollection.map((col) => (
+              <li key={col.id}>
               <label>
-                <input type="checkbox" className="mr-2" />
-                HONEYMOON
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
               </label>
             </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                HOME
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                DATE NIGHTS
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label>
-                <input type="checkbox" className="mr-2" />
-                LOREM IPSUM
-              </label>
-            </li>
+            ))}
           </ul>
         )}
       </div>
@@ -596,3 +749,100 @@ const OTHER_REGISTRIES_QUERY = `#graphql
    }
  }
 `;
+
+const PRODUCT_QUERY = `#graphql
+  query {
+    products(first: 50) {
+      edges {
+        node {
+          handle
+          description
+          id
+          title
+          createdAt
+          images(first: 10) {
+            edges {
+              node {
+                id
+                src
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                availableForSale
+                priceV2 {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTION_QUERY = `#graphql
+    query {
+    collections(first: 50) {
+      nodes {
+        description
+        title
+        id
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
+          id
+          value
+        }
+        subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
+        products(first: 10){
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              createdAt
+              images(first: 10) {
+                edges {
+                  node {
+                    id
+                    url
+                  }
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;

@@ -76,6 +76,35 @@ const COLLECTION_QUERY = `#graphql
   }
 `;
 
+const BESTSELLER_PRODUCTS_QUERY = `#graphql
+  query GetBestsellerProducts($first: Int!) {
+    products(first: $first, query: "tag:bestseller") {
+      edges {
+        node {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export async function loader({request, context}) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('search');
@@ -98,6 +127,15 @@ export async function loader({request, context}) {
     }
   }
   
+  // Fetch bestseller products
+  let bestsellerProducts = [];
+  try {
+    const {products: bestsellerData} = await context.storefront.query(BESTSELLER_PRODUCTS_QUERY, { variables: { first: 8 } });
+    bestsellerProducts = bestsellerData?.edges || [];
+  } catch (error) {
+    console.log('Error fetching bestseller products:', error);
+  }
+  
   // If there's a search query, filter collections by title/description
   let filteredCollections = collections;
   if (searchQuery) {
@@ -111,7 +149,8 @@ export async function loader({request, context}) {
     collections: filteredCollections, 
     searchQuery, 
     registry: registry?.data?.[0] || null,
-    user: user || null
+    user: user || null,
+    bestsellerProducts
   });
 }
 
@@ -139,7 +178,7 @@ async function loadCollectionData({context}) {
 }
 
 const Products = () => {
-  const {collections, searchQuery, registry, user} = useLoaderData();
+  const {collections, searchQuery, registry, user, bestsellerProducts} = useLoaderData();
   const [searchParams] = useSearchParams();
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -319,26 +358,32 @@ const Products = () => {
         <>
           <div className="lg:px-[9.583vw] w-full lg:mx-auto px-16 pb-[12.448vw]">
             <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-x-[1.25vw] lg:gap-y-[3.958vw] gap-y-16 gap-x-[24px] mt-[4.167vw]">
-              <div className="flex flex-col items-center justify-center">
-                <img src={newArrivals} alt="" className="w-full lg:h-[25.417vw]" />
-                <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
-                  NEW ARRIVALS
-                </h3>
-              </div>
-              <div className="flex flex-col items-center justify-center">
-                <img src={bestSellers} alt="" className="w-full lg:h-[25.417vw]" />
-                <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
-                  BESTSELLERS
-                </h3>
-              </div>
+              <Link to="/products/new-arrivals">
+                <div className="flex flex-col items-center justify-center cursor-pointer">
+                  <img src={newArrivals} alt="" className="w-full lg:h-[25.417vw]" />
+                  <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
+                    NEW ARRIVALS
+                  </h3>
+                </div>
+              </Link>
+              <Link to="/products/bestsellers">
+                <div className="flex flex-col items-center justify-center cursor-pointer">
+                  <img src={bestSellers} alt="" className="w-full lg:h-[25.417vw]" />
+                  <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
+                    BESTSELLERS
+                  </h3>
+                </div>
+              </Link>
+              <Link to="/dashboard/giftcards">
               <div className="flex flex-col items-center justify-center">
                 <img src={giftCards} alt="" className="w-full lg:h-[25.417vw] bg-[#446184]" />
                 <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                   GIFT CARDS
                 </h3>
               </div>
+              </Link>
               {parentCollections.map((col) => (
-                <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer">
                   <img src={col.image.url} alt={col.title} className="w-full lg:h-[25.417vw]" />
                   <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                     {col.title}
@@ -357,12 +402,14 @@ const Products = () => {
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw] lg:h-[0.417vw]'}
         />
-            <ProductSlider />
+            <ProductSlider products={bestsellerProducts} />
         <div className="text-center">
-          <ButtonComponent
-            text="BROWSE BESTSELLERS"
-            className="button-cs text-[#1F1D1B] bastardogrotesk lg:text-[0.938vw] lg:leading-[0.938vw] text-[18px] leading-[18px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.271vw]"
-          />
+          <Link to="/products/bestsellers">
+            <ButtonComponent
+              text="BROWSE BESTSELLERS"
+              className="button-cs text-[#1F1D1B] bastardogrotesk lg:text-[0.938vw] lg:leading-[0.938vw] text-[18px] leading-[18px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.271vw]"
+            />
+          </Link>
         </div>
       </section>
 

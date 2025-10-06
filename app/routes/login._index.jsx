@@ -49,10 +49,21 @@ export async function action({request, context}) {
         },
       });
     } else {
-      return {...response};
+      // Return error response with proper structure
+      return json({
+        statusCode: response?.code || response?.statusCode || 400,
+        message: response?.message || response?.data?.message || 'Login failed',
+        ...response
+      });
     }
   } catch (e) {
-    return {...e};
+    console.log('Login error:', e);
+    // Return error response with proper structure
+    return json({
+      statusCode: e?.statusCode || e?.code || 500,
+      message: e?.message || 'An error occurred during login',
+      ...e
+    });
   }
 }
 
@@ -61,6 +72,18 @@ const LoginIndex = () => {
   const actionData = useActionData();
   const navigate = useNavigate();
   console.log(actionData, 'ActionData');
+  
+  // Debug error conditions
+  if (actionData?.statusCode >= 400) {
+    console.log('Error conditions:', {
+      statusCode: actionData.statusCode,
+      message: actionData.message,
+      isArray: Array.isArray(actionData.message),
+      hasEmailError: Array.isArray(actionData.message) && actionData.message.some(msg => msg.toLowerCase().includes('email')),
+      isUserNotFound: actionData.message === 'user not found',
+      isInvalidPassword: actionData.message === 'Invalid password'
+    });
+  }
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -128,7 +151,16 @@ const LoginIndex = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    error={actionData?.statusCode >= 400 && actionData?.message?.toLowerCase().includes('email') ? actionData?.message : undefined}
+                    error={
+                      // Email validation errors (check message content)
+                      (Array.isArray(actionData?.message) && 
+                       actionData?.message.some(msg => msg.toLowerCase().includes('email')))
+                        ? actionData?.message.find(msg => msg.toLowerCase().includes('email'))
+                        // User not found error (check message content)
+                        : (actionData?.message === 'user not found')
+                        ? 'Email not found'
+                        : undefined
+                    }
                   />
                   <Input
                     required={true}
@@ -138,7 +170,12 @@ const LoginIndex = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    error={actionData?.statusCode >= 400 && actionData?.message?.toLowerCase().includes('password') ? actionData?.message : undefined}
+                    error={
+                      // Invalid password error (check message content)
+                      (actionData?.message === 'Invalid password')
+                        ? 'Invalid password'
+                        : undefined
+                    }
                   />
                 </div>
                 <div className="text-left">
@@ -146,11 +183,16 @@ const LoginIndex = () => {
                     Forgot Password?
                   </Link>
                 </div>
-                {actionData?.statusCode >= 400 && (
+                {actionData?.statusCode >= 400 && 
+                 !(Array.isArray(actionData?.message) && actionData?.message.some(msg => msg.toLowerCase().includes('email'))) &&
+                 !(actionData?.message === 'user not found') &&
+                 !(actionData?.message === 'Invalid password') && (
                   <div className="text-center text-red-500 text-sm">
-                    {Array.isArray(actionData?.message)
-                      ? actionData?.message[0]
-                      : actionData?.message}
+                    {actionData?.statusCode === 500 
+                      ? 'Server error. Please try again later.'
+                      : Array.isArray(actionData?.message)
+                        ? actionData?.message[0]
+                        : actionData?.message}
                   </div>
                 )}
 

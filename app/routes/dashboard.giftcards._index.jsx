@@ -26,11 +26,22 @@ export async function loader(args) {
   const {collections} = await loadCollectionData({context});
   const {giftCards} = await loadGiftCardData({context});
   const user = await context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
-  return json({collections, giftCards, registry});
+  
+  // Only fetch registry if user is logged in
+  let registry = null;
+  if (user && user.user && user.user.id) {
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+    } catch (error) {
+      console.log('Error fetching registry:', error);
+      // Continue without registry data
+    }
+  }
+  
+  return json({collections, giftCards, registry, user});
 }
 
 export async function action({request, context}) {
@@ -92,7 +103,7 @@ async function loadGiftCardData({context}) {
 }
 
 const GiftCards = () => {
-  const {collections, giftCards, registry} = useLoaderData();
+  const {collections, giftCards, registry, user} = useLoaderData();
   const fetcher = useFetcher();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -108,6 +119,13 @@ const GiftCards = () => {
 
   const handleAddToRegistry = (giftCard, quantity) => {
     try {
+      // Check if user is logged in
+      if (!user || !user.user || !user.user.id) {
+        // User not logged in, redirect to login
+        window.location.href = '/login';
+        return;
+      }
+
       // Check if registry exists and has an id
       if (!registry || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please try again.');
@@ -208,6 +226,7 @@ const GiftCards = () => {
                 title={giftCard.title}
                 price={price}
                 registryId={registry?.data[0]?.id}
+                user={user}
                 onAddToRegistry={(quantity) => handleAddToRegistry(giftCard, quantity)}
               />
             );
@@ -391,7 +410,7 @@ const GiftCards = () => {
 
 export default GiftCards
 
-const GiftCard = ({id, image, title, price, registryId, onAddToRegistry}) => {
+const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry}) => {
   const [quantity, setQuantity] = useState(1);
 
   const incrementQuantity = () => {
