@@ -16,22 +16,22 @@ const MeetOurTeam = () => {
       <img
         src={ShowroomImg}
         alt=""
-        className="w-full h-[510px] lg:h-[800px] object-cover"
+        className="w-full h-[510px] lg:h-[27.083vw] object-cover"
       />
 
-      <div className="container mx-auto py-16">
+      <div className="mx-auto px-[12.24vw] py-[5vw]">
         <Heading
           text="meet our sister store"
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <h2 className="text-center font-semibold text-2xl lg:text-4xl py-16">
+        <h2 className="text-center font-[500] text-2xl lg:text-[1.146vw] m-0 lg:leading-[1.875vw] pb-[4.427vw] pt-[1.667vw]">
           HOPSON GRACE
         </h2>
-        <p className="text-center text-2xl lg:text-3xl font-normal">
+        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.979vw] font-normal">
           The Registry was born out of Hopson
           Grace, Toronto’s destination for beautifully curated homewares,
           design-forward essentials, and timeless gifts. Hopson Grace is where
@@ -40,25 +40,25 @@ const MeetOurTeam = () => {
           is where you'll find it.
         </p>
       </div>
-      <div className="w-full container mx-auto py-4">
-        <h2 className="text-center font-semibold text-2xl lg:text-4xl pt-16">
+      <div className="mx-auto px-[12.24vw]">
+        <h2 className="text-center font-semibold text-2xl lg:text-[1.146vw] lg:leading-[1.875vw]">
           BEYOND THE WEDDING
         </h2>
-        <p className="text-center text-2xl lg:text-3xl font-normal pt-2">
+        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.979vw] font-normal">
           Like what you see? Many of the pieces featured on The Registry are
           also available at Hopson Grace. Discover beautiful home essentials and
           timeless gifts perfect for post-wedding life and every chapter that
           follows.
         </p>
-        <div className="flex justify-center py-16">
+        <div className="flex justify-center pt-[2.292vw]">
           <Button
             text="TAKE ME THERE"
-            className="text-white bg-[#446184] py-[22px] lg:py-[30px] lg:w-[320px] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
+            className="text-white font-[500] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-[22px] lg:py-[5px] lg:w-[17.292vw] lg:h-[4.063vw] cursor-pointer mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
           />
         </div>
       </div>
 
-      <div className="w-full py-16">
+      <div className="w-full py-[9.063vw]">
         <ImageAndText
           direction={'right'}
           imgBanner={teaImg}

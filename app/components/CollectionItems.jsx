@@ -36,6 +36,9 @@ const CollectionItems = () => {
         modules={[FreeMode, Autoplay]}
         slidesPerView={5}
         spaceBetween={30}
+        allowTouchMove={false}
+        simulateTouch={false}
+        grabCursor={false} 
         freeMode={{ enabled: true }}
         autoplay={{
           delay: 0
