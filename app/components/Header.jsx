@@ -816,7 +816,7 @@ export function Header() {
                       className={`rounded-full shadow-md transform w-[2.031vw] h-full transition-transform duration-200 ${
                         isDraft
                           ? 'translate-x-0 bg-gray-300'
-                          : 'translate-x-[1.094vw] bg-[#FF6F61]'
+                          : 'translate-x-[1.094vw] bg-[#C52248]'
                       }`}
                     />
                   </button>
@@ -844,7 +844,7 @@ export function Header() {
                       className={`rounded-full shadow-md transform w-[2.031vw] h-full transition-transform duration-200 ${
                         isDraft
                           ? 'translate-x-0 bg-gray-300'
-                          : 'translate-x-[1.094vw] bg-[#FF6F61]'
+                          : 'translate-x-[1.094vw] bg-[#C52248]'
                       }`}
                     />
                   </button>
@@ -919,7 +919,7 @@ export function Header() {
                 <a className={`text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
                     <div className="z-20 text-inherit">
-                      <span className="relative inline-block">SHIP MY GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/shipgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                      <span className="relative inline-block">FULFILL + SHIP GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/shipgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>

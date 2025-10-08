@@ -361,7 +361,7 @@ const GiftDetailHandle = () => {
                       <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         CLASSIC TUMBLER, SET OF 6
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$80</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$80.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -372,7 +372,7 @@ const GiftDetailHandle = () => {
                       <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         FARMHOUSE BOWL 11"
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$95</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$95.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -383,7 +383,7 @@ const GiftDetailHandle = () => {
                       <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         RAW HONEY
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$430</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$430.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -394,7 +394,7 @@ const GiftDetailHandle = () => {
                       <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         RAW HONEY
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$430</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$430.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -405,7 +405,7 @@ const GiftDetailHandle = () => {
                       <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                         FARMHOUSE BOWL 11"
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$95</p>
+                      <p className="lg:text-[24px] text-sm pt-3">$95.00</p>
                     </SwiperSlide>
                   </Swiper>
                   <div className="swiper-button-next-prod absolute top-[40%] z-10 -right-16  cursor-pointer uppercase flex items-center justify-center text-white">

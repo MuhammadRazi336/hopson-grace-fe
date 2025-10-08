@@ -2,6 +2,7 @@
 import {Link, useFetcher, useNavigate} from '@remix-run/react';
 import React, {useEffect, useState} from 'react';
 import Heading from './Heading';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export default function SideCart({
   open,
@@ -176,7 +177,7 @@ export default function SideCart({
                         />
                       </div>
                       <div className="col-span-2 text-center text-[26px]">
-                        ${item.price}
+                        {formatPrice(item.price)}
                       </div>
                       <div className="col-span-2 text-center text-[26px]">
                         ${(item.price * (item.quantity || 1)).toFixed(2)}
@@ -223,7 +224,7 @@ export default function SideCart({
                       </div>
                       <div className="col-span-2 flex justify-center"></div>
                       <div className="col-span-2 text-center text-[26px]">
-                        ${item.price}
+                        {formatPrice(item.price)}
                       </div>
                       <div className="col-span-2 text-center text-[26px]"></div>
                       <div className="col-span-1 flex justify-center">
@@ -271,7 +272,7 @@ export default function SideCart({
                       </div>
                       <div className="col-span-2 flex justify-center"></div>
                       <div className="col-span-2 text-center text-[26px]">
-                        ${item.price}
+                        {formatPrice(item.price)}
                       </div>
                       <div className="col-span-2 text-center text-lg"></div>
                       <div className="col-span-1 flex justify-center">
@@ -358,7 +359,7 @@ export default function SideCart({
                           {item.title}
                         </div>
                         <div className="text-[18px] font-semibold text-gray-600">
-                          ${item.price}
+                          {formatPrice(item.price)}
                         </div>
                       </div>
                     ))}

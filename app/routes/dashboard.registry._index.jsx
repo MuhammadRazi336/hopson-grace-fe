@@ -8,6 +8,7 @@ import {useState} from 'react';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import { Footer } from '~/components/Footer';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
@@ -685,7 +686,7 @@ const ProductPage = ({data}) => {
 
                     <div className="flex justify-between items-center">
                       <p className="font-semibold text-md">
-                        ${price?.amount || product.amount || 0}
+                        {formatPrice(price?.amount || product.amount || 0)}
                       </p>
                     </div>
 

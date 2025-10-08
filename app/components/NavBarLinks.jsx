@@ -91,27 +91,6 @@ const NavBarLinks = (mobileClasses) => {
             <div className="absolute custom-mega-menu left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
               <div className="flex mx-auto justify-between">
                 <div className="mr-[90px]">
-                  <h4 className="text-[18px] lg:text-[0.938vw] tracking-[1.44px] font-[800] mb-[26px]">
-                    TOP TRENDING BRANDS
-                  </h4>
-                  <ul className="">
-                    {brandsLoading ? (
-                      <li className="block mb-[26px] text-gray-500">Loading brands...</li>
-                    ) : brands.length > 0 ? (
-                      brands.slice(0, 7).map((brand) => (
-                        <li key={brand.id}>
-                          <NavLink
-                            to={`/brand/${brand.handle}`}
-                            className="block uppercase mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
-                          >
-                            {brand.title}
-                          </NavLink>
-                        </li>
-                      ))
-                    ) : (
-                      <li className="block mb-[26px] text-gray-500">No brands available</li>
-                    )}
-                  </ul>
                   <div className="flex items-center gap-2 mt-4">
                     <NavLink
                       to="/our-brands"

@@ -1,5 +1,6 @@
 import { Link } from '@remix-run/react';
 import React, {useState} from 'react';
+import {formatPrice} from '~/utils/priceFormatter';
 
 const ProductCard = ({
   image,
@@ -37,7 +38,7 @@ const ProductCard = ({
           <h3 className="text-[20px] font-semibold uppercase mt-3 w-[360px]">
             {productName}
           </h3>
-          <p className="text-[24px] mt-1 w-[360px]">${price}</p>
+          <p className="text-[24px] mt-1 w-[360px]">{formatPrice(price)}</p>
         </div>
 
         {/* Expanding Overlay */}
@@ -54,7 +55,7 @@ const ProductCard = ({
             <h3 className="text-sm font-bold uppercase text-left leading-snug">
               {productName}
             </h3>
-            <p className="text-sm mt-2 text-left">${price}</p>
+            <p className="text-sm mt-2 text-left">{formatPrice(price)}</p>
           </div>
 
           <div className="flex items-center justify-between mt-4">

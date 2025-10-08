@@ -239,7 +239,7 @@ const Returns = () => {
               </div>
             </div>
             <label htmlFor="return-agreement" className="text-white text-[16px] lg:text-[0.833vw] lg:leading-[0.833vw] italic ivyora font-[400] cursor-pointer">
-              I understand that returns must be requested within 60 days of receiving my item.
+              I acknowledge that return requests must be made within 60 days of receiving my item.
             </label>
           </div>
 

@@ -11,6 +11,7 @@ import { extractShopifyId } from '~/utils/helpers.js'
 import Marquee from '~/components/Marquee'
 import ButtonComponent from '~/components/Button'
 import lineImg4 from '/assets/Images/Vector 14.png';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export async function loader({params, context}) {
   const {handle} = params;
@@ -352,7 +353,7 @@ const Registry = () => {
                const productNode = product.node || product;
                const firstImage = productNode.images?.edges?.[0]?.node?.url || productNode.images?.edges?.[0]?.node?.src || '/assets/Images/placeholder.png';
                const firstVariant = productNode.variants?.edges?.[0]?.node;
-               const price = firstVariant?.priceV2?.amount || product.price || 'N/A';
+               const price = formatPrice(firstVariant?.priceV2?.amount || product.price);
                
                return (
                  <div key={product.id} className="relative group h-[460px]">
@@ -366,7 +367,7 @@ const Registry = () => {
                      <h3 className="text-sm font-semibold uppercase mt-3">
                        {productNode.title}
                      </h3>
-                     <p className="text-sm mt-1">${price}</p>
+                     <p className="text-sm mt-1">{price}</p>
                    </div>
 
                    {/* Expanding Overlay */}
@@ -383,7 +384,7 @@ const Registry = () => {
                        <h3 className="text-sm font-bold uppercase text-left leading-snug">
                          {productNode.title}
                        </h3>
-                       <p className="text-sm mt-2 text-left">${price}</p>
+                       <p className="text-sm mt-2 text-left">{price}</p>
                      </div>
 
                      <div className="flex items-center justify-between mt-4">

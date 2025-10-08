@@ -22,25 +22,24 @@ const HowItWorks = () => {
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
         <p className="text-center text-2xl lg:text-[1.25vw] lg:max-w-[55.729vw] lg:mx-auto lg:leading-[1.875vw] font-normal py-16">
-           Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod
-          tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim
-          veniam, quis nostrum exercitationem ullam
+           Creating your registry is simple. Just follow the steps below to see
+          how it all comes together.
         </p>
       </div>
 
-      <div className='w-full py-16 container mx-auto'>
-        <WeddingRegistrySteps/>
+      <div className="w-full py-16 container mx-auto">
+        <WeddingRegistrySteps />
       </div>
 
-      <div className='w-full py-16'>
-      <ImageAndText
-        direction={'right'}
-        imgBanner={SpoonImg}
-        lineimg={lineImg3}
-        title="ready?"
-        description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
-        buttontext={'GET STARTED'}
-        buttontype={'Color'} 
+      <div className="w-full py-16">
+        <ImageAndText
+          direction={'right'}
+          imgBanner={SpoonImg}
+          lineimg={lineImg3}
+          title="ready?"
+          description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
+          buttontext={'GET STARTED'}
+          buttontype={'Color'}
         />
       </div>
 

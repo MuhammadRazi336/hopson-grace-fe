@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {formatPrice} from '~/utils/priceFormatter';
 
 const CoupleProductCard = ({
   image,
@@ -206,7 +207,7 @@ const CoupleProductCard = ({
           {name}
         </h2>
         <div className="flex justify-between items-center">
-         {isAnyAmount ? "" : <p className="font-normal text-lg lg:text-[1.25vw]">${price}</p>}
+         {isAnyAmount ? "" : <p className="font-normal text-lg lg:text-[1.25vw]">{formatPrice(price)}</p>}
 
           {(isCashFund || isGroupGift) && !isAnyAmount && (
             <p className="text-sm ivyora lg:text-[1.042vw] italic mt-2 text-right w-full ivyora mb-2 text-[#1F1D1B]">

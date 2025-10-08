@@ -5,6 +5,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
 import {useNavigate} from '@remix-run/react';
+import {formatShopifyPrice} from '~/utils/priceFormatter';
 
 const ProductSlider = ({products = []}) => {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const ProductSlider = ({products = []}) => {
                     {productNode.title}
                   </h3>
                   <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-[12px] pt-[0.625vw]">
-                    {price ? `$${price.amount} ${price.currencyCode}` : 'Price not available'}
+                    {formatShopifyPrice(price)}
                   </p>
                 </div>
               </SwiperSlide>

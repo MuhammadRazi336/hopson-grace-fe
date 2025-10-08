@@ -43,7 +43,7 @@ const stepsData = [
     title: "Along the Way",
     description:(
       <>
-        our private dashboard is your command centre. You can add or edit gifts, track messages from our team, and stay up to date as guests shop your registry.
+        Our private dashboard is your command centre. You can add or edit gifts, track messages from our team, and stay up to date as guests shop your registry.
         <br />
         Each time a gift is purchased, you’ll be notified—but instead of receiving it right away, the value is added to your registry account. This gives you the freedom to adjust quantities or make changes before your final order.
         <br />

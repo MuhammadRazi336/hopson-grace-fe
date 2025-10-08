@@ -1309,35 +1309,35 @@ export default function AddGifts() {
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Tableware" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll1} alt="New arrivals" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-[24px] text-sm py-2">$95</p>
+                <p className="lg:text-[24px] text-sm py-2">$95.00</p>
               </SwiperSlide>
             </Swiper>
             <div className="swiper-button-next-prod absolute top-[5%] right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">

@@ -99,7 +99,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                   <ul className="text-white max-md:text-[14px] max-md:leading-[26px] text-[0.833vw] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
                       <Link className="text-white" to="/register">
-                        START A REGISTRY
+                        START YOUR REGISTRY
                       </Link>
                     </li>
                     <li>
@@ -109,7 +109,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                     <li>
                       <Link className="text-white" to="/inspiration">
-                        FIND INSPIRATION
+                        INSPIRATION
                       </Link>
                     </li>
                     <li>

@@ -8,7 +8,7 @@ export default function ShipMyGifts() {
       <CoupleProfileViewHeader />
       <div className=" p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          <span className="prata uppercase">SHIP</span> my gifts
+          <span className="prata uppercase">FULFILL +</span> SHIP GIFTS
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"
@@ -43,8 +43,8 @@ export default function ShipMyGifts() {
                 className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%]"
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                ​ One free shipment of all your gifts is included. If you’d like
-                any gifts in the meantime, ​standard shipping rates apply.
+                ​ Enjoy two complimentary shipments of your gifts. Standard
+                shipping rates apply to any extra deliveries.
               </p>
               <div>
                 <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm  hover:bg-gray-100">
@@ -54,7 +54,7 @@ export default function ShipMyGifts() {
             </div>
             <div className="mt-14 flex flex-col items-center justify-center">
               <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center">
-                WANT TO DECIDE IN PERSON?
+                WANT A HELPING HAND?
               </h3>
               <img
                 src="/assets/Images/white-bdr.png"
@@ -62,8 +62,8 @@ export default function ShipMyGifts() {
                 className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%] mx-auto"
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                Book a virtual call or showroom appointment ​ to see your gifts
-                live before making you final decisions.
+                Book a virtual appointment and let our Concierge team help with
+                your final decisions.
               </p>
               <div>
                 <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">

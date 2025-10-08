@@ -46,7 +46,7 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
         className={`mx-auto mb-[15px] w-[60px] h-[26px] flex items-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${isDraft ? 'bg-white border-black' : 'bg-white border-black'}`}
       >
         <span
-          className={`w-[26px] h-[22px] rounded-full shadow-md transform transition-transform duration-200 ${isDraft ? 'translate-x-0 bg-gray-300' : 'translate-x-8 bg-[#FF6F61]'}`}
+          className={`w-[26px] h-[22px] rounded-full shadow-md transform transition-transform duration-200 ${isDraft ? 'translate-x-0 bg-gray-300' : 'translate-x-8 bg-[#C52248]'}`}
         />
       </button>
       <div className="uppercase text-lg font-bold text-black tracking-wide lg:text-[18px] lg:leading-[18px]">

@@ -18,6 +18,7 @@ import heart from '/assets/Images/heart.png';
 import lineImgWhiteHead from '/assets/Images/WhiteLine.png';
 import readMoreIcon from '/assets/Images/readMoreIcon.png';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
+import {formatShopifyPrice} from '~/utils/priceFormatter';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/tea.png';
 import lineImg3 from '/assets/Images/line.png';
@@ -727,8 +728,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
             {product.title || `Product ${index + 1}`}
           </p>
           <p className="text-[24px]">
-            ${product.priceRange?.minVariantPrice?.amount || '0.00'}{' '}
-            {product.priceRange?.minVariantPrice?.currencyCode || ''}
+            {formatShopifyPrice(product.priceRange?.minVariantPrice)}
           </p>
         </div>
 
@@ -753,8 +753,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
               {product.title || `Product ${index + 1}`}
             </h3>
             <p className="text-[24px] font-normal leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
-              ${product.priceRange?.minVariantPrice?.amount || '0.00'}{' '}
-              {product.priceRange?.minVariantPrice?.currencyCode || ''}
+              {formatShopifyPrice(product.priceRange?.minVariantPrice)}
             </p>
           </div>
 
