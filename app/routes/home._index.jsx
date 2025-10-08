@@ -105,11 +105,7 @@ export async function loader({ context }) {
       // Final fallback: first collection
       if (!realRegistriesCollection) {
         realRegistriesCollection = realRegistries[0];
-        console.log('Using fallback: first collection');
       }
-      
-      console.log('Selected registry collection:', realRegistriesCollection);
-      console.log('Selection reason: Priority-based selection for Real Registries');
       
       if (realRegistriesCollection.subCollectionMetafield?.value) {
         try {
@@ -117,12 +113,10 @@ export async function loader({ context }) {
           
           // Fetch ALL sub-collections for display (not just the first one)
           if (subCollectionIds.length > 0) {
-            console.log('Sub-collection IDs:', subCollectionIds);
             
             // Fetch all sub-collections
             const subCollectionsData = [];
             for (const subCollectionId of subCollectionIds) {
-              console.log('Fetching sub-collection:', subCollectionId);
               
               const subCollectionData = await context.storefront.query(SUB_COLLECTION_QUERY, {
                 variables: { id: subCollectionId }
@@ -133,15 +127,12 @@ export async function loader({ context }) {
               }
             }
             
-            console.log('All sub-collections data:', subCollectionsData);
-            
             if (subCollectionsData.length > 0) {
               // Return all sub-collections data
               featuredRegistryData = {
                 parentCollection: realRegistriesCollection,
                 subCollections: subCollectionsData
               };
-              console.log(`Successfully fetched ${subCollectionsData.length} sub-collections`);
             } else {
               console.log('No sub-collections found');
             }
@@ -151,8 +142,6 @@ export async function loader({ context }) {
         }
       }
     }
-    
-    console.log('Featured registry data:', featuredRegistryData);
     
     return json({ realRegistries, featuredRegistryData, brands, user, bestsellerProducts: bestsellerProducts?.edges || [] });
   } catch (error) {
@@ -165,14 +154,6 @@ const Home = () => {
   const { realRegistries, featuredRegistryData, brands, user, bestsellerProducts } = useLoaderData();
   const [showBackToTop, setShowBackToTop] = useState(false);
 
-  // Debug logging for brands
-  console.log('Home page received brands:', brands);
-  console.log('Brands length:', brands?.length || 0);
-  
-  // Debug logging for bestseller products
-  console.log('Home page received bestsellerProducts:', bestsellerProducts);
-  console.log('Bestseller products length:', bestsellerProducts?.length || 0);
-  console.log('First bestseller product:', bestsellerProducts?.[0]);
   if (brands && brands.length > 0) {
     console.log('First brand sample:', brands[0]);
   }
@@ -208,11 +189,6 @@ const Home = () => {
       value: 2,
       route: 'themedregistries',
     },
-    {
-      label: 'LOREM IPSUM',
-      value: 3,
-      route: 'lorem',
-    },
   ];
   return (
     <div className="overflow-x-hidden">
@@ -235,7 +211,7 @@ const Home = () => {
           stepsCheck={true}
           title="how it works"
           description="There's no question too small or request too big for our Registry advisors. We're always at your service."
-          buttontext={'CREATE YOUR REGISTRY'}
+          buttontext={'START YOUR REGISTRY'}
           buttontype={'Color'}
           buttonLink={'/register'}
         />

@@ -1,5 +1,6 @@
 import {Money} from '@shopify/hydrogen';
 import React from 'react';
+import {formatPrice} from '~/utils/priceFormatter';
 
 const ProductCard = ({
   productName,
@@ -29,7 +30,7 @@ const ProductCard = ({
           <span className="text-gray-600">N/A</span>
         )}
 
-        <p className="text-gray-600">${collected} Collected</p>
+        <p className="text-gray-600">{formatPrice(collected)} Collected</p>
         {isGroupGift && (
           <p className="text-gray-800 font-semibold mt-2">Group Gift</p>
         )}

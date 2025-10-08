@@ -113,9 +113,12 @@ const OnboardingIndex = () => {
     if (step === 8) {
       // Dynamic title for step 8 using user names
       if (firstName && fianceFirstName) {
-        return `congratulations ${firstName} & ${fianceFirstName}!`;
+        const lowerFirstName = firstName.toLowerCase();
+        const lowerFianceFirstName = fianceFirstName.toLowerCase();
+        return `congratulations ${lowerFirstName} & ${lowerFianceFirstName}!`;
       } else if (firstName) {
-        return `congratulations ${firstName}!`;
+        const lowerFirstName = firstName.toLowerCase();
+        return `congratulations ${lowerFirstName}!`;
       } else {
         return 'congratulations!';
       }

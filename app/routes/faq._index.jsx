@@ -77,8 +77,7 @@ const FAQ = () => {
               How Does it Work?
             </h2>
             <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
-              Once you sign up, create your registry page and start adding
-              gifts, funds, and experiences. Register online or book an
+              Create your registry at your own pace, or let us guide you with a one-on-one virtual appointment. Register online or book an
               appointment at our Toronto showroom.
             </p>{' '}
             <br />
@@ -161,8 +160,7 @@ const FAQ = () => {
               Group Gifting allows multiple guests to contribute toward
               higher ticket items. Just mark any product as a Group Gift and
               we’ll handle the rest. It’s ideal for larger items like furniture
-              or travel. Ready to start your registry?
-              <NavLink to="/register">[Click here.]</NavLink>
+              or travel.
             </p>
           </div>
         </div>
@@ -210,9 +208,7 @@ const FAQ = () => {
               cover the return shipping no cost to you. For all other returns,
               shipping fees will apply. We recommend finalizing your registry
               carefully after the wedding to avoid the need for returns wherever
-              possible. Items must be returned within 60 days of receipt.Ready
-              to start your registry?
-              <NavLink to="/register">[Click here.]</NavLink>
+              possible. Items must be returned within 60 days of receipt.
             </p>
           </div>
         </div>

@@ -136,30 +136,6 @@ const CollectionItems = () => {
               </h3>
             </div>
           </SwiperSlide>
-          <SwiperSlide>
-            <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={iconitem}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
-              <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
-                <>TRAVEL <br/>VOUCHERS</>
-              </h3>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={iconitem}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
-              <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
-                <>GIFT CARDS <br/>GALORE</>
-              </h3>
-            </div>
-          </SwiperSlide>
         </Swiper>
       </div>
       <div className="flex justify-center items-center">

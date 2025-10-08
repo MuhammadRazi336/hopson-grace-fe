@@ -6,6 +6,7 @@ import lineImghead from '~/assets/Images/line.png';
 import { defer, json } from '@remix-run/server-runtime';
 import { useLoaderData, useFetcher, useNavigate, Link } from '@remix-run/react';
 import { extractShopifyId } from '~/utils/helpers.js';
+import {formatPrice} from '~/utils/priceFormatter';
 
 const PRODUCTS_QUERY = `#graphql
   query {
@@ -414,7 +415,7 @@ export default function SearchResults() {
                       product.images?.edges?.[0]?.node?.src || 
                       '/assets/Images/placeholder.png';
     const firstVariant = product.variants?.edges?.[0]?.node;
-    const price = firstVariant?.priceV2?.amount || 'N/A';
+    const price = formatPrice(firstVariant?.priceV2?.amount);
     
     return (
       <div className="relative group h-[460px]">
@@ -428,7 +429,7 @@ export default function SearchResults() {
           <h3 className="text-sm font-semibold uppercase mt-3">
             {product.title}
           </h3>
-          <p className="text-sm mt-1">${price}</p>
+          <p className="text-sm mt-1">{price}</p>
         </div>
 
         {/* Expanding Overlay */}
@@ -445,7 +446,7 @@ export default function SearchResults() {
             <h3 className="text-sm font-bold uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 text-left">${price}</p>
+            <p className="text-sm mt-2 text-left">{price}</p>
           </div>
 
           <div className="flex items-center justify-between mt-4">
@@ -576,7 +577,7 @@ export default function SearchResults() {
 
       <div className="w-full h-fit pt-[100px]">
         <Heading
-          text={`Search Results for "${searchQuery}"`}
+          text={`search results for "${searchQuery}"`}
           classes={
             'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
           }

@@ -3,6 +3,7 @@ import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link} from '@remix-run/react';
 import SideCart from '~/components/SideCart';
 import {CoupleFooter} from '~/components/CoupleFooter';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export default function CoupleProfileView() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -196,7 +197,7 @@ export default function CoupleProfileView() {
                 {item.size ? ` (${item.size})` : ''}
               </h3>
               <p className="font-normal ">
-                {item.description || `$${item.price}`}
+                {item.description || formatPrice(item.price)}
               </p>
 
               {item.requested !== undefined && (
@@ -253,13 +254,13 @@ export default function CoupleProfileView() {
                 type="button"
                 className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
               >
-                $100
+                $100.00
               </button>
               <button
                 type="button"
                 className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
               >
-                $500
+                $500.00
               </button>
               <button
                 type="button"
@@ -340,7 +341,7 @@ export default function CoupleProfileView() {
                   {selectedGiftData.name}
                 </h1>
                 <div className="text-xl font-medium mb-6">
-                  ${selectedGiftData.price}
+                  {formatPrice(selectedGiftData.price)}
                 </div>
 
                 <div className="flex items-center gap-4 mb-6">

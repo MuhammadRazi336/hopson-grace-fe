@@ -219,8 +219,7 @@ const SubmitWedding = () => {
               </div>
             </div>
             <label htmlFor="share-permission" className="text-white ivyora text-[16px] lg:text-[0.833vw] lg:leading-[0.833vw] italic leading-relaxed cursor-pointer">
-              I give The Registry permission to share these images on social media and the website, with proper credit
-              to the photographer.
+            I grant The Registry permission to share these images on our website and social media channels, with full credit to the photographer.
             </label>
           </div>
 

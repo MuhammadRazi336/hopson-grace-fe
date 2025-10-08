@@ -15,6 +15,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import {Link, useLoaderData, useFetcher, redirect} from '@remix-run/react';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
@@ -119,7 +120,7 @@ const ProductCard = React.memo(
     const previousFetcherData = React.useRef(null);
 
     const firstImage = product.image || '/assets/Images/placeholder.png';
-    const price = product.price || 'N/A';
+    const price = formatPrice(product.price);
 
     // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
@@ -227,7 +228,7 @@ const ProductCard = React.memo(
           <h3 className="text-sm font-semibold uppercase mt-3">
             {product.title}
           </h3>
-          <p className="text-sm mt-1">${price}</p>
+          <p className="text-sm mt-1">{price}</p>
         </div>
 
         {/* Expanding Overlay */}
@@ -244,7 +245,7 @@ const ProductCard = React.memo(
             <h3 className="text-sm font-bold uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 text-left">${price}</p>
+            <p className="text-sm mt-2 text-left">{price}</p>
           </div>
 
           <div className="flex items-center justify-between mt-4">
@@ -479,35 +480,35 @@ const PorteTravel = () => {
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product2} alt="Tableware" className="w-full" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product3} alt="Staub Cast Iron Q4" className="w-full" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product4} alt="New arrivals" className="w-full" />
                 <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product1} alt="Staub Cast Iron Q4" className="w-full" />
                 <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
             </Swiper>
             <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">

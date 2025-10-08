@@ -500,35 +500,35 @@ const CashFunds = () => {
                 <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product2} alt="Tableware" className="w-full rounded-none" />
                 <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
                 <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product4} alt="New arrivals" className="w-full rounded-none" />
                 <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={product3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
                 <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-[1.25vw] text-sm py-2">$95</p>
+                <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
               </SwiperSlide>
             </Swiper>
             <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">

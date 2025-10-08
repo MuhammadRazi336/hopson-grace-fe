@@ -4,6 +4,7 @@ import {Link} from '@remix-run/react';
 import SideCart from '~/components/SideCart';
 import EditImagePopup from '~/components/EditImagePopup';
 import {CoupleFooter} from '~/components/CoupleFooter';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export default function CoupleProfileView() {
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
@@ -199,7 +200,7 @@ export default function CoupleProfileView() {
                 {item.size ? ` (${item.size})` : ''}
               </h3>
               <p className="font-normal ">
-                {item.description || `$${item.price}`}
+                {item.description || formatPrice(item.price)}
               </p>
 
               {item.requested !== undefined && (
@@ -256,13 +257,13 @@ export default function CoupleProfileView() {
                 type="button"
                 className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
               >
-                $100
+                $100.00
               </button>
               <button
                 type="button"
                 className=" text-black font-bold py-4 px-8 bg-[#fff] rounded-none cursor-pointer"
               >
-                $500
+                $500.00
               </button>
               <button
                 type="button"

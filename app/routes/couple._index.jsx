@@ -26,11 +26,17 @@ export async function loader({request, context}) {
 export default function FindCoupleForm() {
   const [firstName, setFirstName] = useState('');
   const [fianceFirstName, setFianceFirstName] = useState('');
+  const [validationError, setValidationError] = useState('');
   const {data, name} = useLoaderData();
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     e.preventDefault();
+    if (!firstName.trim() && !fianceFirstName.trim()) {
+      setValidationError('Please fill in at least one name field before searching.');
+      return;
+    }
+    setValidationError('');
     navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
   };
 
@@ -52,7 +58,7 @@ export default function FindCoupleForm() {
             <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
               <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184]">
                 <h1 className="mt-0 lg:text-[2.5vw] text-[24px] prata text-center lg:leading-[2.917vw] font-normal mb-5 text-white">
-                  find a couple
+                what is here.
                 </h1>
                 <img
                   src="/assets/Images/white-bdr.png"
@@ -73,7 +79,7 @@ export default function FindCoupleForm() {
                         placeholder="First Name*"
                         value={firstName}
                         className="w-full border lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] outline-none bg-white border-[#B9B4AE] rounded-none px-3"
-                        required
+                        
                         onChange={(e) => {
                           const value = e.target.value;
                           if (value.length > 0) {
@@ -81,6 +87,7 @@ export default function FindCoupleForm() {
                           } else {
                             setFirstName(value);
                           }
+                          if (validationError) setValidationError('');
                         }}
                       />
                     </div>
@@ -92,7 +99,7 @@ export default function FindCoupleForm() {
                         placeholder="Fiance's First Name*"
                         value={fianceFirstName}
                         className="w-full border outline-none lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
-                        required
+                        
                         onChange={(e) => {
                           const value = e.target.value;
                           if (value.length > 0) {
@@ -100,10 +107,16 @@ export default function FindCoupleForm() {
                           } else {
                             setFianceFirstName(value);
                           }
+                          if (validationError) setValidationError('');
                         }}
                       />
                     </div>
                   </div>
+                  {validationError && (
+                    <div className="text-red-500 text-center mb-4 text-sm">
+                      {validationError}
+                    </div>
+                  )}
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
@@ -140,6 +153,21 @@ export default function FindCoupleForm() {
 }
 
 export function FindCoupleFormBanner() {
+  const [firstName, setFirstName] = useState('');
+  const [fianceFirstName, setFianceFirstName] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!firstName.trim() && !fianceFirstName.trim()) {
+      setValidationError('Please fill in at least one name field before searching.');
+      return;
+    }
+    setValidationError('');
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
+  };
+
   return (
     <div
       className="flex justify-start items-center h-[80vh] mb-16"
@@ -152,7 +180,7 @@ export function FindCoupleFormBanner() {
       <div className="md:ml-20 md:mr-0 ml-auto mr-auto lg:w-[45.885vw]">
         <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
           <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
-            find a couple
+            what is here.
           </h1>
           <img
             src="/assets/Images/white-bdr.png"
@@ -163,7 +191,7 @@ export function FindCoupleFormBanner() {
             enter couple's first and fiance's first name
           </p>
 
-          <form method="GET" className="w-full">
+          <form method="GET" className="w-full" onSubmit={handleSearch}>
             <div className="flex gap-8 mb-4">
               <div className="w-full">
                 <input
@@ -173,23 +201,42 @@ export function FindCoupleFormBanner() {
                   placeholder="First Name*"
                   value={firstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 lg:px-[1.042vw] py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
-                  required
-                  onChange={(e) => setFirstName(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length > 0) {
+                      setFirstName(value.charAt(0).toUpperCase() + value.slice(1));
+                    } else {
+                      setFirstName(value);
+                    }
+                    if (validationError) setValidationError('');
+                  }}
                 />
               </div>
               <div className="w-full">
                 <input
-                  id="lastName"
+                  id="fianceFirstName"
                   name="lastName"
                   type="text"
-                  placeholder="Last Name*"
-                  value={lastName}
+                  placeholder="Fiance's First Name*"
+                  value={fianceFirstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 lg:px-[1.042vw] py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
-                  required
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length > 0) {
+                      setFianceFirstName(value.charAt(0).toUpperCase() + value.slice(1));
+                    } else {
+                      setFianceFirstName(value);
+                    }
+                    if (validationError) setValidationError('');
+                  }}
                 />
               </div>
             </div>
+            {validationError && (
+              <div className="text-red-500 text-center mb-4 text-sm">
+                {validationError}
+              </div>
+            )}
             <div className="flex justify-center items-center">
               <button
                 type="submit"
@@ -205,7 +252,20 @@ export function FindCoupleFormBanner() {
   );
 }
 
-function FindCoupleBanner({firstName, setFirstName, lastName, setLastName}) {
+function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFirstName}) {
+  const [validationError, setValidationError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (!firstName.trim() && !fianceFirstName.trim()) {
+      setValidationError('Please fill in at least one name field before searching.');
+      return;
+    }
+    setValidationError('');
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
+  };
+
   return (
     <div
       className="flex justify-start items-center h-[80vh] mb-16"
@@ -228,7 +288,7 @@ function FindCoupleBanner({firstName, setFirstName, lastName, setLastName}) {
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
           enter couple's first and fiance's first name
           </p>
-          <form method="GET" className="w-full">
+          <form method="GET" className="w-full" onSubmit={handleSearch}>
             <div className="flex gap-8 mb-4">
               <div className="w-full">
                 <input
@@ -238,23 +298,42 @@ function FindCoupleBanner({firstName, setFirstName, lastName, setLastName}) {
                   placeholder="First Name*"
                   value={firstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
-                  required
-                  onChange={(e) => setFirstName(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length > 0) {
+                      setFirstName(value.charAt(0).toUpperCase() + value.slice(1));
+                    } else {
+                      setFirstName(value);
+                    }
+                    if (validationError) setValidationError('');
+                  }}
                 />
               </div>
               <div className="w-full">
                 <input
-                  id="lastName"
-                  name="lastName"
+                  id="fianceFirstName"
+                  name="fianceFirstName"
                   type="text"
-                  placeholder="Last Name*"
-                  value={lastName}
+                  placeholder="Fiance's First Name*"
+                  value={fianceFirstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
-                  required
-                  onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value.length > 0) {
+                      setFianceFirstName(value.charAt(0).toUpperCase() + value.slice(1));
+                    } else {
+                      setFianceFirstName(value);
+                    }
+                    if (validationError) setValidationError('');
+                  }}
                 />
               </div>
             </div>
+            {validationError && (
+              <div className="text-red-500 text-center mb-4 text-sm">
+                {validationError}
+              </div>
+            )}
             <div className="flex justify-center items-center">
               <button
                 type="submit"

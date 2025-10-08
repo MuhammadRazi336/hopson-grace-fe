@@ -66,44 +66,6 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
             <div className={`mt-2.5 ${isBrandSubMenuOpen ? 'flex' : 'hidden'} z-20 w-full py-8 px-8 bg-[#F5F2ED]`}>
               <div className="flex flex-col ">
                 <div className="">
-                  <h4 className="text-[16px] font-semibold mb-4">TOP TRENDING BRANDS</h4>
-                  <ul className="text-[16px]">
-                    <li>
-                      <NavLink to="/our-brands/ginori-1753" className="block mb-4 text-black hover:bg-gray-200">
-                        Ginori 1753
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/our-brands/mud-australia" className="block mb-4 text-black hover:bg-gray-200">
-                        Mud Australia
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/our-brands/richard-brendan" className="block mb-4 text-black hover:bg-gray-200">
-                        Richard Brendan
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/our-brands/zalto" className="block mb-4 text-black hover:bg-gray-200">
-                        Zalto
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/our-brands/coluna" className="block mb-4 text-black hover:bg-gray-200">
-                        Coluna
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/our-brands/pom-bedding" className="block mb-4 text-black hover:bg-gray-200">
-                        Pom Bedding
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/our-brands/a-table" className="block mb-4 text-black hover:bg-gray-200">
-                        A Table
-                      </NavLink>
-                    </li>
-                  </ul>
                   <h4 className="text-[16px] font-semibold mb-4">BRANDS A-Z</h4>
                 </div>
                 <div className="relative">

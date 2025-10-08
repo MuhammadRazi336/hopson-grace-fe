@@ -18,6 +18,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import {Link, useLoaderData, useFetcher, redirect} from '@remix-run/react';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export async function loader({request, context}) {
   const url = new URL(request.url);
@@ -136,7 +137,7 @@ const ProductCard = React.memo(
     const previousFetcherData = React.useRef(null);
 
     const firstImage = product.image || '/assets/Images/placeholder.png';
-    const price = product.price || 'N/A';
+    const price = formatPrice(product.price);
 
     // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
@@ -230,7 +231,7 @@ const ProductCard = React.memo(
           <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
-          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw]">${price}</p>
+          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw]">{price}</p>
         </div>
 
         {/* Expanding Overlay */}
@@ -247,7 +248,7 @@ const ProductCard = React.memo(
             <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">${price}</p>
+            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
           </div>
 
           <div className="flex items-center justify-between mt-[2.813vw]">
@@ -355,7 +356,7 @@ const CashFund = () => {
         <Heading
           text={
             searchQuery
-              ? `Search Results for "${searchQuery}"`
+              ? `search results for "${searchQuery}"`
               : 'cash & travel funds'
           }
           classes={
@@ -531,35 +532,35 @@ const CashFund = () => {
                 <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Tableware" className="w-full rounded-none" />
                 <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
                 <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll1} alt="New arrivals" className="w-full rounded-none" />
                 <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
                 <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-2xl text-sm">$95.00</p>
               </SwiperSlide>
             </Swiper>
             <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">

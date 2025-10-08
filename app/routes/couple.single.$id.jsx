@@ -1732,13 +1732,13 @@ export default function CoupleProfile() {
                 type="button"
                 className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
-                $100
+                $100.00
               </button>
               <button
                 type="button"
                 className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
-                $200
+                $200.00
               </button>
               <button
                 type="button"

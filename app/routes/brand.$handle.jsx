@@ -10,6 +10,7 @@ import {extractShopifyId} from '~/utils/helpers.js';
 import Marquee from '~/components/Marquee';
 import ButtonComponent from '~/components/Button';
 import lineImg4 from '/assets/Images/Vector 14.png';
+import {formatPrice} from '~/utils/priceFormatter';
 
 export async function loader({params, context}) {
   const {handle} = params;
@@ -221,7 +222,7 @@ const Brand = () => {
                 product.images?.edges?.[0]?.node?.url ||
                 '/assets/Images/placeholder.png';
               const firstVariant = product.variants?.edges?.[0]?.node;
-              const price = firstVariant?.priceV2?.amount || 'N/A';
+              const price = formatPrice(firstVariant?.priceV2?.amount);
 
               return (
                 <div key={product.id} className="relative group h-[25vw]">
@@ -235,7 +236,7 @@ const Brand = () => {
                     <h3 className="text-sm font-[500] lg:text-[1.146vw] uppercase mt-3">
                       {product.title}
                     </h3>
-                    <p className="text-sm mt-1">${price}</p>
+                    <p className="text-sm mt-1">{price}</p>
                   </div>
 
                   {/* Expanding Overlay */}
@@ -252,7 +253,7 @@ const Brand = () => {
                       <h3 className="text-sm lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-2 font-[500] uppercase text-left leading-snug">
                         {product.title}
                       </h3>
-                      <p className="text-sm mt-2 lg:mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw] text-left">${price}</p>
+                      <p className="text-sm mt-2 lg:mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
                     </div>
 
                     <div className="flex items-center justify-between mt-[3.906vw]">

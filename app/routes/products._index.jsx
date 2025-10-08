@@ -286,7 +286,7 @@ const Products = () => {
 
       <div className="w-full h-fit pt-[6.771vw]">
         <Heading
-          text={searchQuery ? `Search Results for "${searchQuery}"` : "products"}
+          text={searchQuery ? `search results for "${searchQuery}"` : "products"}
           classes={
             'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
