@@ -67,12 +67,13 @@ const Testimonialslider = ({ blogs = [] }) => {
                         src="/assets/Images/next.png"
                         className="invert-100 -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:hidden max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
                         alt="next"
+                        
                       />
                     </h3>
                   </Link>
                   <div className="flex flex-col items-end">
                     <h3 className="font-bold mt-[3.385vw] lg:text-[0.938vw] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto">
-                      {article.category?.toUpperCase() || 'ARTICLE'}
+                      {(article.category) && (article.category == 'wedding') ? 'WEDDING STORIES' : (article.category) && (article.category == 'ready') ? 'READY-MADE REGISTRIES' : (article.category) && (article.category == 'planning') ? 'REGISTRY & PLANNING TIPS' : (article.category) && (article.category == 'design') ? 'DESIGN NOTES' : (article.category) && (article.category == 'taste') ? 'TASTE & TRAVEL' : 'ARTICLE'}
                     </h3>
                     <h4 className="text-right ivyora text-xl lg:text-[1.875vw] lg:leading-[2.5vw] font-normal m-0 max-[1024px]:hidden">
                       {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', { 

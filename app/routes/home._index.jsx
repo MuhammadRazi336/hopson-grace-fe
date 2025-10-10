@@ -302,10 +302,12 @@ const Home = () => {
         </p>
         <Testimonialslider blogs={blogs} />
         <div className="text-center">
-          <ButtonComponent
-            text="EXPLORE REAL WEDDINGS"
+          <Link to="/inspiration">
+            <ButtonComponent
+              text="EXPLORE REAL WEDDINGS"
             className="button-cs text-[#1F1D1B] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.688vw] hover:bg-gray-100"
-          />
+            />
+          </Link>
         </div>
       </section>
 

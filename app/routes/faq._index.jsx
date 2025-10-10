@@ -97,7 +97,7 @@ const FAQ = () => {
               just intentional choices.
             </p>{' '}
             <br />
-            <p className="text-xl lg:text-2xl">
+            <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
               When you're ready to share your registry, simply make it visible
               and add the link to your wedding website. As gifts are purchased,
               you’ll be notified, and your dashboard will update automatically
