@@ -9,9 +9,21 @@ import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
 import BottleImg from '/assets/Images/BottleImg.png';
 import lineImg3 from '/assets/Images/line.png';
+import Popup from '~/components/Popup';
 import {NavLink} from '@remix-run/react';
+import {useState} from 'react';
 
 const AboutUs = () => {
+  
+  const [showPopup, setShowPopup] = useState(false);
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
     <section>
       <Header />
@@ -78,15 +90,17 @@ const AboutUs = () => {
           READY TO START BUILDING A REGISTRY?
         </h2>
         <p className="text-center text-2xl lg:text-3xl font-normal pt-2">
-        Create your account or book a virtual appointment to get started. 
+          Create your account or book a virtual appointment to get started.
         </p>
         <div className="flex justify-center py-16">
-          <NavLink to="/register">
-            <Button
-              text="Let's Go"
-              className="text-white font-[500] tracking-[0.8px] text-[18px] leading-[18px] bg-[#446184] py-0 lg:w-[332px] lg:h-[78px] mx-auto w-[280px] rounded-none button-cs"
-            />
-          </NavLink>
+          <button
+            onClick={handleOpenPopup}
+            
+            className="text-white font-[500] tracking-[0.8px] text-[18px] leading-[18px] bg-[#446184] py-0 lg:w-[332px] lg:h-[78px] mx-auto w-[280px] rounded-none button-cs"
+          >
+            Let's Go
+          </button>
+          {showPopup && <Popup onClose={handleClosePopup} />}
         </div>
       </div>
 

@@ -7,13 +7,20 @@ import dropdown from '/assets/Images/dropdown.png';
 import FooterBottom from './FooterBottom';
 import Copyright from './Copyright';
 import {useState} from 'react';
+import Popup from './Popup';
 
 /**
  * @param {FooterProps}
  */
 export function Footer({footer: footerPromise, header, publicStoreDomain}) {
   const [openNavIndex, setOpenNavIndex] = useState(null);
-
+  const [showPopup, setShowPopup] = useState(false);
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
   const toggleNav = (index) => {
     setOpenNavIndex((prevIndex) => (prevIndex === index ? null : index));
   };
@@ -98,9 +105,12 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 >
                   <ul className="text-white max-md:text-[14px] max-md:leading-[26px] text-[0.833vw] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
-                      <Link className="text-white" to="/register">
+                      <button 
+                        className="text-white bg-transparent border-none cursor-pointer hover:underline" 
+                        onClick={handleOpenPopup}
+                      >
                         START YOUR REGISTRY
-                      </Link>
+                      </button>
                     </li>
                     <li>
                       <Link className="text-white" to="/contact-us">
@@ -266,6 +276,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
           </div>
         </div>
       </div>
+      {showPopup && <Popup onClose={handleClosePopup} />}
     </div>
   );
 }

@@ -27,16 +27,17 @@ import arrowUp from '/assets/Images/arrowDown.png';
 import { Link, useLoaderData, json } from '@remix-run/react';
 import GuidedVideo from '~/components/GuidedVideo';
 import LiveChat from '~/components/LiveChat';
-
+import Popup from '~/components/Popup';
 export async function loader({ context }) {
   try {
     // Get user session if available (optional for non-logged in users)
     const user = context?.session?.get('@User');
     
-    const [{ collections }, { collections: brandCollections }, { products: bestsellerProducts }] = await Promise.all([
+    const [{ collections }, { collections: brandCollections }, { products: bestsellerProducts }, { blogs }] = await Promise.all([
       context.storefront.query(REAL_REGISTRIES_QUERY),
       context.storefront.query(BRAND_QUERY),
-      context.storefront.query(BESTSELLER_PRODUCTS_QUERY, { variables: { first: 8 } })
+      context.storefront.query(BESTSELLER_PRODUCTS_QUERY, { variables: { first: 8 } }),
+      context.storefront.query(BLOGS_QUERY)
     ]);
     
     // Filter collections where both ready_made AND parent_collection metafields are true
@@ -143,16 +144,25 @@ export async function loader({ context }) {
       }
     }
     
-    return json({ realRegistries, featuredRegistryData, brands, user, bestsellerProducts: bestsellerProducts?.edges || [] });
+    return json({ realRegistries, featuredRegistryData, brands, user, bestsellerProducts: bestsellerProducts?.edges || [], blogs: blogs?.nodes || [] });
   } catch (error) {
     console.error('Error loading real registries:', error);
-    return json({ realRegistries: [], featuredRegistryData: null, brands: [], user: null, bestsellerProducts: [] });
+    return json({ realRegistries: [], featuredRegistryData: null, brands: [], user: null, bestsellerProducts: [], blogs: [] });
   }
 }
 
 const Home = () => {
-  const { realRegistries, featuredRegistryData, brands, user, bestsellerProducts } = useLoaderData();
+  const { realRegistries, featuredRegistryData, brands, user, bestsellerProducts, blogs } = useLoaderData();
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleOpenModal = () => {
+    setShowPopup(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowPopup(false);
+  };
 
   if (brands && brands.length > 0) {
     console.log('First brand sample:', brands[0]);
@@ -213,7 +223,7 @@ const Home = () => {
           description="There's no question too small or request too big for our Registry advisors. We're always at your service."
           buttontext={'START YOUR REGISTRY'}
           buttontype={'Color'}
-          buttonLink={'/register'}
+          onClick={handleOpenModal}
         />
       </section>
 
@@ -290,7 +300,7 @@ const Home = () => {
         <p className="text-center max-[1024px]:hidden mt-5 lg:text-[1.354vw] lg:leading-[1.979vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mt-[2.135vw] lg:mb-0 mb-8">
           A peek inside some of our most-loved celebrations.
         </p>
-        <Testimonialslider />
+        <Testimonialslider blogs={blogs} />
         <div className="text-center">
           <ButtonComponent
             text="EXPLORE REAL WEDDINGS"
@@ -368,6 +378,7 @@ const Home = () => {
         <img src={arrowUp} className='text-white invert rotate-180 mx-auto w-[15px] h-[13px] mb-1' alt="arrowUp" />
         <span className="text-white text-sm">Back to Top</span>
       </button> */}
+      {showPopup && <Popup onClose={handleCloseModal} />}
     </div>
   );
 };
@@ -504,3 +515,28 @@ const BESTSELLER_PRODUCTS_QUERY = `#graphql
     }
   }
 `;
+
+const BLOGS_QUERY = `#graphql
+query GetAllBlogsAndArticlesForInspiration {
+  blogs(first: 10) {
+    nodes {
+      title
+      handle
+      articles(first: 20) {
+        nodes {
+          id
+          title
+          handle
+          publishedAt
+          contentHtml
+          image {
+            url
+          }
+          categoryMetafield: metafield(namespace: "custom", key: "category") {
+            value
+          }
+        }
+      }
+    }
+  }
+}`;
