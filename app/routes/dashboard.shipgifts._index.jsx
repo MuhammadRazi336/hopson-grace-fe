@@ -7,7 +7,7 @@ const ShipGifts = () => {
     <div className="pt-[80px]">
       <div className=" p-4">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          <span className="prata uppercase">FULFILL +</span> SHIP GIFTS
+          <span className="prata uppercase">READY TO FULFILL </span> & SHIP?
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"
@@ -47,7 +47,8 @@ const ShipGifts = () => {
                 className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%]"
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                Finalize your selections, and we’ll take care of the rest.
+                Enjoy two complimentary shipments of your gifts. Standard
+                shipping rates apply to any extra deliveries.
               </p>
               <div>
                 <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm  hover:bg-gray-100">
@@ -96,9 +97,11 @@ const ShipGifts = () => {
           your registry.
         </p>
         <div>
+          <Link to="/Home">
           <button className="border w-[300px] mb-20 font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
             KEEP SHOPPING
           </button>
+          </Link>
         </div>
       </div>
 

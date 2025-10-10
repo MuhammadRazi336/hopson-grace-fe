@@ -347,11 +347,11 @@ const CashFunds = () => {
                 key={index}
                 image={card.image}
                 title={card.title}
-                amount={card.price}
+                amount={typeof card.price === 'number' ? card.price.toFixed(2) : parseFloat(card.price || 0).toFixed(2)}
                 buttonLabel={'Personalize Fund'}
                 onButtonClick={() => handleButtonClick(card.title)}
                 registryId={registryId}
-                price={card.price}
+                price={typeof card.price === 'number' ? card.price.toFixed(2) : parseFloat(card.price || 0).toFixed(2)}
                 currency={card.currency}
                 handle={card.handle}
                 onSuccess={handleSuccess}
