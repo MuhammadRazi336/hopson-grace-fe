@@ -56,6 +56,25 @@ const ImageAndText = ({
         <div className="lg:mx-auto">
           {showLiveChat ? (
             <LiveChat {...liveChatProps} />
+          ) : onClick ? (
+            <button onClick={onClick}>
+              <Button
+                text={buttontext}
+                className={`text-[10px] block leading-[12px] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
+                  ${
+                    stepsCheck
+                      ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]'
+                      : ''
+                  }  
+                  ${
+                    buttontype == 'link'
+                      ? 'text-[#1F1D1B] border-3 border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
+                      : 'text-white bg-[#446184] rounded-none font-mono'
+                  }
+                  ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
+                `}
+              />
+            </button>
           ) : (
             <NavLink to={buttonLink}>
               <Button

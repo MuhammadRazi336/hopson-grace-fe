@@ -12,8 +12,17 @@ import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {NavLink} from '@remix-run/react';
 import LiveChat from '~/components/LiveChat';
+import { useState } from 'react';
+import Popup from '~/components/Popup';
 
 const FAQ = () => {
+  const [showPopup, setShowPopup] = useState(false);
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
   return (
     <section>
       <Header />
@@ -261,12 +270,13 @@ const FAQ = () => {
             READY TO START YOUR REGISTRY?
           </p>
           <div className="flex justify-center">
-            <NavLink to="/register">
-              <Button
+            {/* <NavLink to="/register"> */}
+              <Button onClick={handleOpenPopup}
                 text="Let's Go"
                 className="text-white font-[500] tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[20.677vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs"
               />
-            </NavLink>
+            {/* </NavLink> */}
+            {showPopup && <Popup onClose={handleClosePopup} />}
           </div>
         </div>
 
