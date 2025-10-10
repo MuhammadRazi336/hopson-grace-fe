@@ -67,6 +67,7 @@ const Testimonialslider = ({ blogs = [] }) => {
                         src="/assets/Images/next.png"
                         className="invert-100 -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:hidden max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
                         alt="next"
+                        
                       />
                     </h3>
                   </Link>
