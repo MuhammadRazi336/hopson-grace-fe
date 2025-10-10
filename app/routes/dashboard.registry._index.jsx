@@ -841,13 +841,13 @@ const FundPage = ({data}) => {
 
                     <div className="flex justify-between items-center">
                       {!isAnyAmount && (
-                        <p className="font-semibold text-md">${totalAmount}</p>
+                        <p className="font-semibold text-md">${totalAmount.toFixed(2)}</p>
                       )}
                     </div>
 
                     {!isAnyAmount && (
                       <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
-                        Remaining: ${remainingAmount}
+                        Remaining: ${remainingAmount.toFixed(2)}
                       </p>
                     )}
 

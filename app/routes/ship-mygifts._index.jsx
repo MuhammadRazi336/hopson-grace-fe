@@ -16,9 +16,8 @@ export default function ShipMyGifts() {
           className="max-w-[630px] mt-5 h-auto mx-auto"
         />
         <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
-          Enjoy one-time free shipping after the wedding—just let us know when
-          you're ready. Prefer to receive something sooner? You can ship gifts
-          anytime; standard shipping rates will apply.
+          Enjoy two complimentary shipments of your gifts. Standard shipping
+          rates apply to any extra deliveries.
         </p>
       </div>
 
