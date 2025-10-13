@@ -998,7 +998,7 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
     },
     {
       id: 3,
-      label: 'Both',
+      label: 'Gifts + Cash',
       image: Both,
       selectedImage: selected,
     },
