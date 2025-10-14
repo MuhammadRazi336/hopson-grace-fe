@@ -18,7 +18,7 @@ import arrowDown from '/assets/Images/arrowDown.png';
 
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticlesForInspiration {
-  blogs(first: 10) {
+  blogs(first: 1, reverse: true) {
     nodes {
       title
       handle
@@ -58,7 +58,7 @@ export async function loader({context}) {
 
 const Inspiration = () => {
   const {blogs} = useLoaderData();
-  console.log('blogs', blogs);
+  console.log('blogsww', blogs);
   
   const [clickedSection, setClickedSection] = React.useState(null);
   const [articlesToShow, setArticlesToShow] = React.useState(12);
