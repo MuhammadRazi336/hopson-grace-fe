@@ -1012,6 +1012,22 @@ td.rdp-day.rdp-outside {
   margin-right: auto;
 }
 
+html, body { height: 100%; margin: 0; }
+
+#app-clip {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#app-scale {
+  transform: scale(0.8);
+  transform-origin: top left;
+  width: calc(100vw / 0.8);
+  height: 100vh;
+}
+
 /* .steps-btns-hover:hover {
   transform: translateY(-3px);
 } */

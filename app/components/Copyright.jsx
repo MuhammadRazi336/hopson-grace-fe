@@ -3,7 +3,7 @@ import HopsonGrace from '/assets/Images/HopsonGraceTitleWhite.png';
 
 const Copyright = () => {
   return (
-    <div className="flex items-center justify-center gap-[0.677vw] text-white tracking-[0.08em] max-md:mb-[15px]">
+    <div className="flex items-center lg:w-[25%] relative left-[0.3vw] justify-center gap-[0.677vw] text-white tracking-[0.08em] max-md:mb-[15px]">
       <img
         src={HopsonGrace}
         alt="Hopson Grace"
