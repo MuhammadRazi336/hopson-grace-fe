@@ -114,7 +114,8 @@ const BLOGS_QUERY = `#graphql
       first: $first,
       last: $last,
       before: $startCursor,
-      after: $endCursor
+      after: $endCursor,
+      reverse: true
     ) {
       pageInfo {
         hasNextPage

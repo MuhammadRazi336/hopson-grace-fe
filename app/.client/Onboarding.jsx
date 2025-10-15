@@ -60,7 +60,6 @@ const OnboardingClient = ({onStepChange}) => {
     eventId: null,
   });
   const [eventDateError, setEventDateError] = useState('');
-  const [step2Errors, setStep2Errors] = useState({});
   const [step3Error, setStep3Error] = useState('');
   const [step4Errors, setStep4Errors] = useState({});
   const handleGuestNoChange = (e) => {
@@ -86,6 +85,16 @@ const OnboardingClient = ({onStepChange}) => {
   useEffect(() => {
     getEvents();
   }, []);
+
+  // Auto-select first event type when event types are loaded
+  useEffect(() => {
+    if (eventTypes.length > 0 && !eventData.selectedOption.id) {
+      setEventData((prev) => ({
+        ...prev,
+        selectedOption: {label: eventTypes[0].label, id: eventTypes[0].id},
+      }));
+    }
+  }, [eventTypes]);
 
   useEffect(() => {
     if (user) {
@@ -172,17 +181,10 @@ const OnboardingClient = ({onStepChange}) => {
       selectedOption: {label: value.label, id: value.id},
     }));
   };
-  // Main state for selected date
-  const handleEventNameChange = (e) => {
-    setEventData((prev) => ({
-      ...prev,
-      eventName: e.target.value,
-    }));
-  };
 
   const handleRegistry = async () => {
     const payload = {
-      name: eventData.eventName,
+      name: eventData.eventName || 'My Event', // Default event name if not provided
       eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD'),
       eventTypeId: Number(eventData.selectedOption.id),
       ...(eventData.id && {id: eventData.id}),
@@ -411,30 +413,14 @@ const OnboardingClient = ({onStepChange}) => {
       }, 1000);
     }
   };
-  // Add frontend validation for Step 2
-  const validateStep2 = () => {
-    const errors = {};
-    if (!eventData.eventName || eventData.eventName.trim() === '') {
-      errors.eventName = 'Event name is required';
-    }
-    if (!eventData.selectedDate) {
-      errors.selectedDate = 'Event date is required';
-    }
-    if (!eventData.selectedOption || !eventData.selectedOption.id) {
-      errors.selectedOption = 'Event type is required';
-    }
-    setStep2Errors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   // Update goNext to validate before calling handleRegistry
   async function goNext() {
     if (step === 1) {
-      setStep(step + 1);
-    } else if (step === 2) {
-      if (!validateStep2()) return;
+      // Skip step 2 (event name selection) and go directly to step 3 (guest info)
+      // Auto-create registry with first event type
       await handleRegistry();
-    } else if (step === 3) {
+    } else if (step === 2) {
       if (!eventData.noOfGuest || eventData.noOfGuest.trim() === '') {
         setStep3Error('Number of guests is required');
         return;
@@ -442,7 +428,7 @@ const OnboardingClient = ({onStepChange}) => {
         setStep3Error('');
       }
       await handleNoOfGuest();
-         } else if (step === 4) {
+         } else if (step === 3) {
                // Step 4 validation - Simple validation
         const errors = {};
         
@@ -494,21 +480,21 @@ const OnboardingClient = ({onStepChange}) => {
        setStep4Errors(errors);
        if (Object.keys(errors).length > 0) return;
        await handleShipping();
-    } else if (step === 5) {
+    } else if (step === 4) {
       // Validate that at least one gift preference is selected
       if (!selectedGiftPreference) {
         alert('Please select your gift preference to continue.');
         return;
       }
       setStep(step + 1);
-         } else if (step === 6) {
+         } else if (step === 5) {
        // Validate that at least one collection is selected
        if (!selectedCollections || selectedCollections.length === 0) {
          alert('Please select at least one collection to continue.');
          return;
        }
        
-       // Call API to update preferred categories when finishing Step 6
+       // Call API to update preferred categories when finishing Step 5
        if (user && user.user && user.user.id) {
          const preferredCategoryTitles = selectedCollections.map((col) => col.title);
          const token = user.accessToken;
@@ -522,14 +508,14 @@ const OnboardingClient = ({onStepChange}) => {
          );
        }
        setStep(step + 1);
-         } else if (step === 7) {
+         } else if (step === 6) {
        // Validate that at least one sub-collection is selected
        if (!selectedSubCollections || selectedSubCollections.length === 0) {
          alert('Please select at least one sub-collection to continue.');
          return;
        }
        
-       // Call API to update preferred subcategories when finishing Step 7
+       // Call API to update preferred subcategories when finishing Step 6
        if (user && user.user && user.user.id) {
          const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
          const token = user.accessToken;
@@ -543,7 +529,7 @@ const OnboardingClient = ({onStepChange}) => {
          );
        }
        setStep(step + 1);
-    } else if (step === 8) {
+    } else if (step === 7) {
       await handleOnboard();
     }
   }
@@ -563,7 +549,7 @@ const OnboardingClient = ({onStepChange}) => {
 
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
-    if (currentStep === 8) {
+    if (currentStep === 7) {
       return (
         <div className="flex flex-col items-center justify-center text-white py-6 rounded-md">
           <div className="uppercase tracking-widest font-semibold mb-4 text-center text-xl md:text-xl">
@@ -579,10 +565,10 @@ const OnboardingClient = ({onStepChange}) => {
             </div>
           </div>
           <div className="font-semibold text-center mb-6 mt-4 text-base md:text-xl">
-            Now it’s time to set up your dashboard — your registry HQ.
+            Now it's time to set up your dashboard — your registry HQ.
           </div>
           <div className="text-center mb-6 text-lg md:text-xl max-w-xl">
-            From tracking gifts and checking messages to sending thank-you notes and setting up your home page, everything you need lives here. You’ll land here every time you log in.
+            From tracking gifts and checking messages to sending thank-you notes and setting up your home page, everything you need lives here. You'll land here every time you log in.
           </div>
           <div className="uppercase font-semibold mb-6 text-center">READY?</div>
           <button
@@ -600,21 +586,6 @@ const OnboardingClient = ({onStepChange}) => {
           <Step1
             setSelectedDate={setSelectedDate}
             selectedDate={eventData.selectedDate}
-            onSkip={handleSkip}
-          />
-        );
-      case STEPS_CONSTANTS.EVENT_ADD_INFO:
-        return (
-          <Step2
-            eventData={eventTypes}
-            setSelectedDate={setSelectedDate}
-            selectedDate={eventData.selectedDate}
-            handleEventNameChange={handleEventNameChange}
-            eventName={eventData.eventName}
-            selectedOption={eventData.selectedOption}
-            handleSelectChange={handleSelectChange}
-            eventDateError={eventDateError}
-            step2Errors={step2Errors}
             onSkip={handleSkip}
           />
         );
@@ -667,7 +638,7 @@ const OnboardingClient = ({onStepChange}) => {
     <div className="flex justify-center items-center">
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
-      {step !== 8 && <Stepper step={step} totalSteps={9} />}
+      {step !== 7 && <Stepper step={step} totalSteps={8} />}
       <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
         <div className="mb-6">
@@ -675,7 +646,7 @@ const OnboardingClient = ({onStepChange}) => {
           {renderStepContent(step)}
         </div>
         {/* Back and Next buttons, hidden on last step */}
-        {step !== 8 && (
+        {step !== 7 && (
           <div className="flex justify-between mt-4">
             {/* Only show back button if not on step 1 */}
             {step !== STEPS_CONSTANTS.EVENT_DATE_INFO && (
@@ -695,7 +666,7 @@ const OnboardingClient = ({onStepChange}) => {
               text="Next"
               className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
             >
-              {step === 9 ? 'Submit' : 'Next'}{' '}
+              {step === 8 ? 'Submit' : 'Next'}{' '}
               <img src={arrow} alt="" className="max-[768px]:w-4" />
             </button>
           </div>
@@ -750,97 +721,6 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
   );
 };
 
-const Step2 = ({
-  setSelectedDate,
-  selectedDate,
-  handleEventNameChange,
-  eventName,
-  selectedOption,
-  handleSelectChange,
-  eventData,
-  eventDateError,
-  step2Errors,
-  onSkip,
-}) => {
-  const {useState, useEffect} = React;
-  // Create disabled dates array - disable all dates before today
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set to start of day
-  
-  const disabledDates = [
-    { from: new Date(1900, 0, 1), to: new Date(today.getTime() - 24 * 60 * 60 * 1000) }
-  ];
-
-  // For step 2, we don't want to show the prefilled date from step 1
-  const [localSelectedDate, setLocalSelectedDate] = useState(null);
-
-  // Update local date when selectedDate changes (but only if it's a new selection, not the initial prefilled value)
-  useEffect(() => {
-    if (selectedDate && !localSelectedDate) {
-      setLocalSelectedDate(selectedDate);
-    }
-  }, [selectedDate, localSelectedDate]);
-
-  const handleDateChange = (date) => {
-    setLocalSelectedDate(date);
-    setSelectedDate(date);
-  };
-
-  return (
-    <div>
-      <div className="text-center">
-        <Heading text={'Do You Have Other Events where guest may buy gifts?'} />
-        <h2 className="text-l font-bold mb-4">
-          {'(ie. bridal shower , engagement party)'}
-        </h2>
-      </div>
-      <div className="customselect mb-6">
-        <CustomSelect
-          title={'Event Type'}
-          options={eventData}
-          selected={selectedOption}
-          setSelected={handleSelectChange}
-          placeholder="Choose an option"
-          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black"
-        />
-        {step2Errors?.selectedOption && (
-          <div className="input-error-message">
-            {step2Errors.selectedOption}
-          </div>
-        )}
-      </div>
-      {/* Event Name Input */}
-      <Input
-        label="Event Name"
-        value={eventName}
-        onChange={handleEventNameChange}
-        placeholder="Enter event name"
-        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-        error={step2Errors?.eventName}
-      />
-      <div className="mt-6 customdatepicker">
-        <DatePicker
-          selectedDate={localSelectedDate}
-          onDateChange={handleDateChange}
-          placeholder="Select a date"
-          inputProps={{
-            className:
-              'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black h-[68px] customDatePicker',
-          }}
-          buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
-          disabledDates={disabledDates}
-        />
-        {step2Errors?.selectedDate && (
-          <div className="input-error-message">{step2Errors.selectedDate}</div>
-        )}
-        {eventDateError && (
-          <div className="input-error-message">{eventDateError}</div>
-        )}
-      </div>
-
-    </div>
-  );
-};
 const Step3 = ({value, onChange, step3Error, onSkip}) => {
   return (
     <div>
@@ -998,7 +878,7 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
     },
     {
       id: 3,
-      label: 'Both',
+      label: 'Gifts + Cash',
       image: Both,
       selectedImage: selected,
     },
@@ -1011,7 +891,7 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
         CHOOSE AS MANY AS YOU'D LIKE:
       </h2>
       {/* Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl mx-auto">
         {options.map((option) => (
           <button
             key={option.id}

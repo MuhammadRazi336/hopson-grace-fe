@@ -47,15 +47,19 @@ const ProductCard = ({
             <img
               src={image}
               alt={productName}
-              className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
+              className={`w-full rounded-none h-[15.625vw] mx-auto object-cover ${onPersonalizeFund ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+              onClick={onPersonalizeFund}
             />
             <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {'BRAND NAME'}
             </h4>
-            <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
-              {productName}
-            </h3>
-            <p className="text-sm mt-2 lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] text-left">{formatPrice(price)}</p>
+              <h3 
+                className={`text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug ${onPersonalizeFund ? 'cursor-pointer hover:text-gray-600 transition-colors' : ''}`}
+                onClick={onPersonalizeFund}
+              >
+                {productName}
+              </h3>
+            <p className="text-sm mt-2 text-left">{formatPrice(price)}</p>
           </div>
 
           <div className="flex items-center justify-between mt-[2.813vw]">
