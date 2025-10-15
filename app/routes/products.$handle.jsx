@@ -624,6 +624,7 @@ export default function ProductCollection() {
                   return (
                     <RegistryProduct
                       key={product.id}
+                      id={product.id}
                       image={firstImage}
                       productName={product.title}
                       price={firstVariant.priceV2.amount}

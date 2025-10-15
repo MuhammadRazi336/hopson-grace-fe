@@ -47,29 +47,24 @@ const ProductCard = ({
             <img
               src={image}
               alt={productName}
-              className="w-full h-[220px] mx-auto object-cover mb-2"
+              className={`w-full h-[220px] mx-auto object-cover mb-2 ${onPersonalizeFund ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+              onClick={onPersonalizeFund}
             />
             <h4 className="text-xs font-medium uppercase text-left mb-1">
               {'BRAND NAME'}
             </h4>
-            <h3 className="text-sm font-bold uppercase text-left leading-snug">
-              {productName}
-            </h3>
+              <h3 
+                className={`text-sm font-bold uppercase text-left leading-snug ${onPersonalizeFund ? 'cursor-pointer hover:text-gray-600 transition-colors' : ''}`}
+                onClick={onPersonalizeFund}
+              >
+                {productName}
+              </h3>
             <p className="text-sm mt-2 text-left">{formatPrice(price)}</p>
           </div>
 
           <div className="flex items-center justify-between mt-4">
             {/* Quantity Controls */}
             <div className="flex flex-col w-full items-center text-xs">
-              {/* Add to Registry Button */}
-              {onPersonalizeFund && (
-                <button
-                  className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8"
-                  onClick={onPersonalizeFund}
-                >
-                  personalize fund
-                </button>
-              )}
               {/* Add to Registry Button */}
               <button
                 className="bg-[#446184] w-full block text-white text-xs font-bold py-4 px-8"

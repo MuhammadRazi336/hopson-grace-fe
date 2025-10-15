@@ -121,7 +121,7 @@ export async function loader({request, context}) {
     });
   }
 
-  const apiBaseUrl = context.env?.API_BASE_URL || 'http://localhost:3040';
+  const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
 
   return defer({
     data: mergedArray,

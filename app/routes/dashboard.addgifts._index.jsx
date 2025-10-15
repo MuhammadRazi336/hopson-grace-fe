@@ -1132,6 +1132,7 @@ export default function AddGifts() {
                     return (
                       <RegistryProduct
                         key={product.id}
+                        id={product.id}
                         image={firstImage}
                         productName={product.title}
                         price={product.price}
