@@ -25,7 +25,6 @@ import {Header} from '~/components/Header';
 import {useState, useEffect} from 'react';
 import arrowUp from '/assets/Images/arrowDown.png';
 import { Link, useLoaderData, json } from '@remix-run/react';
-import GuidedVideo from '~/components/GuidedVideo';
 import LiveChat from '~/components/LiveChat';
 import Popup from '~/components/Popup';
 export async function loader({ context }) {
@@ -270,7 +269,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-[80px] my-12 lg:py-[10.625vw] max-[1024px]:px-0 lg:my-0 container">
+      <section className="py-[80px] my-12 lg:py-[10.625vw] max-[1024px]:px-0 lg:my-0">
         <Heading
           text="the registry bestsellers"
           classes={
@@ -363,9 +362,6 @@ const Home = () => {
         />
       </section>
       <Footer />
-      
-      {/* Guided Video Component */}
-      <GuidedVideo />
       
       {/* Back to Top Button */}
       {/* <button

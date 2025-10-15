@@ -1028,6 +1028,16 @@ html, body { height: 100%; margin: 0; }
   height: 100vh;
 }
 
+.guided-video {
+  position: fixed !important;
+  right: 40px;
+  bottom: 20px;
+  display: none;
+}
+body.homepage .guided-video {
+  display: block;
+}
+
 /* .steps-btns-hover:hover {
   transform: translateY(-3px);
 } */

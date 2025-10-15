@@ -864,7 +864,7 @@ export function Header() {
       </header>
 
       <div
-        className={`mt-6 max-[1024px]:hidden  ${
+        className={`mt-4 max-[1024px]:hidden  ${
           isFixed
             ? `fixed transition-all ${
                 isMenuOpenBottom ? 'top-[70px] bg-white' : 'top-[-50px]'

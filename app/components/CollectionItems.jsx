@@ -19,7 +19,7 @@ import { Link } from '@remix-run/react';
 const CollectionItems = () => {
   return (
     <div className="relative">
-      <div className="max-w-[80%] max-[1024px]:max-w-[1400px] mx-auto relative collection-slider">
+      <div className="max-w-[100%] max-[1024px]:max-w-[1400px] mx-auto relative collection-slider">
         <h2 className="text-[20px] leading-[36px] lg:text-[2.5vw] prata text-center lg:leading-[1.875vw] font-normal mb-2 lg:mb-5">
           why the registry?
         </h2>
@@ -34,7 +34,7 @@ const CollectionItems = () => {
       <Swiper
         className="my-16 max-[1024px]:my-0"
         modules={[FreeMode, Autoplay]}
-        slidesPerView={5}
+        slidesPerView={7}
         spaceBetween={30}
         allowTouchMove={false}
         simulateTouch={false}
@@ -48,7 +48,7 @@ const CollectionItems = () => {
         breakpoints={{
           320:  { slidesPerView: 2, spaceBetween: 20 },
           600:  { slidesPerView: 3, spaceBetween: 30 },
-          1025: { slidesPerView: 5, spaceBetween: 50 },
+          1025: { slidesPerView: 7, spaceBetween: 50 },
         }}
       >
           <SwiperSlide>

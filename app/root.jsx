@@ -1,3 +1,4 @@
+import {useLocation} from '@remix-run/react';
 import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
 import {defer} from '@shopify/remix-oxygen';
 import {
@@ -24,6 +25,7 @@ import {ToastContainer, toast as notify} from 'react-toastify';
 import {useEffect} from 'react';
 import {Elements} from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
+import GuidedVideo from '~/components/GuidedVideo';
 
 const stripePromise = loadStripe(
   'pk_test_51RHKe6ELfhE2pt9mxrrxK7hhAclxCvksadMtIQCvxowOQADlw5jCFRSoj1tq7JNEVqqIE3uThE9P6K0DTQ6X3Pam006Cn180x4',
@@ -277,6 +279,8 @@ export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
   const data = useRouteLoaderData('root');
+  const {pathname} = useLocation();
+  const isHome = pathname === '/Home';
 
   // Add null check before destructuring
   useEffect(() => {
@@ -293,7 +297,7 @@ export function Layout({children}) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className={isHome ? 'homepage' : ''}>
         {data ? (
           <Analytics.Provider
             cart={data.cart}
@@ -320,11 +324,17 @@ export function Layout({children}) {
 
 export default function App() {
   return (
+    <>
     <div id="app-clip">
       <div id="app-scale">
         <Outlet />
       </div>
     </div>
+
+    {/* Guided Video Component */}
+    <GuidedVideo />
+    </>
+    
   );
 }
 

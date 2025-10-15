@@ -16,22 +16,22 @@ const OurPhilosophy = () => {
       <img
         src={OurPhilosophyBg}
         alt=""
-        className="w-full h-[510px] lg:h-[800px] object-cover"
+        className="w-full h-[400px] lg:h-[27.083vw] xl:h-[27.083vw] 2xl:h-[27.083vw] object-cover"
       />
 
-      <div className="container mx-auto py-16">
+      <div className="container mx-auto pt-[5vw]">
         <Heading
           text="our philosophy "
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[18.542vw] xl:w-[18.542vw] 2xl:w-[18.542vw]'}
         />
-        <h2 className="text-center font-[500] text-[22px] leading-[36px] lg:text-[22px] leading-[36px] py-16">
+        <h2 className="text-center font-[500] text-[22px] leading-[36px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] m-0 pt-[1.771vw] pb-[4.427vw]">
           FEWER, BETTER THINGS.
         </h2>
-        <p className="text-center text-[26px] lg:text-[26px] leading-[38px] font-normal">
+        <p className="text-center text-[26px] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.979vw] leading-[38px] font-normal lg:w-[75.469vw] xl:w-[75.469vw] 2xl:w-[75.469vw] mx-auto">
           We believe in fewer, better things. That the gifts you choose should
           be beautifully made, deeply personal, and built to last. That great
           design never goes out of style. And that weddings should be a
@@ -42,27 +42,11 @@ const OurPhilosophy = () => {
         </p>
         <br />
       </div>
-      <div className="w-full container mx-auto py-16">
-        <img
-          src={RegistryLogo}
-          alt=""
-          className="w-[100px] object-cover mx-auto"
-        />
-        <img
-          src={lineImghead}
-          alt=""
-          width={100}
-          height={100}
-          className="object-cover mx-auto"
-        />
-
-        <h2 className="text-center tracking-[0.8px] font-[500] text-[22px] lg:text-[22px] leading-[32px] pt-[41px]">
-        DISCOVER THE BRANDS & PRODUCTS THAT REFLECT  <br/>OUR ‘FEWER, BETTER THINGS’ PHILOSOPHY
-        </h2>
-        <div className="flex justify-center pb-16 pt-[30px]">
+      <div className="w-full container mx-auto pb-16">
+        <div className="flex justify-center pt-[30px]">
           <Button
             text="BROWSE OUR CURATED COLLECTION   "
-            className="text-white font-normal bg-[#446184] py-[22px] lg:py-[21.5px] lg:w-[465px] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
+            className="text-white font-normal bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
           />
         </div>
       </div>

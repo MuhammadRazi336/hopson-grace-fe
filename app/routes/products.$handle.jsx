@@ -18,7 +18,7 @@ import youll2 from '/assets/Images/youll-2.png';
 import youll3 from '/assets/Images/youll-3.png';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import Heading from '~/components/Heading';
-import lineImghead from '/assets/Images/line.png';
+import lineImghead from '/assets/Images/heading-bottom-curve.png';
 import CustomTab from '~/components/CustomTab';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
@@ -166,10 +166,10 @@ function SidebarFilter({
   };
 
   return (
-    <div className="w-full xl:w-1/4 p-6 h-fit bg-[#FAF9F6]">
+    <div className="w-full lg:w-[19.031vw] xl:w-[19.031vw] 2xl:w-[19.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
           onClick={() => toggleSection('categories')}
         >
           Product Categories
@@ -178,25 +178,25 @@ function SidebarFilter({
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-[16px]">
             {parentCollection.map((col) => (
-              <li key={col.id}>
+              <li key={col.id} className='flex items-center'>
                 <label>
                   <input
                     type="checkbox"
-                    className="mr-2"
+                    className="mr-2 lg:mr-[0.885vw] xl:mr-[0.885vw] 2xl:mr-[0.885vw] lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] lg:h-[1.25vw] xl:h-[1.25vw] 2xl:h-[1.25vw]"
                     checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
@@ -208,9 +208,9 @@ function SidebarFilter({
         )}
       </div>
 
-      <div className="mb-6">
+      <div className="my-10">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
           onClick={() => toggleSection('brands')}
         >
           Our Brands
@@ -219,25 +219,25 @@ function SidebarFilter({
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.brands && (
-          <p className="text-sm text-gray-500 italic">No data</p>
+          <p className="lg:text-[0.834vw] xl:text-[0.834vw] 2xl:text-[0.834vw] text-[16px] text-gray-500 italic">No data</p>
         )}
       </div>
 
       <div>
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
           onClick={() => toggleSection('styles')}
         >
           Shop by Style
@@ -246,25 +246,25 @@ function SidebarFilter({
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-270"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw] rotate-90"
               />
             )}
           </span>
         </h2>
         {openSections.styles && (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-[16px]">
             {subCollection.map((col) => (
-              <li key={col.id}>
+              <li key={col.id} className='flex items-center'>
                 <label>
                   <input
                     type="checkbox"
-                    className="mr-2"
+                    className="mr-2 lg:mr-[0.885vw] xl:mr-[0.885vw] 2xl:mr-[0.885vw] lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] lg:h-[1.25vw] xl:h-[1.25vw] 2xl:h-[1.25vw]"
                     checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
@@ -499,8 +499,8 @@ export default function ProductCollection() {
           <div className=" ">
             {!selectedSwiperCollectionId && (
               <>
-                <div className="z-10 swiper-button-prev-prod absolute  left-[0.5%] lg:w-[5.781vw] xl:w-[5.781vw] 2xl:w-[5.781vw] cursor-pointer text-white uppercase items-center bg-white top-[45%] translate-y-[-50%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
-                  <img src={nextitem} alt="" className="rotate-180 size-6" />
+                <div className="z-10 swiper-button-prev-prod absolute left-[0.5%] lg:w-[5.781vw] xl:w-[5.781vw] lg:h-[5.781vw] xl:h-[5.781vw] 2xl:h-[5.781vw] 2xl:w-[5.781vw] cursor-pointer text-white uppercase items-center bg-white top-[45%] translate-y-[-50%] flex justify-center max-[1024px]:w-[33px]">
+                  <img src={nextitem} alt="" className="rotate-90 lg:w-[1.875vw] lg:h-[1.875vw] xl:w-[1.875vw] xl:h-[1.875vw] 2xl:w-[1.875vw] 2xl:h-[1.875vw]" />
                 </div>
 
                 <Swiper
@@ -513,7 +513,7 @@ export default function ProductCollection() {
                     nextEl: '.swiper-button-next-prod',
                     prevEl: '.swiper-button-prev-prod',
                   }}
-                  className="px-[178px]"
+                  className=""
                   breakpoints={{
                     345: {
                       slidesPerView: 1.25,
@@ -571,8 +571,8 @@ export default function ProductCollection() {
                       </SwiperSlide>
                     ))}
                 </Swiper>
-                <div className="swiper-button-next-prod absolute  right-[0.5%] lg:w-[5.781vw] xl:w-[5.781vw] 2xl:w-[5.781vw] cursor-pointer  uppercase items-center bg-white z-10 top-[45%] translate-y-[-50%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
-                  <img src={nextitem} className="size-6" alt="" />
+                <div className="swiper-button-next-prod absolute right-[0.5%] lg:w-[5.781vw] xl:w-[5.781vw] 2xl:w-[5.781vw] lg:h-[5.781vw] xl:h-[5.781vw] 2xl:h-[5.781vw] cursor-pointer uppercase items-center bg-white z-10 top-[45%] translate-y-[-50%] flex justify-center text-white max-[1024px]:w-[33px]">
+                  <img src={nextitem} className="rotate-270 lg:w-[1.875vw] lg:h-[1.875vw] xl:w-[1.875vw] xl:h-[1.875vw] 2xl:w-[1.875vw] 2xl:h-[1.875vw]" alt="" />
                 </div>
               </>
             )}
@@ -591,8 +591,8 @@ export default function ProductCollection() {
         </div>
       </section>
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-[5vw]">
+      <section className="px-[8.594vw] mx-auto">
+        <div className="flex flex-col md:flex-row gap-[3.75vw] w-full mx-auto pt-[5vw]">
           <SidebarFilter
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
@@ -600,7 +600,7 @@ export default function ProductCollection() {
             selectedCollectionId={selectedCollection?.id}
           />
           <div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10 flex-1"
+            className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]"
             ref={productGridRef}
           >
             {(() => {
@@ -650,7 +650,7 @@ export default function ProductCollection() {
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">
+            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">
               LOADING {Math.min(productsToShow, displayedProducts.length)} of{' '}
               {displayedProducts.length}
             </p>
@@ -688,21 +688,21 @@ export default function ProductCollection() {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+      <section className="bg-[#FAF9F6] pt-[5.26vw] pb-8 mt-[6.896vw]">
         <Heading
           text="we think you'll love"
           classes={
-            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw] lg:h-[0.417vw]'}
         />
 
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 " />
-              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+        <div className=" relative items-start mt-[5.573vw] mb-10 max-[1024px]:my-10">
+          <div className="lg:px-[11.823vw] xl:px-[11.823vw] 2xl:px-[11.823vw] mx-auto">
+            <div className="swiper-button-prev-prod absolute items-center top-12 left-[2.344vw] cursor-pointer uppercase flex w-[139px] lg:w-[2.813vw] xl:w-[2.813vw] 2xl:w-[2.813vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw]" />
+              <span className="-rotate-90 text-black lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
                 more
               </span>
             </div>
@@ -716,7 +716,7 @@ export default function ProductCollection() {
                 nextEl: '.swiper-button-next-prod',
                 prevEl: '.swiper-button-prev-prod',
               }}
-              className="px-[178px]"
+              className=""
               breakpoints={{
                 345: {
                   spaceBetween: 10,
@@ -747,51 +747,51 @@ export default function ProductCollection() {
               {/* slides here */}
               <SwiperSlide>
                 <img src={youll1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] mt-[0.521vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                   SMEG TOASTER, 2 SLICE
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] mt-[0.521vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5 uppercase lg:mt-[30px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] mt-[0.521vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll1} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                   ARKE GLASS BOTTLE FOR CARBONATOR PRO
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] mt-[0.521vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
               <SwiperSlide>
                 <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                <h3 className="mt-2.5 uppercase lg:mt-[30px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                   THE BARISTA TOUCH ESPRESSO MAKER
                 </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
+                <p className="lg:text-[1.25vw] mt-[0.521vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm">$95</p>
               </SwiperSlide>
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+            <div className="swiper-button-next-prod absolute top-12 right-[3.8vw] cursor-pointer  uppercase flex w-[139px] items-center lg:w-[2.813vw] xl:w-[2.813vw] 2xl:w-[2.813vw] max-[768px]:h-[41.35vw] justify-center text-white max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
                 more
               </span>
-              <img src={nextitem} className="" alt="" />
+              <img src={nextitem} className="rotate-270 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw]" alt="" />
             </div>
           </div>
         </div>
       </section>
 
-      <div className="py-[120px] px-12">
+      <div className="py-[5.26vw] px-0">
           <ExploreCategories />
         </div>
 
