@@ -143,7 +143,7 @@ const RegisterIndex = () => {
         <StepsAndImage
           title="let's get to know each other."
           stepNo="1"
-          totalSteps="9"
+          totalSteps="8"
           content={
             <div className="flex h-full items-center">
               {/* Stepper for progress */}

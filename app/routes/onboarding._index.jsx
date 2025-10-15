@@ -44,13 +44,12 @@ const COLLECTIONS_QUERY = `#graphql
 // Define step titles
 const STEP_TITLES = {
   1: "the countdown is on. mark your date.",
-  2: "Name of the Event!",
-  3: "how many guest are you inviting?",
-  4: "where would you like your gifts shipped after the wedding?",
-  5: "what type of gifts would you like?",
-  6: "what kind of gifts are you looking for?",
-  7: "you're nearly there!",
-  8: "congratulations jo & jon!"
+  2: "how many guest are you inviting?",
+  3: "where would you like your gifts shipped after the wedding?",
+  4: "what type of gifts would you like?",
+  5: "what kind of gifts are you looking for?",
+  6: "you're nearly there!",
+  7: "congratulations jo & jon!"
 };
 
 export async function loader({ request, context }) {
@@ -110,8 +109,8 @@ const OnboardingIndex = () => {
   
   // Create dynamic step titles
   const getStepTitle = (step) => {
-    if (step === 8) {
-      // Dynamic title for step 8 using user names
+    if (step === 7) {
+      // Dynamic title for step 7 using user names
       if (firstName && fianceFirstName) {
         const lowerFirstName = firstName.toLowerCase();
         const lowerFianceFirstName = fianceFirstName.toLowerCase();
@@ -132,9 +131,9 @@ const OnboardingIndex = () => {
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
         stepNo={currentStep + 1} // Start from step 3 and increment
-        totalSteps={9} // Add total number of steps
+        totalSteps={8} // Add total number of steps
         content={hydrated && <Onboarding onStepChange={setCurrentStep} />} 
-        className={currentStep === 6 || currentStep === 7 ? 'px-12' : ''} // Add className prop
+        className={currentStep === 5 || currentStep === 6 ? 'px-12' : ''} // Add className prop
       />
       <Footer />
     </div>
