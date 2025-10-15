@@ -604,7 +604,7 @@ export function Header() {
             <img
               src={isFixed ? registryLogoScroll : registryLogo}
               alt="Registry Logo"
-              className={`transition-all duration-600 ease-in-out ${
+              className={`transition-all duration-600 ease-in-out lg:w-[4vw] ${
                 isFixed
                   ? 'max-[1024px]:w-[60px]'
                   : 'lg:w-[21.667vw] max-md:w-[133px]'

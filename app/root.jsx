@@ -319,7 +319,13 @@ export function Layout({children}) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <div id="app-clip">
+      <div id="app-scale">
+        <Outlet />
+      </div>
+    </div>
+  );
 }
 
 export function ErrorBoundary() {

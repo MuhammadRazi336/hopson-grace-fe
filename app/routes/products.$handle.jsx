@@ -471,35 +471,35 @@ export default function ProductCollection() {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="pt-[80px] relative p-4 mt-[80px]">
-        <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+      <div className="relative mt-[5.938vw]">
+        <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[1.875vw] font-normal mb-1">
           {selectedSwiperCollectionId ? (
-            <span className="prata uppercase">
+            <span className="prata lowercase">
               {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
             </span>
           ) : selectedCollection ? (
-            <span className="prata uppercase">{selectedCollection.title}</span>
+            <span className="prata lowercase">{selectedCollection.title}</span>
           ) : (
-            <span className="prata uppercase">Browse Products</span>
+            <span className="prata lowercase">Browse Products</span>
           )}
         </h2>
         <img
-          src="/assets/Images/profile-view-page-bdr.png"
+          src="/assets/Images/heading-bottom-curve.png"
           alt="Couple"
-          className="max-w-[630px] mt-5 h-auto mx-auto"
+          className="max-w-[360px] lg:w-[18.75vw] xl:w-[18.75vw] 2xl:w-[18.75vw] mt-5 h-auto mx-auto"
         />
-        <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
+        <p className="max-w-xl lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] mx-auto text-center  mt-[1.875vw] mb-[3.281vw] font-normal leading-relaxed">
           Browse by category, filter by price, or get inspired with our curated
           edits. Add, update, or switch things up whenever you like.
         </p>
       </div>
 
-      <section className=" ">
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+      <section className="lg:px-[8.125vw] xl:px-[8.125vw] 2xl:px-[8.125vw] ">
+        <div className=" relative items-start mt-[0] mb-0 max-[1024px]:my-10">
           <div className=" ">
             {!selectedSwiperCollectionId && (
               <>
-                <div className="z-10 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[45%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
+                <div className="z-10 swiper-button-prev-prod absolute  left-[0.5%] lg:w-[5.781vw] xl:w-[5.781vw] 2xl:w-[5.781vw] cursor-pointer text-white uppercase items-center bg-white top-[45%] translate-y-[-50%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
                   <img src={nextitem} alt="" className="rotate-180 size-6" />
                 </div>
 
@@ -536,13 +536,13 @@ export default function ProductCollection() {
                       centeredSlides: true,
                     },
                     1366: {
-                      slidesPerView: 3.25,
-                      spaceBetween: 39,
+                      slidesPerView: 3.7,
+                      spaceBetween: 36.7,
                       centeredSlides: true,
                     },
                     1600: {
-                      slidesPerView: 3.5,
-                      spaceBetween: 39,
+                      slidesPerView: 3.7,
+                      spaceBetween: 36.7,
                       centeredSlides: true,
                     },
                   }}
@@ -558,19 +558,20 @@ export default function ProductCollection() {
                           setSelectedSwiperCollectionId(col.id);
                         }}
                         style={{ cursor: 'pointer'}}
+                        className='lg:w-[33.33%] xl:w-[33.33%] 2xl:w-[33.33%]'
                       >
                         <img
                           src={col.image?.url || '/assets/Images/placeholder.png'}
                           alt={col.title}
-                          className="w-full h-[500px] object-cover"
+                          className="w-full h-[400px] lg:h-[22.76vw] xl:h-[22.76vw] 2xl:h-[22.76vw] object-cover"
                         />
-                        <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                        <h3 className="mt-2.5 text-center lg:mt-[1.927vw] xl:mt-[1.927vw] 2xl:mt-[1.927vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:text-center lg:leading-[1.146vw] text-sm font-medium tracking-wider">
                           {col.title}
                         </h3>
                       </SwiperSlide>
                     ))}
                 </Swiper>
-                <div className="swiper-button-next-prod absolute  right-[1%] max-[1601px]:-right-[0%] cursor-pointer  uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[45%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
+                <div className="swiper-button-next-prod absolute  right-[0.5%] lg:w-[5.781vw] xl:w-[5.781vw] 2xl:w-[5.781vw] cursor-pointer  uppercase items-center bg-white z-10 top-[45%] translate-y-[-50%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
                   <img src={nextitem} className="size-6" alt="" />
                 </div>
               </>
@@ -591,7 +592,7 @@ export default function ProductCollection() {
       </section>
 
       <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
+        <div className="flex flex-col md:flex-row gap-12 pt-[5vw]">
           <SidebarFilter
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
