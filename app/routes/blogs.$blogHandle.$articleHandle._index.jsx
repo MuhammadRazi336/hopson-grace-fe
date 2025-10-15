@@ -31,7 +31,7 @@ import BlogArticle from '~/components/BlogArticle';
 
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticlesForInspiration {
-  blogs(first: 10) {
+  blogs(first: 1, reverse: true) {
     nodes {
       title
       handle

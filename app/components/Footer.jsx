@@ -82,7 +82,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/meet-our-team">
+                      <Link className="text-white" to="https://hopsongrace.com">
                       MEET OUR SISTER STORE HOPSON GRACE
                       </Link>
                     </li>

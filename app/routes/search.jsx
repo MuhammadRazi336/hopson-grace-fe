@@ -161,7 +161,7 @@ query getCashFundsForSearch {
 
 const BLOGS_QUERY = `#graphql
   query GetAllBlogsAndArticlesForSearch {
-    blogs(first: 20) {
+    blogs(first: 1, reverse: true) {
       nodes {
     title
     handle

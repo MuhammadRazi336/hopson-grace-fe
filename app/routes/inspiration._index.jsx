@@ -18,7 +18,7 @@ import arrowDown from '/assets/Images/arrowDown.png';
 
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticlesForInspiration {
-  blogs(first: 10) {
+  blogs(first: 1, reverse: true) {
     nodes {
       title
       handle
@@ -58,7 +58,7 @@ export async function loader({context}) {
 
 const Inspiration = () => {
   const {blogs} = useLoaderData();
-  console.log('blogs', blogs);
+  console.log('blogsww', blogs);
   
   const [clickedSection, setClickedSection] = React.useState(null);
   const [articlesToShow, setArticlesToShow] = React.useState(12);
@@ -192,7 +192,7 @@ const Inspiration = () => {
            clickedSection === 'planning' ? 'REGISTRY & PLANNING TIPS' :
            clickedSection === 'design' ? 'DESIGN NOTES' :
            clickedSection === 'taste' ? 'TASTE & TRAVEL' :
-           'ALL ARTICLES'}
+           ''}
         </h3>
         <p className="text-center lg:text-[1.25vw] lg:leading-[1.875vw] text-xl lg:w-[50%] mx-auto mt-5">
           {clickedSection === 'wedding' ? 
@@ -205,7 +205,7 @@ const Inspiration = () => {
             "Explore design inspiration and styling tips for your special day." :
             clickedSection === 'taste' ?
             "Culinary inspiration and travel ideas for your wedding journey." :
-            "Explore our complete collection of articles covering wedding stories, planning tips, design inspiration, and more. Click on any category above to filter by topic."
+            ""
           }
         </p>
 
