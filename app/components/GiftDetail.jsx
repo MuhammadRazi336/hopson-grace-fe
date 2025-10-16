@@ -34,22 +34,22 @@ const GiftDetail = ({
   };
 
   return (
-    <div className="max-w-[1500px] mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row">
+    <div className="w-full">
+      <div className="flex flex-col lg:flex-row gap-[3.438vw] w-full">
         {/* Left Section: Product Images */}
-        <div className="lg:w-1/2">
+        <div className="lg:min-w-[42%] xl:min-w-[42%] 2xl:min-w-[42%] lg:w-[42%] xl:w-[42%] 2xl:w-[42%] w-1/2">
           {/* Main Product Image */}
-          <div className="w-[690px] h-[690px] aspect-square bg-gray-50 rounded-lg overflow-hidden mb-6">
+          <div className="w-full bg-gray-50 rounded-none overflow-hidden mb-6">
             <img
               src={selectedImage?.node?.url || '/fallback-image.jpg'}
               alt={selectedImage?.node?.altText || productTitle || 'Product image'}
-              className="w-[690px] h-[690px] object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
 
           {/* Thumbnail Images */}
           {safeProductImages.length > 1 && (
-            <div className="flex w-[690px] gap-3">
+            <div className="flex w-[36.08vw] gap-3">
               {safeProductImages.map((image, index) => (
                 <div
                   key={index}
@@ -72,26 +72,26 @@ const GiftDetail = ({
         </div>
 
         {/* Right Section: Product Information */}
-        <div className="lg:w-1/2">
+        <div className="lg:w-[39.063vw] xl:w-[39.063vw] 2xl:w-[39.063vw] w-1/2">
           {/* Brand */}
-          <div className="text-[22px] font-medium text-gray-600 mb-2">
+          <div className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] font-medium mb-[1.198vw]">
             {productBrand}
           </div>
 
           {/* Product Title */}
-          <h1 className="prata text-3xl lg:text-[44px] font-bold text-gray-900 mb-4 leading-tight">
+          <h1 className="prata lowercase text-2xl lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] font-bold mt-0 mb-[1.146vw]">
             {productTitle}
           </h1>
 
           {/* Price */}
-          <div className="text-[28px] font-semibold text-gray-900 mb-6">
+          <div className="text-[28px] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] font-semibold text-gray-900 mb-[2.76vw]">
             <Money data={productPrice} />
           </div>
 
           {/* Quantity Selector */}
 
-          <div className="flex items-center w-full my-10 gap-6">
-            <p className="text-[22px] font-bold uppercase text-left mb-1">QTY</p>
+          <div className="flex items-center w-full gap-6 lg:gap-[1.927vw] xl:gap-[1.927vw] 2xl:gap-[1.927vw]">
+            <p className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] font-bold uppercase text-left mb-1">QTY</p>
             {/* Quantity Selector */}
             <div className="flex flex-col items-center">
               <button
@@ -100,14 +100,14 @@ const GiftDetail = ({
               >
                 <img
                   src="/assets/Images/arrowDown.png"
-                  className="w-[20px] h-[20px] rotate-180"
+                  className="w-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] h-[20px] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] rotate-180"
                   alt=""
                 />
               </button>
 
               <input
                 value={quantity}
-                className="w-16 h-16 text-center border-none outline-none text-[40px]"
+                className="w-16 h-16 text-center border-none outline-none text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.25vw]"
                 readOnly
               />
 
@@ -117,7 +117,7 @@ const GiftDetail = ({
               >
                 <img
                   src="/assets/Images/arrowDown.png"
-                  className="w-[20px] h-[20px]"
+                  className="w-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] h-[20px] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw]"
                   alt=""
                 />
               </button>
@@ -126,12 +126,12 @@ const GiftDetail = ({
             {/* Add to Registry Button */}
             <button
               onClick={handleRegistryPress}
-              className="bg-[#446184] text-white text-[18px] font-bold w-[320px] h-[80px] px-6"
+              className="bg-[#446184] text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6"
             >
               ADD TO REGISTRY
             </button>
 
-            <div className="flex items-center gap-3 pl-6">
+            <div className="flex items-center gap-3">
               <input
                 type="checkbox"
                 id="groupGift"
@@ -141,7 +141,7 @@ const GiftDetail = ({
               />
               <label
                 htmlFor="groupGift"
-                className="text-[12px] font-medium text-black cursor-pointer text-center"
+                className="text-[12px] lg:text-[0.625vw] xl:text-[0.625vw] 2xl:text-[0.625vw] font-medium text-black cursor-pointer text-center"
               >
                 TAG AS <br /> GROUP GIFT
               </label>
@@ -150,7 +150,7 @@ const GiftDetail = ({
 
           {/* Product Description */}
           <div className="prose prose-gray max-w-none">
-            <div className="text-gray-700 text-[22px] leading-relaxed py-3">
+            <div className="text-[22px] leading-relaxed lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] pt-[2.917vw]">
               {productDescription ? (
                 <p>{productDescription}</p>
               ) : (

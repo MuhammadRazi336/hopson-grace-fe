@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Pagination, Autoplay} from 'swiper/modules';
 import 'swiper/swiper-bundle.css'; // Import Swiper styles
-import heroImg from '/assets/Images/heroImg.png';
+import heroImg from '/assets/Images/heroImgs.jpg';
 import vectorImg from '/assets/Images/Vector 22.png';
 import 'swiper/css/pagination';
 import Button from '~/components/Button.jsx';
@@ -21,7 +21,7 @@ const HeroSlider = () => {
     {
       id: 1,
       type: 'content',
-      content: <>elevated. <br />effortless.<br /><span style={{fontFamily: 'ivyora', lineHeight: '10px'}}>yours</span>.</>,
+      content: <>elevated. effortless.<br /><span style={{fontFamily: 'ivyora', lineHeight: '10px'}}>yours</span>.</>,
       description:
         <>A modern registry for gifts, travel & <br/>everything in between.</>,
       image: heroImg,
@@ -146,23 +146,23 @@ const HeroSlider = () => {
       slidesPerView={1}
       autoplay={{delay: 14000}} // Autoplay every 14 seconds
       pagination={ false } // Show dots
-      className='lg:h-[48.958vw]'
+      className='lg:h-[34.375vw] xl:h-[34.375vw] 2xl:h-[34.375vw]'
     >
       {slides.map((slide) => (
         <SwiperSlide key={slide.id}>
           {slide.type === 'content' ? (
-            <div className='lg:h-[48.958vw]'>
+            <div className='lg:h-[34.375vw] xl:h-[34.375vw] 2xl:h-[34.375vw]'>
               <img
                 src={slide.image}
                 alt="Slide"
-                className="w-full h-[430px] lg:h-[1000px] object-cover"
+                className="w-full h-[430px] lg:h-[34.375vw] xl:h-[34.375vw] 2xl:h-[34.375vw] object-cover object-[0vw_-10vw]"
               />
               <div className="absolute flex flex-col items-center top-0 max-w-[50%] max-[1024px]:max-w-[70%] h-full justify-center text-white px-8">
-                <h3 className="text-[40px] leading-[46px] lg:text-[5.521vw] text-center prata lg:leading-[5vw] text-shadow">
+                <h3 className="text-[40px] leading-[46px] lg:text-[4.479vw] xl:text-[4.479vw] 2xl:text-[4.479vw] text-center ivyoraDisplay lg:leading-[5vw] xl:leading-[5vw] 2xl:leading-[5vw] font-normal text-shadow">
                   {slide.content}
                 </h3>
                 <img src={vectorImg} alt="line" className="w-72 max-[1024px]:w-[158px] mt-[2vw] max-[1024px]:mt-[10px]" />
-                <p className="text-[12px] w-full max-[1024px]:w-[170px] max-[1024px]:mt-[15px] leading-[16px] lg:text-[1.25vw] mt-[2.604vw] text-center font-semibold uppercase lg:w-2xl lg:leading-[2.083vw]">
+                <p className="text-[12px] w-full max-[1024px]:w-[170px] max-[1024px]:mt-[15px] leading-[16px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mt-[2.604vw] text-center font-semibold uppercase lg:w-2xl lg:leading-[2.083vw] xl:w-2xl xl:leading-[2.083vw] 2xl:w-2xl 2xl:leading-[2.083vw]">
                   {slide.description}
                 </p>
               <div className="mx-auto flex lg:flex-row flex-col gap-[15px] mt-[2.604vw] max-[1024px]:mt-[18px] justify-center items-center ">

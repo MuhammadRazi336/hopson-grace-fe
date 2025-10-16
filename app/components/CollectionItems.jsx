@@ -8,8 +8,13 @@ import nextitem from '/assets/Images/next.png';
 import vectorImg from '/assets/Images/Vector 14.png';
 import headingCurve1 from '../assets/Images/heading-curve1.svg';
 import Button from '~/components/Button.jsx';
-import iconitem from '/assets/Images/collectionitems.png';
+import iconitem from '/assets/Images/groupGifting.png';
+import newlywedDiscount from '/assets/Images/newlywedDiscount.png';
+import freeShipping from '/assets/Images/freeShippings.png';
+import fewerBetterThings from '/assets/Images/fewerBetterThings.png';
 import WorldBestBrands from '/assets/Images/WORLDSBESTBRANDS.png';
+import personalizedRegistry from '/assets/Images/personalized.png';
+import styleAdvice from '/assets/Images/styleAdvices.png';
 import CashTravel from '/assets/Images/CASHTRAVEL.png';
 import BespokeTravel from '/assets/Images/BESPOKETRAVEL.png';
 import TyNote from '/assets/Images/TYNOTE.png';
@@ -53,24 +58,28 @@ const CollectionItems = () => {
       >
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={WorldBestBrands}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={WorldBestBrands}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              
               <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
-                THE WORLD'S <br />
-                BEST BRANDS
+                THE WORLD’S <br/>BEST BRANDS
               </h3>
             </div>
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={CashTravel}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={CashTravel}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
                 <>CASH <br/>FUNDS</>
               </h3>
@@ -78,11 +87,13 @@ const CollectionItems = () => {
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={BespokeTravel}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={BespokeTravel}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
                 <>BESPOKE <br/>TRAVEL</>
               </h3>
@@ -90,23 +101,27 @@ const CollectionItems = () => {
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={TyNote}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={TyNote}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
-                THANK YOU <br/>NOTE TRACKER
+                THANK YOU NOTE <br/>TRACKER
               </h3>
             </div>
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={ReadyMadeRegistries}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={ReadyMadeRegistries}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
                 <>READY-MADE <br/>REGISTRIES</>
               </h3>
@@ -114,25 +129,85 @@ const CollectionItems = () => {
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={iconitem}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={iconitem}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
-                <>EXCLUSIVE <br/>OFFERS</>
+                GROUP <br/>GIFTING
               </h3>
             </div>
           </SwiperSlide>
           <SwiperSlide>
             <div className="flex items-center justify-center gap-4 flex-col">
-              <img
-                src={iconitem}
-                alt="icon collection item"
-                className="bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] lg:p-[1.042vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] p-[12px]"
-              />
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={newlywedDiscount}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
-                <>PERSONALIZED <br/>GIFTING</>
+                NEWLYWED <br/>DISCOUNT
+              </h3>
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="flex items-center justify-center gap-4 flex-col">
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={freeShipping}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
+                FREE <br/>SHIPPING
+              </h3>
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="flex items-center justify-center gap-4 flex-col">
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={fewerBetterThings}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
+                FEWER, <br/>BETTER THINGS
+              </h3>
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="flex items-center justify-center gap-4 flex-col">
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={personalizedRegistry}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
+                PERSONALIZED <br/>REGISTRY PAGE
+              </h3>
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="flex items-center justify-center gap-4 flex-col">
+              <div className="relative bg-[#F5F2ED] rounded-full w-[7.24vw] h-[7.24vw] p-[8px] lg:p-[0.5vw] max-[1024px]:w-[100px] max-[1024px]:h-[100px] flex items-center justify-center">
+                <img
+                  src={styleAdvice}
+                  alt="icon collection item"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h3 className="text-center font-bold text-[10px] lg:text-[1.042vw] lg:leading-[1.458vw] leading-[14px] tracking-[1px]">
+                STYLE ADVICE <br/>& GUIDED TOOLS
               </h3>
             </div>
           </SwiperSlide>

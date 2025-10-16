@@ -534,22 +534,22 @@ function SidebarFilter({
     <div className="w-[400px] p-6 h-fit bg-[#FAF9F6]">
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('categories')}
         >
           Product Categories
-          <span className="text-lg">
+          <span className="text-lg relative -top-[3px]">
             {openSections.categories ? (
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw]"
               />
             )}
           </span>
@@ -575,22 +575,22 @@ function SidebarFilter({
 
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('brands')}
         >
           Our Brands
-          <span className="text-lg">
+          <span className="text-lg relative -top-[3px]">
             {openSections.brands ? (
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw]"
               />
             )}
           </span>
@@ -602,22 +602,22 @@ function SidebarFilter({
 
       <div>
         <h2
-          className="text-sm font-bold uppercase mb-2 cursor-pointer flex items-center justify-between"
+          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('styles')}
         >
           Shop by Style
-          <span className="text-lg">
+          <span className="text-lg relative -top-[3px]">
             {openSections.styles ? (
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-3 h-3 rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-3 h-3 rotate-90"
+                className="w-[0.833vw] h-[0.833vw]"
               />
             )}
           </span>
@@ -889,7 +889,7 @@ export default function AddGifts() {
             {!selectedSwiperCollectionId && (
               <>
                 <div className="z-10 mb-8 swiper-button-prev-prod absolute  left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[38%] px-8 py-10  justify-center max-[1024px]:w-[33px]">
-                  <img src={nextitem} alt="" className="rotate-180 size-6" />
+                  <img src={nextitem} alt="" className="rotate-90 size-6" />
                 </div>
 
                 <Swiper
@@ -979,7 +979,7 @@ export default function AddGifts() {
                     ))}
                 </Swiper>
                 <div className="swiper-button-next-prod absolute right-[1%] max-[1601px]:-right-[0%] cursor-pointer uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[38%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px]">
-                  <img src={nextitem} className="size-6" alt="" />
+                  <img src={nextitem} className="size-6 rotate-270" alt="" />
                 </div>
               </>
             )}
@@ -1260,8 +1260,8 @@ export default function AddGifts() {
 
         <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
           <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[5%] left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 " />
+            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
               <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
                 more
               </span>
@@ -1341,11 +1341,11 @@ export default function AddGifts() {
                 <p className="lg:text-[24px] text-sm py-2">$95.00</p>
               </SwiperSlide>
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-[5%] right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+            <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                 more
               </span>
-              <img src={nextitem} className="" alt="" />
+              <img src={nextitem} className="rotate-270 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
             </div>
           </div>
         </div>

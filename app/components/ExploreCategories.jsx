@@ -13,22 +13,22 @@ function ExploreCategories({ collections = [] }) {
   );
 
   return (
-    <section className="bg-[#FAF9F6] py-[5.26vw] px-[4.583vw] lg:w-[86.719vw] mx-auto">
+    <section className="bg-[#FAF9F6] py-[5.208vw] px-[4.583vw] lg:w-[90.938%] xl:w-[90.938%] 2xl:w-[90.938%] mx-auto">
       <Heading
         text="explore more categories"
         classes={
-          'prata text-2xl lg:text-[40px] lg:leading-[1.979vw] font-normal text-center max-[1024px]:m-0'
+          'prata text-2xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
         }
         image={headingCurve}
-        imageClasses={'max-[1024px]:max-w-[330px]'}
+        imageClasses={'max-[1024px]:max-w-[330px] lg:w-[27.24vw] xl:w-[27.24vw] 2xl:w-[27.24vw]'}
       />
 
       {/* slides here */}
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-row-[5.208vw] gap-col-[3.438vw] mt-[5.573vw]">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-row-[5.208vw] gap-col-[3.438vw] mt-[5.313vw]">
         {parentCollections.map((col) => (
           <div key={col.id}>
             <img src={col.image?.url || '/assets/Images/placeholder.png'} alt={col.title} className="w-[450px] h-[450px] object-cover" />
-            <h3 className="mt-2.5 text-center lg:mt-[1.771vw] uppercase lg:text-[24px] lg:leading-[1.25vw] text-sm font-bold tracking-wider">
+            <h3 className="mt-2.5 text-center lg:mt-[1.771vw] uppercase lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] text-sm font-bold tracking-wider">
               {col.title}
             </h3>
           </div>

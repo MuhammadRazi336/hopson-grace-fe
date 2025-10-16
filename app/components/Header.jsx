@@ -607,7 +607,7 @@ export function Header() {
               className={`transition-all duration-600 ease-in-out lg:w-[4vw] ${
                 isFixed
                   ? 'max-[1024px]:w-[60px]'
-                  : 'lg:w-[21.667vw] max-md:w-[133px]'
+                  : 'lg:w-[19.2vw] max-md:w-[133px]'
               }`}
             />
           </NavLink>
@@ -864,7 +864,7 @@ export function Header() {
       </header>
 
       <div
-        className={`mt-4 max-[1024px]:hidden  ${
+        className={`mt-0 max-[1024px]:hidden  ${
           isFixed
             ? `fixed transition-all ${
                 isMenuOpenBottom ? 'top-[70px] bg-white' : 'top-[-50px]'
