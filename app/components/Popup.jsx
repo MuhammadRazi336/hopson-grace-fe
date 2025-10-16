@@ -1,4 +1,5 @@
-import popupimg from "/assets/Images/CherryBg.png"
+// import popupimg from "/assets/Images/CherryBg.png"
+import popupimg from "/assets/Images/registrypopup.jpg"
 // import imageFPO from "/assets/Images/imageFPO.png"
 import reglogo from "/assets/Images/reglogo.png"
 import closebtn from "/assets/Images/closebtn.png"
@@ -8,7 +9,7 @@ const Popup = ({ onClose }) => {
     return ( 
     <div className="fixed p-20 top-0 bottom-0 left-0 right-0 z-30 flex items-center justify-center bg-[#1F1D1BE5] max-[768px]:flex-col max-[768px]:px-4 max-[768px]:items-end">
         <div className="relative left-[96px] max-[768px]:left-[initial]">
-            <img src={popupimg} alt="" className="max-[768px]:max-w-[80%]" />
+            <img src={popupimg} alt="" className="w-[1386px] h-[780px] max-[768px]:max-w-[80%]" />
         </div>
         <div className="w-[618px] bg-[#446184] py-16 px-8 relative flex items-center justify-center text-white pb-[127px] -left-[96px] max-[768px]:left-[initial] max-[768px]:w-[80%] max-[768px]:-top-[60px] max-[768px]:p-8">
             <img src={reglogo} alt="" className="absolute -top-[71px] max-[768px]:w-[70px] max-[768px]:-top-7" />

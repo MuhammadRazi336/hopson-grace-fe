@@ -6,6 +6,10 @@ import ImageAndText from '~/components/ImageAndText';
 import flowerImg from '/assets/Images/flower.png';
 import showroomImg from '/assets/Images/showroom.png';
 import cupImg from '/assets/Images/cups.png';
+import howItWorksImg from '/assets/Images/howitworks.jpg';
+import areyoureadyImg from '/assets/Images/areyouready.jpg';
+import bookavirtualImg from '/assets/Images/bookavirtual.jpg';
+import atyourserviceGif from '/assets/Images/atyourservice.gif';
 import teaImg from '/assets/Images/tea.png';
 import lineImg from '/assets/Images/line.png';
 import lineImg2 from '/assets/Images/Vector 24.png';
@@ -215,7 +219,7 @@ const Home = () => {
       <section className="mb-[10.417vw] max-[1024px]:mb-[80px]">
         <ImageAndText
           direction={'right'}
-          imgBanner={cupImg}
+          imgBanner={howItWorksImg}
           lineimg={lineImg}
           stepsCheck={true}
           title="how it works"
@@ -313,7 +317,7 @@ const Home = () => {
       <section className="my-[80px] lg:my-[10.417vw]">
       <ImageAndText
             direction={'left'}
-            imgBanner={flowerImg}
+            imgBanner={atyourserviceGif}
             lineimg={lineImg}
             title=" questions?"
             description="We've got answers."
@@ -334,7 +338,7 @@ const Home = () => {
       <section className="my-[80px] lg:my-[10.417vw]">
         <ImageAndText
           direction={'left'}
-          imgBanner={showroomImg}
+          imgBanner={bookavirtualImg}
           lineimg={lineImg2}
           title=<>book a virtual <br/>appointment</>
           description="Our virtual appointments offer the  same personalized guidance — without leaving home. "
@@ -346,7 +350,7 @@ const Home = () => {
       <section className="mb-[80px] lg:my-[10.417vw]">
         <ImageAndText
           direction={'right'}
-          imgBanner={teaImg}
+          imgBanner={areyoureadyImg}
           lineimg={lineImg3}
           title="ready?"
           description={
@@ -488,6 +492,35 @@ query getHomeBrands {
 const BESTSELLER_PRODUCTS_QUERY = `#graphql
   query GetBestsellerProducts($first: Int!) {
     products(first: $first, query: "tag:bestseller") {
+      edges {
+        node {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const RECOMMENDED_PRODUCTS_QUERY = `#graphql
+  query GetRecommendedProducts($first: Int!) {
+    products(first: $first, query: "tag:recommended") {
       edges {
         node {
           id
