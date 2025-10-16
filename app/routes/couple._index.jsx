@@ -48,9 +48,9 @@ export default function FindCoupleForm() {
       ) : (
         <>
           <div
-            className="flex justify-start items-center h-[80vh] lg:h-[802px] mb-16"
+            className="flex justify-start items-center lg:h-[51.771vw] xl:h-[51.771vw] 2xl:h-[51.771vw] mb-16"
             style={{
-              backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+              backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}

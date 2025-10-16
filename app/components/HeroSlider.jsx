@@ -21,7 +21,7 @@ const HeroSlider = () => {
     {
       id: 1,
       type: 'content',
-      content: <>elevated. <br />effortless.<br /><span style={{fontFamily: 'ivyora'}}>yours</span>.</>,
+      content: <>elevated. <br />effortless.<br /><span style={{fontFamily: 'ivyora', lineHeight: '10px'}}>yours</span>.</>,
       description:
         <>A modern registry for gifts, travel & <br/>everything in between.</>,
       image: heroImg,
@@ -158,7 +158,7 @@ const HeroSlider = () => {
                 className="w-full h-[430px] lg:h-[1000px] object-cover"
               />
               <div className="absolute flex flex-col items-center top-0 max-w-[50%] max-[1024px]:max-w-[70%] h-full justify-center text-white px-8">
-                <h3 className="text-[40px] leading-[46px] lg:text-[5.521vw] text-center prata lg:leading-[5.833vw] text-shadow">
+                <h3 className="text-[40px] leading-[46px] lg:text-[5.521vw] text-center prata lg:leading-[5vw] text-shadow">
                   {slide.content}
                 </h3>
                 <img src={vectorImg} alt="line" className="w-72 max-[1024px]:w-[158px] mt-[2vw] max-[1024px]:mt-[10px]" />

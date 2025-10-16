@@ -8,7 +8,7 @@ const Textandbutton = () => {
         your wedding <span className="italic ivyora font-normal">isn't</span>{' '}ordinary,
          <br /> your registry<span className="italic ivyora font-normal"> shouldn't be either</span>
       </h2>
-      <p className="text-center lg:text-[1.563vw] lg:leading-[2.083vw] max-w-[1020px] max-[768px]:max-w-[390px] mx-auto lg:mb-[2.083vw] mb-[65px] max-[1024px]:w-[291px] max-[1024px]:max-w-full max-[1024px]:mx-auto text-[12px] leading-[16px] tracking-[0.72px]">
+      <p className="text-center lg:text-[1.563vw] lg:leading-[2.083vw] max-w-[1080px] max-[768px]:max-w-[390px] mx-auto lg:mb-[2.083vw] mb-[65px] max-[1024px]:w-[291px] max-[1024px]:max-w-full max-[1024px]:mx-auto text-[12px] leading-[16px] tracking-[0.72px]">
         From iconic homeware to bespoke travel experiences and custom cash
         funds, <br className="max-[767px]:hidden" /> The Registry is for modern
         couples who value style, sustainability and service.
