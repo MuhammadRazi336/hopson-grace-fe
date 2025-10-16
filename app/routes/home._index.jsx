@@ -522,6 +522,35 @@ const BESTSELLER_PRODUCTS_QUERY = `#graphql
   }
 `;
 
+const RECOMMENDED_PRODUCTS_QUERY = `#graphql
+  query GetRecommendedProducts($first: Int!) {
+    products(first: $first, query: "tag:recommended") {
+      edges {
+        node {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticlesForInspiration {
   blogs(first: 1, reverse: true) {
