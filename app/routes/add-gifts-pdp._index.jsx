@@ -14,8 +14,26 @@ import product4 from '/assets/Images/product4.png';
 import ExploreCategories from '~/components/ExploreCategories';
 import Heading from '~/components/Heading';
 import ButtonComponent from '~/components/Button';
+import { useLoaderData, json } from '@remix-run/react';
+import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
+
+export async function loader({ context }) {
+  try {
+    const { products: recommendedProducts } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
+      variables: { first: 8 } 
+    });
+    
+    return json({ 
+      recommendedProducts: recommendedProducts?.edges || [] 
+    });
+  } catch (error) {
+    console.error('Error loading recommended products:', error);
+    return json({ recommendedProducts: [] });
+  }
+}
 
 export default function ProductSection() {
+  const { recommendedProducts } = useLoaderData();
   const images = [
     '/assets/Images/gift-prod-1.png',
     '/assets/Images/gift-prod-2.png',
@@ -243,7 +261,7 @@ export default function ProductSection() {
             image={brandline}
             imageClasses={'max-[1024px]:max-w-[330px]'}
           />
-          <ProductSlider />
+          <ProductSlider products={recommendedProducts} />
           <div className="text-center">
             <ButtonComponent
               text="browse bestsellers"

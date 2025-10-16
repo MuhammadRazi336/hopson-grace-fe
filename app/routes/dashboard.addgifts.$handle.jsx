@@ -20,6 +20,8 @@ import product2 from '/assets/Images/product2.png';
 import product1 from '/assets/Images/product1.png';
 import product4 from '/assets/Images/product4.png';
 import {Navigation, Pagination} from 'swiper/modules';
+import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
+import {formatShopifyPrice} from '~/utils/priceFormatter';
 
 const images = [
     '/assets/Images/gift-prod-1.png',
@@ -33,6 +35,17 @@ export async function loader(args) {
     const {request, context} = args;
     const {collections} = await loadCollectionData({context});
     const {product} = await loadProductData(args);
+    
+    // Fetch recommended products
+    let recommendedProducts = [];
+    try {
+      const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
+        variables: { first: 8 } 
+      });
+      recommendedProducts = recommendedProductsData?.edges || [];
+    } catch (error) {
+      console.error('Error loading recommended products:', error);
+    }
     
     // Try to get user, but don't require authentication
     let user = null;
@@ -51,7 +64,7 @@ export async function loader(args) {
       console.log('User not authenticated, allowing access to product page');
     }
     
-    return defer({collections, product, user, registry});
+    return defer({collections, product, user, registry, recommendedProducts});
   } catch (error) {
     console.error('Error in dashboard.addgifts.$handle loader:', error);
     throw error;
@@ -116,7 +129,7 @@ async function loadProductData({context, params, request}) {
 
 const GiftDetailHandle = () => {
   const fetcher = useFetcher();
-  const {collections, product, registry, user} = useLoaderData();
+  const {collections, product, registry, user, recommendedProducts} = useLoaderData();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
@@ -433,7 +446,7 @@ const GiftDetailHandle = () => {
             image={brandline}
             imageClasses={'max-[1024px]:max-w-[330px]'}
           />
-          <ProductSlider products={[]} />
+          <ProductSlider products={recommendedProducts || []} />
           {/* <div className="text-center">
             <ButtonComponent
               text="browse bestsellers"
