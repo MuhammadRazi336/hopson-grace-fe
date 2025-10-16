@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useLoaderData, useNavigate} from '@remix-run/react';
 import GlassImg from '/assets/Images/GlassImg.png';
+import onboardingGif from '/assets/Images/onboardingFPO.gif';
 import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
 import Button from '~/components/Button.jsx';
@@ -558,11 +559,11 @@ const OnboardingClient = ({onStepChange}) => {
           <div className="my-4 flex flex-col items-center justify-center relative">
             {/* FPO Placeholder Image */}
             <div>
-              <img src={GlassImg} alt="" className="w-full h-full" />
+              <img src={onboardingGif} alt="" className="w-[163px] h-[163px]" />
             </div>
-            <div className="flex items-center justify-center w-16 h-12 bg-white mx-auto mb-4 absolute top-8 left-14">
-              <span className="text-black font-normal text-lg">FPO</span>
-            </div>
+            {/* <div className="flex items-center justify-center w-16 h-12 bg-white mx-auto mb-4 absolute top-8 left-14">
+              <span className="text-black font-normal text-lg">FPO GIF</span>
+            </div> */}
           </div>
           <div className="font-semibold text-center mb-6 mt-4 text-base md:text-xl">
             Now it's time to set up your dashboard — your registry HQ.

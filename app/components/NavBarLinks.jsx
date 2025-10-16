@@ -87,47 +87,6 @@ const NavBarLinks = (mobileClasses) => {
             >
               OUR BRANDS
             </NavLink>
-            {/* Nested Menu */}
-            <div className="absolute custom-mega-menu left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
-              <div className="flex mx-auto justify-between">
-                <div className="mr-[90px]">
-                  <ul className="">
-                    {brandsLoading ? (
-                      <li className="block mb-[26px] text-gray-500">Loading brands...</li>
-                    ) : brands.length > 0 ? (
-                      brands.slice(0, 7).map((brand) => (
-                        <li key={brand.id}>
-                          <NavLink
-                            to={`/brand/${brand.handle}`}
-                            className="block uppercase mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
-                          >
-                            {brand.title}
-                          </NavLink>
-                        </li>
-                      ))
-                    ) : (
-                      <li className="block mb-[26px] text-gray-500">No brands available</li>
-                    )}
-                  </ul>
-                  <div className="flex items-center gap-2 mt-4">
-                    
-                    <NavLink
-                      to="/our-brands"
-                      className="text-black font-[800] tracking-[1.44px] text-[18px] lg:text-[0.938vw] underline flex items-center gap-2"
-                    >
-                      VIEW ALL BRANDS
-                      <img src={arrowImg} className='text-black brightness-0' alt="" />
-                    </NavLink>
-                  </div>
-                </div>
-                <div className="relative">
-                  <img src={brandImg} alt="Our brands" />
-                  <h3 className="absolute top-14 lowercase left-14 prata text-white 2xl:text-6xl xl:text-4xl lg:text-2xl">
-                    Our Brands
-                  </h3>
-                </div>
-              </div>
-            </div>
           </li>
           <li className="group">
             <NavLink
