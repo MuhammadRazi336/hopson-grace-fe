@@ -31,11 +31,7 @@ const stepsData = [
     title: " Add Gifts",
     description: (
       <>
-        From group gifting and cash funds to one-of-a-kind travel experiences, we make it easy to register for what you really want.
-        <br />
-        Browse our curated collections, add gift cards, or start with one of our ready-made registries.
-        <br />
-        When you're ready, publish your registry, link it to your wedding website, and share it with guests.
+        Add products, gift cards, cash funds, or travel experiences. Then publish your registry, link it to your wedding website, and share it with your guests.
       </>
     ),
   },
@@ -43,11 +39,7 @@ const stepsData = [
     title: "Along the Way",
     description:(
       <>
-        Our private dashboard is your command centre. You can add or edit gifts, track messages from our team, and stay up to date as guests shop your registry.
-        <br />
-        Each time a gift is purchased, you’ll be notified—but instead of receiving it right away, the value is added to your registry account. This gives you the freedom to adjust quantities or make changes before your final order.
-        <br />
-        The easiest part? You can track gifts and send thank-you notes, all at your own pace.
+        Receive a notification every time a gift is purchased. Track gifts, manage your list, and send thank you notes from your private dashboard.
       </>
     ),
   },
