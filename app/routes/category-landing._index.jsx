@@ -22,8 +22,27 @@ import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import ExploreCategories from '~/components/ExploreCategories';
+import { useLoaderData, json } from '@remix-run/react';
+import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
+import {formatShopifyPrice} from '~/utils/priceFormatter';
+
+export async function loader({ context }) {
+  try {
+    const { products: recommendedProducts } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
+      variables: { first: 8 } 
+    });
+    
+    return json({ 
+      recommendedProducts: recommendedProducts?.edges || [] 
+    });
+  } catch (error) {
+    console.error('Error loading recommended products:', error);
+    return json({ recommendedProducts: [] });
+  }
+}
 
 export default function CategoryLanding() {
+  const { recommendedProducts } = useLoaderData();
   const tabsData = [
     {
       label: 'REAL REGISTRIES',
@@ -237,42 +256,53 @@ export default function CategoryLanding() {
                 },
               }}
             >
-              {/* slides here */}
-              <SwiperSlide>
-                <img src={youll1} alt="New Arrival" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={youll2} alt="Tableware" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  SMEG TOASTER, 2 SLICE
-                </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-                  THE BARISTA TOUCH ESPRESSO MAKER
-                </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={youll1} alt="New arrivals" className="w-full" />
-                <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                  ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={youll2} alt="Staub Cast Iron Q4" className="w-full" />
-                <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-                  THE BARISTA TOUCH ESPRESSO MAKER
-                </h3>
-                <p className="lg:text-2xl text-sm">$95</p>
-              </SwiperSlide>
+              {/* Dynamic recommended products */}
+              {recommendedProducts.length > 0 ? (
+                recommendedProducts.map((product) => {
+                  const productNode = product.node;
+                  const firstImage = productNode.images?.edges?.[0]?.node;
+                  const price = productNode.priceRange?.minVariantPrice;
+                  
+                  return (
+                    <SwiperSlide key={productNode.id}>
+                      <img 
+                        src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                        alt={productNode.title || 'Product'} 
+                        className="w-full" 
+                      />
+                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                        {productNode.title}
+                      </h3>
+                      <p className="lg:text-2xl text-sm">{formatShopifyPrice(price)}</p>
+                    </SwiperSlide>
+                  );
+                })
+              ) : (
+                // Fallback to static slides if no recommended products
+                <>
+                  <SwiperSlide>
+                    <img src={youll1} alt="New Arrival" className="w-full" />
+                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      ARKE GLASS BOTTLE FOR CARBONATOR PRO
+                    </h3>
+                    <p className="lg:text-2xl text-sm">$95.00</p>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <img src={youll2} alt="Tableware" className="w-full" />
+                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                      SMEG TOASTER, 2 SLICE
+                    </h3>
+                    <p className="lg:text-2xl text-sm">$95.00</p>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
+                    <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                      THE BARISTA TOUCH ESPRESSO MAKER
+                    </h3>
+                    <p className="lg:text-2xl text-sm">$95.00</p>
+                  </SwiperSlide>
+                </>
+              )}
             </Swiper>
             <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
               <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
