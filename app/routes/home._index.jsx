@@ -9,6 +9,8 @@ import cupImg from '/assets/Images/cups.png';
 import howItWorksImg from '/assets/Images/howitworks.jpg';
 import areyoureadyImg from '/assets/Images/areyouready.jpg';
 import bookavirtualImg from '/assets/Images/bookavirtual.jpg';
+import virtualappointmentImg from '/assets/Images/virtual-appointment.jpg';
+import areYouReady from '/assets/Images/youready.jpg';
 import atyourserviceGif from '/assets/Images/atyourservice.gif';
 import teaImg from '/assets/Images/tea.png';
 import lineImg from '/assets/Images/line.png';
@@ -206,7 +208,7 @@ const Home = () => {
   return (
     <div className="overflow-x-hidden">
       <Header />
-      <section className="hero-slider lg:h-[34.375vw] xl:h-[34.375vw] 2xl:h-[34.375vw]">
+      <section className="hero-slider lg:h-[43vw] xl:h-[43vw] 2xl:h-[43vw]">
         <HeroSlider />
       </section>
       <section className="text-and-button-section pt-12 pb-0 lg:py-[7.76vw]">
@@ -338,7 +340,7 @@ const Home = () => {
       <section className="my-[80px] lg:my-[10.417vw]">
         <ImageAndText
           direction={'left'}
-          imgBanner={bookavirtualImg}
+          imgBanner={virtualappointmentImg}
           lineimg={lineImg2}
           title=<>book a virtual <br/>appointment</>
           description="Our virtual appointments offer the  same personalized guidance — without leaving home. "
@@ -350,7 +352,7 @@ const Home = () => {
       <section className="mb-[80px] lg:my-[10.417vw]">
         <ImageAndText
           direction={'right'}
-          imgBanner={areyoureadyImg}
+          imgBanner={areYouReady}
           lineimg={lineImg3}
           title="ready?"
           description={
