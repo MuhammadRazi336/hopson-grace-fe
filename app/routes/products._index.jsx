@@ -397,7 +397,7 @@ const Products = () => {
         <Heading
           text="the registry bestsellers"
           classes={
-            'prata text-3xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
+            'prata text-3xl lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
           }
           image={brandline}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[33.021vw] lg:h-[0.417vw]'}

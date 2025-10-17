@@ -42,7 +42,7 @@ const ImageAndText = ({
         </h3>
 
         <svg className='mx-auto my-[20px] lg:w-[18.542vw] lg:h-[0.521vw] w-[130px] max-[1024px]:mb-[14px] max-[1024px]:mt-[0px]' width="360" height="10" viewBox="0 0 360 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 2C79.5717 2 157.143 2 234.715 2C275.718 2 317.587 8 358 8" stroke="black" stroke-width="3" stroke-linecap="round"/>
+          <path d="M2 2C79.5717 2 157.143 2 234.715 2C275.718 2 317.587 8 358 8" stroke="black" strokeWidth="3" strokeLinecap="round"/>
         </svg>
 
         {stepsCheck ? (
@@ -53,49 +53,42 @@ const ImageAndText = ({
           </p>
         )}
 
-        <div className="lg:mx-auto">
-          {showLiveChat ? (
-            <LiveChat {...liveChatProps} />
-          ) : onClick ? (
-            <button onClick={onClick}>
-              <Button
-                text={buttontext}
-                className={`text-[10px] block leading-[12px] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
-                  ${
-                    stepsCheck
-                      ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]'
-                      : ''
-                  }  
-                  ${
-                    buttontype == 'link'
-                      ? 'text-[#1F1D1B] border-3 border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                      : 'text-white bg-[#446184] rounded-none font-mono'
-                  }
-                  ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
-                `}
-              />
-            </button>
-          ) : (
-            <NavLink to={buttonLink}>
-              <Button
-                text={buttontext}
-                className={`text-[10px] block leading-[12px] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
-                  ${
-                    stepsCheck
-                      ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]'
-                      : ''
-                  }  
-                  ${
-                    buttontype == 'link'
-                      ? 'text-[#1F1D1B] border-3 border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                      : 'text-white bg-[#446184] rounded-none font-mono'
-                  }
-                  ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
-                `}
-              />
-            </NavLink>
-          )}
-        </div>
+      <div className="lg:mx-auto">
+        {showLiveChat ? (
+          <LiveChat {...liveChatProps} />
+        ) : onClick ? (
+          // ✅ Just the Button (no wrapper button)
+          <Button
+            onClick={onClick}
+            type="button"
+            text={buttontext}
+            className={`text-[10px] block leading-[12px] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
+              ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
+              ${buttontype == 'link'
+                ? 'text-[#1F1D1B] border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
+                : 'text-white bg-[#446184] rounded-none font-mono'}
+              ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
+            `}
+            disabled={disabled}
+          />
+        ) : (
+          // ✅ Link version: render NavLink as the interactive element itself
+          <NavLink
+            to={buttonLink}
+            className={`inline-flex items-center justify-center text-[10px] leading-[12px] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
+              ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
+              ${buttontype == 'link'
+                ? 'text-[#1F1D1B] border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
+                : 'text-white bg-[#446184] rounded-none font-mono'}
+              ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
+            `}
+            aria-label={buttontext}
+          >
+            {buttontext}
+          </NavLink>
+        )}
+      </div>
+
       </div>
 
       <div

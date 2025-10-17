@@ -497,7 +497,7 @@ const CashFund = () => {
         <div className=" relative items-start mt-[5.573vw] max-[1024px]:my-10">
           <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
             <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 " />
+              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
               <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
                 more
               </span>
@@ -588,11 +588,11 @@ const CashFund = () => {
                 </>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+            <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
               <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                 more
               </span>
-              <img src={nextitem} className="" alt="" />
+              <img src={nextitem} className="rotate-270 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
             </div>
           </div>
         </div>
@@ -689,18 +689,18 @@ function SidebarFilter({collections = [], checkedCategories = [], setCheckedCate
           onClick={() => toggleSection('categories')}
         >
           Categories
-          <span className="text-lg">
+          <span className="text-lg relative -top-[3px]">
             {openSections.categories ? (
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-[0.833vw] h-[0.833vw] rotate-90"
+                className="w-[0.833vw] h-[0.833vw]"
               />
             )}
           </span>

@@ -16,12 +16,12 @@ export default function ButtonComponent({
       onClick={onClick}
       type={type}
       disabled={disabled}
-      className={`px-6 py-2 rounded bastardogrotesk ${
+      className={`px-[5px] py-2 rounded bastardogrotesk ${
         disabled ? 'bg-gray-300' : 'bg-black text-white'
       } ${className}`}
       {...rest}
     >
-      <Typography className='text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw]'>{text}</Typography>
+      <Typography className='text-[18px] leading-[18px] lg:text-[0.833vw] lg:leading-[0.833vw]'>{text}</Typography>
     </Button>
     // </Link>
   );

@@ -467,18 +467,18 @@ function SidebarFilter() {
           onClick={() => toggleSection('categories')}
         >
           Categories
-          <span className="text-lg">
+          <span className="text-lg relative -top-[3px]">
             {openSections.categories ? (
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-270"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-[0.833vw] h-[0.833vw] rotate-90"
+                className="w-[0.833vw] h-[0.833vw]"
               />
             )}
           </span>

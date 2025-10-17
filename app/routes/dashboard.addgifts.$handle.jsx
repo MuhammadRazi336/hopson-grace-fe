@@ -223,7 +223,7 @@ const GiftDetailHandle = () => {
         </div>
       </div>
     )}
-    <div className="flex container flex-col lg:flex-row max-w-screen-xl mx-auto px-4 py-12 gap-8">
+    <div className="flex flex-col lg:flex-row mx-auto px-[9.167vw] pt-[7.031vw] gap-8">
           {/* Images Grid */}
           <div className=" grid grid-cols-1  gap-4 flex-1">
           <GiftDetail
@@ -300,32 +300,32 @@ const GiftDetailHandle = () => {
           </div> */}
         </div>
 
-        <section className="mt-[180px] bg-[#446184] text-white px-6">
-          <div className="container mx-auto flex flex-col lg:flex-row gap-10 items-center">
+        <section className="mt-[9.74vw] bg-[#446184] text-white pl-[5.469vw]">
+          <div className="mx-auto flex flex-col lg:flex-row gap-10 py-[4.792vw]">
             {/* Left Text Section */}
             <div className="lg:w-4/12 w-full flex items-center flex-col gap-2">
-              <p className="text-[22px] tracking-wider uppercase pb-1">
+              <p className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-wider uppercase pb-1">
                 Meet the Maker
               </p>
               <img
                 src={'/assets/Images/meet-the-maker-bdr.png'}
                 alt=""
-                className="w-auto -mt-3"
+                className="w-auto lg:w-[18.594vw] xl:w-[18.594vw] 2xl:w-[18.594vw]"
               />
-              <h5 className="text-[40px] prata mb-1">hopson grace</h5>
-              <p className="text-[14px] uppercase mb-4">Toronto</p>
-              <p className="text-[18px] leading-[1.7] text-center mb-6">
+              <h5 className="text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] prata my-[1.042vw]">hopson grace</h5>
+              <p className="text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mb-2">Toronto</p>
+              <p className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] text-center mb-0">
                 Lorem ipsum dolor sit amet. Ab nesciunt officia qui labore unde
                 33 veniam reprehenderit ut impedit perspiciatis in magnam
                 accusantium est ratione dignissimos qui dolor internos. Sit
                 laboriosam rerum est minima provident eos doloremque omnis.
               </p>
-              <button className=" text-white border-b px-4 pt-2 pb-1 text-[14px] font-semibold uppercase tracking-wide">
+              <button className=" text-white border-b pt-2 pb-1 text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] font-semibold uppercase tracking-wide">
                 View Full Profile
               </button>
             </div>
             <section className="lg:w-8/12 w-full  container ">
-              <div className="relative items-start mt-[100px] mb-[80px] max-[1024px]:my-10 mr-8">
+              <div className="relative items-start max-[1024px]:my-10 mr-[5.208vw]">
                 <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
                   <Swiper
                     spaceBetween={39}
@@ -371,10 +371,10 @@ const GiftDetailHandle = () => {
                         alt="Marble Butter Keeper"
                         className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                         CLASSIC TUMBLER, SET OF 6
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$80.00</p>
+                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$80.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -382,10 +382,10 @@ const GiftDetailHandle = () => {
                         alt="Belle-V Icecream Scoop"
                         className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                         FARMHOUSE BOWL 11"
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$95.00</p>
+                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -393,10 +393,10 @@ const GiftDetailHandle = () => {
                         alt="Staub Cast Iron Q4"
                         className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                         RAW HONEY
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$430.00</p>
+                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -404,10 +404,10 @@ const GiftDetailHandle = () => {
                         alt="Staub Cast Iron Q4"
                         className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                         RAW HONEY
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$430.00</p>
+                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>
                     </SwiperSlide>
                     <SwiperSlide>
                       <img
@@ -415,17 +415,17 @@ const GiftDetailHandle = () => {
                         alt="Belle-V Icecream Scoop"
                         className="w-[345px] h-[345px]"
                       />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
                         FARMHOUSE BOWL 11"
                       </h3>
-                      <p className="lg:text-[24px] text-sm pt-3">$95.00</p>
+                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
                     </SwiperSlide>
                   </Swiper>
-                  <div className="swiper-button-next-prod absolute top-[40%] z-10 -right-16  cursor-pointer uppercase flex items-center justify-center text-white">
-                    <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+                  <div className="swiper-button-next-prod absolute top-[40%] transform-y-[-50%] h-[40px] right-[-6.125vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+                    <span className="rotate-90 text-white block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                       more
                     </span>
-                    <img src={nextitem} className="invert-100" alt="" />
+                    <img src={nextitem} className="invert rotate-270 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw]" alt="" />
                   </div>
                 </div>
               </div>
@@ -433,18 +433,18 @@ const GiftDetailHandle = () => {
           </div>
         </section>
 
-        <div className=" pt-[180px] px-12">
+        <div className="pt-[9.375vw]">
           <ExploreCategories collections={collections} />
         </div>
 
-        <section className="pt-[180px] pb-[180px] my-12 lg:my-[240px] container">
+        <section className="pt-[9.375vw] pb-[9.375vw] my-12 lg:my-[240px] container">
           <Heading
             text="you might also like"
             classes={
-              'prata text-3xl lg:text-[44px] font-normal text-center  max-[1024px]:m-0'
+              'prata text-3xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
             }
             image={brandline}
-            imageClasses={'max-[1024px]:max-w-[330px]'}
+            imageClasses={'max-[1024px]:max-w-[330px] lg:w-[19.896vw] xl:w-[19.896vw] 2xl:w-[19.896vw]'}
           />
           <ProductSlider products={recommendedProducts || []} />
           {/* <div className="text-center">
