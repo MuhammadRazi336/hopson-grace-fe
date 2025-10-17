@@ -1,16 +1,31 @@
 import vector14 from '/assets/Images/Vector 14.png';
 import faqline from '/assets/Images/faqline.png';
 import moreImg from '/assets/Images/more.png';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import ButtonComponent from './Button';
 import { Link } from '@remix-run/react';
 
 const Faqs = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const toggleFaqs = () => {
     setIsExpanded(!isExpanded);
   };
+
+  // Determine how many items to show initially based on screen size
+  const initialItemsCount = isMobile ? 2 : 4;
 
   const faqs = [
     {
@@ -70,7 +85,7 @@ const Faqs = () => {
             isExpanded ? 'line-vertical-extend' : 'line-vertical'
           }`}
         >
-          {faqs.slice(0, 4).map((faq) => (
+          {faqs.slice(0, initialItemsCount).map((faq) => (
             <div
               className="flex w-full lg:w-1/2 mt-0 max-[1024px]:mt-10 px-[3.906vw] max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center "
               key={faq.number}
@@ -89,7 +104,7 @@ const Faqs = () => {
             </div>
           ))}
           {isExpanded &&
-            faqs.slice(4).map((faq) => (
+            faqs.slice(initialItemsCount).map((faq) => (
               <div
                 className="flex w-full lg:w-1/2 mt-0 max-[1024px]:mt-10 px-[3.906vw] max-[1024px]:flex-col max-[1024px]:justify-center max-[1024px]:items-center"
                 key={faq.number}

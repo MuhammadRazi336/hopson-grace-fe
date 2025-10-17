@@ -47,7 +47,7 @@ const Testimonialslider = ({ blogs = [] }) => {
           
           return (
             <SwiperSlide key={article.id}>
-              <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[700px]">
+              <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[450px]">
                 <img
                   src={article.image?.url || "/assets/Images/couple-logo.png"}
                   alt={article.image?.altText || cleanTitle}

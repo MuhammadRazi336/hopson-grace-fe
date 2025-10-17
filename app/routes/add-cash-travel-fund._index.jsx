@@ -34,7 +34,7 @@ export default function AddCashTravelFund() {
           <img
             src="/assets/Images/new-cash-bdr.png"
             alt="Couple"
-            className="max-w-[630px] mt-5 h-auto mx-auto"
+            className="max-w-[630px] max-[1024px]:max-w-[90%] mt-5 h-auto mx-auto"
           />
 
           <p className="max-w-2xl mb-10 mx-auto text-center text-white mt-5 font-normal leading-relaxed">

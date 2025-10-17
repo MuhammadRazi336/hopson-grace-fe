@@ -27,9 +27,9 @@ const ProductSlider = ({products = []}) => {
 
   return (
     <div className="relative items-start mt-10 lg:mt-[5.469vw] lg:mb-0 mb-10 max-[1024px]:my-[30px]">
-      <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] max-[1024px]:max-w-[88%] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-        <div className="swiper-button-prev-prod absolute top-0 max-[1024px]:left-[-15px] left-[9%] h-full cursor-pointer text-white uppercase flex w-[139px] items-center bg-[#446184] lg:w-[7.24vw] lg:h-[18.75vw] justify-center max-[1024px]:w-[28px]">
-          <img src={nextitem} alt="" className="rotate-90 invert-100 lg:w-[1.042vw] lg:h-[1.042vw]" />
+      <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] max-[1024px]:max-w-[78%] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
+        <div className="swiper-button-prev-prod absolute top-0 max-[1024px]:left-0 left-[9%] h-[160px] cursor-pointer text-white uppercase flex w-[139px] items-center bg-[#446184] lg:w-[7.24vw] lg:h-[18.75vw] justify-center max-[1024px]:w-[28px]">
+          <img src={nextitem} alt="" className="rotate-90 invert-100 w-[14px] h-[14px] lg:w-[1.042vw] lg:h-[1.042vw]" />
           <span className="-rotate-90 lg:text-[1.146vw] lg:leading-[1.667vw] text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>
@@ -92,11 +92,11 @@ const ProductSlider = ({products = []}) => {
             );
           })}
         </Swiper>
-        <div className="swiper-button-next-prod absolute top-0 max-[1024px]:right-[-15px] right-[9%] cursor-pointer text-white uppercase flex lg:w-[7.24vw] lg:h-[18.75vw] items-center bg-[#446184] h-full justify-center max-[1024px]:w-[28px]">
+        <div className="swiper-button-next-prod absolute top-0 max-[1024px]:right-0 right-[9%] cursor-pointer text-white uppercase flex lg:w-[7.24vw] lg:h-[18.75vw] h-[160px] items-center bg-[#446184] justify-center max-[1024px]:w-[28px]">
           <span className="-rotate-270 lg:text-[1.146vw] lg:leading-[1.667vw] text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>
-          <img src={nextitem} className="rotate-270 invert-100 lg:w-[1.042vw] lg:h-[1.042vw]" alt="" />
+          <img src={nextitem} className="rotate-270 invert-100 lg:w-[1.042vw] lg:h-[1.042vw] w-[14px] h-[14px]" alt="" />
         </div>
       </div>
     </div>

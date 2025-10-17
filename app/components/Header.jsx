@@ -25,6 +25,7 @@ export function Header() {
   const [isMenuOpenBottom, setIsMenuOpenBottom] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const location = useLocation();
   const [status, setStatus] = useState(registryData?.status || 'draft');
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -427,6 +428,10 @@ export function Header() {
     setIsMenuOpenBottom((prev) => !prev);
   };
 
+  const toggleMobileDrawer = () => {
+    setIsMobileDrawerOpen((prev) => !prev);
+  };
+
   const handleScroll = () => {
     const scrollY = window.scrollY;
     const threshold = 100; // Lower threshold for earlier activation
@@ -540,12 +545,12 @@ export function Header() {
         className={`header-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out ${
           isFixed
             ? 'fixed top-0 left-0 w-full z-50 bg-black shadow-lg h-[100px]'
-            : 'relative bg-white h-[160px] max-md:h-[80px]'
+            : 'relative bg-white h-[160px] max-[1024px]:h-[80px]'
         }`}
       >
         {/* User Icon */}
         <div
-          className={`flex lg:w-[33%] mt-[-0.625vw] max-md:hidden ${
+          className={`flex lg:w-[33%] mt-[-0.625vw] max-[1024px]:hidden ${
             isFixed ? 'items-center' : 'items-start'
           }`}
         >
@@ -599,7 +604,7 @@ export function Header() {
         </div>
 
         {/* Logo */}
-        <div className="font-bold text-xl lg:w-[34%] lg:mb-[4vw] flex max-md:order-2 items-center justify-center">
+        <div className="font-bold text-xl lg:w-[34%] lg:mb-[4vw] flex max-[1024px]:order-2 items-center justify-center max-[1024px]:absolute max-[1024px]:left-[50%] max-[1024px]:translate-x-[-50%]">
           <NavLink to="/Home" className="text-black flex justify-center">
             <img
               src={isFixed ? registryLogoScroll : registryLogo}
@@ -607,32 +612,32 @@ export function Header() {
               className={`transition-all duration-600 ease-in-out lg:w-[4vw] ${
                 isFixed
                   ? 'max-[1024px]:w-[60px]'
-                  : 'lg:w-[19.2vw] max-md:w-[133px]'
+                  : 'lg:w-[19.2vw] max-[1024px]:w-[133px]'
               }`}
             />
           </NavLink>
         </div>
 
-        <div className="min-[768px]:hidden max-md:order-1 hamburger" onClick={toggleMenu}>
+        <div className="min-[1025px]:hidden max-[1024px]:order-1 hamburger" onClick={toggleMenu}>
           <img
             src={isFixed ? hamburgerscroll : hamburger}
             alt=""
-            className={`w-8 max-md:w-[20px] ${isFixed ? 'brightness-unset' : 'brightness-0'}`}
+            className={`w-8 max-[1024px]:w-[20px] ${isFixed ? 'brightness-unset' : 'brightness-0'}`}
           />
         </div>
 
         {/* Icons and CTA */}
-        <div className={`flex max-md:order-3 justify-end lg:w-[33%] ${isFixed ? 'mt-[0] items-center' : 'mt-[-0.625vw] items-start'}`}>
+        <div className={`flex max-[1024px]:order-3 justify-end lg:w-[33%] ${isFixed ? 'mt-[0] items-center' : 'mt-[-0.625vw] items-start'}`}>
           {!user && (
             <div className="flex items-center gap-[1.406vw]">
                 {!isFixed && (
-                  <div className="bg-[#F5F2ED] rounded-full p-2 w-[2.917vw] h-[2.917vw] max-md:h-[40px] max-md:w-[40px] flex items-center justify-center">
+                  <div className="bg-[#F5F2ED] rounded-full p-2 w-[2.917vw] h-[2.917vw] max-[1024px]:h-[40px] max-[1024px]:w-[40px] flex items-center justify-center">
                     <NavLink
                       to="/login"
                       className="text-xl hover:text-blue-500"
                     >
                       <span role="img" aria-label="User Icon">
-                        <img className='w-[1.25vw] h-[1.25vw] max-md:w-[18px] max-md:h-[17px]' src={userImg} alt="User Icon" />
+                        <img className='w-[1.25vw] h-[1.25vw] max-[1024px]:w-[18px] max-[1024px]:h-[17px]' src={userImg} alt="User Icon" />
                       </span>
                     </NavLink>
                   </div>
@@ -649,7 +654,7 @@ export function Header() {
                   </NavLink>
                 )}
 
-                <div className="flex items-center gap-4 max-md:hidden">
+                <div className="flex items-center gap-4 max-[1024px]:hidden">
                   {/* link Button */}
                   <NavLink
                     to="/couple"
@@ -672,7 +677,7 @@ export function Header() {
           {user && (
             <>
               <div className='flex items-start justify-end gap-[1.042vw]'>
-                <div className={`rounded-full p-0 w-[2.917vw] h-[2.917vw] flex items-center justify-center border-2 ${
+                <div className={`rounded-full p-0 w-[2.917vw] h-[2.917vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px] flex items-center justify-center border-2 ${
                   isFixed 
                     ? 'bg-[#F5F2ED] border-white' 
                     : 'bg-[#F5F2ED] border-black'
@@ -684,7 +689,7 @@ export function Header() {
                       className="w-full h-full object-cover rounded-full"
                     />
                   ) : (
-                    <h2 className={`flex items-center font-prata justify-center m-0 text-[1.25vw] leading-[0.938vw] ${
+                    <h2 className={`flex items-center font-prata justify-center m-0 max-[1024px]:text-[16px] max-[1024px]:leading-[20px] text-[1.25vw] leading-[0.938vw] ${
                       isFixed ? 'text-white' : 'text-black'
                     }`}>{getUserInitials()}</h2>
                   )}
@@ -695,7 +700,7 @@ export function Header() {
                     className="relative inline-block hover:opacity-80 transition-opacity"
                   >
                     {/* Bell Icon (SVG) */}
-                    <svg width="60" height="60" className="w-[3.125vw] h-[3.125vw]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="60" height="60" className="w-[3.125vw] h-[3.125vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                       <path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/>
                     </svg>
@@ -806,21 +811,21 @@ export function Header() {
                       aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
                     onClick={handleToggle}
                       disabled={isUpdatingStatus}
-                      className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none overflow-hidden ${
+                      className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] max-[1024px]:w-[30px] max-[1024px]:h-[16px] focus:outline-none overflow-hidden ${
                       isDraft
                         ? 'bg-white border-black'
                         : 'bg-white border-black'
                     }`}
                   >
                     <span
-                      className={`rounded-full shadow-md transform w-[2.031vw] h-full transition-transform duration-200 ${
+                      className={`rounded-full shadow-md transform h-full transition-transform duration-200 ${
                         isDraft
-                          ? 'translate-x-0 bg-gray-300'
-                          : 'translate-x-[1.094vw] bg-[#C52248]'
+                          ? 'translate-x-0 bg-gray-300 w-[2.031vw] w-[16px]'
+                          : 'translate-x-[1.094vw] bg-[#C52248]  w-full'
                       }`}
                     />
                   </button>
-                    <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] ${
+                    <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] max-[1024px]:text-[10px] max-[1024px]:leading-[14px] ${
                     isFixed ? 'text-white' : 'text-black'
                   }`}>
                       {isUpdatingStatus ? 'Updating...' : (isDraft ? 'Draft' : 'Published')}
@@ -880,7 +885,31 @@ export function Header() {
         <div className="w-full">
           <div className="w-full">
             <div className="w-full">
-              <div className="w-full shadow-md flex justify-between bg-[#F5F2ED] lg:px-[3.125vw] min-h-[70px]">
+              {/* Mobile hamburger button for dashboard navigation */}
+              <div className="lg:hidden w-full shadow-md bg-[#F5F2ED] px-4 py-3 flex items-center">
+                <button 
+                  onClick={toggleMobileDrawer}
+                  className="hover:bg-gray-200 rounded-md transition-colors mr-3"
+                >
+                  <svg 
+                    className="w-6 h-6 text-gray-600" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M4 6h16M4 12h16M4 18h16" 
+                    />
+                  </svg>
+                </button>
+                <span className="text-gray-600 font-medium">Dashboard Menu</span>
+              </div>
+              
+              {/* Desktop navigation - hidden on mobile */}
+              <div className="hidden lg:flex w-full shadow-md justify-between bg-[#F5F2ED] lg:px-[3.125vw] min-h-[70px]">
                 <a className={`text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
@@ -959,6 +988,134 @@ export function Header() {
                     </div>
                   </div>
                 </button>
+              </div>
+              
+              {/* Mobile Drawer */}
+              <div className={`lg:hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
+                isMobileDrawerOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`} onClick={toggleMobileDrawer}>
+                <div className={`fixed top-0 left-0 w-80 h-full bg-white shadow-xl transform transition-transform duration-300 ${
+                  isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+                }`} onClick={(e) => e.stopPropagation()}>
+                  {/* Drawer Header */}
+                  <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-900">Dashboard Menu</h2>
+                    <button 
+                      onClick={toggleMobileDrawer}
+                      className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {/* Drawer Navigation Items */}
+                  <div className="p-4 space-y-2">
+                    <a 
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === '/dashboard' 
+                          ? 'bg-gray-100 text-black font-semibold' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      href="/dashboard"
+                      onClick={toggleMobileDrawer}
+                    >
+                      MY DETAILS
+                    </a>
+                    <a 
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === '/dashboard/registry' 
+                          ? 'bg-gray-100 text-black font-semibold' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      href="/dashboard/registry"
+                      onClick={toggleMobileDrawer}
+                    >
+                      MY REGISTRY HOMEPAGE
+                    </a>
+                    <a 
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === '/dashboard/addgifts' 
+                          ? 'bg-gray-100 text-black font-semibold' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      href="/dashboard/addgifts"
+                      onClick={toggleMobileDrawer}
+                    >
+                      ADD OR EDIT GIFTS
+                    </a>
+                    <a 
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === '/dashboard/cashfunds' 
+                          ? 'bg-gray-100 text-black font-semibold' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      href="/dashboard/cashfunds"
+                      onClick={toggleMobileDrawer}
+                    >
+                      ADD A CASH OR TRAVEL FUND
+                    </a>
+                    <a 
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === '/dashboard/gifttracker' 
+                          ? 'bg-gray-100 text-black font-semibold' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      href="/dashboard/gifttracker"
+                      onClick={toggleMobileDrawer}
+                    >
+                      GIFTS + THANK YOU TRACKER
+                    </a>
+                    <a 
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === '/dashboard/shipgifts' 
+                          ? 'bg-gray-100 text-black font-semibold' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      href="/dashboard/shipgifts"
+                      onClick={toggleMobileDrawer}
+                    >
+                      FULFILL + SHIP GIFTS
+                    </a>
+                    <a 
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
+                        location.pathname === '/dashboard/support' 
+                          ? 'bg-gray-100 text-black font-semibold' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                      href="/dashboard/support"
+                      onClick={toggleMobileDrawer}
+                    >
+                      SUPPORT
+                    </a>
+                    <button 
+                      className="block w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-red-600"
+                      onClick={() => {
+                        // Clear all localStorage
+                        localStorage.clear();
+                        
+                        // Clear all sessionStorage
+                        sessionStorage.clear();
+                        
+                        // Clear specific items to be sure
+                        localStorage.removeItem('@token');
+                        localStorage.removeItem('@Token');
+                        localStorage.removeItem('@User');
+                        localStorage.removeItem('@Registry');
+                        
+                        // Submit form to logout route to clear server-side session
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/logout';
+                        document.body.appendChild(form);
+                        form.submit();
+                      }}
+                    >
+                      LOGOUT
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

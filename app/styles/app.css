@@ -1031,20 +1031,6 @@ td.rdp-day.rdp-outside {
 
 html, body { height: 100%; margin: 0; }
 
-#app-clip {
-  width: 100%;
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-#app-scale {
-  transform: scale(0.8);
-  transform-origin: top left;
-  width: calc(100% / 0.8);
-  height: 100vh;
-}
-
 .guided-video {
   position: fixed !important;
   right: 40px;
@@ -1089,9 +1075,25 @@ body.homepage .guided-video {
     font-size: 0.833vw !important;
     line-height: 0.938vw !important;
   }
+  #app-clip {
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  #app-scale {
+    transform: scale(0.8);
+    transform-origin: top left;
+    width: calc(100% / 0.8);
+    height: 100vh;
+  }
 }
 
 @media screen and (max-width: 1024px) {
+  .guided-video{
+    right: 20px;
+  }
   .insetshadow::before {
     display: none;
   }
