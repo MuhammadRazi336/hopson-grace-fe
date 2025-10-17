@@ -1,5 +1,5 @@
 import {NavLink, useLoaderData, useNavigate} from '@remix-run/react';
-import registryLogo from '/assets/Images/registryLogo.png';
+import registryLogo from '/assets/Images/registryLogos.png';
 import registryLogoScroll from '/assets/Images/copyrightLogo.png';
 import searchImg from '/assets/Images/search.png';
 import searchImgscroll from '/assets/Images/searchwhite.png';
@@ -599,7 +599,7 @@ export function Header() {
         </div>
 
         {/* Logo */}
-        <div className="font-bold text-xl lg:w-[34%] flex max-md:order-2 items-center justify-center">
+        <div className="font-bold text-xl lg:w-[34%] lg:mb-[4vw] flex max-md:order-2 items-center justify-center">
           <NavLink to="/Home" className="text-black flex justify-center">
             <img
               src={isFixed ? registryLogoScroll : registryLogo}

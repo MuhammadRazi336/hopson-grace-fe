@@ -92,14 +92,14 @@ const ImageAndText = ({
       </div>
 
       <div
-        className={`lg:w-[65%] w-[45%] min-w-[45%]  ${
+        className={`lg:w-[65%] w-[45%] min-w-[45%] ${
           direction === 'left' ? 'lg:mt-20 mt-6' : 'lg:mb-20 mb-6'
         }`}
       >
         <img
           src={imgBanner}
           alt="Image Banner"
-          className="w-full max-[1024px]:h-full object-cover object-[80%] rounded-none"
+          className="w-full max-[1024px]:h-full lg:h-[44.15vw] xl:h-[44.15vw] 2xl:h-[44.15vw] object-cover object-[80%] rounded-none"
         />
       </div>
     </div>
