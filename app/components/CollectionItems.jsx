@@ -52,7 +52,7 @@ const CollectionItems = () => {
         loop={true}
         breakpoints={{
           320:  { slidesPerView: 2, spaceBetween: 20 },
-          600:  { slidesPerView: 3, spaceBetween: 30 },
+          600:  { slidesPerView: 5, spaceBetween: 30 },
           1025: { slidesPerView: 7, spaceBetween: 50 },
         }}
       >

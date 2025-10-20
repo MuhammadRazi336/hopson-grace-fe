@@ -21,7 +21,7 @@ export default function ButtonComponent({
       } ${className}`}
       {...rest}
     >
-      <Typography className='text-[18px] leading-[18px] lg:text-[0.833vw] lg:leading-[0.833vw]'>{text}</Typography>
+      <Typography className='text-[10px] leading-[18px] lg:text-[0.833vw] lg:leading-[0.833vw]'>{text}</Typography>
     </Button>
     // </Link>
   );

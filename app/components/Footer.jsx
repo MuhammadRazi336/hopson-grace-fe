@@ -27,25 +27,25 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
 
   return (
     <div>
-      <div className="bg-[#1F1D1B] lg:pt-[4.792vw] lg:pb-[3.802vw] text-white max-md:pb-[25px] max-md:pt-[77px] max-md:px-[33px]">
-        <div className="lg:px-8 max-md:px-0 lg:max-w-[90%] max-md:w-full mx-auto">
+      <div className="bg-[#1F1D1B] lg:pt-[4.792vw] lg:pb-[3.802vw] text-white max-[1024px]:pb-[25px] max-[1024px]:pt-[77px] max-[1024px]:px-[33px]">
+        <div className="lg:px-8 max-[1024px]:px-0 lg:max-w-[90%] max-[1024px]:w-full mx-auto">
           {/* Footer Logo */}
           <div className="footer-logo">
             <img
               src={footerImg}
               alt="Footer Icon"
-              className="lg:w-[19.896vw] max-md:w-[171.26px]"
+              className="lg:w-[19.896vw] max-[1024px]:w-[171.26px]"
             />
           </div>
 
-          <p className='prata lg:mt-[3.49vw] max-md:mt-[44px] text-[1.25vw] max-md:text-[14px] max-md:leading-[22px] leading-[1.354vw]'>The Registry is a sister brand to <span className='underline'>Hopson Grace</span>, curators of modern tableware and timeless home furnishings.</p>
+          <p className='prata lg:mt-[3.49vw] max-[1024px]:mt-[44px] text-[1.25vw] max-[1024px]:text-[14px] max-[1024px]:leading-[22px] leading-[1.354vw]'>The Registry is a sister brand to <span className='underline'>Hopson Grace</span>, curators of modern tableware and timeless home furnishings.</p>
 
           {/* First Menu in Footer */}
           <div className="mt-[4.427vw]">
-            <div className="flex gap-[3.021vw] max-md:flex-wrap max-md:mt-[40px]">
-              <div className='w-[25%] max-md:w-full'>
+            <div className="flex gap-[3.021vw] max-[1024px]:flex-wrap max-[1024px]:mt-[40px]">
+              <div className='w-[25%] max-[1024px]:w-full'>
                 <h4
-                  className="text-[0.938vw] max-md:text-[14px] max-md:leading-[20px] mt-0 font-[800] leading-[0.938vw] uppercase mb-[1.771vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
+                  className="text-[0.938vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] mt-0 font-[800] leading-[0.938vw] uppercase mb-[1.771vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
                   onClick={() => toggleNav(0)}
                 >
                   About <img src={dropdown} alt="" className="lg:hidden" />
@@ -55,7 +55,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     openNavIndex === 0 ? 'block' : 'hidden'
                   } lg:block`}
                 >
-                  <ul className="text-white text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] font-[500] leading-[1.875vw] tracking-[0.08em]">
+                  <ul className="text-white text-[0.833vw] max-[1024px]:text-[14px] max-[1024px]:leading-[26px] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
                       <Link className="text-white" to="/aboutus">
                         ABOUT US
@@ -90,9 +90,9 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 </nav>
               </div>
 
-              <div className='w-[25%] max-md:w-full'>
+              <div className='w-[25%] max-[1024px]:w-full'>
                 <h4
-                  className="text-[0.938vw] leading-[0.938vw] max-md:text-[14px] max-md:leading-[20px] font-[800] mt-0 uppercase mb-[1.771vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
+                  className="text-[0.938vw] leading-[0.938vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] mt-0 uppercase mb-[1.771vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
                   onClick={() => toggleNav(1)}
                 >
                   For Couples{' '}
@@ -103,7 +103,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     openNavIndex === 1 ? 'block' : 'hidden'
                   } lg:block`}
                 >
-                  <ul className="text-white max-md:text-[14px] max-md:leading-[26px] text-[0.833vw] font-[500] leading-[1.875vw] tracking-[0.08em]">
+                  <ul className="text-white max-[1024px]:text-[14px] max-[1024px]:leading-[26px] text-[0.833vw] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
                       <button 
                         className="text-white bg-transparent border-none cursor-pointer hover:underline" 
@@ -151,9 +151,9 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 </nav>
               </div>
 
-              <div className='w-[25%] max-md:w-full'>
+              <div className='w-[25%] max-[1024px]:w-full'>
                 <h4
-                  className="text-[0.938vw] leading-[0.938vw] max-md:text-[14px] max-md:leading-[20px] font-[800] uppercase mt-0 mb-[1.771vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
+                  className="text-[0.938vw] leading-[0.938vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] uppercase mt-0 mb-[1.771vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
                   onClick={() => toggleNav(2)}
                 >
                   For Wedding Guests{' '}
@@ -164,7 +164,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     openNavIndex === 2 ? 'block' : 'hidden'
                   } lg:block`}
                 >
-                  <ul className="text-white max-md:text-[14px] max-md:leading-[26px] text-[0.833vw] font-[500] leading-[1.875vw] tracking-[0.08em]">
+                  <ul className="text-white max-[1024px]:text-[14px] max-[1024px]:leading-[26px] text-[0.833vw] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
                       <Link className="text-white" to="/couple">
                         FIND A COUPLE
@@ -174,7 +174,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 </nav>
 
                 <h4
-                  className="text-[0.938vw] leading-[0.938vw] max-md:text-[14px] max-md:leading-[20px] mb-[1.406vw] font-[800] uppercase mt-[4.688vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
+                  className="text-[0.938vw] leading-[0.938vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] mb-[1.406vw] font-[800] uppercase mt-[4.688vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
                   onClick={() => toggleNav(3)}
                 >
                   Contact Us{' '}
@@ -185,7 +185,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     openNavIndex === 3 ? 'block' : 'hidden'
                   } lg:block`}
                 >
-                  <ul className="text-white text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] font-[500] leading-[1.875vw] tracking-[0.08em]">
+                  <ul className="text-white text-[0.833vw] max-[1024px]:text-[14px] max-[1024px]:leading-[26px] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
                       <p className="text-white">
                         LIVE CHAT
@@ -195,12 +195,12 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 </nav>
               </div>
 
-              <div className='w-[25%] max-md:w-full'>
+              <div className='w-[25%] max-[1024px]:w-full'>
                 <h4 className="text-[0.938vw] leading-[0.938vw] mb-[1.771vw] mt-[0] font-[800] uppercase text-white tracking-[0.08em] hidden lg:block">
                   Follow Us
                 </h4>
                 <nav>
-                  <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em] flex gap-4 max-md:gap-[13px] max-md:mt-[20px]">
+                  <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em] flex gap-4 max-[1024px]:gap-[13px] max-[1024px]:mt-[20px]">
                     <li>
                       <a
                         className="text-white"
@@ -208,7 +208,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <img src={pinterestIcon} className='max-md:w-[22px] max-md:h-[22px]' alt="pinterest" />
+                        <img src={pinterestIcon} className='max-[1024px]:w-[22px] max-[1024px]:h-[22px]' alt="pinterest" />
                       </a>
                     </li>
                     <li>
@@ -221,7 +221,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                         <img
                           src={instagramIcon}
                           alt="Search Icon"
-                          className='max-md:w-[22px] max-md:h-[22px]'
+                          className='max-[1024px]:w-[22px] max-[1024px]:h-[22px]'
                         />
                       </a>
                     </li>
@@ -232,16 +232,16 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <img src={facebookIcon} className='max-md:w-[22px] max-md:h-[22px]' alt="facebook" />
+                        <img src={facebookIcon} className='max-[1024px]:w-[22px] max-[1024px]:h-[22px]' alt="facebook" />
                       </a>
                     </li>
                   </ul>
                 </nav>
 
                 <div>
-                <h3 className='prata lg:hidden max-md:visible max-md:mt-[44px] text-[16px] max-md:text-[16px] max-md:leading-[20px]'>Refer a friend for exclusive discounts & special offers</h3>
-                <p className='text-[12px] mb-[36px] leading-[36px] font-600 hidden max-md:block'>GET STARTED</p>
-                <h4 className="text-[0.938vw] leading-[1.25vw] mb-[1.615vw] mt-[2.76vw] max-md:mt-[0px] max-md:leading-[24px] max-md:text-[10px] max-md:mb-[4px] font-[800] uppercase text-white tracking-[0.08em]">
+                <h3 className='prata lg:hidden max-[1024px]:visible max-[1024px]:mt-[44px] text-[16px] max-[1024px]:text-[16px] max-[1024px]:leading-[20px]'>Refer a friend for exclusive discounts & special offers</h3>
+                <p className='text-[12px] mb-[36px] leading-[36px] font-600 hidden max-[1024px]:block'>GET STARTED</p>
+                <h4 className="text-[0.938vw] leading-[1.25vw] mb-[1.615vw] mt-[2.76vw] max-[1024px]:mt-[0px] max-[1024px]:leading-[24px] max-[1024px]:text-[10px] max-[1024px]:mb-[4px] font-[800] uppercase text-white tracking-[0.08em]">
                   Stay in the Loop with Weekly Inspo
                 </h4>
                 <nav>
@@ -252,11 +252,11 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                           type="email"
                           aria-label="Email address"
                           placeholder="hello@theregistry.com"
-                          className="w-[12.135vw] h-[2.917vw] bg-[#F5F2ED] px-[12px] m-0 border-0 text-[#948E8A] rounded-none font-['bastardogrotesk'] font-[400] text-[0.885vw] leading-[1.25vw] tracking-[0.03em] max-md:w-[217px] max-md:h-[44px] max-md:text-[12px] max-md:leading-[24px]"
+                          className="w-[12.135vw] h-[2.917vw] bg-[#F5F2ED] px-[12px] m-0 border-0 text-[#948E8A] rounded-none font-['bastardogrotesk'] font-[400] text-[0.885vw] leading-[1.25vw] tracking-[0.03em] max-[1024px]:w-[217px] max-[1024px]:h-[44px] max-[1024px]:text-[12px] max-[1024px]:leading-[24px]"
                         />
                         <button
                           aria-label="Sign up for newsletter"
-                          className="py-3 bg-[#446184] font-[500] h-[2.917vw] w-[5.313vw] text-[0.729vw] leading-[1.25vw] font-bold uppercase rounded-none tracking-[0.08em] text-white max-md:w-[100px] max-md:h-[44px] max-md:text-[12px] max-md:leading-[24px]"
+                          className="py-3 bg-[#446184] font-[500] h-[2.917vw] w-[5.313vw] text-[0.729vw] leading-[1.25vw] font-bold uppercase rounded-none tracking-[0.08em] text-white max-[1024px]:w-[100px] max-[1024px]:h-[44px] max-[1024px]:text-[12px] max-[1024px]:leading-[24px]"
                         >
                           Sign Up
                         </button>
@@ -270,7 +270,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
           </div>
 
           {/* Footer bottom */}
-          <div className="flex mt-[7.969vw] text-center justify-between items-center max-md:mt-[53px] max-md:flex-col-reverse">
+          <div className="flex mt-[7.969vw] text-center justify-between items-center max-[1024px]:mt-[53px] max-[1024px]:flex-col-reverse">
             <FooterBottom />
             <Copyright />
           </div>
