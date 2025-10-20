@@ -15,39 +15,39 @@ const Faqs = () => {
   const faqs = [
     {
       number: 1,
-      heading: 'WHY CHOOSE THE REGISTRY?',
+      heading: 'Why Choose The Registry?',
       paragraph:
-        "Your wedding should reflect your taste— and your future. That's why The Registry offers more than just beautiful gifts. From top-tier brands to bespoke travel and personalized cash funds, we make it easy (...)",
+        "Your wedding should reflect your taste and your future. That's why The Registry offers more than just beautiful gifts. From top-tier brands to bespoke travel and personalized cash funds, we make it easy (and inspiring) to create a registry that's anything but ordinary. Enjoy a seamless experience with tools like a customizable dashboard, gift tracker, and thank-you note manager. Browse our designer curated Ready-Made Registries or build your own from scratch. After the wedding, take advantage of our 15% Newlywed Discount for any items you wanted but didn't receive and when you're ready, we'll ship your gifts free of charge, anywhere in continental North America.",
     },
     {
       number: 2,
-      heading: 'HOW DOES IT WORK?',
+      heading: 'How Does it Work?',
       paragraph:
-        "Once you sign up, you'll be guided through creating your registry page and adding gifts, funds, and experiences. Register online or book an appointment at our Toronto showroom. (...)",
+        "Create your registry at your own pace, or let us guide you with a one-on-one virtual appointment. Register online or book an appointment at our Toronto showroom. You can choose from curated products, digital gift cards, cash funds (like a honeymoon or home reno), and bespoke travel experiences all in one place. Our curated edit means no overwhelm just intentional choices. When you're ready to share your registry, simply make it visible and add the link to your wedding website. As gifts are purchased, you'll be notified, and your dashboard will update automatically with gift values and thank-you reminders. After your wedding, enjoy 15% off remaining items on your list. We'll help you finalize your order, and nothing ships without your approval.",
     },
     {
       number: 3,
-      heading: 'CAN WE REGISTER IN PERSON?',
+      heading: 'Can We Register in Person?',
       paragraph:
-        'Absolutely. You can set up your registry online, Let our concierge help set up, manage or fulfill your registry. with one of our advisors, or visit us in person at our Toronto showroom. Ready to start your registry? Click Here.',
+        "While we don't offer in-person appointments, you can easily build your registry online or book a virtual session with our Registry Concierge we'll walk you through everything.",
     },
     {
       number: 4,
-      heading: 'CAN WE REGISTER FOR CASH?',
+      heading: 'Can We Register for Cash?',
       paragraph:
-        "Yes! Set up a personalized fund for anything from your honeymoon to a kitchen reno or down payment. There's no cost to you — only a 2.5% processing fee to guests, which covers Stripe's transaction fee. (...)",
+        "Yes! Set up a personalized fund for anything from your honeymoon to a kitchen reno or down payment. There's no cost to you just a 2.5% processing fee for guests, which covers Stripe's transaction fee. You can withdraw your cash at any time or wait until after your wedding to receive the full amount. All you need is a Canadian or U.S. bank account and address.",
     },
     {
       number: 5,
-      heading: 'WHAT IS GROUP GIFTING?',
+      heading: 'What is Group Gifting?',
       paragraph:
-        "Group Gifting allows multiple guests to contribute toward higher-ticket items. Just mark any product as a Group Gift and we'll handle the rest. Ready to start your registry? Click here.",
+        "Group Gifting allows multiple guests to contribute toward higher ticket items. Just mark any product as a Group Gift and we'll handle the rest. It's ideal for larger items like furniture or travel.",
     },
     {
       number: 6,
-      heading: 'CAN WE EXCHANGE OUR GIFTS?',
+      heading: 'Can we Exchange Our Gifts?',
       paragraph:
-        'Of course. You can make changes to your registry at any time before confirming your final order — most couples fine-tune their list after the wedding for maximum flexibility.Ready to start your registry? Click here.',
+        "Yes, this is one of the best features of our registry. You can edit your list anytime before confirming your final order. Since we don't ship gifts until after the wedding, you have the flexibility to swap items, adjust quantities, or choose something entirely different once the celebrations are over. It's a seamless way to get exactly what you want without the hassle of returns or exchanges. We recommend reviewing your list carefully after the wedding to avoid unnecessary returns. Please note that Special Order items are final sale and not eligible for exchange.",
     },
   ];
 

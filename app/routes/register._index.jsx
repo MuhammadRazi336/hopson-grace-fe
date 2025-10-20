@@ -19,7 +19,7 @@ export async function action({request, context}) {
       const user = response.data;
       context.session.set('@User', user);
       const cookie = await context.session.commit();
-      return redirect('/onboarding', {
+      return redirect('/onboarding?step=3', {
         headers: {
           'Set-Cookie': cookie,
         },
@@ -210,6 +210,33 @@ const RegisterIndex = () => {
   const renderStep2 = () => (
     <div className="text-center">
       <div className="space-y-6">
+        {/* Show previously entered user name, autofilled and disabled */}
+        <div className="mb-6">
+          <Heading
+            text="YOUR NAME?"
+            classes="font-normal text-[22px] m-0"
+          />
+          <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1 mt-4">
+            <Input
+              value={formData.firstName}
+              onChange={handleInputChange}
+              placeholder="First *"
+              name="firstName"
+              className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+              classNameLabel="max-[580px]:text-left"
+              disabled
+            />
+            <Input
+              value={formData.lastName}
+              onChange={handleInputChange}
+              placeholder="Last *"
+              name="lastName"
+              className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+              classNameLabel="max-[580px]:text-left"
+              disabled
+            />
+          </div>
+        </div>
         <div className="text-center">
           <Heading
             text="AND YOUR FIANCÉ?"
@@ -324,8 +351,8 @@ const RegisterIndex = () => {
       <div className="flex justify-center items-center min-h-screen bg-white">
         <StepsAndImage
           title={stepTitles[currentStep]}
-          stepNo={currentStep.toString()}
-          totalSteps="3"
+          stepNo={(currentStep <= 2 ? 1 : 2).toString()}
+          totalSteps="9"
           content={
             <div className="flex h-full items-center">
               <div className="space-y-6 max-w-full w-full mx-auto">
@@ -353,7 +380,7 @@ const RegisterIndex = () => {
           }
         />
         {/* Main content wrapper */}
-        <Stepper step={currentStep} totalSteps={3} />
+        <Stepper step={currentStep <= 2 ? 1 : 2} totalSteps={9} />
       </div>
       <Footer />
     </>

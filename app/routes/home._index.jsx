@@ -346,6 +346,7 @@ const Home = () => {
           description="Our virtual appointments offer the  same personalized guidance — without leaving home. "
           buttontext={'BOOK NOW'}
           buttontype={'link'}
+          buttonLink={'/contact-us'}
         />
       </section>
 
@@ -364,7 +365,7 @@ const Home = () => {
           }
           buttontext={'GET STARTED'}
           buttontype={'Color'}
-          buttonLink={'/register'}
+          onClick={handleOpenModal}
         />
       </section>
       <Footer />

@@ -8,6 +8,7 @@ import FooterBottom from './FooterBottom';
 import Copyright from './Copyright';
 import {useState} from 'react';
 import Popup from './Popup';
+import LiveChat from './LiveChat';
 
 /**
  * @param {FooterProps}
@@ -31,11 +32,13 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
         <div className="lg:px-8 max-md:px-0 lg:max-w-[90%] max-md:w-full mx-auto">
           {/* Footer Logo */}
           <div className="footer-logo">
-            <img
-              src={footerImg}
-              alt="Footer Icon"
-              className="lg:w-[19.896vw] max-md:w-[171.26px]"
-            />
+            <Link to="/Home">
+              <img
+                src={footerImg}
+                alt="Footer Icon"
+                className="lg:w-[19.896vw] max-md:w-[171.26px]"
+              />
+            </Link>
           </div>
 
           <p className='prata lg:mt-[3.49vw] max-md:mt-[44px] text-[1.25vw] max-md:text-[14px] max-md:leading-[22px] leading-[1.354vw]'>The Registry is a sister brand to <span className='underline'>Hopson Grace</span>, curators of modern tableware and timeless home furnishings.</p>
@@ -187,9 +190,15 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 >
                   <ul className="text-white text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] font-[500] leading-[1.875vw] tracking-[0.08em]">
                     <li>
-                      <p className="text-white">
-                        LIVE CHAT
-                      </p>
+                      <div className="flex flex-col items-start justify-start">
+                        <LiveChat 
+                          title=""
+                          buttonText="LIVE CHAT"
+                          showTitle={false}
+                          showDescription={false}
+                          className="text-white bg-transparent border-none cursor-pointer hover:underline font-[500] text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] leading-[1.875vw] tracking-[0.08em] p-0 m-0"
+                        />
+                      </div>
                     </li>
                   </ul>
                 </nav>
@@ -248,18 +257,14 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                   <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em]">
                     <li>
                       <div className="flex">
-                        <input
+                         {/* <input
                           type="email"
                           aria-label="Email address"
                           placeholder="hello@theregistry.com"
                           className="w-[12.135vw] h-[2.917vw] bg-[#F5F2ED] px-[12px] m-0 border-0 text-[#948E8A] rounded-none font-['bastardogrotesk'] font-[400] text-[0.885vw] leading-[1.25vw] tracking-[0.03em] max-md:w-[217px] max-md:h-[44px] max-md:text-[12px] max-md:leading-[24px]"
-                        />
-                        <button
-                          aria-label="Sign up for newsletter"
-                          className="py-3 bg-[#446184] font-[500] h-[2.917vw] w-[5.313vw] text-[0.729vw] leading-[1.25vw] font-bold uppercase rounded-none tracking-[0.08em] text-white max-md:w-[100px] max-md:h-[44px] max-md:text-[12px] max-md:leading-[24px]"
-                        >
-                          Sign Up
-                        </button>
+                         /> */}
+                         {/* Klaviyo embedded form (as on coming-soon) */}
+                         <div className="klaviyo-form-WV2nJt" />
                       </div>
                     </li>
                   </ul>
