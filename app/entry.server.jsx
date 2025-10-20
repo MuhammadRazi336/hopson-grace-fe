@@ -25,11 +25,11 @@ export default async function handleRequest(
     // Add Calendly domains to the CSP
     frameSrc: ["'self'", "https://*.calendly.com"],
     childSrc: ["'self'", "https://*.calendly.com"],
-    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://assets.calendly.com", "https://*.calendly.com"],
-    connectSrc: ["'self'", "https://*.calendly.com"],
-    imgSrc: ["'self'", "blob:", "data:", "https://*.calendly.com"],
-    styleSrc: ["'self'", "'unsafe-inline'", "https://*.calendly.com"],
-    fontSrc: ["'self'", "data:", "https://*.calendly.com"],
+    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://assets.calendly.com", "https://*.calendly.com", "https://static.klaviyo.com", "https://*.klaviyo.com"],
+    connectSrc: ["'self'", "https://*.calendly.com", "https://*.klaviyo.com"],
+    imgSrc: ["'self'", "blob:", "data:", "https://*.calendly.com", "https://*.klaviyo.com"],
+    styleSrc: ["'self'", "'unsafe-inline'", "https://*.calendly.com", "https://*.klaviyo.com"],
+    fontSrc: ["'self'", "data:", "https://*.calendly.com", "https://*.klaviyo.com"],
   });
 
   const body = await renderToReadableStream(

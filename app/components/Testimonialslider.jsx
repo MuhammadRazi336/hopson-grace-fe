@@ -62,10 +62,10 @@ const Testimonialslider = ({ blogs = [] }) => {
                   </p>
                   <Link to={`/blogs/${article.blogHandle || 'blog'}/${article.handle || 'article'}`}>
                     <h3 className="lg:text-[0.938vw] lg:leading-[0.938vw] text-[16px] flex items-center gap-2 text-white font-normal mt-[2vw]">
-                      <span className="border-white border-b-2 pb-[3px] max-[1024px]:hidden">READ MORE</span>
+                      <span className="border-white border-b-2 pb-[3px] max-[1024px]:hidden">READ ON</span>
                       <img
-                        src="/assets/Images/next.png"
-                        className="invert-100 -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:hidden max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
+                        src="/assets/Images/arrow.png"
+                        className=" -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:hidden max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
                         alt="next"
                         
                       />

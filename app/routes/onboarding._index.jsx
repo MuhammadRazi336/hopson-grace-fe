@@ -41,20 +41,25 @@ const COLLECTIONS_QUERY = `#graphql
   }
 `;
 
-// Define step titles
+// Define step titles (1-9)
 const STEP_TITLES = {
-  1: "the countdown is on. mark your date.",
-  2: "how many guest are you inviting?",
-  3: "where would you like your gifts shipped after the wedding?",
-  4: "what type of gifts would you like?",
-  5: "what kind of gifts are you looking for?",
-  6: "you're nearly there!",
-  7: "congratulations jo & jon!"
+  1: "let's get to know each other.",
+  2: "and your partner?",
+  3: "let's secure your account.",
+  4: "the countdown is on. mark your date.",
+  5: "how many guest are you inviting?",
+  6: "where would you like your gifts shipped after the wedding?",
+  7: "what type of gifts would you like?",
+  8: "what kind of gifts are you looking for?",
+  9: "you're nearly there!"
 };
 
 export async function loader({ request, context }) {
   try {
     const user = await requireAuth(context);
+    const url = new URL(request.url);
+    const stepParam = url.searchParams.get('step');
+    const stepFromQuery = stepParam ? Number(stepParam) : null;
     
     // Query collections using the storefront client directly
     let collections = { nodes: [] };
@@ -71,7 +76,8 @@ export async function loader({ request, context }) {
         user, 
         collections, 
         context,
-        error: null 
+        error: null,
+        stepFromQuery
       };
     }
     return redirect('/');
@@ -88,8 +94,8 @@ export async function loader({ request, context }) {
 
 const OnboardingIndex = () => {
   const hydrated = useHydrated();
-  const { user } = useLoaderData();
-  const [currentStep, setCurrentStep] = useState(1); // Start with step 1 for titles
+  const { user, stepFromQuery } = useLoaderData();
+  const [currentStep, setCurrentStep] = useState(stepFromQuery ? stepFromQuery : 3); // Start at 3 by default
 
   // // Refresh the page once whenever user goes to onboarding page
   // if (typeof window !== 'undefined') {
@@ -109,8 +115,8 @@ const OnboardingIndex = () => {
   
   // Create dynamic step titles
   const getStepTitle = (step) => {
-    if (step === 7) {
-      // Dynamic title for step 7 using user names
+    if (step === 9) {
+      // Dynamic title for step 9 using user names
       if (firstName && fianceFirstName) {
         const lowerFirstName = firstName.toLowerCase();
         const lowerFianceFirstName = fianceFirstName.toLowerCase();
@@ -130,10 +136,10 @@ const OnboardingIndex = () => {
       <Header />
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
-        stepNo={currentStep + 1} // Start from step 3 and increment
-        totalSteps={8} // Add total number of steps
-        content={hydrated && <Onboarding onStepChange={setCurrentStep} />} 
-        className={currentStep === 5 || currentStep === 6 ? 'px-12' : ''} // Add className prop
+        stepNo={currentStep}
+        totalSteps={9}
+        content={hydrated && <Onboarding onStepChange={(val) => setCurrentStep((val || 1) + 2)} />} 
+        className={currentStep === 8 || currentStep === 9 ? 'px-12' : ''}
       />
       <Footer />
     </div>
