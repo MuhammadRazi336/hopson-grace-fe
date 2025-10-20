@@ -42,6 +42,7 @@ const RegisterIndex = () => {
   const submit = useSubmit();
   const actionData = useActionData();
 
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -53,6 +54,43 @@ const RegisterIndex = () => {
     confirmEmail: '',
   });
   const [errors, setErrors] = useState({});
+
+  // Step titles
+  const stepTitles = {
+    1: "let's get to know each other.",
+    2: "and your partner?",
+    3: "who should we keep in the loop?."
+  };
+
+  // Navigation functions
+  const goNext = () => {
+    if (currentStep === 1) {
+      // Validate user names
+      if (!formData.firstName || !formData.lastName) {
+        setErrors({ firstName: !formData.firstName ? 'First name is required' : '', lastName: !formData.lastName ? 'Last name is required' : '' });
+        return;
+      }
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      // Validate partner names
+      if (!formData.fianceFirstName || !formData.fianceLastName) {
+        setErrors({ fianceFirstName: !formData.fianceFirstName ? 'Fiance first name is required' : '', fianceLastName: !formData.fianceLastName ? 'Fiance last name is required' : '' });
+        return;
+      }
+      setCurrentStep(3);
+    } else if (currentStep === 3) {
+      // Validate and submit
+      if (!validate()) return;
+      handleSignup();
+    }
+  };
+
+  const goBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      setErrors({}); // Clear errors when going back
+    }
+  };
 
   // Parse backend errors for password fields
   const backendPasswordErrors = {};
@@ -121,9 +159,7 @@ const RegisterIndex = () => {
     setErrors((prev) => ({...prev, [name]: undefined}));
   };
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  const handleSignup = async () => {
     const payload = {
       firstName: formData.firstName,
       lastName: formData.lastName,
@@ -136,147 +172,188 @@ const RegisterIndex = () => {
     };
     submit({payload}, {method: 'post', encType: 'application/json'});
   };
+  // Step 1: User Names
+  const renderStep1 = () => (
+    <div className="text-center">
+      <div className="space-y-6">
+        <div className="text-center mt-6">
+          <Heading
+            text="YOUR NAME?"
+            classes="font-normal text-[22px] m-0"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
+          <Input
+            value={formData.firstName}
+            onChange={handleInputChange}
+            placeholder="First *"
+            name="firstName"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            classNameLabel="max-[580px]:text-left"
+            error={errors.firstName}
+          />
+          <Input
+            value={formData.lastName}
+            onChange={handleInputChange}
+            placeholder="Last *"
+            name="lastName"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            classNameLabel="max-[580px]:text-left"
+            error={errors.lastName}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 2: Partner Names
+  const renderStep2 = () => (
+    <div className="text-center">
+      <div className="space-y-6">
+        <div className="text-center">
+          <Heading
+            text="AND YOUR FIANCÉ?"
+            classes="font-normal text-[22px] m-0"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
+          <Input
+            value={formData.fianceFirstName}
+            onChange={handleInputChange}
+            placeholder="First *"
+            name="fianceFirstName"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            classNameLabel="max-[580px]:text-left"
+            error={errors.fianceFirstName}
+          />
+          <Input
+            value={formData.fianceLastName}
+            onChange={handleInputChange}
+            placeholder="Last *"
+            name="fianceLastName"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            classNameLabel="max-[580px]:text-left"
+            error={errors.fianceLastName}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 3: Auth Info
+  const renderStep3 = () => (
+    <div className="text-center">
+      <div className="space-y-6">
+        <div className="text-center mb-4">
+        <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto">
+          We'll use this email to keep you updated on gifts notifications and all things registry.
+        </h2>
+        </div>
+        <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
+          <Input
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Email *"
+            name="email"
+            type="email"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            error={
+              errors.email ||
+              (actionData?.statusCode === 422 &&
+              actionData?.message
+                ?.toLowerCase()
+                .includes('email already exist')
+                ? 'This email is already registered'
+                : undefined)
+            }
+          />
+          <Input
+            value={formData.confirmEmail}
+            onChange={handleInputChange}
+            placeholder="Confirm Email *"
+            name="confirmEmail"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            type="email"
+            error={errors.confirmEmail}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
+          <Input
+            value={formData.password}
+            onChange={handleInputChange}
+            placeholder="Password *"
+            name="password"
+            type="password"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            error={errors.password || backendPasswordErrors.password}
+          />
+          <Input
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            placeholder="Confirm Password *"
+            name="confirmPassword"
+            type="password"
+            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            error={
+              errors.confirmPassword ||
+              backendPasswordErrors.confirmPassword
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render current step content
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return renderStep1();
+      case 2:
+        return renderStep2();
+      case 3:
+        return renderStep3();
+      default:
+        return renderStep1();
+    }
+  };
+
   return (
     <>
       <Header />
       <div className="flex justify-center items-center min-h-screen bg-white">
         <StepsAndImage
-          title="let's get to know each other."
-          stepNo="1"
-          totalSteps="8"
+          title={stepTitles[currentStep]}
+          stepNo={currentStep.toString()}
+          totalSteps="3"
           content={
             <div className="flex h-full items-center">
-              {/* Stepper for progress */}
-
-              <form
-                className="space-y-6 max-w-full w-full mx-auto"
-                onSubmit={handleSignup}
-              >
-                {/* Render the step content dynamically */}
-                <div className="text-center mt-6">
-                  <Heading
-                    text="YOUR NAME?"
-                    classes="font-normal text-[22px]  m-0"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
-                  <Input
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="First *"
-                    name="firstName"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    classNameLabel="max-[580px]:text-left"
-                    error={errors.firstName}
-                  />
-                  <Input
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Last *"
-                    name="lastName"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    classNameLabel="max-[580px]:text-left"
-                    error={errors.lastName}
-                  />
-                </div>
-                <div className="text-center">
-                  <Heading
-                    text="AND YOUR FIANCÉ?"
-                    classes="font-normal text-[22px] m-0"
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
-                  <Input
-                    value={formData.fianceFirstName}
-                    onChange={handleInputChange}
-                    placeholder="First *"
-                    name="fianceFirstName"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    classNameLabel="max-[580px]:text-left"
-                    error={errors.fianceFirstName}
-                  />
-                  <Input
-                    value={formData.fianceLastName}
-                    onChange={handleInputChange}
-                    placeholder="Last *"
-                    name="fianceLastName"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    classNameLabel="max-[580px]:text-left"
-                    error={errors.fianceLastName}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
-                  <Input
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Email *"
-                    name="email"
-                    type="email"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    error={
-                      errors.email ||
-                      (actionData?.statusCode === 422 &&
-                      actionData?.message
-                        ?.toLowerCase()
-                        .includes('email already exist')
-                        ? 'This email is already registered'
-                        : undefined)
-                    }
-                  />
-                  <Input
-                    value={formData.confirmEmail}
-                    onChange={handleInputChange}
-                    placeholder="Confirm Email *"
-                    name="confirmEmail"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    type="email"
-                    error={errors.confirmEmail}
-                  />
-                </div>
-                {/* <div className="text-center">
-        <Heading text="Create your account" className="text-center" />
-      </div> */}
-                <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
-                  <Input
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Password *"
-                    name="password"
-                    type="password"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    error={errors.password || backendPasswordErrors.password}
-                  />
-                  <Input
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    placeholder="Confirm Password *"
-                    name="confirmPassword"
-                    type="password"
-                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                    error={
-                      errors.confirmPassword ||
-                      backendPasswordErrors.confirmPassword
-                    }
-                  />
-                </div>
-
-                {/* Back and Next buttons */}
-                <div className="flex justify-end mt-4 absolute bottom-6 right-6 steps-btns-hover">
-                  {/* Add any additional buttons if needed */}
+              <div className="space-y-6 max-w-full w-full mx-auto">
+                {renderCurrentStep()}
+                
+                {/* Navigation buttons */}
+                <div className="flex justify-between mt-8">
+                  {currentStep > 1 && (
+                    <button
+                      onClick={goBack}
+                      className="flex items-center uppercase font-bold gap-2 text-gray-600 hover:text-gray-800"
+                    >
+                      <img src={arrow} alt="" className="rotate-180" /> Back
+                    </button>
+                  )}
                   <button
-                    type="submit"
-                    text="Next"
-                    className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10"
+                    onClick={goNext}
+                    className="flex items-center uppercase font-bold gap-2 ml-auto"
                   >
-                    Next <img src={arrow} alt="" />
+                    {currentStep === 3 ? 'Submit' : 'Next'} <img src={arrow} alt="" />
                   </button>
                 </div>
-              </form>
+              </div>
             </div>
           }
         />
         {/* Main content wrapper */}
-        <Stepper step={1} totalSteps={8} />
+        <Stepper step={currentStep} totalSteps={3} />
       </div>
       <Footer />
     </>
