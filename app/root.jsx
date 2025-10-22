@@ -339,6 +339,9 @@ export default function App() {
       </div>
     </div>
 
+    {/* Modal outside the scaled tree */}
+    <div id="modal-root"></div>
+
     {/* Guided Video Component */}
     <GuidedVideo />
     </>

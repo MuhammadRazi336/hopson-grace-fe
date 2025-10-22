@@ -176,10 +176,10 @@ const RegisterIndex = () => {
   const renderStep1 = () => (
     <div className="text-center">
       <div className="space-y-6">
-        <div className="text-center mt-6">
+        <div className="text-center mt-[3.01vw]">
           <Heading
             text="YOUR NAME?"
-            classes="font-normal text-[22px] m-0"
+            classes="font-normal text-[12px] leading-[18px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
@@ -188,7 +188,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="First *"
             name="firstName"
-            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]"
             classNameLabel="max-[580px]:text-left"
             error={errors.firstName}
           />
@@ -197,7 +197,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="Last *"
             name="lastName"
-            className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]"
             classNameLabel="max-[580px]:text-left"
             error={errors.lastName}
           />
@@ -355,11 +355,11 @@ const RegisterIndex = () => {
           totalSteps="9"
           content={
             <div className="flex h-full items-center">
-              <div className="space-y-6 max-w-full w-full mx-auto">
+              <div className="space-y-6 max-w-full w-full h-full mx-auto">
                 {renderCurrentStep()}
                 
                 {/* Navigation buttons */}
-                <div className="flex justify-between mt-8">
+                <div className="flex justify-between mt-8 absolute lg:bottom-[2.135vw] xl:bottom-[2.135vw] 2xl:bottom-[2.135vw] lg:right-[1.823vw] xl:right-[1.823vw] 2xl:right-[1.823vw] max-[1024px]:right-[28px]">
                   {currentStep > 1 && (
                     <button
                       onClick={goBack}
@@ -370,9 +370,9 @@ const RegisterIndex = () => {
                   )}
                   <button
                     onClick={goNext}
-                    className="flex items-center uppercase font-bold gap-2 ml-auto"
+                    className="flex items-center uppercase font-bold gap-2 ml-auto text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:right-[24px]"
                   >
-                    {currentStep === 3 ? 'Submit' : 'Next'} <img src={arrow} alt="" />
+                    {currentStep === 3 ? 'Submit' : 'Next'} <img src={arrow} className="lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" alt="" />
                   </button>
                 </div>
               </div>

@@ -13,6 +13,7 @@ import NavBarLinks from './NavBarLinks';
 import HeaderMobileMenu from './HeaderMobileMenu';
 import {useState, useEffect, useRef} from 'react';
 import Popup from './Popup';
+import ModalPortal from './ModalPortal';
 import {useLocation} from 'react-router-dom';
 import { io } from 'socket.io-client';
 
@@ -667,7 +668,7 @@ export function Header() {
                   {/* CTA Button */}
                   <button
                     onClick={handleOpenPopup}
-                    className="text-[0.833vw] leading-[0.938vw] h-[3.095vw] bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[11.719vw] text-center"
+                    className="text-[0.833vw] leading-[0.938vw] cursor-pointer h-[3.095vw] bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[11.719vw] text-center"
                   >
                     CREATE A REGISTRY
                   </button>
@@ -865,7 +866,11 @@ export function Header() {
             )}
           
         </div>
-        {showPopup && <Popup onClose={handleClosePopup} />}
+        {showPopup && (
+          <ModalPortal>
+            <Popup onClose={handleClosePopup} />
+          </ModalPortal>
+        )}
       </header>
 
       <div

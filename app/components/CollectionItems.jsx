@@ -37,8 +37,8 @@ const CollectionItems = () => {
         A smarter, more stylish way to register—curated for how couples live now.
       </p>
       <Swiper
-        className="my-16 max-[1024px]:my-0"
-        modules={[FreeMode, Autoplay]}
+        className="my-16 max-[1024px]:my-0 pointer-events-none"
+        modules={[Autoplay]}
         slidesPerView={7}
         spaceBetween={30}
         allowTouchMove={false}
@@ -46,8 +46,12 @@ const CollectionItems = () => {
         grabCursor={false} 
         freeMode={{ enabled: true }}
         autoplay={{
-          delay: 0
+          delay: 0,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: false
         }}
+        preventClicks={true}
+        preventClicksPropagation={true}
         speed={8000}                   // higher => slower, smoother
         loop={true}
         breakpoints={{

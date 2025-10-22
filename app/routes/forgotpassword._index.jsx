@@ -96,10 +96,10 @@ const ForgotPassword = () => {
                   className="space-y-6 max-w-full w-full mx-auto"
                   onSubmit={handleSubmit}
                 >
-                  <div className="text-center mt-6">
+                  <div className="text-center lg:pt-[3.646vw] xl:pt-[3.646vw] 2xl:pt-[3.646vw] m-0">
                     <Heading
                       text="RESET PASSWORD"
-                      classes="font-normal text-[22px] m-0"
+                      classes="font-normal text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0 lg:mb-[1vw] xl:mb-[1vw] 2xl:mb-[1vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]"
                     />
                   </div>
                   <div className="space-y-4">
@@ -110,7 +110,7 @@ const ForgotPassword = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0"
                       error={
                         // Email validation errors (check message content)
                         (Array.isArray(actionData?.message) && 
@@ -124,7 +124,7 @@ const ForgotPassword = () => {
                     />
                   </div>
                   <div className="text-left">
-                    <Link to="/login" className="text-white hover:underline">
+                    <Link to="/login" className="text-white hover:underline text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]">
                       Back to Login
                     </Link>
                   </div>
@@ -153,9 +153,9 @@ const ForgotPassword = () => {
                   <div className="flex justify-end mt-4 absolute bottom-6 right-6 steps-btns-hover">
                     <button
                       type="submit"
-                      className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10 whitespace-nowrap"
+                      className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10 whitespace-nowrap text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:right-[24px]"
                     >
-                      Send Reset Email <img src={arrow} alt="" />
+                      Send Reset Email <img src={arrow} className="lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" alt="" />
                     </button>
                   </div>
                 </form>
