@@ -1149,10 +1149,8 @@ export default function AddGifts() {
                         productName={product.title}
                         price={product.price}
                         description={product.description}
+                        productHandle={product.handle}
                         onAddToRegistry={() => handleAddtoRegistry(product)}
-                        onPersonalizeFund={() =>
-                          navigate(`/dashboard/addgifts/${product.handle}`)
-                        }
                       />
                     );
                   });
@@ -1325,15 +1323,17 @@ export default function AddGifts() {
                   
                   return (
                     <SwiperSlide key={productNode.id}>
-                      <img 
-                        src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                        alt={productNode.title || 'Product'} 
-                        className="w-[455px] h-[455px]" 
-                      />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
-                        {productNode.title}
-                      </h3>
-                      <p className="lg:text-[24px] text-sm py-2">{formatShopifyPrice(price)}</p>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer">
+                        <img 
+                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                          alt={productNode.title || 'Product'} 
+                          className="w-[455px] h-[455px] hover:opacity-80 transition-opacity" 
+                        />
+                        <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                          {productNode.title}
+                        </h3>
+                        <p className="lg:text-[24px] text-sm py-2">{formatShopifyPrice(price)}</p>
+                      </Link>
                     </SwiperSlide>
                   );
                 })

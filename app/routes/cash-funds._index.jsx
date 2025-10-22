@@ -23,6 +23,7 @@ import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 
 export async function loader({request, context}) {
+  try {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('search');
   
@@ -109,8 +110,20 @@ export async function loader({request, context}) {
     searchQuery,
     registryId,
     user: user || null,
-    recommendedProducts,
+    recommendedProducts: recommendedProducts || [],
   };
+  } catch (error) {
+    console.error('Error in cash-funds loader:', error);
+    // Return default values to prevent the page from crashing
+    return {
+      products: [],
+      collections: [],
+      searchQuery: null,
+      registryId: null,
+      user: null,
+      recommendedProducts: [],
+    };
+  }
 }
 
 export async function action({request, context}) {

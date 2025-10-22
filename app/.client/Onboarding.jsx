@@ -768,15 +768,18 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
       
       {/* General error message */}
       {step4Errors?.general && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {step4Errors.general}
-          {/* Display suggestions if available */}
+        <div role="alert" className="mb-4 text-left">
+          <div className="mt-3">
+            <span className="font-medium text-[#B00020] text-[18px]">
+              {step4Errors.general}
+            </span>
+          </div>
           {step4Errors?.suggestions && step4Errors.suggestions.length > 0 && (
             <div className="mt-3">
-              <p className="font-semibold mb-2">Suggestions:</p>
+              <p className="font-medium mb-2">Suggestions:</p>
               <ul className="list-disc list-inside space-y-1">
                 {step4Errors.suggestions.map((suggestion, index) => (
-                  <li key={index} className="text-sm">{suggestion}</li>
+                  <li key={index} className="text-[18px]">{suggestion}</li>
                 ))}
               </ul>
             </div>

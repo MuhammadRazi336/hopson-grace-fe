@@ -642,6 +642,7 @@ export default function ProductCollection() {
                       productName={product.title}
                       price={firstVariant.priceV2.amount}
                       description={product.description}
+                      productHandle={product.handle}
                       onAddToRegistry={() => handleAddtoRegistry(product)}
                       onGroupGiftTagChange={(isGroupGift) =>
                         console.log(`Group Gift tag changed: ${isGroupGift}`)

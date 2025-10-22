@@ -131,8 +131,12 @@ const ForgotPassword = () => {
                   
                   {/* Success message */}
                   {actionData?.success && (
-                    <div className="text-center text-green-500 text-sm">
-                      {actionData?.message}
+                    <div className="flex justify-start">
+                      <div role="status" className="mt-3">
+                        <span className="font-medium text-green-600 text-[18px]">
+                          {actionData?.message}
+                        </span>
+                      </div>
                     </div>
                   )}
                   
@@ -140,12 +144,16 @@ const ForgotPassword = () => {
                   {actionData?.statusCode >= 400 && 
                    !(Array.isArray(actionData?.message) && actionData?.message.some(msg => msg.toLowerCase().includes('email'))) &&
                    !(actionData?.message === 'user not found' || actionData?.message === 'email not found') && (
-                    <div className="text-center text-red-500 text-sm">
-                      {actionData?.statusCode === 500 
-                        ? 'Server error. Please try again later.'
-                        : Array.isArray(actionData?.message)
-                          ? actionData?.message[0]
-                          : actionData?.message}
+                    <div className="flex justify-start">
+                      <div role="alert" className="mt-3">
+                        <span className="font-medium text-[#B00020] text-[18px]">
+                          {actionData?.statusCode === 500 
+                            ? 'Server error. Please try again later.'
+                            : Array.isArray(actionData?.message)
+                              ? actionData?.message[0]
+                              : actionData?.message}
+                        </span>
+                      </div>
                     </div>
                   )}
 

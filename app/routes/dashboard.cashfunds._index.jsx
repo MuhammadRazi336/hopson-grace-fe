@@ -24,6 +24,7 @@ import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 
 export async function loader({context}) {
+  try {
   const user = await context?.session?.get('@User');
   
   const registry = await context.ClientGet(
@@ -39,11 +40,12 @@ export async function loader({context}) {
   let collections = [];
   let allProducts = [];
   try {
-    const [{collections: collectionsData}, { products: recommendedProducts }] = await Promise.all([
+    const [{collections: collectionsData}, { products: recommendedProductsData }] = await Promise.all([
       context.storefront.query(COLLECTION_QUERY),
       context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { variables: { first: 8 } })
     ]);
     collections = collectionsData?.nodes || [];
+    const recommendedProducts = recommendedProductsData?.edges || [];
     
     // Extract products from collections: include cashfund=true OR titles matching categories (Honeymoon/Home/Date Night)
     collections.forEach(collection => {
@@ -72,7 +74,18 @@ export async function loader({context}) {
     console.error('Error fetching collections:', error);
   }
 
-  return {products: allProducts, registryId: registry?.data[0]?.id, collections, user, recommendedProducts: recommendedProducts?.edges || []};
+  return {products: allProducts, registryId: registry?.data[0]?.id, collections, user, recommendedProducts: recommendedProducts || []};
+  } catch (error) {
+    console.error('Error in dashboard.cashfunds loader:', error);
+    // Return default values to prevent the page from crashing
+    return {
+      products: [],
+      collections: [],
+      registryId: null,
+      user: null,
+      recommendedProducts: [],
+    };
+  }
 }
 
 export async function action({request, context}) {

@@ -16,7 +16,7 @@ import step8Image from "/assets/Images/scootycouple.jpg"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
 
-const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true }) => {
+const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true, onBackClick, showBackButton = false }) => {
     // Function to get the appropriate image based on step number
     const getStepImage = (step) => {
         switch(step) {
@@ -51,6 +51,18 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                 <div className="mb-10">
                     {content}
                 </div>
+                {/* Back button in left corner */}
+                {showBackButton && (
+                    <button
+                        onClick={onBackClick}
+                        type="button"
+                        className="absolute bottom-6 lg:bottom-[2vw] xl:bottom-[2vw] 2xl:bottom-[2vw] max-[1024px]:bottom-2.5 left-6 lg:left-[2vw] xl:left-[2vw] 2xl:left-[2vw] max-[1024px]:left-4 flex items-center uppercase font-bold gap-2 text-gray-600 hover:text-gray-800 bg-transparent border-none"
+                        style={{ cursor: 'pointer', zIndex: 9999 }}
+                    >
+                        <img src="/assets/Images/arrow.png" alt="" className="rotate-180 w-4 h-4" /> Back
+                    </button>
+                )}
+                
                 {showPagination && (
                     <div className="step absolute bottom-6 lg:bottom-[2vw] xl:bottom-[2vw] 2xl:bottom-[2vw] max-[1024px]:bottom-2.5 right-0 left-0 text-center flex items-center gap-2 justify-center">
                         <span className="text-6xl max-[1024px]:text-4xl">{stepNo}</span>
