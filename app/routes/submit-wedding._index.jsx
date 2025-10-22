@@ -8,7 +8,7 @@ import {Link} from '@remix-run/react';
 import registrylogoSteps from '/assets/Images/registrylogoSteps.png';
 import StepLine from '/assets/Images/StepLine.png';
 import { Button } from '@material-tailwind/react';
-import { Upload } from 'lucide-react';
+import { Upload, Check } from 'lucide-react';
 import ButtonComponent from '~/components/Button';
 
 const SubmitWedding = () => {
@@ -203,8 +203,8 @@ const SubmitWedding = () => {
                 <input
                   type="checkbox"
                   id="share-permission"
-                //   checked={formData.agreedToShare}
-                //   onChange={handleCheckboxChange}
+                  checked={formData.agreedToShare}
+                  onChange={handleCheckboxChange}
                   required
                   className="sr-only rounded-full"
                 />

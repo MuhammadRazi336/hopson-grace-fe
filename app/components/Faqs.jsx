@@ -24,6 +24,29 @@ const Faqs = () => {
     setIsExpanded(!isExpanded);
   };
 
+  // Helper function to truncate text and add clickable "..."
+  const truncateText = (text, maxWords = 26) => {
+    const words = text.split(' ');
+    if (words.length <= maxWords) {
+      return text;
+    }
+    
+    const truncatedWords = words.slice(0, maxWords);
+    const truncatedText = truncatedWords.join(' ');
+    
+    return (
+      <>
+        {truncatedText}{' '}
+        <Link 
+          to="/faq" 
+          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+        >
+          {'{...}'}
+        </Link>
+      </>
+    );
+  };
+
   // Determine how many items to show initially based on screen size
   const initialItemsCount = isMobile ? 2 : 4;
 
@@ -98,7 +121,7 @@ const Faqs = () => {
                   {faq.heading}
                 </h4>
                 <p className="font-normal text-[1.25vw] leading-[1.875vw] mb-[4.583vw] tracking-normal vertical-align-middle max-[1024px]:text-[12px] max-[1024px]:leading-[18px] max-[1024px]:text-center">
-                  {faq.paragraph}
+                  {truncateText(faq.paragraph)}
                 </p>
               </div>
             </div>
@@ -117,7 +140,7 @@ const Faqs = () => {
                     {faq.heading}
                   </h4>
                   <p className="font-normal text-[1.25vw] leading-[1.875vw] mb-[4.583vw] tracking-normal vertical-align-middle max-[1024px]:text-[12px] max-[1024px]:leading-[18px] max-[1024px]:text-center">
-                    {faq.paragraph}
+                    {truncateText(faq.paragraph)}
                   </p>
                 </div>
               </div>

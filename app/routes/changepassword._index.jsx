@@ -76,6 +76,7 @@ const ChangePassword = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
+                showPasswordTooltip={true}
               />
             </div>
             <div className="mb-4">
@@ -86,17 +87,16 @@ const ChangePassword = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
+                showPasswordTooltip={true}
               />
             </div>
-            <div
-              style={{
-                color: actionData?.statusCode >= 400 ? 'red' : 'inherit',
-              }}
-            >
-              {actionData?.statusCode >= 400 && Array.isArray(actionData?.message)
-                ? actionData?.message[0]
-                : actionData?.message}
-            </div>
+            {actionData?.message && (
+              <div role={actionData?.statusCode >= 400 ? 'alert' : 'status'} className="mt-3 text-left">
+                <span className={`font-medium text-[18px] ${actionData?.statusCode >= 400 ? 'text-[#B00020]' : 'text-green-600'}`}>
+                  {Array.isArray(actionData?.message) ? actionData?.message[0] : actionData?.message}
+                </span>
+              </div>
+            )}
             <ButtonComponent type="submit" className="w-full" text={'Enter'} />
           </form>
         </div>

@@ -2,7 +2,7 @@ import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
 import {useState} from 'react';
-import {useFetcher, useLoaderData} from '@remix-run/react';
+import {useFetcher, useLoaderData, Link} from '@remix-run/react';
 import {defer, redirect} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
 import {requireAuth} from '~/utils/auth-guard.js';
@@ -34,7 +34,7 @@ export async function loader(args) {
   try {
     const {request, context} = args;
     const {collections} = await loadCollectionData({context});
-    const {product} = await loadProductData(args);
+    const {product, vendorProducts} = await loadProductData(args);
     
     // Fetch recommended products
     let recommendedProducts = [];
@@ -64,7 +64,7 @@ export async function loader(args) {
       console.log('User not authenticated, allowing access to product page');
     }
     
-    return defer({collections, product, user, registry, recommendedProducts});
+    return defer({collections, product, user, registry, recommendedProducts, vendorProducts});
   } catch (error) {
     console.error('Error in dashboard.addgifts.$handle loader:', error);
     throw error;
@@ -118,8 +118,28 @@ async function loadProductData({context, params, request}) {
       throw new Error(`Product with handle "${handle}" not found`);
     }
     
+    // Fetch products from the same vendor
+    let vendorProducts = [];
+    if (productByHandle.vendor) {
+      try {
+        const { products: vendorProductsData } = await storefront.query(VENDOR_PRODUCTS_QUERY, {
+          variables: { 
+            vendor: `vendor:${productByHandle.vendor}`
+          }
+        });
+        // Filter out the current product and limit to 6 products
+        vendorProducts = (vendorProductsData?.edges || [])
+          .filter(edge => edge.node.handle !== handle)
+          .slice(0, 6);
+        console.log('Vendor products loaded:', vendorProducts);
+      } catch (error) {
+        console.error('Error loading vendor products:', error);
+      }
+    }
+    
     return {
       product: productByHandle,
+      vendorProducts,
     };
   } catch (error) {
     console.error('Error loading product data:', error);
@@ -129,7 +149,7 @@ async function loadProductData({context, params, request}) {
 
 const GiftDetailHandle = () => {
   const fetcher = useFetcher();
-  const {collections, product, registry, user, recommendedProducts} = useLoaderData();
+  const {collections, product, registry, user, recommendedProducts, vendorProducts} = useLoaderData();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
@@ -137,6 +157,7 @@ const GiftDetailHandle = () => {
   console.log('Product data:', product);
   console.log('Product variants:', product?.variants);
   console.log('Product priceRange:', product?.priceRange);
+  console.log('Vendor products:', vendorProducts);
 
   const handleTileClick = (title) => {
     alert(`You clicked on ${title}`);
@@ -312,21 +333,31 @@ const GiftDetailHandle = () => {
                 alt=""
                 className="w-auto lg:w-[18.594vw] xl:w-[18.594vw] 2xl:w-[18.594vw]"
               />
-              <h5 className="text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] prata my-[1.042vw]">hopson grace</h5>
+              <h5 className="text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] prata my-[1.042vw]">
+                {product?.vendor || 'Hopson Grace'}
+              </h5>
               <p className="text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mb-2">Toronto</p>
               <p className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] text-center mb-0">
-                Lorem ipsum dolor sit amet. Ab nesciunt officia qui labore unde
-                33 veniam reprehenderit ut impedit perspiciatis in magnam
-                accusantium est ratione dignissimos qui dolor internos. Sit
-                laboriosam rerum est minima provident eos doloremque omnis.
+                {product?.description ? 
+                  product.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : 
+                  'Discover the craftsmanship and quality that defines our brand. Each product is carefully selected to bring beauty and functionality to your home.'
+                }
               </p>
-              <button className=" text-white border-b pt-2 pb-1 text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] font-semibold uppercase tracking-wide">
-                View Full Profile
-              </button>
+              <Link to={`/brand/${product?.vendor?.toLowerCase().replace(/\s+/g, '-') || 'hopson-grace'}`}>
+                <button className="text-white border-b pt-2 pb-1 text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] font-semibold uppercase tracking-wide hover:text-gray-300 transition-colors cursor-pointer">
+                  View Full Profile
+                </button>
+              </Link>
             </div>
             <section className="lg:w-8/12 w-full  container ">
               <div className="relative items-start max-[1024px]:my-10 mr-[5.208vw]">
                 <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
+                  <div className="swiper-button-prev-prod absolute top-[40%] transform-y-[-50%] h-[40px] left-[-4vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
+                    <img src={nextitem} className="invert rotate-90 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw]" alt="" />
+                    <span className="-rotate-90 text-white block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
+                      more
+                    </span>
+                  </div>
                   <Swiper
                     spaceBetween={39}
                     slidesPerView={3}
@@ -365,63 +396,78 @@ const GiftDetailHandle = () => {
                       },
                     }}
                   >
-                    <SwiperSlide>
-                      <img
-                        src={product1}
-                        alt="Marble Butter Keeper"
-                        className="w-[345px] h-[345px]"
-                      />
-                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
-                        CLASSIC TUMBLER, SET OF 6
-                      </h3>
-                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$80.00</p>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <img
-                        src={product2}
-                        alt="Belle-V Icecream Scoop"
-                        className="w-[345px] h-[345px]"
-                      />
-                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
-                        FARMHOUSE BOWL 11"
-                      </h3>
-                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <img
-                        src={product3}
-                        alt="Staub Cast Iron Q4"
-                        className="w-[345px] h-[345px]"
-                      />
-                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
-                        RAW HONEY
-                      </h3>
-                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <img
-                        src={product3}
-                        alt="Staub Cast Iron Q4"
-                        className="w-[345px] h-[345px]"
-                      />
-                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
-                        RAW HONEY
-                      </h3>
-                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <img
-                        src={product2}
-                        alt="Belle-V Icecream Scoop"
-                        className="w-[345px] h-[345px]"
-                      />
-                      <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider">
-                        FARMHOUSE BOWL 11"
-                      </h3>
-                      <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
-                    </SwiperSlide>
+                    {/* Debug info */}
+                    {console.log('Rendering vendor products:', vendorProducts)}
+                    {vendorProducts && vendorProducts.length > 0 ? (
+                      vendorProducts.map((productEdge) => {
+                        const vendorProduct = productEdge.node;
+                        const firstImage = vendorProduct.images?.edges?.[0]?.node;
+                        const price = vendorProduct.priceRange?.minVariantPrice;
+                        
+                        return (
+                          <SwiperSlide key={vendorProduct.id}>
+                            <Link to={`/dashboard/addgifts/${vendorProduct.handle}`} className="cursor-pointer">
+                              <img
+                                src={firstImage?.url || '/assets/Images/placeholder.png'}
+                                alt={vendorProduct.title}
+                                className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
+                              />
+                              <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                                {vendorProduct.title}
+                              </h3>
+                              <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">
+                                {formatShopifyPrice(price)}
+                              </p>
+                            </Link>
+                          </SwiperSlide>
+                        );
+                      })
+                    ) : (
+                      // Fallback to static products if no vendor products - make them clickable
+                      <>
+                        <SwiperSlide>
+                          <Link to="/dashboard/addgifts/classic-tumbler-set" className="cursor-pointer">
+                            <img
+                              src={product1}
+                              alt="Marble Butter Keeper"
+                              className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
+                            />
+                            <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                              CLASSIC TUMBLER, SET OF 6
+                            </h3>
+                            <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$80.00</p>
+                          </Link>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                          <Link to="/dashboard/addgifts/farmhouse-bowl" className="cursor-pointer">
+                            <img
+                              src={product2}
+                              alt="Belle-V Icecream Scoop"
+                              className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
+                            />
+                            <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                              FARMHOUSE BOWL 11"
+                            </h3>
+                            <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
+                          </Link>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                          <Link to="/dashboard/addgifts/raw-honey" className="cursor-pointer">
+                            <img
+                              src={product3}
+                              alt="Staub Cast Iron Q4"
+                              className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
+                            />
+                            <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                              RAW HONEY
+                            </h3>
+                            <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>
+                          </Link>
+                        </SwiperSlide>
+                      </>
+                    )}
                   </Swiper>
-                  <div className="swiper-button-next-prod absolute top-[40%] transform-y-[-50%] h-[40px] right-[-6.125vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
+                  <div className="swiper-button-next-prod absolute top-[40%] transform-y-[-50%] h-[40px] right-[-4vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
                     <span className="rotate-90 text-white block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                       more
                     </span>
@@ -540,6 +586,7 @@ query getProductByHandle($handle: String!) {
     id
     title
     handle
+    vendor
     descriptionHtml
     description
     priceRange {
@@ -565,6 +612,35 @@ query getProductByHandle($handle: String!) {
           priceV2 {
             amount
             currencyCode
+          }
+        }
+      }
+    }
+  }
+}`;
+
+const VENDOR_PRODUCTS_QUERY = `#graphql
+query getProductsByVendor($vendor: String!) {
+  products(first: 8, query: $vendor) {
+    edges {
+      node {
+        id
+        title
+        handle
+        vendor
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        images(first: 1) {
+          edges {
+            node {
+              id
+              url
+              altText
+            }
           }
         }
       }

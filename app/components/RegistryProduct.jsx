@@ -8,7 +8,7 @@ const ProductCard = ({
   price,
   description,
   onAddToRegistry,
-  onPersonalizeFund,
+  productHandle,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
@@ -44,36 +44,27 @@ const ProductCard = ({
         {/* Expanding Overlay */}
         <div className="absolute lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
-            <img
-              src={image}
-              alt={productName}
-              className={`w-full rounded-none h-[15.625vw] mx-auto object-cover ${onPersonalizeFund ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
-              onClick={onPersonalizeFund}
-            />
+            <Link to={`/dashboard/addgifts/${productHandle}`}>
+              <img
+                src={image}
+                alt={productName}
+                className="w-full rounded-none h-[15.625vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </Link>
             <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {'BRAND NAME'}
             </h4>
-              <h3 
-                className={`text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug ${onPersonalizeFund ? 'cursor-pointer hover:text-gray-600 transition-colors' : ''}`}
-                onClick={onPersonalizeFund}
-              >
+            <Link to={`/dashboard/addgifts/${productHandle}`}>
+              <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
                 {productName}
               </h3>
+            </Link>
             <p className="text-sm mt-2 text-left">{formatPrice(price)}</p>
           </div>
 
           <div className="flex items-center justify-between mt-[2.813vw]">
             {/* Quantity Controls */}
             <div className="flex flex-col w-full items-center text-xs">
-              {/* Add to Registry Button */}
-              {onPersonalizeFund && (
-                <button
-                  className="bg-white cursor-pointer w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:mb-[0.729vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4"
-                  onClick={onPersonalizeFund}
-                >
-                  personalize fund
-                </button>
-              )}
               {/* Add to Registry Button */}
               <button
                 className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"

@@ -64,24 +64,68 @@ const RegisterIndex = () => {
 
   // Navigation functions
   const goNext = () => {
+    console.log('goNext called, currentStep:', currentStep);
+    console.log('formData:', formData);
+    
     if (currentStep === 1) {
-      // Validate user names
-      if (!formData.firstName || !formData.lastName) {
-        setErrors({ firstName: !formData.firstName ? 'First name is required' : '', lastName: !formData.lastName ? 'Last name is required' : '' });
+      // Validate user names - check for empty strings and trim whitespace
+      const firstName = formData.firstName?.trim();
+      const lastName = formData.lastName?.trim();
+      
+      console.log('Step 1 validation - firstName:', firstName, 'lastName:', lastName);
+      
+      if (!firstName || !lastName) {
+        console.log('Validation failed');
+        setErrors({ 
+          firstName: !firstName ? 'First name is required' : '', 
+          lastName: !lastName ? 'Last name is required' : '' 
+        });
         return;
       }
+      
+      console.log('Validation passed, moving to step 2');
+      // Clear any existing errors
+      setErrors({});
       setCurrentStep(2);
     } else if (currentStep === 2) {
       // Validate partner names
-      if (!formData.fianceFirstName || !formData.fianceLastName) {
-        setErrors({ fianceFirstName: !formData.fianceFirstName ? 'Fiance first name is required' : '', fianceLastName: !formData.fianceLastName ? 'Fiance last name is required' : '' });
+      const fianceFirstName = formData.fianceFirstName?.trim();
+      const fianceLastName = formData.fianceLastName?.trim();
+      
+      if (!fianceFirstName || !fianceLastName) {
+        setErrors({ 
+          fianceFirstName: !fianceFirstName ? 'Fiance first name is required' : '', 
+          fianceLastName: !fianceLastName ? 'Fiance last name is required' : '' 
+        });
         return;
       }
+      
+      // Clear any existing errors
+      setErrors({});
       setCurrentStep(3);
     } else if (currentStep === 3) {
       // Validate and submit
       if (!validate()) return;
       handleSignup();
+    }
+  };
+
+  // Direct step navigation function
+  const handleNextClick = () => {
+    console.log('handleNextClick called');
+    console.log('Current step before:', currentStep);
+    
+    // Test direct state change first
+    if (currentStep === 1) {
+      console.log('Attempting direct state change to step 2');
+      setCurrentStep(2);
+      console.log('State change called');
+    } else {
+      try {
+        goNext();
+      } catch (error) {
+        console.error('Error in goNext:', error);
+      }
     }
   };
 
@@ -313,6 +357,7 @@ const RegisterIndex = () => {
             type="password"
             className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
             error={errors.password || backendPasswordErrors.password}
+            showPasswordTooltip={true}
           />
           <Input
             value={formData.confirmPassword}
@@ -325,6 +370,7 @@ const RegisterIndex = () => {
               errors.confirmPassword ||
               backendPasswordErrors.confirmPassword
             }
+            showPasswordTooltip={true}
           />
         </div>
       </div>
@@ -353,24 +399,20 @@ const RegisterIndex = () => {
           title={stepTitles[currentStep]}
           stepNo={(currentStep <= 2 ? 1 : 2).toString()}
           totalSteps="9"
+          showBackButton={currentStep > 1}
+          onBackClick={goBack}
           content={
             <div className="flex h-full items-center">
               <div className="space-y-6 max-w-full w-full h-full mx-auto">
                 {renderCurrentStep()}
                 
                 {/* Navigation buttons */}
-                <div className="flex justify-between mt-8 absolute lg:bottom-[2.135vw] xl:bottom-[2.135vw] 2xl:bottom-[2.135vw] lg:right-[1.823vw] xl:right-[1.823vw] 2xl:right-[1.823vw] max-[1024px]:right-[28px]">
-                  {currentStep > 1 && (
-                    <button
-                      onClick={goBack}
-                      className="flex items-center uppercase font-bold gap-2 text-gray-600 hover:text-gray-800"
-                    >
-                      <img src={arrow} alt="" className="rotate-180" /> Back
-                    </button>
-                  )}
+                <div className="flex justify-end mt-8 absolute lg:bottom-[2.135vw] xl:bottom-[2.135vw] 2xl:bottom-[2.135vw] lg:right-[1.823vw] xl:right-[1.823vw] 2xl:right-[1.823vw] max-[1024px]:right-[28px]">
                   <button
-                    onClick={goNext}
-                    className="flex items-center uppercase font-bold gap-2 ml-auto text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:right-[24px]"
+                    onClick={handleNextClick}
+                    type="button"
+                    className="flex items-center uppercase font-bold gap-2 text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] bg-transparent border-none"
+                    style={{ cursor: 'pointer', zIndex: 9999 }}
                   >
                     {currentStep === 3 ? 'Submit' : 'Next'} <img src={arrow} className="lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" alt="" />
                   </button>
