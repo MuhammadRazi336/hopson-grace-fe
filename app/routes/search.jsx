@@ -579,7 +579,7 @@ export default function SearchResults() {
         <Heading
           text={`search results for "${searchQuery}"`}
           classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
+            'prata text-[48px] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
