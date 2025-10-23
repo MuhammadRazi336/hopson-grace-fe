@@ -109,10 +109,10 @@ const AboutUs = () => {
           direction={'left'}
           imgBanner={BottleImg}
           lineimg={lineImg3}
-          title="questions?"
-          description="We’ve got answers."
-          buttontext={'PHONE, EMAIL OR LIVE CHAT'}
-          buttontype={'Color'}
+          title="at your service?"
+          description="There's no question too small or request too big for our Registry advisors. We're always at your service."
+          buttontext={'CONTACT US'}
+          buttontype={'link'}
           buttonLink={'/contact-us'}
         />
       </div>

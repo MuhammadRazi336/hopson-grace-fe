@@ -6,7 +6,7 @@ const BrandImages = ({ brandCollections = [] }) => {
     return <div></div>;
   }
   
-  // Generate images for each brand (no repetition)
+  // Generate images for each brand (brands are already sorted alphabetically from the loader)
   const generateBrandImages = () => {
     return brandCollections.map((brand, index) => (
       <img 
@@ -14,6 +14,10 @@ const BrandImages = ({ brandCollections = [] }) => {
         src={brand.image?.url || '/assets/Images/placeholder.png'} 
         alt={brand.image?.altText || brand.title || `brand${index + 1}`} 
         className='w-52'
+        onError={(e) => {
+          // Fallback to placeholder if image fails to load
+          e.target.src = '/assets/Images/placeholder.png';
+        }}
       />
     ));
   };

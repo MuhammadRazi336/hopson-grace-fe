@@ -18,11 +18,28 @@ async function loadBrand({context}) {
         const [{collections}] = await Promise.all([
             context.storefront.query(BRAND_QUERY),
         ]);
-        const brandCollections = collections?.nodes?.filter(collections =>
+        
+        // Filter brands with brand metafield = true
+        const filteredBrands = collections?.nodes?.filter(collections =>
             collections.metafield?.value === 'true'
         ) || [];
 
-        return brandCollections;
+        // Remove duplicates by title (keep first occurrence)
+        const uniqueBrands = filteredBrands.filter((brand, index, self) => 
+            index === self.findIndex(b => b.title === brand.title)
+        );
+
+        // Sort brands alphabetically by title
+        const sortedBrands = uniqueBrands.sort((a, b) => 
+            a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+        );
+
+        console.log('Total collections:', collections?.nodes.length);
+        console.log('Filtered brands count:', filteredBrands.length);
+        console.log('Unique brands count:', uniqueBrands.length);
+        console.log('Sorted brands:', sortedBrands.map(brand => brand.title));
+
+        return sortedBrands;
     } catch (error) {
         console.error("Error loading brands:", error);
         return [];
@@ -75,7 +92,7 @@ export default OurBrands;
 
 const BRAND_QUERY = `#graphql
 query getOurBrands {
-  collections(first: 50) {
+  collections(first: 250) {
     nodes {
       id
       title

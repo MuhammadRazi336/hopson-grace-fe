@@ -66,7 +66,7 @@ export default function FindCoupleForm() {
                   className="max-w-[315px] lg:max-w-[16.406vw] mb-4"
                 />
                 <p className="text-center tracking-[0.8px] lg:text-[1.042vw] lg:leading-[1.354vw] text-white uppercase max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-                enter couple's first and fiance's first name
+                Enter either person's first and last name
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
@@ -188,7 +188,7 @@ export function FindCoupleFormBanner() {
             className="max-w-[315px] mb-4"
           />
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-            enter couple's first and fiance's first name
+            Enter either person's first and last name
           </p>
 
           <form method="GET" className="w-full" onSubmit={handleSearch}>
@@ -278,7 +278,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
       <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
         <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
           <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
-            find a couple
+            what is here.
           </h1>
           <img
             src="/assets/Images/white-bdr.png"
@@ -286,7 +286,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
             className="max-w-[315px] mb-4"
           />
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-          enter couple's first and fiance's first name
+          Enter either person's first and last name
           </p>
           <form method="GET" className="w-full" onSubmit={handleSearch}>
             <div className="flex gap-8 mb-4">

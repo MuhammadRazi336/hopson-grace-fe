@@ -87,6 +87,48 @@ const NavBarLinks = (mobileClasses) => {
             >
               OUR BRANDS
             </NavLink>
+            <div className="absolute custom-mega-menu left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
+              <div className="flex mx-auto">
+                <div className="mr-[90px]">
+                  <ul className="">
+                    {/* Dynamic brands */}
+                    {brandsLoading ? (
+                      <li className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-gray-500">Loading brands...</li>
+                    ) : brands.length > 0 ? (
+                      brands.map((brand) => (
+                        <li key={brand.id}>
+                          <NavLink
+                            to={`/brand/${brand.handle}`}
+                            className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
+                          >
+                            {brand.title.toUpperCase()}
+                          </NavLink>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-gray-500">No brands available</li>
+                    )}
+                    
+                    <li className='flex items-center gap-2'>
+                      <NavLink
+                        to="/our-brands"
+                        className="mb-[26px] text-black font-semibold underline flex items-center gap-2"
+                      >
+                        VIEW ALL BRANDS
+                        <img src={arrowImg} className='text-black brightness-0' alt="" />
+                      </NavLink>
+                    </li>
+                  </ul>
+                </div>
+                <div className="relative">
+                  <img src={brandImg} alt="Our brands" />
+                  <h3 className="absolute top-56 left-14 prata text-black 2xl:text-6xl xl:text-4xl lg:text-2xl">
+                    our brands
+                  </h3>
+                  <img src={lineImg} alt="Our brands" className="absolute top-[300px] left-14 w-[300px]" />
+                </div>
+              </div>
+            </div>
           </li>
           <li className="group">
             <NavLink
