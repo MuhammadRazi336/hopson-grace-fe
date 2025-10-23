@@ -573,7 +573,7 @@ const OnboardingClient = ({onStepChange}) => {
           </div>
           <div className="uppercase font-semibold mb-6 text-center">READY?</div>
           <button
-            className="bg-white text-black font-bold px-8 py-5 shadow hover:bg-gray-100 transition"
+            className="bg-white text-black cursor-pointer font-bold px-8 py-5 shadow hover:bg-gray-100 transition"
             onClick={async () => { await handleOnboard(); navigate('/dashboard'); }}
           >
             GO TO MY DASHBOARD
@@ -727,7 +727,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
     <div>
       <div className="text-center">
         {/* <Heading text={'How many guests are you inviting?'} /> */}
-        <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto">
+        <h2 className="font-normal mb-4 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
           This will help us calculate the magic number to ensure all guests have
           a good amount of gifts to choose from.
         </h2>
@@ -761,7 +761,7 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
     <div className="">
       <div className="text-center">
         {/* <Heading text={'Where would you like your gifts shipped?'} /> */}
-        <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto">
+        <h2 className="font-normal mb-4 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
           You can update your address at any time.
         </h2>
       </div>
@@ -891,7 +891,7 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
   return (
     <div className="flex flex-col items-center">
       {/* <Heading text={'What is your preferred gift?'} /> */}
-      <h2 className="font-normal mb-4 mt-4 w-[80%] text-2xl max-[768px]:text-lg mx-auto text-center">
+      <h2 className="font-normal mb-4 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </h2>
       {/* Grid */}
@@ -908,7 +908,7 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
             }`}
           >
             <div
-              className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-40 aspect-[1/1] flex items-center justify-center ${
+              className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-[8.021vw] h-[8.021vw] aspect-[1/1] flex items-center justify-center ${
                 selectedOption === option.id ? 'bg-[#223247]' : 'bg-[#F5F2ED]'
               }`}
             >
@@ -922,7 +922,7 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
                 <img src={option.image} className="max-[768px]:w-16" alt="" />
               )}
             </div>
-            <span className="text-[20px] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center">
+            <span className="text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center">
               {option.label}
             </span>
           </button>
@@ -973,7 +973,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
+      <p className="font-normal mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
       {/* Grid */}
@@ -988,7 +988,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
               }`}
             >
               <div
-                className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-40 aspect-[1/1] flex items-center justify-center relative ${
+                className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-[8.021vw] h-[8.021vw] aspect-[1/1] flex items-center justify-center relative ${
                   selectedOptions.some((item) => item.id === collection.id) 
                     ? 'bg-[#223247]' 
                     : 'bg-[#F5F2ED]'
@@ -1008,7 +1008,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
                   />
                 )}
               </div>
-              <span className="text-[20px] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center">
+              <span className="text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center">
                 {collection.title}
               </span>
             </button>
@@ -1094,18 +1094,18 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
 
   return (
     <div className="">
-      <p className="font-normal mb-10 mt-4 w-[80%] text-2xl mx-auto text-center">
+      <p className="font-normal mb-10 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-[14px] mx-auto text-center">
         Pick a style, and we'll make gift recommendations tailored to your
         taste.
       </p>
-      <p className="font-normal mb-4 mt-4 w-[80%] text-2xl mx-auto text-center">
+      <p className="font-normal mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
       {error && <p className="text-red-500 mb-4">Error: {error}</p>}
       <div className="relative">
         <div className="swiper-button-prev-subcollection absolute top-[60px] -left-16  cursor-pointer text-white uppercase flex ">
-          <img src={nextitem} alt="" className="rotate-180 invert-100" />
-          <span className="-rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+          <img src={nextitem} alt="" className="rotate-90 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" />
+          <span className="-rotate-90 text-white block text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] tracking-wider max-[1024px]:hidden">
             more
           </span>
         </div>
@@ -1214,10 +1214,10 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
           )}
         </Swiper>
         <div className="swiper-button-next-subcollection absolute top-[60px] -right-16 cursor-pointer text-white uppercase flex">
-          <span className="rotate-90 text-white block tracking-wider max-[1024px]:hidden">
+          <span className="rotate-90 text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] block tracking-wider max-[1024px]:hidden">
             more
           </span>
-          <img src={nextitem} className="invert-100" alt="" />
+          <img src={nextitem} className="rotate-270 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" alt="" />
         </div>
       </div>
     </div>

@@ -34,8 +34,8 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
   };
 
   return (
-    <div className={`bg-[#f5f2ed] rounded-sm p-6 w-64 text-center relative shadow-sm ${className}`}>
-      <div className="uppercase text-lg lg:text-[18px] lg:leading-[20px] font-medium tracking-wide text-black mb-4">
+    <div className={`bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px] ${className}`}>
+      <div className="uppercase text-lg lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.042vw] xl:leading-[1.042vw] 2xl:leading-[1.042vw] font-medium tracking-wide text-black mb-4 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw]">
         Registry<br />Homepage Status:
       </div>
       {/* Toggle Switch */}
@@ -43,13 +43,13 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
         type="button"
         aria-pressed={!isDraft}
         onClick={handleToggle}
-        className={`mx-auto mb-[15px] w-[60px] h-[26px] flex items-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${isDraft ? 'bg-white border-black' : 'bg-white border-black'}`}
+        className={`mx-auto mb-[15px] w-[60px] h-[26px] lg:w-[3.125vw] xl:w-[3.125vw] 2xl:w-[3.125vw] lg:h-[1.354vw] xl:h-[1.354vw] 2xl:h-[1.354vw] flex items-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${isDraft ? 'bg-white border-black' : 'bg-white border-black'}`}
       >
         <span
-          className={`w-[26px] h-[22px] rounded-full shadow-md transform transition-transform duration-200 ${isDraft ? 'translate-x-0 bg-gray-300' : 'translate-x-8 bg-[#C52248]'}`}
+          className={`w-[26px] h-[22px] lg:h-[1.3vw] xl:h-[1.3vw] 2xl:h-[1.3vw] rounded-full shadow-md transform transition-transform duration-200 ${isDraft ? 'translate-x-0 bg-gray-300 w-[full]' : 'translate-x-8 bg-[#C52248] lg:w-[2.031vw] xl:w-[2.031vw] 2xl:w-[2.031vw]'}`}
         />
       </button>
-      <div className="uppercase text-lg font-bold text-black tracking-wide lg:text-[18px] lg:leading-[18px]">
+      <div className="uppercase text-lg font-bold text-black tracking-wide lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
         {isDraft ? 'Draft' : 'Published'}
       </div>
     </div>

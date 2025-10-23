@@ -24,7 +24,7 @@ export default function Input({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`mt-2 p-2 border border-gray-300 rounded w-80 ${className} ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+          className={`mt-2 p-2 border border-gray-300 rounded w-80 ${className} ${error ? 'border-red-500 max-[1024px]:h-[47px] max-[1024px]:py-0 focus:border-red-500 focus:ring-red-500' : ''}`}
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
           {...rest}

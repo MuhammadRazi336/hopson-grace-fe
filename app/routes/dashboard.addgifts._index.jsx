@@ -1053,7 +1053,7 @@ export default function AddGifts() {
                       />
                     </button>
                     {isDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-10 min-w-[200px]">
+                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-10 min-w-[200px] max-[1024px]:min-w-unset">
                         <button
                           onClick={() => {
                             setPriceSort('');
