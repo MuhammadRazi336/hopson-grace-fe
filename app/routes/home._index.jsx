@@ -52,14 +52,32 @@ export async function loader({ context }) {
       return readyMadeMetafield && parentCollectionMetafield;
     }) || [];
 
-    // Filter brand collections for the marquee
-    const brands = brandCollections?.nodes?.filter(collection =>
-      collection.metafield?.value === 'true'
+    // Filter brand collections for the marquee - only show brands with featured metafield as true
+    const filteredBrands = brandCollections?.nodes?.filter(collection =>
+      collection.featuredMetafield?.value === 'true'
     ) || [];
+
+    // Remove duplicates by title (keep first occurrence)
+    const brands = filteredBrands.filter((brand, index, self) => 
+      index === self.findIndex(b => b.title === brand.title)
+    );
     
     console.log('All collections:', collections?.nodes);
     console.log('Real registries (parent collections):', realRegistries);
-    console.log('Brands for marquee:', brands);
+    console.log('All brand collections (before filtering):', brandCollections?.nodes);
+    console.log('Filtered brands count:', filteredBrands.length);
+    console.log('Brands after deduplication:', brands.length);
+    console.log('Brand titles:', brands.map(brand => brand.title));
+    
+    // Debug: Log each brand's metafield to see what we're getting
+    brandCollections?.nodes?.forEach((collection, index) => {
+      console.log(`Brand ${index + 1}:`, {
+        title: collection.title,
+        featuredMetafield: collection.featuredMetafield?.value,
+        namespace: collection.featuredMetafield?.namespace,
+        key: collection.featuredMetafield?.key
+      });
+    });
     
     // Log each collection with its title and metafields for debugging
     realRegistries.forEach((collection, index) => {
@@ -321,17 +339,11 @@ const Home = () => {
             direction={'left'}
             imgBanner={atyourserviceGif}
             lineimg={lineImg}
-            title=" questions?"
+            title=" There's no question too small or request too big for our Registry advisors. We're always at your service."
             description="We've got answers."
             showLiveChat={true}
-            liveChatProps={{
-              buttonText: "PHONE, EMAIL OR LIVE CHAT",
-              showTitle: false,
-              showDescription: false,
-              className: "bg-[#446184] text-white hover:bg-[#3a4f6b]"
-            }}
           />
-      </section>
+    </section>
 
       <section className="">
         <Faqs />
@@ -484,7 +496,7 @@ query getHomeBrands {
         width
         height
       }
-      metafield(namespace: "custom", key: "brand") {
+      featuredMetafield: metafield(namespace: "custom", key: "featured") {
         id
         value
       }

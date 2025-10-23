@@ -47,10 +47,10 @@ const Marquee = ({ brands = [] }) => {
   return (
     <div className="brandSlider">
       <Swiper
-        spaceBetween={0}
-        slidesPerView={5.75}
-        centeredSlides={true}
-        loop={true}
+        spaceBetween={40}
+        slidesPerView="auto"
+        centeredSlides={false}
+        loop={displayBrands.length > 1} // Only loop if we have more than 1 brand
         speed={6000} // VERY slow transition so it looks continuous
         autoplay={{
           delay: 1,
@@ -82,26 +82,9 @@ const Marquee = ({ brands = [] }) => {
           },
         }}
       >
-        {/* First set of slides */}
+        {/* Render brands only once - Swiper will handle the loop internally */}
         {displayBrands.map((brand, index) => (
-          <SwiperSlide key={`first-${index}`}>
-            <div className="flex items-center justify-center">
-              <img 
-                src={getBrandImage(brand)} 
-                alt={getBrandAlt(brand)}
-                className="w-52" 
-                onError={(e) => {
-                  // Fallback to first fallback image if dynamic image fails
-                  e.target.src = fallbackBrands[0];
-                }}
-              />
-            </div>
-          </SwiperSlide>
-        ))}
-        
-        {/* Second set of slides for seamless loop */}
-        {displayBrands.map((brand, index) => (
-          <SwiperSlide key={`second-${index}`}>
+          <SwiperSlide key={`brand-${brand.id || index}`}>
             <div className="flex items-center justify-center">
               <img 
                 src={getBrandImage(brand)} 

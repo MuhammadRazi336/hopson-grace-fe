@@ -40,7 +40,26 @@ export async function action({ request, context }) {
       collection.metafield?.value === 'true'
     );
 
-    return json({ brands: filteredBrands });
+    // Debug logging to check for duplicates
+    console.log('Total collections:', collections.nodes.length);
+    console.log('Filtered brands count:', filteredBrands.length);
+    console.log('Brand titles:', filteredBrands.map(brand => brand.title));
+    
+    // Check for duplicate titles and remove duplicates
+    const titles = filteredBrands.map(brand => brand.title);
+    const uniqueTitles = [...new Set(titles)];
+    if (titles.length !== uniqueTitles.length) {
+      console.warn('Duplicate brand titles found:', titles.filter((title, index) => titles.indexOf(title) !== index));
+    }
+
+    // Remove duplicates by title (keep first occurrence)
+    const uniqueBrands = filteredBrands.filter((brand, index, self) => 
+      index === self.findIndex(b => b.title === brand.title)
+    );
+
+    console.log('Unique brands count after deduplication:', uniqueBrands.length);
+
+    return json({ brands: uniqueBrands });
   } catch (error) {
     return json({ 
       error: 'Failed to fetch navigation brands',
