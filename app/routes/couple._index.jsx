@@ -286,7 +286,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
             className="max-w-[315px] mb-4"
           />
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-          enter couple's first and fiance's first name
+          Enter either person's first and last name
           </p>
           <form method="GET" className="w-full" onSubmit={handleSearch}>
             <div className="flex gap-8 mb-4">
