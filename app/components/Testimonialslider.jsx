@@ -12,6 +12,7 @@ const Testimonialslider = ({ blogs = [] }) => {
       ...article,
       blogHandle: blog.handle,
       category: (article?.categoryMetafield?.value || '').toLowerCase().trim(),
+      venue: article?.venueMetafield?.value || '',
     })) || []
   ) || [];
 
@@ -43,7 +44,7 @@ const Testimonialslider = ({ blogs = [] }) => {
         {allArticles.length > 0 ? allArticles.slice(0, 4).map((article, index) => {
           const cleanTitle = article?.title?.replace(/<[^>]*>/g, '') || 'Untitled Article';
           const cleanContent = article?.contentHtml?.replace(/<[^>]*>/g, '') || '';
-          const excerpt = cleanContent.slice(0, 200) + (cleanContent.length > 200 ? '...' : '');
+          const excerpt = cleanContent.slice(0, 300) + (cleanContent.length > 300 ? '...' : '');
           
           return (
             <SwiperSlide key={article.id}>
@@ -54,10 +55,7 @@ const Testimonialslider = ({ blogs = [] }) => {
                   className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[47.417vw] xl:w-[47.417vw] 2xl:w-[47.417vw] lg:h-[36.458vw] xl:h-[36.458vw] 2xl:h-[36.458vw] rounded-none"
                 />
                 <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[29.167vw] lg:h-[36.042vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
-                  <h3 className="text-xl lg:text-[1.25vw] lg:leading-[1.5vw] font-bold mb-3 max-[1024px]:text-[16px] max-[1024px]:leading-normal">
-                    {cleanTitle}
-                  </h3>
-                  <p className="text-lg lg:text-[1vw] lg:leading-[1.8vw] font-normal tracking-wider leading-[35px] max-[1024px]:text-[14px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
+                  <p className="text-xl lg:text-[1.1vw] lg:leading-[1.9vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
                     {excerpt}
                   </p>
                   <Link to={`/blogs/${article.blogHandle || 'blog'}/${article.handle || 'article'}`}>
@@ -73,14 +71,10 @@ const Testimonialslider = ({ blogs = [] }) => {
                   </Link>
                   <div className="flex flex-col items-end">
                     <h3 className="font-bold mt-[3.385vw] lg:text-[0.938vw] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto">
-                      {(article.category) && (article.category == 'wedding') ? 'WEDDING STORIES' : (article.category) && (article.category == 'ready') ? 'READY-MADE REGISTRIES' : (article.category) && (article.category == 'planning') ? 'REGISTRY & PLANNING TIPS' : (article.category) && (article.category == 'design') ? 'DESIGN NOTES' : (article.category) && (article.category == 'taste') ? 'TASTE & TRAVEL' : 'ARTICLE'}
+                      {cleanTitle}
                     </h3>
                     <h4 className="text-right ivyora text-xl lg:text-[1.875vw] lg:leading-[2.5vw] font-normal m-0 max-[1024px]:hidden">
-                      {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      }) : 'Recent'}
+                      {article.venue || 'Venue TBD'}
                     </h4>
                   </div>
                 </div>
@@ -96,15 +90,12 @@ const Testimonialslider = ({ blogs = [] }) => {
                 className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[35.417vw] lg:h-[36.458vw] rounded-none"
               />
               <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[29.167vw] lg:h-[36.042vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
-                <h3 className="text-xl lg:text-[1.25vw] lg:leading-[1.5vw] font-bold mb-3 max-[1024px]:text-[16px] max-[1024px]:leading-normal">
-                  Coming Soon
-                </h3>
-                <p className="text-lg lg:text-[1vw] lg:leading-[1.8vw] font-normal tracking-wider leading-[35px] max-[1024px]:text-[14px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
+                <p className="text-xl lg:text-[1.1vw] lg:leading-[1.9vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
                   We're working on bringing you amazing blog content. Check back soon for inspiring stories and helpful tips!
                 </p>
                 <div className="flex flex-col items-end">
                   <h3 className="font-bold mt-[3.385vw] lg:text-[0.938vw] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto">
-                    BLOG
+                    Coming Soon
                   </h3>
                   <h4 className="text-right ivyora text-xl lg:text-[1.875vw] lg:leading-[2.5vw] font-normal m-0 max-[1024px]:hidden">
                     Stay Tuned

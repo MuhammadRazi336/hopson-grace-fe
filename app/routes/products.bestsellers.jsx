@@ -358,6 +358,7 @@ const Bestsellers = () => {
                   image={image}
                   productName={product.node.title}
                   price={price}
+                  productHandle={product.node.handle}
                   registryId={registry?.id}
                   onAddToRegistry={(quantity) => handleAddToRegistry(product.node, quantity)}
                 />

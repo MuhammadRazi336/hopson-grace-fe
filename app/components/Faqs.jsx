@@ -3,7 +3,7 @@ import faqline from '/assets/Images/faqline.png';
 import moreImg from '/assets/Images/more.png';
 import {useState, useEffect} from 'react';
 import ButtonComponent from './Button';
-import { Link } from '@remix-run/react';
+import {Link} from '@remix-run/react';
 
 const Faqs = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -30,15 +30,15 @@ const Faqs = () => {
     if (words.length <= maxWords) {
       return text;
     }
-    
+
     const truncatedWords = words.slice(0, maxWords);
     const truncatedText = truncatedWords.join(' ');
-    
+
     return (
       <>
         {truncatedText}{' '}
-        <Link 
-          to="/faq" 
+        <Link
+          to="/faq"
           className="text-blue-600 hover:text-blue-800 cursor-pointer"
         >
           {'{...}'}
@@ -53,25 +53,24 @@ const Faqs = () => {
   const faqs = [
     {
       number: 1,
-      heading: 'Why Choose The Registry?',
+      heading: 'Why choose The Registry?',
       paragraph:
-        "Your wedding should reflect your taste and your future. That's why The Registry offers more than just beautiful gifts. From top-tier brands to bespoke travel and personalized cash funds, we make it easy (and inspiring) to create a registry that's anything but ordinary. Enjoy a seamless experience with tools like a customizable dashboard, gift tracker, and thank-you note manager. Browse our designer curated Ready-Made Registries or build your own from scratch. After the wedding, take advantage of our 15% Newlywed Discount for any items you wanted but didn't receive and when you're ready, we'll ship your gifts free of charge, anywhere in continental North America.",
+        'Your wedding should reflect your taste—and your future. That’s why The Registry offers more than just beautiful gifts. From top-tier brands to bespoke travel and personalized cash funds, we make it easy (and inspiring) to create a registry that’s anything but ordinary. Enjoy a seamless experience with tools like a customizable dashboard, gift tracker, and thank-you note manager. Browse our designer-curated Ready-Made Registries or build your own from scratch. After the wedding, take advantage of our 15% Newlywed Discount for any items you wanted but didn’t receive—and when you’re ready, we’ll ship your gifts free of charge, anywhere in continental North America.',
     },
     {
       number: 2,
-      heading: 'How Does it Work?',
+      heading: 'How does it work?',
       paragraph:
-        "Create your registry at your own pace, or let us guide you with a one-on-one virtual appointment. Register online or book an appointment at our Toronto showroom. You can choose from curated products, digital gift cards, cash funds (like a honeymoon or home reno), and bespoke travel experiences all in one place. Our curated edit means no overwhelm just intentional choices. When you're ready to share your registry, simply make it visible and add the link to your wedding website. As gifts are purchased, you'll be notified, and your dashboard will update automatically with gift values and thank-you reminders. After your wedding, enjoy 15% off remaining items on your list. We'll help you finalize your order, and nothing ships without your approval.",
+        "Once you sign up, create your registry page and start adding gifts, funds, and experiences. Create your registry at your own pace, or let us guide you with a one-on-one virtual appointment. You can choose from curated products, digital gift cards, cash funds (like a honeymoon or home reno), and bespoke travel experiences—all in one place. Our curated edit means no overwhelm—just intentional choices. When you're ready to share your registry, simply make it visible and add the link to your wedding website. As gifts are purchased, you’ll be notified, and your dashboard will update automatically with gift values and thank-you reminders. After your wedding, enjoy 15% off remaining items on your list. We’ll help you finalize your order, and nothing ships without your approval.",
     },
     {
       number: 3,
-      heading: 'Can We Register in Person?',
+      heading: 'Can we register in person?',
       paragraph:
-        "While we don't offer in-person appointments, you can easily build your registry online or book a virtual session with our Registry Concierge we'll walk you through everything.",
-    },
+        "Yes! Set up a personalized fund for anything from your honeymoon to a kitchen reno or down payment. There’s no cost to you—just a 2.5% processing fee for guests, which covers Stripe’s transaction fee. You can withdraw your cash at any time or wait until after your wedding to receive the full amount. All you need is a Canadian or U.S. bank account and address."},
     {
       number: 4,
-      heading: 'Can We Register for Cash?',
+      heading: 'Can we register for cash?',
       paragraph:
         "Yes! Set up a personalized fund for anything from your honeymoon to a kitchen reno or down payment. There's no cost to you just a 2.5% processing fee for guests, which covers Stripe's transaction fee. You can withdraw your cash at any time or wait until after your wedding to receive the full amount. All you need is a Canadian or U.S. bank account and address.",
     },
@@ -79,14 +78,14 @@ const Faqs = () => {
       number: 5,
       heading: 'What is Group Gifting?',
       paragraph:
-        "Group Gifting allows multiple guests to contribute toward higher ticket items. Just mark any product as a Group Gift and we'll handle the rest. It's ideal for larger items like furniture or travel.",
+        "Group Gifting allows multiple guests to contribute toward higher-ticket items. Just mark any product as a Group Gift and we’ll handle the rest. It’s ideal for larger items like furniture or travel.",
     },
     {
       number: 6,
-      heading: 'Can we Exchange Our Gifts?',
+      heading: 'Can we exchange our gifts?',
       paragraph:
-        "Yes, this is one of the best features of our registry. You can edit your list anytime before confirming your final order. Since we don't ship gifts until after the wedding, you have the flexibility to swap items, adjust quantities, or choose something entirely different once the celebrations are over. It's a seamless way to get exactly what you want without the hassle of returns or exchanges. We recommend reviewing your list carefully after the wedding to avoid unnecessary returns. Please note that Special Order items are final sale and not eligible for exchange.",
-    },
+        "Yes—this is one of the best features of our registry. You can edit your list anytime before confirming your final order. Since we don’t ship gifts until after the wedding, you have the flexibility to swap items, adjust quantities, or choose something entirely different once the celebrations are over. It’s a seamless way to get exactly what you want—without the hassle of returns or exchanges. We recommend reviewing your list carefully after the wedding to avoid unnecessary returns. Please note that Special Order items are final sale and not eligible for exchange.",
+    },,
   ];
 
   return (
@@ -149,10 +148,10 @@ const Faqs = () => {
         {isExpanded && (
           <div className="w-full text-center">
             <Link to="/faq">
-            <ButtonComponent
-              className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 cursor-pointer lg:mt-[4.688vw] w-80 lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:w-[224px] max-[1024px]:h-[44px] max-[1024px]:mt-8"
-              text={'SEE ALL FAQS'}
-            />
+              <ButtonComponent
+                className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 cursor-pointer lg:mt-[4.688vw] w-80 lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:w-[224px] max-[1024px]:h-[44px] max-[1024px]:mt-8"
+                text={'SEE ALL FAQS'}
+              />
             </Link>
           </div>
         )}
@@ -171,11 +170,17 @@ const Faqs = () => {
             }
           }}
         >
-          <span className='lg:text-[1.146vw] font-[500] uppercase max-[1024px]:text-[12px] max-[1024px]:leading-[32px]'>{isExpanded ? 'Less' : 'More'}</span>
+          <span className="lg:text-[1.146vw] font-[500] uppercase max-[1024px]:text-[12px] max-[1024px]:leading-[32px]">
+            {isExpanded ? 'Less' : 'More'}
+          </span>
           <img
             src={moreImg}
             alt=""
-            className={`${isExpanded ? 'rotate-180 max-[1024px]:w-[12px] max-[1024px]:h-[12px]' : 'max-[1024px]:w-[14px] max-[1024px]:h-[14px]'}`}
+            className={`${
+              isExpanded
+                ? 'rotate-180 max-[1024px]:w-[12px] max-[1024px]:h-[12px]'
+                : 'max-[1024px]:w-[14px] max-[1024px]:h-[14px]'
+            }`}
           />
         </button>
       </div>
