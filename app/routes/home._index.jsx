@@ -339,9 +339,11 @@ const Home = () => {
             direction={'left'}
             imgBanner={atyourserviceGif}
             lineimg={lineImg}
-            title=" There's no question too small or request too big for our Registry advisors. We're always at your service."
-            description="We've got answers."
-            showLiveChat={true}
+            title=" at your service"
+            description="There's no question too small or request too big for our Registry advisors. We're always at your service."
+            buttontext={'CONTACT US'}
+            buttontype={'link'}
+            buttonLink={'/contact-us'}
           />
     </section>
 
@@ -579,6 +581,9 @@ query GetAllBlogsAndArticlesForInspiration {
             url
           }
           categoryMetafield: metafield(namespace: "custom", key: "category") {
+            value
+          }
+          venueMetafield: metafield(namespace: "custom", key: "venue") {
             value
           }
         }

@@ -40,6 +40,23 @@ const LiveChat = ({
     // Set up Tawk_API before script loads
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
+    
+    // Configure Tawk to position on the left side
+    window.Tawk_API.customStyle = {
+      zIndex: 1000,
+      visibility: {
+        desktop: {
+          position: 'bl', // bottom-left
+          xOffset: 20,
+          yOffset: 20
+        },
+        mobile: {
+          position: 'bl', // bottom-left
+          xOffset: 20,
+          yOffset: 20
+        }
+      }
+    };
 
     // Handle script load completion
     script.onload = () => {
@@ -52,6 +69,28 @@ const LiveChat = ({
           window.Tawk_API.maximize();
           setIsChatOpen(true);
           onChatStart && onChatStart();
+          
+          // Add close button to chat widget after it opens
+          setTimeout(() => {
+            addCloseButtonToChat();
+          }, 1000);
+          
+          // Also watch for DOM changes to catch chat popup when it appears
+          const observer = new MutationObserver(() => {
+            addCloseButtonToChat();
+          });
+          
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'id']
+          });
+          
+          // Stop observing after 10 seconds
+          setTimeout(() => {
+            observer.disconnect();
+          }, 10000);
         }, 500);
       }
     };
@@ -89,6 +128,78 @@ const LiveChat = ({
     }
   };
 
+  // Function to add close button to chat widget
+  const addCloseButtonToChat = () => {
+    // Wait for chat popup to be fully loaded
+    const checkForChatPopup = () => {
+      // Find the opened chat popup/window
+      const chatPopup = document.querySelector('[class*="tawk-widget"], [class*="tawk-chat"], [class*="tawk-window"], iframe[src*="tawk"]');
+      const chatHeader = document.querySelector('[class*="tawk-header"], [class*="tawk-title"], [class*="tawk-widget-header"], [class*="chat-header"]');
+      
+      if (chatPopup && !document.querySelector('.tawk-custom-close-btn')) {
+        // Create close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'tawk-custom-close-btn';
+        closeBtn.innerHTML = '×';
+        closeBtn.style.cssText = `
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: #ff4444;
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          cursor: pointer;
+          font-size: 20px;
+          font-weight: bold;
+          z-index: 10003;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+          transition: all 0.2s ease;
+        `;
+        
+        // Add hover effect
+        closeBtn.addEventListener('mouseenter', () => {
+          closeBtn.style.background = '#cc0000';
+          closeBtn.style.transform = 'scale(1.1)';
+        });
+        
+        closeBtn.addEventListener('mouseleave', () => {
+          closeBtn.style.background = '#ff4444';
+          closeBtn.style.transform = 'scale(1)';
+        });
+        
+        // Add click handler
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleCloseChat();
+        });
+        
+        // Try to append to chat header first, then to chat popup
+        if (chatHeader) {
+          chatHeader.style.position = 'relative';
+          chatHeader.appendChild(closeBtn);
+        } else if (chatPopup) {
+          chatPopup.style.position = 'relative';
+          chatPopup.appendChild(closeBtn);
+        }
+        
+        console.log('Close button added to chat popup');
+      } else if (!chatPopup) {
+        // If chat popup not found, try again after a short delay
+        setTimeout(checkForChatPopup, 500);
+      }
+    };
+    
+    // Start checking for chat popup
+    checkForChatPopup();
+  };
+
   // Cleanup effect
   useEffect(() => {
     return () => {
@@ -106,20 +217,72 @@ const LiveChat = ({
     }
   }, []);
 
-  // Apply right-side positioning CSS when chat is loaded
+  // Apply left-side positioning CSS when chat is loaded
   useEffect(() => {
     if (chatScriptLoaded) {
-      // Add CSS to position the Tawk.to widget on the right side
+      // Add CSS to position the Tawk.to widget on the left side
       const style = document.createElement('style');
       style.textContent = `
-        /* Position Tawk.to widget on the right side */
-        #tawk-widget {
-          right: 20px !important;
-          left: auto !important;
+        /* Position Tawk.to widget on the left side */
+        #tawk-widget,
+        .tawk-widget,
+        [id*="tawk"],
+        [class*="tawk"] {
+          left: 20px !important;
+          right: auto !important;
+        }
+        
+        /* Position the chat bubble/button on the left */
+        .tawk-widget-bubble,
+        .tawk-widget-button,
+        [class*="tawk-bubble"],
+        [class*="tawk-button"] {
+          left: 20px !important;
+          right: auto !important;
+        }
+        
+        /* Position the chat window on the left */
+        .tawk-widget-chat,
+        .tawk-widget-window,
+        [class*="tawk-chat"],
+        [class*="tawk-window"] {
+          left: 20px !important;
+          right: auto !important;
         }
         
         /* Style the close button */
         .tawk-chat-close-btn {
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          background: #ff4444;
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          cursor: pointer;
+          font-size: 20px;
+          font-weight: bold;
+          z-index: 10001;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .tawk-chat-close-btn:hover {
+          background: #cc0000;
+          transform: scale(1.1);
+        }
+        
+        /* Add close button to chat widget header */
+        .tawk-widget-chat .tawk-widget-header::after,
+        .tawk-widget-window .tawk-widget-header::after,
+        [class*="tawk-chat"] [class*="header"]::after,
+        [class*="tawk-window"] [class*="header"]::after,
+        iframe[src*="tawk"]::after {
+          content: "×";
           position: absolute;
           top: 10px;
           right: 10px;
@@ -127,19 +290,56 @@ const LiveChat = ({
           color: white;
           border: none;
           border-radius: 50%;
-          width: 30px;
-          height: 30px;
+          width: 35px;
+          height: 35px;
           cursor: pointer;
-          font-size: 16px;
+          font-size: 20px;
           font-weight: bold;
-          z-index: 10000;
+          z-index: 10003;
           display: flex;
           align-items: center;
           justify-content: center;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+          transition: all 0.2s ease;
         }
         
-        .tawk-chat-close-btn:hover {
+        .tawk-widget-chat .tawk-widget-header::after:hover,
+        .tawk-widget-window .tawk-widget-header::after:hover,
+        [class*="tawk-chat"] [class*="header"]::after:hover,
+        [class*="tawk-window"] [class*="header"]::after:hover,
+        iframe[src*="tawk"]::after:hover {
           background: #cc0000;
+          transform: scale(1.1);
+        }
+        
+        /* Ensure close button appears on opened chat popup */
+        .tawk-custom-close-btn {
+          position: absolute !important;
+          top: 10px !important;
+          right: 10px !important;
+          background: #ff4444 !important;
+          color: white !important;
+          border: none !important;
+          border-radius: 50% !important;
+          width: 35px !important;
+          height: 35px !important;
+          cursor: pointer !important;
+          font-size: 20px !important;
+          font-weight: bold !important;
+          z-index: 10003 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+          transition: all 0.2s ease !important;
+        }
+        
+        /* Additional positioning for all possible Tawk elements */
+        iframe[src*="tawk"],
+        div[class*="tawk"],
+        div[id*="tawk"] {
+          left: 20px !important;
+          right: auto !important;
         }
       `;
       document.head.appendChild(style);
