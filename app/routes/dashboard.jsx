@@ -5,8 +5,9 @@ import {useEffect, useRef, useState} from 'react';
 import NotificationCard from '~/components/NotificationCard';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
 import { Footer } from '~/components/Footer';
-import lineImg3 from '/assets/Images/line.png';
+import lineImg3 from '/assets/Images/heading-bottom-curve.png';
 import { Header } from '~/components/Header';
+import AnimatedSVG from '~/components/AnimatedSVG'
 
 const introSteps = [
   {
@@ -135,6 +136,26 @@ const Dashboard_index = ({context}) => {
   const overlayRef = useRef(null);
   const [coupleName, setCoupleName] = useState('');
   const {apiBaseUrl} = useLoaderData();
+
+  const containerRef = useRef(null);
+  const [showSVG, setShowSVG] = useState(true);
+
+  // Simple SVG positioning for each step
+  const getSVGStyle = (stepNumber) => {
+    switch(stepNumber) {
+      case 0: return { left: '9.74vw', top: '1.25vw', width: '25vw', height: '11vw' };
+      case 1: return { left: '21vw', top: '1.25vw', width: '18vw', height: '10vw' };
+      case 2: return { left: '39vw', top: '1.25vw', width: '23vw', height: '10vw' };
+      case 3: return { left: '56vw', top: '1.25vw', width: '23vw', height: '9vw' };
+      case 4: return { left: '71vw', top: '1.25vw', width: '23vw', height: '9vw' };
+      case 5: return { left: '78vw', top: '1.25vw', width: '25vw', height: '11vw' };
+      case 6: return { left: '84vw', top: '1.25vw', width: '25vw', height: '11vw' };
+      case 7: return { left: '84vw', top: '4.25vw', width: '25vw', height: '11vw' };
+      case 8: return { left: '86vw', top: '20vw', width: '25vw', height: '11vw' };
+      default: return { left: '50%', top: '1.25vw', width: '200px', height: '100px' };
+    }
+  };
+
   // On mount, check localStorage for token and intro flag
   useEffect(() => {
     const token = localStorage.getItem('@Token');
@@ -205,125 +226,6 @@ const Dashboard_index = ({context}) => {
     console.log(`Step data:`, introSteps[currentStep]);
   }, [currentStep]);
 
-
-  // Animated Arrow (relative to overlay container, with per-step config)
-  const AnimatedArrow = ({ fromRef, toRef, show, containerRef, arrowConfig }) => {
-    const [coords, setCoords] = useState(null);
-    const [key, setKey] = useState(0);
-
-    useEffect(() => {
-      setKey(prev => prev + 1); // Reset animation when show changes
-    }, [show]);
-
-    useEffect(() => {
-      console.log('AnimatedArrow useEffect triggered:', { fromRef: fromRef.current, toRef, containerRef: containerRef.current, show });
-      if (fromRef.current && toRef && containerRef.current) {
-        const fromRect = fromRef.current.getBoundingClientRect();
-        const toRect = toRef.getBoundingClientRect();
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const {
-          tailOffsetX = 0,
-          tailOffsetY = 0,
-          headOffsetX = 0,
-          headOffsetY = 0,
-          controlOffsetX = -120,
-          controlOffsetY = -100,
-        } = arrowConfig || {};
-        const x1 = fromRect.left + fromRect.width / 2 - containerRect.left + tailOffsetX;
-        const y1 = fromRect.top + fromRect.height / 2 - containerRect.top + tailOffsetY;
-        const x2 = toRect.left + toRect.width / 2 - containerRect.left + headOffsetX;
-        const y2 = toRect.top + toRect.height / 2 - containerRect.top + headOffsetY;
-        const controlX = x1 + controlOffsetX;
-        const controlY = y1 + controlOffsetY;
-        
-        console.log(`Arrow coordinates for step ${currentStep}:`, {
-          x1, y1, x2, y2, controlX, controlY,
-          tailOffsetX, tailOffsetY, headOffsetX, headOffsetY, controlOffsetX, controlOffsetY
-        });
-        
-        // Ensure coordinates are within reasonable bounds
-        const containerWidth = containerRect.width;
-        const containerHeight = containerRect.height;
-        
-        // Clamp coordinates to container bounds with some padding
-        const clampedX1 = Math.max(10, Math.min(containerWidth - 10, x1));
-        const clampedY1 = Math.max(10, Math.min(containerHeight - 10, y1));
-        const clampedX2 = Math.max(10, Math.min(containerWidth - 10, x2));
-        const clampedY2 = Math.max(10, Math.min(containerHeight - 10, y2));
-        const clampedControlX = Math.max(10, Math.min(containerWidth - 10, controlX));
-        const clampedControlY = Math.max(10, Math.min(containerHeight - 10, controlY));
-        
-        setCoords({ 
-          x1: clampedX1, 
-          y1: clampedY1, 
-          x2: clampedX2, 
-          y2: clampedY2, 
-          controlX: clampedControlX, 
-          controlY: clampedControlY 
-        });
-      }
-    }, [fromRef, toRef, show, containerRef, arrowConfig]);
-
-    if (!coords || !show) {
-      console.log(`Arrow not rendering: coords=${!!coords}, show=${show}`);
-      return null;
-    }
-    
-    console.log(`Rendering arrow with coordinates:`, coords);
-    
-    return (
-      <svg
-        key={key}
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-          zIndex: 40,
-        }}
-        viewBox={`0 0 ${overlayRef.current?.offsetWidth || 800} ${overlayRef.current?.offsetHeight || 600}`}
-      >
-        <defs>
-          <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L0,6 L8,3 z" fill="#222">
-              <animate
-                attributeName="opacity"
-                from="0"
-                to="1"
-                dur="0.1s"
-                begin="drawArrow.end"
-                fill="freeze"
-              />
-            </path>
-          </marker>
-        </defs>
-                 <path
-           id="drawArrow"
-           d={`M${coords.x1},${coords.y1} Q${coords.controlX},${coords.controlY} ${coords.x2},${coords.y2}`}
-           stroke="#222"
-           strokeWidth="3"
-           fill="none"
-           markerEnd="url(#arrowhead)"
-           style={{
-             strokeDasharray: "1000",
-             strokeDashoffset: "1000",
-             animation: show ? "drawArrow 1.5s ease-out forwards" : "none"
-           }}
-         />
-         {/* Fallback arrow body in case animation fails */}
-         <path
-           d={`M${coords.x1},${coords.y1} Q${coords.controlX},${coords.controlY} ${coords.x2},${coords.y2}`}
-           stroke="#222"
-           strokeWidth="2"
-           fill="none"
-           opacity="0.3"
-         />
-      </svg>
-    );
-  };
-
   // Add the animation keyframes at the top of the component
   const animationStyle = `
     @keyframes drawArrow {
@@ -365,17 +267,17 @@ const Dashboard_index = ({context}) => {
       <Header />
       <div className="">
         {showIntro ? (
-          <><div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative min-h-[70vh]">
+          <><div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative min-h-[70vh] max-[1024px]:flex-col max-[1024px]:py-[50px] max-[1024px]:px-[20px]">
             {/* Welcome and couple name */}
-            <div className="mb-6 mt-16">
-              <div className="md:text-[42px] lg:text-[48px] lg:leading-[56px] text-center xl:mt-0 mt-16 font-normal ivyora">welcome to your dashboard</div>
-              <div className="font-serif text-3xl text-center mb-2">{coupleName}</div>
-              <img src={lineImg3} alt="line" className="w-[60%] h-auto mx-auto" />
-              <div className="uppercase mt-[39px] mb-[30px] text-sm lg:text-[24px] lg:leading-[36px] text-center tracking-widest text-black/70">How this works</div>
+            <div className="mt-[6.25vw] max-[1024px]:order-1 max-[1024px]:mt-[0px]">
+              <div className="md:text-[42px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center xl:mt-0 mt-16 font-normal ivyora max-[1024px]:mt-0 max-[1024px]:text-[30px]">welcome to your dashboard</div>
+              <div className="font-serif text-[48px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mb-2">{coupleName}</div>
+              <img src={lineImg3} alt="line" className="w-[60%] mt-[1.615vw] lg:w-[23.438vw] xl:w-[23.438vw] 2xl:w-[23.438vw] h-auto mx-auto" />
+              <div className="uppercase mt-[2.031vw] mb-[2.865vw] text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center tracking-widest text-black/70">How this works</div>
             </div>
 
             {/* Right side cards */}
-            <div className="absolute right-4 top-4 flex flex-col gap-[18px]">
+            <div className="absolute right-4 top-4 lg:right-[4.271vw] xl:right-[4.271vw] 2xl:right-[4.271vw] lg:top-[2.917vw] xl:top-[2.917vw] 2xl:top-[2.917vw] flex flex-col gap-[18px] max-[1024px]:relative max-[1024px]:order-2 max-[1024px]:top-0 max-[1024px]:right-0 max-[1024px]:w-full max-[1024px]:mb-[30px]">
               <div ref={(node) => setNotificationNode(node)}>
                 <NotificationCard
                   className={currentStep === 7 ? 'border-2 border-black' : ''}
@@ -391,26 +293,26 @@ const Dashboard_index = ({context}) => {
             </div>
 
             {/* Blue card */}
-            <div ref={introCardRef} className="bg-[#3d5676] text-white p-[38px] w-full max-w-lg lg:w-[41.354vw] lg:max-w-[41.354vw] text-center shadow-lg z-40 relative">
-              <div className="uppercase text-lg lg:text-[24px] lg:leading-[36px] font-bold tracking-wide mb-2">
+            <div ref={introCardRef} className="bg-[#3d5676] text-white py-[1.979vw] px-[3.698vw] w-full lg:w-[41.354vw] xl:w-[41.354vw] 2xl:w-[41.354vw] text-center shadow-lg z-40 relative max-[1024px]:order-3 max-[1024px]:p-[20px]">
+              <div className="uppercase text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold tracking-wide mb-2 max-[1024px]:text-[20px]">
                 {introSteps[currentStep].type ? introSteps[currentStep].type.toUpperCase() : introSteps[currentStep].tab}
-                <svg className='mx-auto mt-[20px] mb-[34px]' width="223" height="6" viewBox="0 0 223 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg className='mx-auto mt-[1.042vw] mb-[1.771vw] lg:w-[11.172vw] xl:w-[11.172vw] 2xl:w-[11.172vw]' width="223" height="6" viewBox="0 0 223 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2 2.61322C54.2128 2.61322 106.426 2.61322 158.638 2.61322C174.645 2.61322 190.652 2.61322 206.659 2.61322C209.331 2.61322 219.683 0.547044 221 4" stroke="white" stroke-width="3" stroke-linecap="round"/>
                 </svg>
               </div>
-              <div className="mb-6 font-normal lg:w-[33.906vw] lg:text-[22px] lg:leading-[32px]">
+              <div className="mb-6 font-normal text-[22px] lg:w-[33.906vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] lg:leading-[32px] max-[1024px]:text-[18px]">
                 {introSteps[currentStep].message}
               </div>
               <div className="absolute left-4 bottom-3">
-                <img src="/assets/Images/reglogo.png" width={35} alt="" />
+                <img src="/assets/Images/reglogo.png" className="w-[45px] h-[40px] lg:w-[2.344vw] xl:w-[2.344vw] 2xl:w-[2.344vw] lg:h-[2.083vw] xl:h-[2.083vw] 2xl:h-[2.083vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px]" width={35} alt="" />
               </div>
             </div>
 
             {/* Pagination centered below the card */}
-            <div className="flex flex-col items-center mt-[35px] w-full max-w-lg lg:w-[41.354vw] lg:max-w-[41.354vw]">
+            <div className="flex flex-col items-center mt-[35px] lg:mt-[1.823vw] xl:mt-[1.823vw] 2xl:mt-[1.823vw] w-full max-w-lg lg:w-[41.354vw] lg:max-w-[41.354vw] max-[1024px]:order-4 max-[1024px]:w-full max-[1024px]:max-w-full">
               <div className="w-full flex justify-end">
                 <button
-                  className="font-bold lg:text-[22px] lg:leading-[18px] uppercase tracking-wide text-black"
+                  className="font-bold cursor-pointer lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-wide text-black max-[1024px]:text-base"
                   onClick={() => {
                     if (currentStep < introSteps.length - 1) {
                       setCurrentStep(s => s + 1);
@@ -422,11 +324,11 @@ const Dashboard_index = ({context}) => {
                   {currentStep < introSteps.length - 1 ? 'Got it, Next →' : 'Done'}
                 </button>
               </div>
-              <div className="text-lg font-bold text-center mb-[35px] mt-[20px]">
-                <span className="text-3xl md:text-4xl font-normal lg:text-[62px] lg:leading-[62px] top-[10px] relative mr-[10px]">{currentStep + 1}</span> <span className="font-normal text-lg lg:text-[24px] lg:leading-[28px]">/ {introSteps.length}</span>
+              <div className="text-lg font-bold text-center mb-[35px] mt-[20px] lg:mt-[1.042vw] xl:mt-[1.042vw] 2xl:mt-[1.042vw] lg:mb-[2.396vw] xl:mb-[2.396vw] 2xl:mb-[2.396vw]">
+                <span className="text-3xl md:text-4xl font-normal lg:text-[3.229vw] xl:text-[3.229vw] 2xl:text-[3.229vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] top-[10px] relative mr-[10px]">{currentStep + 1}</span> <span className="font-normal text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.467vw] xl:leading-[1.467vw] 2xl:leading-[1.467vw]">/ {introSteps.length}</span>
               </div>
               <button
-                className="font-bold uppercase tracking-wide text-black mb-[140px] lg:text-[18px] pb-[8px] border-b-1.5 border-[#1F1D1B] lg:leading-[18px] "
+                className="font-bold uppercase tracking-wide text-black mb-[140px] lg:mb-[7.604vw] xl:mb-[7.604vw] 2xl:mb-[7.604vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] pb-[0.313vw] cursor-pointer border-b-1.5 border-[#1F1D1B] lg:leading-[18px] max-[1024px]:text-base max-[1024px]:mb-0"
                 onClick={handleFinishIntro}
               >
                 Skip Intro
@@ -439,12 +341,13 @@ const Dashboard_index = ({context}) => {
               const targetNode = getCurrentStepNode();
               console.log(`Rendering arrow for step ${currentStep}:`, { targetNode, showIntro });
               return targetNode && (
-                <AnimatedArrow
-                  fromRef={introCardRef}
-                  toRef={targetNode}
-                  show={showIntro}
-                  containerRef={overlayRef}
-                  arrowConfig={introSteps[currentStep].arrow} />
+                <AnimatedSVG 
+                  show={showSVG} 
+                  containerRef={containerRef}
+                  style={getSVGStyle(currentStep)}
+                  className='max-[1024px]:hidden'
+                  stepNumber={currentStep}
+                />
               );
             })()}
           </div>

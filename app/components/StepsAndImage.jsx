@@ -3,23 +3,25 @@ import arrow from "/assets/Images/arrow.png"
 import registrylogoSteps from "/assets/Images/registrylogoSteps.png"
 import StepLine from "/assets/Images/StepLine.png"
 import Steps from "/assets/Images/Steps.png"
+import AnimatedSVG from "./AnimatedSVG"
 
 // Import different images for different steps
 import step1Image from "/assets/Images/onboardingstep1.jpg"
-import step2Image from "/assets/Images/3candlecake.jpg"
-import step3Image from "/assets/Images/gardenchairs.jpg"
-import step4Image from "/assets/Images/resortpool.jpg"
-import step5Image from "/assets/Images/seaandstairs.jpg"
-import step6Image from "/assets/Images/lampwithstand.jpg"
-import step7Image from "/assets/Images/dreamFunds.png"
-import step8Image from "/assets/Images/scootycouple.jpg"
+import step2Image from "/assets/Images/ceremony-step.jpg"
+import step3Image from "/assets/Images/laurenstep.jpg"
+import step4Image from "/assets/Images/guestsstep.jpg"
+import step5Image from "/assets/Images/guestsstep.jpg"
+import step6Image from "/assets/Images/amanyarastep.jpg"
+import step7Image from "/assets/Images/seaandstairs.jpg"
+import step8Image from "/assets/Images/giftkindstep.jpg"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
 
 const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true, onBackClick, showBackButton = false }) => {
     // Function to get the appropriate image based on step number
     const getStepImage = (step) => {
-        switch(step) {
+        const stepNumber = parseInt(step);
+        switch(stepNumber) {
             case 1: return step1Image;
             case 2: return step2Image;
             case 3: return step3Image;
@@ -56,10 +58,10 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                     <button
                         onClick={onBackClick}
                         type="button"
-                        className="absolute bottom-6 lg:bottom-[2vw] xl:bottom-[2vw] 2xl:bottom-[2vw] max-[1024px]:bottom-2.5 left-6 lg:left-[2vw] xl:left-[2vw] 2xl:left-[2vw] max-[1024px]:left-4 flex items-center uppercase font-bold gap-2 text-gray-600 hover:text-gray-800 bg-transparent border-none"
+                        className="flex justify-end mt-8 absolute lg:bottom-[2.135vw] xl:bottom-[2.135vw] 2xl:bottom-[2.135vw] lg:left-[1.823vw] xl:left-[1.823vw] 2xl:left-[1.823vw] max-[1024px]:left-[28px] flex items-center uppercase font-bold gap-2 text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] bg-transparent border-none"
                         style={{ cursor: 'pointer', zIndex: 9999 }}
                     >
-                        <img src="/assets/Images/arrow.png" alt="" className="rotate-180 w-4 h-4" /> Back
+                        <img src="/assets/Images/arrow.png" alt="" className="rotate-180 lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" /> Back
                     </button>
                 )}
                 
