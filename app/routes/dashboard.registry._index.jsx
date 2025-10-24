@@ -318,18 +318,18 @@ const index = () => {
 
   return (
     <>
-      <div className="flex justify-between mt-6">
-        <div className="flex-1 lg:ml-[15.625vw]">
+      <div className="flex justify-between mt-[2.865vw] max-[1024px]:flex-wrap max-[1024px]:mt-[50px] max-[1024px]:px-[20px]">
+        <div className="flex-1 lg:ml-[15.625vw] max-[1024px]:w-full max-[1024px]:mx-auto">
           <div className="text-center">
-            <h2 className="mt-16 lg:text-[48px] xl:text-4xl 2xl:text-[48px] text-[24px] ivyora lg:leading-[60px] font-normal mb-4">
+            <h2 className="mt-[2.708vw] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] ivyora lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-[1.771vw] max-[1024px]:mt-0">
               <span className="prata uppercase">My registry</span> homepage
             </h2>
 
-            <svg className='mx-auto mt-[30px]' width="757" height="10" viewBox="0 0 757 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className='mx-auto lg:w-[39.219vw] xl:w-[39.219vw] 2xl:w-[39.219vw] max-[1024px]:w-[70%]' width="757" height="10" viewBox="0 0 757 10" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M2 3.83965C181.526 3.83965 361.053 3.83965 540.579 3.83965C595.616 3.83965 650.652 3.83965 705.689 3.83965C714.879 3.83965 750.471 -2.35887 755 8" stroke="#1F1D1B" stroke-width="3" stroke-linecap="round"/>
             </svg>
 
-            <p className="max-w-[43.958vw] text-[#1F1D1B] mx-auto mt-[39px] text-2xl lg:text-[26px] lg:leading-[36px]">
+            <p className="max-w-[43.958vw] text-[#1F1D1B] mx-auto mt-[2.031vw] text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-[1024px]:w-[100%] max-[1024px]:max-w-full max-[1024px]:text-[16px] max-[1024px]:mb-[20px]">
               Your guests will land here—so have fun with it! Leave them a
               message and upload your photos or video, or pick from our
               illustrations to create something uniquely you.
@@ -337,7 +337,7 @@ const index = () => {
           </div>
         </div>
 
-        <div className="w-[300px] flex flex-col gap-y-4">
+        <div className="w-[300px] flex flex-col gap-y-4 max-[1024px]:w-full">
           <div>
             <RegistryStatusCard
               status={registryData?.status}
@@ -347,14 +347,14 @@ const index = () => {
           </div>
 
 <Link to={`/couple/single/${registryData?.userId}`}>
-          <div className="w-[260px] min-h-[100px] bg-[#F5F2ED] z-10">
-            <div className="container mx-auto pt-3">
+          <div className="w-[260px] min-h-[100px] bg-[#F5F2ED] z-10 max-[1024px]:w-full">
+            <div className="container mx-auto pt-5 flex items-center justify-center flex-col">
               <img
                 src="/assets/Images/share-icon.png"
                 alt="preview"
-                className="w-10 mx-auto filter brightness-0"
+                className="w-10 mx-auto filter brightness-0 lg:w-[1.875vw] xl:w-[1.875vw] 2xl:w-[1.875vw] mb-[1.146vw]"
               />
-              <h2 className="text-black text-sm text-center font-bold mt-2">
+              <h2 className="text-black text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
                 PREVIEW PAGE
               </h2>
             </div>
@@ -373,7 +373,7 @@ const index = () => {
         onClose={() => setIsBackgroundEditPopupOpen(false)}
         onSave={handleBackgroundImageSave}
       />
-      <div className="text-center pt-[80px] px-[3.281vw] mx-auto font-sans">
+      <div className="text-center pt-[4.115vw] px-[3.281vw] mx-auto font-sans max-[1024px]:pt-[50px] max-[1024px]:px-[20px]">
         <div className="relative">
           <img
             src={backgroundImage}
@@ -386,7 +386,7 @@ const index = () => {
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
           >
-            <div className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-50">
+            <div className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-50 max-[1024px]:p-1">
               <img
                 src="/assets/Images/edit-icon.png"
                 alt="Edit Background"
@@ -413,14 +413,14 @@ const index = () => {
           />
         </div> */}
 
-        <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-10 xl:-translate-y-[200px] ">
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
-            <h1 className="md:text-[4.479vw] md:leading-[4.792vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto">
+        <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 lg:-translate-y-[200px] xl:-translate-y-[200px] 2xl:-translate-y-[200px] ">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px]">
+            <h1 className="lg:text-[4.479vw] xl:text-[4.479vw] 2xl:text-[4.479vw] lg:leading-[4.792vw] xl:leading-[4.792vw] 2xl:leading-[4.792vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px]">
               {userGet?.data?.user?.firstName} &{' '}
               {userGet?.data?.user?.fianceFirstName}
             </h1>
           </div>
-          <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[36.979vw] lg:h-[36.979vw] w-full">
+          <div className="lg:w-[36.979vw] xl:w-[36.979vw] 2xl:w-[36.979vw] lg:min-w-[36.979vw] xl:min-w-[36.979vw] 2xl:min-w-[36.979vw] lg:min-h-[36.979vw] xl:min-h-[36.979vw] 2xl:min-h-[36.979vw] lg:h-[36.979vw] xl:h-[36.979vw] 2xl:h-[36.979vw]  w-full">
             <div className="relative">
               <img
                 src={eventImage || '/assets/Images/couple-placeholder.png'}
@@ -446,15 +446,15 @@ const index = () => {
               </div>
             </div>
           </div>
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px]">
             <div className="mr-16">
-              <p className="md:text-[2.5vw] text-right my-2 md:leading-[2.917vw] prata ml-auto">
+              <p className="lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-right my-2 lg:leading-[2.917vw] xl:leading-[2.917vw] 2xl:leading-[2.917vw] prata ml-auto">
                 {eventGet?.data?.eventDate}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
                 alt="Couple"
-                className="max-w-[19.219vw] h-auto ml-auto"
+                className="max-w-[19.219vw] h-auto ml-auto max-[1024px]:mb-[50px]"
               />
               <div className="uppercase text-right ">
                 <p className="text-lg my-1">{eventGet?.data?.location}</p>
@@ -476,12 +476,12 @@ const index = () => {
               onChange={(e) => setNote(e.target.value)}
             />
           </div>
-          <div className="flex justify-between items-center mt-2">
-            <span className="text-sm italic text-gray-400">
+          <div className="flex justify-between items-center mt-2 max-[1024px]:flex-wrap max-[1024px]:justify-start">
+            <span className="text-sm italic text-gray-400 max-[1024px]:w-full">
               {maxLength - note.length}/{maxLength} characters remaining
             </span>
             <button
-              className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
+              className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1 max-[1024px]:text-[14px] max-[1024px]:mx-[10px]"
               onClick={handleSavePreview}
               type="button"
             >
@@ -489,7 +489,7 @@ const index = () => {
             </button>
             <Link to={`/dashboard/registry/${registryData.events[0].id}`}>
               <button
-                className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1"
+                className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1 max-[1024px]:text-[14px] max-[1024px]:mx-[10px]"
                 type="button"
               >
                 Edit Registry Details
@@ -498,71 +498,71 @@ const index = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto w-[calc(100%-7.812vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] ">
-        <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+      <div className="mx-auto w-[calc(100%-7.812vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] max-[1024px]:w-full max-[1024px]:px-[20px]">
+        <h2 className="mt-0 lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[60px] font-normal mb-[1.302vw]">
           our registry selections
         </h2>
         <img
-          src="/assets/Images/profile-view-page-bdr.png"
+          src="/assets/Images/heading-bottom-curve.png"
           alt="Couple"
-          className="max-w-[630px] h-auto mx-auto"
+          className="max-w-[630px] h-auto mx-auto lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] max-[1024px]:w-[70%]"
         />
 
         <div className="filters">
-          <div className="filter-item flex gap-x-12 mt-12 justify-center">
-            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+          <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px]">
+            <h3 className="text-[18px] uppercase border-b-2 border-[#446184] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
               {' '}
               <strong>Categories</strong> All{' '}
             </h3>
-            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+            <h3 className="text-[18px] uppercase border-b-2 border-[#446184] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
               {' '}
               <strong>price</strong> low to high{' '}
             </h3>
-            <h3 className="text-lg uppercase border-b-2 border-[#446184]">
+            <h3 className="text-[18px] uppercase border-b-2 border-[#446184] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
               {' '}
               <strong>status</strong> All{' '}
             </h3>
           </div>
         </div>
-        <div className="gap-6 mt-12">
-          <h2 className="text-[30px] leading-[36px] font-bold text-center">GIFTS</h2>
+        <div className="gap-6 mt-[5.938vw]">
+          <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
           <ProductPage data={data} />
         </div>
 
-        <div className="gap-6 mt-12">
-          <h2 className="text-[30px] leading-[36px] font-bold text-center">CASH FUNDS</h2>
+        <div className="gap-6 mt-[6vw]">
+          <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">CASH FUNDS</h2>
           <FundPage data={cashfundData} />
         </div>
       </div>
-      <div className="py-12 w-full flex justify-center items-center">
-        <div className="py-10 md:py-12 bg-[#446184] flex items-center justify-between flex-row lg:w-[81.354vw] lg:min-h-[28.698vw] w-full max-[768px]:p-10 lg:mt-20 mt-6 gap-x-16">
-          <div className='pl-[25px]'>
+      <div className="py-[8.177vw] w-full flex justify-center items-center max-[1024px]:py-[50px]">
+        <div className="py-10 lg:py-[3.438vw] xl:py-[3.438vw] 2xl:py-[3.438vw] bg-[#446184] flex items-center justify-between flex-row lg:w-[81.354vw] xl:w-[81.354vw] 2xl:w-[81.354vw] lg:min-h-[28.698vw] xl:min-h-[28.698vw] 2xl:min-h-[28.698vw] w-full max-[768px]:p-10 mt-0 gap-x-16 max-[1024px]:p-[20px] max-[1024px]:flex-wrap max-[1024px]:items-center">
+          <div className='pl-[25px] max-[1024px]:pl-[0px]'>
             <img
               src="/assets/Images/giftCard.png"
               alt="gift"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover lg:w-[31.547vw] xl:w-[31.547vw] 2xl:w-[31.547vw] max-[1024px]:w-[70%] max-[1024px]:mb-[20px] max-[1024px]:mx-auto"
             />
           </div>
-          <div className='flex flex-col items-center justify-center pr-[7.656vw]'>
-            <h3 className="text-2xl text-white lg:text-[44px] lg:leading-[36px] 3xl:w-full prata max-w-[410px] text-center">
+          <div className='flex flex-col items-center justify-center pr-[7.656vw] max-[1024px]:pr-[0px] max-[1024px]:w-[100%]'>
+            <h3 className="text-2xl text-white lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full prata max-w-[410px] text-center lg:mb-[0.677vw] xl:mb-[0.677vw] 2xl:mb-[0.677vw]">
               add a gift card
             </h3>
             <img
               src="/assets/Images/white-bdr.png"
               alt="couple"
-              className="max-w-[325.9px] mb-[35px] mx-auto mt-[25px]"
+              className="max-w-[325.9px] mb-[35px] lg:mb-[1.792vw] xl:mb-[1.792vw] 2xl:mb-[1.792vw] mx-auto max-[1024px]:mb-[20px] max-[1024px]:w-[70%] max-[1024px]:mx-auto"
             />
-            <h5 className="text-white text-[24px] leading-[44px] text-center font-[500]">
+            <h5 className="text-white text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] leading-[44px] text-center font-[500] mt-0 mb-[2.083vw] max-[1024px]:text-[16px] max-[1024px]:leading-[20px] max-[1024px]:mb-[20px]">
               CONTRIBUTE TO OUR JOURNEY!
             </h5>
-            <p className="text-sm lg:text-[24px] leading-[30px] text-white max-w-[30.99vw] mt-4 mb-7 font-normal text-center">
+            <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] leading-[30px] text-white max-w-[30.99vw] mt-0 mb-[2.708vw] font-normal text-center max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:mb-[20px] max-[1024px]:w-[100%] max-[1024px]:max-w-full">
               Help us create our dream wedding, honeymoon or life experience.
               We're so grateful.
             </p>
             <Link to="/dashboard/giftcards">
               <button
                 type="button"
-                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] w-[296px] h-[78px] text-[18px] leading-[18px] rounded-none cursor-pointer mx-auto block"
+                className="text-black font-bold py-4 px-8 bg-[#F5F2ED] lg:w-[15.417vw] xl:w-[15.417vw] 2xl:w-[15.417vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] rounded-none cursor-pointer mx-auto block max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:mb-[20px] max-[1024px]:w-[100%] max-[1024px]:max-w-full"
               >
                 ADD GIFT CARDS
               </button>
@@ -588,7 +588,7 @@ const ProductPage = ({data}) => {
     (_, index) => (
       <div
         key={`placeholder-${index}`}
-        className={`h-[380px] mb-4 flex items-center justify-center ${
+        className={`mb-4 flex items-center justify-center ${
           data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
         }`}
       >
@@ -596,7 +596,7 @@ const ProductPage = ({data}) => {
           <img
             src="/assets/Images/add-gift-placeholder.png"
             alt="Add gift placeholder"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
           />
         </Link>
       </div>
@@ -604,12 +604,12 @@ const ProductPage = ({data}) => {
   );
 
   return (
-    <div className="container">
+    <div className="">
       <div
         className={`${
           data.length > 4
-            ? 'flex gap-[3.281vw] mt-12 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-[3.281vw] mt-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            ? 'flex gap-[3.281vw] mt-0 overflow-x-auto snap-x snap-mandatory'
+            : 'grid gap-[3.281vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
@@ -757,7 +757,7 @@ const FundPage = ({data}) => {
     (_, index) => (
       <div
         key={`placeholder-${index}`}
-        className={`h-[380px] mb-4 flex items-center justify-center ${
+        className={`mb-4 flex items-center justify-center ${
           data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
         }`}
       >
@@ -781,8 +781,8 @@ const FundPage = ({data}) => {
       <div
         className={`${
           data.length > 4
-            ? 'flex gap-[3.281vw] mt-12 pb-4 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-[3.281vw] mt-12 pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            ? 'flex gap-[3.281vw] pb-4 overflow-x-auto snap-x snap-mandatory'
+            : 'grid gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
