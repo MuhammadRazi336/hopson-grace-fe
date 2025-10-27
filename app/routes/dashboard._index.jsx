@@ -320,33 +320,33 @@ const index = () => {
 
   return (
     <>
-    <div className="pt-[80px]">
-      <div className="flex xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-16">
-        <div className="w-full xl:w-9/12 flex flex-col gap-y-4 items-center pb-8">
+    <div className="pt-[80px] lg:pt-[2.917vw] xl:pt-[2.917vw] 2xl:pt-[2.917vw] max-[1024px]:py-[50px] max-[1024px]:px-[20px]">
+      <div className="flex lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-[5.208vw] max-[1024px]:justify-center">
+        <div className="w-9/12 lg:w-9/12 xl:w-9/12 2xl:w-9/12 flex flex-col items-center pt-[1vw] pl-[27vw] max-[1024px]:pl-0">
           <div className="w-64 h-32 flex items-center justify-center">
             <img src="/assets/Images/heart.png" alt="" />
           </div>
 
-          <h2 className="md:text-[42px] lg:text-[48px] lg:leading-[56px] text-center xl:mt-0 mt-16 font-normal ivyora">
+          <h2 className="md:text-[42px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] text-center xl:mt-0 mt-16 max-[1024px]:mt-2 font-normal ivyora mb-[48px] max-[1024px]:mb-[20px] lg:mb-[2.5vw] xl:mb-[2.5vw] 2xl:mb-[2.5vw] mt-2 max-[1024px]:!text-[30px]">
             welcome to the heart of your wedding,
-            <span className="block">{user?.user.firstName} & {user?.user.fianceFirstName}</span>
+            <span className="block uppercase prata">{user?.user.firstName} & {user?.user.fianceFirstName}</span>
           </h2>
 
-          <p className="text-lg font-bold bastardogrotesk mb-[10px] lg:text-[30px] lg:leading-[36px]">{registry?.events?.eventDate}</p>
+          <p className="text-lg font-bold bastardogrotesk mb-[1.406vw] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{registry?.events?.eventDate}</p>
 
           <img
             src="/assets/Images/dashboard-bdr.png"
             alt="Hamburger"
-            className="w-auto h-auto mx-auto -mt-2"
+            className="w-auto h-auto mx-auto lg:w-[39.219vw] xl:w-[39.219vw] 2xl:w-[39.219vw] mb-[2.083vw]" 
           />
-          <p className="text-xl font-normal text-center mt-[20px] lg:text-[32px] lg:leading-[36px]">
+          <p className="text-xl font-normal text-center lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
             YOU HAVE &nbsp;
-            <span className="font-bold prata text-2xl lg:text-[58px] lg:leading-[36px] relative top-[10px]">{daysLeft} </span> DAYS &nbsp;
+            <span className="font-bold prata text-2xl lg:text-[3.021vw] xl:text-[3.021vw] 2xl:text-[3.021vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] relative top-[0.521vw]">{daysLeft} </span> DAYS &nbsp;
             UNTIL THE WEDDING!
           </p>
         </div>
-        <div className="w-full xl:w-3/12 flex flex-col gap-y-4">
-          <div>
+        <div className="w-3/12 lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4 pr-[4.271vw] max-[1024px]:w-full max-[1024px]:pr-0">
+          <div className='flex justify-end'>
             <NotificationCard 
               count={unreadCount} 
               onView={handleNotificationView}
@@ -354,48 +354,48 @@ const index = () => {
               refreshing={refreshing}
             />
           </div>
-          <div>
+          <div className='flex justify-end'>
             <RegistryStatusCard status={registry?.status} registryId={registry?.id} token={user?.accessToken}/>
           </div>
         </div>
       </div>
 
-      <div className="grid xl:gap-y-[150px] lg:gap-[3.906vw] lg:w-[64.323vw] lg:mx-auto gap-y-24 xl:grid-cols-2 md:grid-cols-1 grid-cols-1 w-full mt-[100px] pb-[11.615vw]">
+      <div className="grid lg:gap-[3.906vw] xl:gap-[3.906vw] 2xl:gap-[3.906vw] lg:w-[64.323vw] md:!gap-y-[10vw] lg:mx-auto gap-y-30 xl:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-2 max-[1024px]:grid-cols-1 w-full mt-[100px] pb-[11.615vw] max-[1024px]:gap-y-[130px] max-[1024px]:pb-[50px]">
         {REGISTRY_CARDS.map((card) => (
           <div
             key={card.id}
-            className="bg-[#446184] text-white pb-[2.5vw] lg:px-[2.865vw] flex flex-col items-center"
+            className="bg-[#446184] text-white pb-[2.5vw] lg:px-[2.865vw] flex flex-col items-center max-[1024px]:p-[20px]"
           >
              {card.showIcon && (
-              <div className='flex bg-[#F6F5ED] rounded-full -mt-24 w-40 h-40 lg:w-[11.198vw] lg:h-[11.198vw] items-center justify-center'>
+              <div className='flex bg-[#F6F5ED] rounded-full -mt-24 w-40 h-40 lg:w-[11.198vw] xl:w-[11.198vw] 2xl:w-[11.198vw] lg:h-[11.198vw] xl:h-[11.198vw] 2xl:h-[11.198vw] items-center justify-center max-[1024px]:w-[130px] max-[1024px]:h-[130px]'>
                 <img
                   src={card.icon}
                   alt="Gift Icon"
-                  className="w-24 h-24 lg:w-[8.021vw] lg:h-[8.021vw] mb-4"
+                  className="w-24 h-24 lg:w-[8.021vw] lg:h-[8.021vw]"
                 />
               </div>
              )}
-            <h3 className="text-3xl font-semibold lg:text-[24px] lg:leading-[24px] mb-[1.302vw] mt-[2.656vw]">
+            <h3 className="text-3xl font-semibold lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] mb-[1.302vw] mt-[2.656vw] max-[1024px]:!text-[20px]">
               {card.title}
             </h3>
-            <p className="text-2xl min-h-[135px] lg:text-[22px] lg:leading-[32px] text-center mb-6">
+            <p className="text-2xl min-h-[7.031vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] text-center mb-[2.604vw] max-[1024px]:!text-[16px] max-[1024px]:!leading-[20px] max-[1024px]:px-[20px]">
               {card.description}
             </p>
             <div className="text-5xl prata flex items-baseline">
               {(card.id === 'funds' || card.id === 'gift-balance') && (
-                <span className="text-7xl mr-1 self-start">$</span>
+                <span className="text-5xl mr-1 self-start lg:text-[3.333vw] xl:text-[3.333vw] 2xl:text-[3.333vw]">$</span>
               )}
-              <span className="text-7xl lg:text-[64px]">{card.value}</span>
+              <span className="text-5xl lg:text-[3.333vw] xl:text-[3.333vw] 2xl:text-[3.333vw]">{card.value}</span>
               {card.total && (
-                <span className="ml-1 text-6xl lg:text-[36px]">
-                  /<span className="text-4xl">{card.total}</span>
+                <span className="ml-1 text-6xl lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw]">
+                  /<span className="text-2xl lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw]">{card.total}</span>
                 </span>
               )}
             </div>
-            <p className="text-sm mt-2">{card.label}</p>
+            <p className="text-sm mt-2 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw]">{card.label}</p>
             {card.buttonText && (
               <Link to={card.link}>
-              <button className="bg-[#F6F5ED] lg:w-[296px] lg:h-[78px] font-bold text-black px-1 py-1 mt-10 text-base lg:text-[18px] lg:leading-[18px]">
+              <button className="bg-[#F6F5ED] lg:w-[15.417vw] xl:w-[15.417vw] 2xl:w-[15.417vw] lg:h-[4.115vw] xl:h-[4.115vw] 2xl:h-[4.115vw] font-bold text-black px-1 py-1 mt-[2.396vw] text-base lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] cursor-pointer max-[1024px]:w-[200px] max-[1024px]:h-[40px] max-[1024px]:text-[14px]">
                 {card.buttonText}
               </button>
               </Link>
@@ -403,9 +403,8 @@ const index = () => {
           </div>
         ))}
       </div>
-
-      <Footer />
       </div>
+      <Footer />
           {/* <RegistryChecklist registry={registry} /> */}
     </>
   );
