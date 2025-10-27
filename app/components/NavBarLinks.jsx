@@ -83,7 +83,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="group">
             <NavLink
               to="/our-brands"
-              className="text-black mega-menu-triggers hover:no-underline tracking-[1.44px] menu-item-hover font-[800] uppercase"
+              className="text-black mega-menu-triggers hover:no-underline tracking-[1.60px] menu-item-hover font-[800] uppercase"
             >
               OUR BRANDS
             </NavLink>

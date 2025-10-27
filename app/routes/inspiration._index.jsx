@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/inspirationLine.png';
@@ -63,6 +63,33 @@ const Inspiration = () => {
   const [clickedSection, setClickedSection] = React.useState(null);
   const [articlesToShow, setArticlesToShow] = React.useState(12);
   const articlesGridRef = React.useRef(null);
+  const [isStickyBarVisible, setIsStickyBarVisible] = useState(false);
+  const [activeStickyCategory, setActiveStickyCategory] = useState(null);
+  const heroSectionRef = useRef(null);
+
+  // Show sticky bar when scrolling past hero section
+  useEffect(() => {
+    const handleScroll = () => {
+      const appClip = document.getElementById('app-clip');
+      if (!appClip) return;
+
+      const scrollTop = appClip.scrollTop;
+      const heroHeight = heroSectionRef.current?.offsetHeight || 0;
+      
+      setIsStickyBarVisible(scrollTop > heroHeight - 100);
+    };
+
+    const appClip = document.getElementById('app-clip');
+    if (appClip) {
+      appClip.addEventListener('scroll', handleScroll);
+      return () => appClip.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  // Update sticky bar active category based on clicked section
+  useEffect(() => {
+    setActiveStickyCategory(clickedSection);
+  }, [clickedSection]);
 
   // Flatten all articles from all blogs
   const allArticles = blogs.flatMap(blog => 
@@ -93,7 +120,89 @@ const Inspiration = () => {
     <div>
       <Header />
 
-      <div className="mx-auto bg-[#F5F2ED] py-10 px-5 w-full h-[610px] lg:h-[950px]">
+      {/* Sticky Category Bar */}
+      {isStickyBarVisible && (
+        <div className="sticky top-0 z-50 bg-[#1F1D1B] w-full py-4 lg:py-6 shadow-lg">
+          <div className="flex justify-center items-center gap-8 lg:gap-16 px-4">
+            {/* Real Weddings */}
+            <button
+              onClick={() => { setClickedSection('wedding'); setArticlesToShow(12); }}
+              className={`relative flex flex-col items-center gap-2 pb-1 transition-opacity ${activeStickyCategory === 'wedding' ? 'opacity-100' : 'opacity-70 hover:opacity-100'}`}
+            >
+              <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="white" className="w-6 h-6 lg:w-8 lg:h-8">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  <circle cx="8" cy="9" r="1.5"/>
+                  <circle cx="16" cy="9" r="1.5"/>
+                </svg>
+              </div>
+              <span className="text-white text-xs lg:text-sm font-medium uppercase tracking-wide">
+                REAL WEDDINGS
+              </span>
+              {activeStickyCategory === 'wedding' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
+              )}
+            </button>
+
+            {/* The Planning Edit */}
+            <button
+              onClick={() => { setClickedSection('planning'); setArticlesToShow(12); }}
+              className={`relative flex flex-col items-center gap-2 pb-1 transition-opacity ${activeStickyCategory === 'planning' ? 'opacity-100' : 'opacity-70 hover:opacity-100'}`}
+            >
+              <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="white" className="w-6 h-6 lg:w-8 lg:h-8">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  <path d="M9 11l3-3 3 3 2-2-5-5-5 5z"/>
+                </svg>
+              </div>
+              <span className="text-white text-xs lg:text-sm font-medium uppercase tracking-wide">
+                THE PLANNING EDIT
+              </span>
+              {activeStickyCategory === 'planning' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
+              )}
+            </button>
+
+            {/* At Home */}
+            <button
+              onClick={() => { setClickedSection('design'); setArticlesToShow(12); }}
+              className={`relative flex flex-col items-center gap-2 pb-1 transition-opacity ${activeStickyCategory === 'design' ? 'opacity-100' : 'opacity-70 hover:opacity-100'}`}
+            >
+              <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="white" className="w-6 h-6 lg:w-8 lg:h-8">
+                  <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+              </div>
+              <span className="text-white text-xs lg:text-sm font-medium uppercase tracking-wide">
+                AT HOME
+              </span>
+              {activeStickyCategory === 'design' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
+              )}
+            </button>
+
+            {/* Travel & Culture */}
+            <button
+              onClick={() => { setClickedSection('taste'); setArticlesToShow(12); }}
+              className={`relative flex flex-col items-center gap-2 pb-1 transition-opacity ${activeStickyCategory === 'taste' ? 'opacity-100' : 'opacity-70 hover:opacity-100'}`}
+            >
+              <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="white" className="w-6 h-6 lg:w-8 lg:h-8">
+                  <path d="M17.5 4.5c-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5-1.45 0-2.99.22-4.28.79C1.49 5.62 1 6.33 1 7.14v11.28c0 1.3 1.22 2.26 2.48 1.94.88-.23 1.9-.35 2.96-.35 1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.7 0 3.55.38 5.5 1.5 1.05-.7 2.2-1.1 3.52-1.1.96 0 1.98.12 2.86.35 1.26.32 2.48-.64 2.48-1.94V7.14c0-.81-.49-1.52-1.22-1.85-1.29-.57-2.83-.79-4.28-.79zM21 17.23c0 .63-.58 1.09-1.2.98l-2.24-.3c-1.1-.15-2.25.05-3.18.65-1.35.85-3.8 1.5-5.5 1.5-1.7 0-3.55-.38-5.5-1.5-.93-.6-2.08-.8-3.18-.65l-2.24.3C.58 18.32 0 17.86 0 17.23V7.14c0-.52.31-.97.77-1.17.39-.18.82-.27 1.23-.27 2.22 0 4.63.61 6.5 1.5 1.85.89 4.15 1.5 6.5 1.5 2.35 0 4.65-.61 6.5-1.5 1.87-.89 4.28-1.5 6.5-1.5.41 0 .84.09 1.23.27.46.2.77.65.77 1.17v10.09z"/>
+                </svg>
+              </div>
+              <span className="text-white text-xs lg:text-sm font-medium uppercase tracking-wide">
+                TRAVEL & CULTURE
+              </span>
+              {activeStickyCategory === 'taste' && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div ref={heroSectionRef} className="mx-auto bg-[#F5F2ED] py-10 px-5 w-full h-[610px] lg:h-[950px]">
         <Heading
           text="a curated journal of modern love"
           classes={
@@ -224,22 +333,22 @@ const Inspiration = () => {
                   <div key={article.id} className="mb-[5.156vw]">
                     <div className="w-full">
                       {article.image?.url ? (
-                        <img src={article.image.url} alt="" className='w-[370px] h-[390px]'/>
+                        <img src={article.image.url} alt="" className='w-full h-[390px] lg:h-[20.313vw] xl:h-[20.313vw] 2xl:h-[20.313vw] object-cover'/>
                       ) : (
                         <img src="/assets/Images/couple-logo.png" alt="" className='w-[370px] h-[390px]'/>
                       )}
-                      <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
+                      <h4 className="text-xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] font-semibold mt-[1.667vw] mb-[14px] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw]">
                         {displayedTitle}
                       </h4>
-                      <p className="text-sm mt-2 mb-3 ivyora italic lg:text-[20px] lg:leading-[1.1vw] font-normal">
+                      <p className="text-sm mt-0 mb-[1.042vw] ivyora italic lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.4vw] xl:leading-[1.4vw] 2xl:leading-[1.4vw] lg:tracking-[0.052vw] xl:tracking-[0.052vw] 2xl:tracking-[0.052vw] tracking-[1px] font-normal">
                         {article.contentHtml.replace(/<[^>]*>/g, '').slice(0, 80)}
                         ...
                       </p>
                       <div className="flex items-center justify-start">
                         <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
-                          <p className="font-bold flex items-center lg:text-[18px] uppercase gap-2">
+                          <p className="font-bold flex items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase gap-2">
                             Read More
-                            <img src={readMoreIcon} alt="" />
+                            <img src={readMoreIcon} alt="" className='w-[16px] h-[16px] lg:w-[0.833vw] lg:h-[0.833vw] xl:w-[0.833vw] xl:h-[0.833vw] 2xl:w-[0.833vw] 2xl:h-[0.833vw]' />
                           </p>
                     </Link>
             </div>

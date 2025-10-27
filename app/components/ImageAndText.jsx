@@ -33,8 +33,8 @@ const ImageAndText = ({
       }`}
     >
       <div
-        className={`bg-[#F5F2ED] py-16 relative flex justify-center flex-col lg:w-[36.406vw] w-[55%] lg:px-[4.219vw] max-[1024px]:p-[20px] ${
-          direction === 'left' ? 'lg:mb-20 mb-6' : 'lg:mt-20 mt-6'
+        className={`bg-[#F5F2ED] py-[3.333vw] relative flex justify-center flex-col lg:w-[36.406vw] w-[55%] lg:px-[4.219vw] xl:px-[4.219vw] 2xl:px-[4.219vw] max-[1024px]:p-[20px] ${
+          direction === 'left' ? 'mb-0 mt-6 lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw]' : 'mt-6 lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw]'
         }`}
       >
         <h3 className="text-[20px] leading-[36px] text-center lg:mx-auto lg:text-[2.5vw] lg:leading-[3.125vw] prata max-w-[410px]">
@@ -93,13 +93,13 @@ const ImageAndText = ({
 
       <div
         className={`lg:w-[65%] w-[45%] min-w-[45%] ${
-          direction === 'left' ? 'lg:mt-20 mt-6' : 'lg:mb-20 mb-6'
+          direction === 'left' ? 'lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw] mt-6' : 'lg:mb-[2.24vw] xl:mb-[2.24vw] 2xl:mb-[2.24vw] mb-6'
         }`}
       >
         <img
           src={imgBanner}
           alt="Image Banner"
-          className="w-full max-[1024px]:h-full lg:h-[44.15vw] xl:h-[44.15vw] 2xl:h-[44.15vw] object-cover object-[80%] rounded-none"
+          className="w-full max-[1024px]:h-full lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] object-cover object-[80%] rounded-none"
         />
       </div>
     </div>

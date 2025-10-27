@@ -158,7 +158,7 @@ const HeroSlider = () => {
                 className="w-full h-[380px] lg:h-[43vw] xl:h-[43vw] 2xl:h-[43vw] object-cover lg:object-[0vw_-10vw] xl:object-[0vw_-10vw] 2xl:object-[0vw_-10vw]"
               />
               <div className="absolute flex flex-col items-center w-[246px] lg:w-[40%] xl:w-[40%] 2xl:w-[40%] top-0 max-w-[50%] max-[1024px]:max-w-[70%] h-full justify-center text-white px-8">
-                <h3 className="text-[40px] leading-[46px] max-w-screen-lg:w-[246px] lg:text-[4.479vw] xl:text-[4.479vw] 2xl:text-[4.479vw] text-center ivyoraDisplay lg:leading-[5vw] xl:leading-[5vw] 2xl:leading-[5vw] font-normal text-shadow">
+                <h3 className="text-[40px] leading-[46px] max-w-screen-lg:w-[246px] lg:text-[4.479vw] xl:text-[4.479vw] 2xl:text-[4.479vw] text-center ivyoraDisplay lg:leading-[4.1vw] xl:leading-[4.1vw] 2xl:leading-[4.1vw] font-normal text-shadow">
                   {slide.content}
                 </h3>
                 <img src={vectorImg} alt="line" className="w-72 max-[1024px]:w-[158px] mt-[2vw] max-[1024px]:mt-[10px]" />
