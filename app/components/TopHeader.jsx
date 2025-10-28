@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react";
 import Popup from "./Popup";
+import ModalPortal from "./ModalPortal";
 import { useState, useEffect } from "react";
 
 const TopHeader = () => {
@@ -43,7 +44,11 @@ const TopHeader = () => {
                     </>
                 )}
             </div>
-            {showPopup && <Popup onClose={handleClosePopup} />}
+            {showPopup && (
+              <ModalPortal>
+                <Popup onClose={handleClosePopup} />
+              </ModalPortal>
+            )}
         </div>
      );
 }

@@ -55,7 +55,7 @@ const Testimonialslider = ({ blogs = [] }) => {
                   className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[47.417vw] xl:w-[47.417vw] 2xl:w-[47.417vw] lg:h-[36.458vw] xl:h-[36.458vw] 2xl:h-[36.458vw] rounded-none"
                 />
                 <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[29.167vw] lg:h-[36.042vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
-                  <p className="text-xl lg:text-[1.1vw] lg:leading-[1.9vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
+                  <p className="text-xl lg:text-[1.1vw] lg:leading-[1.9vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal max-[1024px]:line-clamp-15">
                     {excerpt}
                   </p>
                   <Link to={`/blogs/${article.blogHandle || 'blog'}/${article.handle || 'article'}`}>

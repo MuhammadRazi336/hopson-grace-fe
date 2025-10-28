@@ -14,6 +14,7 @@ import {NavLink} from '@remix-run/react';
 import LiveChat from '~/components/LiveChat';
 import { useState } from 'react';
 import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
 
 const FAQ = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -276,7 +277,11 @@ const FAQ = () => {
                 className="text-white font-[500] tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[20.677vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs"
               />
             {/* </NavLink> */}
-            {showPopup && <Popup onClose={handleClosePopup} />}
+            {showPopup && (
+              <ModalPortal>
+                <Popup onClose={handleClosePopup} />
+              </ModalPortal>
+            )}
           </div>
         </div>
 
