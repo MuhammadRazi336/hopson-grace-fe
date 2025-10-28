@@ -1095,7 +1095,7 @@ export function Header() {
                       SUPPORT
                     </a>
                     <button 
-                      className="block w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-red-600"
+                      className="block w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-[#FD446F]"
                       onClick={() => {
                         // Clear all localStorage
                         localStorage.clear();

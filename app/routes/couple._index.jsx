@@ -113,7 +113,7 @@ export default function FindCoupleForm() {
                     </div>
                   </div>
                   {validationError && (
-                    <div className="text-red-500 text-center mb-4 text-sm">
+                    <div className="text-[#FD446F] text-center mb-4 text-sm">
                       {validationError}
                     </div>
                   )}
@@ -233,7 +233,7 @@ export function FindCoupleFormBanner() {
               </div>
             </div>
             {validationError && (
-              <div className="text-red-500 text-center mb-4 text-sm">
+              <div className="text-[#FD446F] text-center mb-4 text-sm">
                 {validationError}
               </div>
             )}
@@ -330,7 +330,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
               </div>
             </div>
             {validationError && (
-              <div className="text-red-500 text-center mb-4 text-sm">
+              <div className="text-[#FD446F] text-center mb-4 text-sm">
                 {validationError}
               </div>
             )}

@@ -117,7 +117,7 @@ export default function FindCoupleForm() {
                     </div>
                   </div>
                   {validationError && (
-                    <div className="text-red-500 text-center mb-4 text-sm">
+                    <div className="text-[#FD446F] text-center mb-4 text-sm">
                       {validationError}
                     </div>
                   )}
@@ -232,7 +232,7 @@ function CoupleListing({data}) {
                   </div>
                 </div>
                 {validationError && (
-                  <div className="text-red-500 text-center mb-4 text-sm">
+                  <div className="text-[#FD446F] text-center mb-4 text-sm">
                     {validationError}
                   </div>
                 )}

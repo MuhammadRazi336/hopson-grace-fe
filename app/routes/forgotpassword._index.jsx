@@ -7,6 +7,7 @@ import { Footer } from "~/components/Footer";
 import StepsAndImage from '~/components/StepsAndImage';
 import Heading from '~/components/Heading.jsx';
 import arrow from '/assets/Images/arrow.png';
+import Popup from '~/components/Popup';
 
 export async function loader(args) {
     const {context} = args;
@@ -47,6 +48,7 @@ export async function action({request, context}) {
 const ForgotPassword = () => {
     const submit = useSubmit();
     const actionData = useActionData();
+    const [showPopup, setShowPopup] = useState(false);
     console.log(actionData, 'ActionData');
     
     // Debug all actionData properties
@@ -63,6 +65,21 @@ const ForgotPassword = () => {
     const [formData, setFormData] = useState({
         email: '',
     })
+
+    const handleOpenPopup = () => {
+        setShowPopup(true);
+    };
+
+    const handleClosePopup = () => {
+        setShowPopup(false);
+    };
+
+    // Extract name from email for greeting
+    const extractNameFromEmail = (email) => {
+        if (!email) return 'there';
+        const name = email.split('@')[0];
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    };
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -85,93 +102,106 @@ const ForgotPassword = () => {
         <Header />
         <div className="flex justify-center items-center min-h-screen bg-white">
           <StepsAndImage
-            title="forgot password?"
+            title={actionData?.success ? `welcome back, ${extractNameFromEmail(formData.email)}.` : "forgot password?"}
             stepNo="1"
             totalSteps="1"
             showLoginLink={false}
             showPagination={false}
+            customImageFooter={actionData?.success && (
+              <h5 className="text-black lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
+                Not you? <Link to="#" onClick={handleOpenPopup} className="font-bold underline">CREATE AN ACCOUNT</Link>
+              </h5>
+            )}
             content={
               <div className="flex h-full items-center">
-                <form
-                  className="space-y-6 max-w-full w-full mx-auto"
-                  onSubmit={handleSubmit}
-                >
-                  <div className="text-center lg:pt-[3.646vw] xl:pt-[3.646vw] 2xl:pt-[3.646vw] m-0">
-                    <Heading
-                      text="RESET PASSWORD"
-                      classes="font-normal text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0 lg:mb-[1vw] xl:mb-[1vw] 2xl:mb-[1vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]"
-                    />
-                  </div>
-                  <div className="space-y-4">
-                    <Input
-                      type="email"
-                      required={true}
-                      placeholder="Email *"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0"
-                      error={
-                        // Email validation errors (check message content)
-                        (Array.isArray(actionData?.message) && 
-                         actionData?.message.some(msg => msg.toLowerCase().includes('email')))
-                          ? actionData?.message.find(msg => msg.toLowerCase().includes('email'))
-                          // User not found error (check message content)
-                          : (actionData?.message === 'user not found' || actionData?.message === 'email not found')
-                          ? 'Email not found'
-                          : undefined
-                      }
-                    />
-                  </div>
-                  <div className="text-left">
-                    <Link to="/login" className="text-white hover:underline text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]">
-                      Back to Login
-                    </Link>
-                  </div>
-                  
-                  {/* Success message */}
-                  {actionData?.success && (
-                    <div className="flex justify-start">
-                      <div role="status" className="mt-3">
-                        <span className="font-medium text-green-600 text-[18px]">
-                          {actionData?.message}
-                        </span>
-                      </div>
+                {actionData?.success ? (
+                  // Success view - Email sent
+                  <div className="space-y-6 max-w-full w-full mx-auto">
+                    <div className="text-center lg:pt-[3.646vw] xl:pt-[3.646vw] 2xl:pt-[3.646vw] m-0">
+                      <Heading
+                        text="email sent."
+                        classes="font-normal text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0 lg:mb-[1vw] xl:mb-[1vw] 2xl:mb-[1vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]"
+                      />
                     </div>
-                  )}
-                  
-                  {/* Error message */}
-                  {actionData?.statusCode >= 400 && 
-                   !(Array.isArray(actionData?.message) && actionData?.message.some(msg => msg.toLowerCase().includes('email'))) &&
-                   !(actionData?.message === 'user not found' || actionData?.message === 'email not found') && (
-                    <div className="flex justify-start">
-                      <div role="alert" className="mt-3">
-                        <span className="font-medium text-[#B00020] text-[18px]">
-                          {actionData?.statusCode === 500 
-                            ? 'Server error. Please try again later.'
-                            : Array.isArray(actionData?.message)
-                              ? actionData?.message[0]
-                              : actionData?.message}
-                        </span>
-                      </div>
+                    <div className="text-center">
+                      <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]">
+                        CHECK YOUR EMAIL INBOX FOR PASSWORD RESET INSTRUCTIONS.
+                      </p>
                     </div>
-                  )}
+                  </div>
+                ) : (
+                  // Form view - Forgot password
+                  <form
+                    className="space-y-6 max-w-full w-full mx-auto"
+                    onSubmit={handleSubmit}
+                  >
+                    <div className="text-center lg:pt-[3.646vw] xl:pt-[3.646vw] 2xl:pt-[3.646vw] m-0">
+                      <Heading
+                        text="RESET PASSWORD"
+                        classes="font-normal text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0 lg:mb-[1vw] xl:mb-[1vw] 2xl:mb-[1vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]"
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <Input
+                        type="email"
+                        required={true}
+                        placeholder="Email *"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0"
+                        error={
+                          // Email validation errors (check message content)
+                          (Array.isArray(actionData?.message) && 
+                           actionData?.message.some(msg => msg.toLowerCase().includes('email')))
+                            ? actionData?.message.find(msg => msg.toLowerCase().includes('email'))
+                            // User not found error (check message content)
+                            : (actionData?.message === 'user not found' || actionData?.message === 'email not found')
+                            ? 'Email not found'
+                            : undefined
+                        }
+                      />
+                    </div>
+                    <div className="text-left">
+                      <Link to="/login" className="text-white hover:underline text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]">
+                        Back to Login
+                      </Link>
+                    </div>
+                    
+                    {/* Error message */}
+                    {actionData?.statusCode >= 400 && 
+                     !(Array.isArray(actionData?.message) && actionData?.message.some(msg => msg.toLowerCase().includes('email'))) &&
+                     !(actionData?.message === 'user not found' || actionData?.message === 'email not found') && (
+                      <div className="flex justify-start">
+                        <div role="alert" className="mt-3">
+                          <span className="font-medium text-[#FD446F] text-[18px]">
+                            {actionData?.statusCode === 500 
+                              ? 'Server error. Please try again later.'
+                              : Array.isArray(actionData?.message)
+                                ? actionData?.message[0]
+                                : actionData?.message}
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-                  {/* Back and Next buttons */}
-                  <div className="flex justify-end mt-4 absolute bottom-6 right-6 steps-btns-hover">
-                    <button
-                      type="submit"
-                      className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10 whitespace-nowrap text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:right-[24px]"
-                    >
-                      Send Reset Email <img src={arrow} className="lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" alt="" />
-                    </button>
-                  </div>
-                </form>
+                    {/* Back and Next buttons */}
+                    <div className="flex justify-end mt-4 absolute bottom-6 right-6 steps-btns-hover">
+                      <button
+                        type="submit"
+                        className="absolute right-10 bottom-2.5 flex items-center uppercase font-bold gap-2 z-10 whitespace-nowrap text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:right-[24px]"
+                      >
+                        Send Reset Email <img src={arrow} className="lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" alt="" />
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             }
           />
         </div>
         <Footer />
+        {showPopup && <Popup onClose={handleClosePopup} />}
       </>
     )
 }

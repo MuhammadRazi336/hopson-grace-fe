@@ -368,7 +368,7 @@ function CreateNewCashFund() {
                   className="w-full h-[14.375vw] mb-[0.938vw] p-[2.344vw] text-[24px] lg:text-[1.25vw] lg:leading-[1.563vw] bg-white resize-none border-none outline-none"
                 />
                 <p className={`ivyora text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] m-0 italic tracking-wide font-[400] ${
-                  (500 - noteToFamily.length) < 50 ? 'text-red-400' : 'text-[#FFFCFC]'
+                  (500 - noteToFamily.length) < 50 ? 'text-[#FD446F]' : 'text-[#FFFCFC]'
                 }`}>
                   {500 - noteToFamily.length}/500 characters remaining
                 </p>

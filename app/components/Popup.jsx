@@ -7,6 +7,14 @@ import { useEffect, useRef } from "react";
 const Popup = ({ onClose }) => {
   const overlayRef = useRef(null);
 
+  // Lock body scroll when popup is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   // Close on ESC
   useEffect(() => {
     const onKeyDown = (e) => { if (e.key === "Escape") onClose?.(); };
@@ -25,10 +33,11 @@ const Popup = ({ onClose }) => {
       onClick={handleOverlayClick}
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-[#1F1D1B]/90
-                 max-[1024px]:flex-col max-[1024px]:px-4 max-[1024px]:items-end p-5 md:p-20"
+      className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[#1F1D1B]/90"
+      style={{ zIndex: 99999, position: 'fixed' }}
     >
-      <div className="relative lg:scale-80 xl:scale-80 2xl:scale-80 lg:w-[47.396vw] xl:w-[47.396vw] 2xl:w-[47.396vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw] left-[96px] max-[1024px]:left-auto max-[1024px]:w-full">
+      <div className="max-[1024px]:flex-col flex items-center justify-center gap-0 max-[1024px]:px-4">
+      <div className="relative lg:scale-90 xl:scale-90 2xl:scale-90 lg:w-[47.396vw] xl:w-[47.396vw] 2xl:w-[47.396vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw] max-[1024px]:w-full max-[1024px]:h-auto">
         <img
           src={popupimg}
           alt=""
@@ -36,8 +45,7 @@ const Popup = ({ onClose }) => {
         />
       </div>
 
-      <div className="w-[618px] lg:scale-80 xl:scale-80 2xl:scale-80 lg:w-[32.188vw] xl:w-[32.188vw] 2xl:w-[32.188vw] bg-[#446184] py-10 px-8 relative flex items-center justify-center text-white pb-[6.615vw]
-                      -left-[96px] max-[1024px]:left-auto max-[1024px]:w-[95%] max-[1024px]:-top-[10vw] max-[1024px]:px-[24px] max-[1024px]:py-[27px]">
+      <div className="w-[618px] lg:scale-90 xl:scale-90 2xl:scale-90 lg:w-[32.188vw] xl:w-[32.188vw] 2xl:w-[32.188vw] bg-[#446184] py-10 px-8 relative flex items-center justify-center text-white pb-[6.615vw] max-[1024px]:w-[95%] max-[1024px]:-top-[10vw] max-[1024px]:px-[24px] max-[1024px]:py-[27px]">
         <img
           src={reglogo}
           alt=""
@@ -63,6 +71,7 @@ const Popup = ({ onClose }) => {
             LET'S GO
           </Link>
         </div>
+      </div>
       </div>
     </div>
   );

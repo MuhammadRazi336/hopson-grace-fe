@@ -114,7 +114,7 @@ const Profile = () => {
                     placeholder={'First Name'}
                   />
                   {actionData?.error?.firstName && (
-                    <p className="text-red-600">{actionData.error.firstName}</p>
+                    <p className="text-[#FD446F]">{actionData.error.firstName}</p>
                   )}
                   <Input
                     name="lastName"
@@ -123,7 +123,7 @@ const Profile = () => {
                     placeholder={'Last Name'}
                   />
                   {actionData?.error?.lastName && (
-                    <p className="text-red-600">{actionData.error.lastName}</p>
+                    <p className="text-[#FD446F]">{actionData.error.lastName}</p>
                   )}
                 </div>
               </div>
@@ -142,7 +142,7 @@ const Profile = () => {
                     placeholder={'First Name'}
                   />
                   {actionData?.error?.fianceFirstName && (
-                    <p className="text-red-600">
+                    <p className="text-[#FD446F]">
                       {actionData.error.fianceFirstName}
                     </p>
                   )}
@@ -153,7 +153,7 @@ const Profile = () => {
                     placeholder={'Last Name'}
                   />
                   {actionData?.error?.fianceLastName && (
-                    <p className="text-red-600">
+                    <p className="text-[#FD446F]">
                       {actionData.error.fianceLastName}
                     </p>
                   )}
@@ -175,7 +175,7 @@ const Profile = () => {
                     placeholder={'Password'}
                   />
                   {actionData?.error?.fianceFirstName && (
-                    <p className="text-red-600">
+                    <p className="text-[#FD446F]">
                       {actionData.error.fianceFirstName}
                     </p>
                   )}
@@ -186,7 +186,7 @@ const Profile = () => {
                     placeholder={'Confirm Password'}
                   />
                   {actionData?.error?.fianceLastName && (
-                    <p className="text-red-600">
+                    <p className="text-[#FD446F]">
                       {actionData.error.fianceLastName}
                     </p>
                   )}

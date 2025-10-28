@@ -442,10 +442,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="yourFirstName"
           value={state.yourFirstName}
           onChange={onStateChange}
-          className={`outline-none text-black w-full border ${validationErrors.yourFirstName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.yourFirstName ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.yourFirstName && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.yourFirstName}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.yourFirstName}</p>
         )}
       </div>
       <div>
@@ -458,10 +458,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="yourLastName"
           value={state.yourLastName}
           onChange={onStateChange}
-          className={`outline-none text-black w-full border ${validationErrors.yourLastName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.yourLastName ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.yourLastName && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.yourLastName}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.yourLastName}</p>
         )}
       </div>
       <div>
@@ -474,10 +474,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="fianceFirstName"
           value={state.fianceFirstName}
           onChange={onStateChange}
-          className={`outline-none text-black w-full border ${validationErrors.fianceFirstName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.fianceFirstName ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.fianceFirstName && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.fianceFirstName}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.fianceFirstName}</p>
         )}
       </div>
       <div>
@@ -490,10 +490,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="fianceLastName"
           value={state.fianceLastName}
           onChange={onStateChange}
-          className={`outline-none text-black w-full border ${validationErrors.fianceLastName ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.fianceLastName ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.fianceLastName && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.fianceLastName}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.fianceLastName}</p>
         )}
       </div>
       <div>
@@ -522,10 +522,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="weddingDate"
           value={state.weddingDate}
           onChange={onStateChange}
-          className={`outline-none text-black w-full border ${validationErrors.weddingDate ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.weddingDate ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.weddingDate && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.weddingDate}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.weddingDate}</p>
         )}
       </div>
       <div>
@@ -538,10 +538,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="venue"
           value={state.venue}
           onChange={onStateChange}
-          className={`outline-none text-black w-full border ${validationErrors.venue ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.venue ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.venue && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.venue}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.venue}</p>
         )}
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -555,10 +555,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
             name="location"
             value={state.location}
             onChange={onStateChange}
-            className={`outline-none text-black w-full border ${validationErrors.location ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+            className={`outline-none text-black w-full border ${validationErrors.location ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
           />
           {validationErrors.location && (
-            <p className="text-red-500 text-sm mt-1">{validationErrors.location}</p>
+            <p className="text-[#FD446F] text-sm mt-1">{validationErrors.location}</p>
           )}
         </div>
         <div>
@@ -572,10 +572,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
             value={state.noOfGuests}
             onChange={onStateChange}
             min="1"
-            className={`outline-none text-black w-full border ${validationErrors.noOfGuests ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+            className={`outline-none text-black w-full border ${validationErrors.noOfGuests ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
           />
           {validationErrors.noOfGuests && (
-            <p className="text-red-500 text-sm mt-1">{validationErrors.noOfGuests}</p>
+            <p className="text-[#FD446F] text-sm mt-1">{validationErrors.noOfGuests}</p>
           )}
         </div>
       </div>
@@ -605,10 +605,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           value={state.shippingAddress}
           onChange={onStateChange}
           placeholder="Address*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingAddress ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.shippingAddress ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.shippingAddress && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingAddress}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingAddress}</p>
         )}
       </div>
       <div>
@@ -618,10 +618,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           value={state.shippingPhone}
           onChange={onStateChange}
           placeholder="Phone Number*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingPhone ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.shippingPhone ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.shippingPhone && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingPhone}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingPhone}</p>
         )}
       </div>
       <div>
@@ -631,10 +631,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           value={state.shippingPostalCode}
           onChange={onStateChange}
           placeholder="Postal Code*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingPostalCode ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.shippingPostalCode ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.shippingPostalCode && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingPostalCode}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingPostalCode}</p>
         )}
       </div>
       <div>
@@ -644,10 +644,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           value={state.shippingCity}
           onChange={onStateChange}
           placeholder="City*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingCity ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.shippingCity ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.shippingCity && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingCity}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingCity}</p>
         )}
       </div>
       <div>
@@ -657,10 +657,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           value={state.shippingProvince}
           onChange={onStateChange}
           placeholder="Province/State*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingProvince ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.shippingProvince ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.shippingProvince && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingProvince}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingProvince}</p>
         )}
       </div>
       <div>
@@ -670,10 +670,10 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           value={state.shippingCountry}
           onChange={onStateChange}
           placeholder="Country*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingCountry ? 'border-red-500' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className={`outline-none text-black w-full border ${validationErrors.shippingCountry ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
         />
         {validationErrors.shippingCountry && (
-          <p className="text-red-500 text-sm mt-1">{validationErrors.shippingCountry}</p>
+          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingCountry}</p>
         )}
       </div>
     </form>

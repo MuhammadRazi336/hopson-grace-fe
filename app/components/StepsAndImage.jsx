@@ -17,7 +17,7 @@ import step8Image from "/assets/Images/giftkindstep.jpg"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
 
-const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true, onBackClick, showBackButton = false }) => {
+const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true, onBackClick, showBackButton = false, customImageFooter }) => {
     // Function to get the appropriate image based on step number
     const getStepImage = (step) => {
         const stepNumber = parseInt(step);
@@ -44,6 +44,11 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                     <img src={registrylogoSteps} alt="" className="absolute bottom-4 -left-[72px] lg:-left-[2.083vw] xl:-left-[2.083vw] 2xl:-left-[2.083vw] max-[1024px]:left-[initial] max-[1024px]:-right-[7px] max-[1024px]:w-[71px] max-[1024px]:bottom-0 max-[1024px]:top-0 max-[1024px]:my-auto lg:w-[4.49vw] xl:w-[4.49vw] 2xl:w-[4.49vw] w-[71px]" />
                     {showLoginLink && (
                         <h5 className="absolute -bottom-16 max-[1024px]:hidden lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw]">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>
+                    )}
+                    {customImageFooter && (
+                        <div className="absolute -bottom-[100px] max-[1024px]:hidden lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
+                            {customImageFooter}
+                        </div>
                     )}
                 </div>
             </div>

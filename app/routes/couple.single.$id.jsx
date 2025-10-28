@@ -387,7 +387,7 @@ export default function CoupleProfile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold text-red-600 mb-4">
+          <h1 className="text-2xl font-semibold text-[#FD446F] mb-4">
             Registry Not Found
           </h1>
           <p className="text-gray-600 mb-4">

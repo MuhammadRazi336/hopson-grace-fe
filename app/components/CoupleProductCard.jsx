@@ -75,7 +75,7 @@ const CoupleProductCard = ({
             placeholder="Enter amount"
             className="border rounded px-2 py-1 w-full mb-2"
           />
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+          {error && <p className="text-[#FD446F] text-sm mb-2">{error}</p>}
           <button
             onClick={handleButtonClick}
             className=" bg-white w-full cursor-pointer border px-4 py-2 lg:h-[4.063vw] tracking-[0.8px] uppercase text-[18px] leading-[18px] font-semibold mt-4 hover:bg-black hover:text-white"
@@ -97,7 +97,7 @@ const CoupleProductCard = ({
             placeholder="Enter amount"
             className="border rounded px-2 py-1 w-full mb-2"
           />
-          {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+          {error && <p className="text-[#FD446F] text-sm mb-2">{error}</p>}
           <button
             onClick={handleButtonClick}
             className="mt-auto bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white"

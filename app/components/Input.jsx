@@ -24,7 +24,7 @@ export default function Input({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`mt-2 p-2 border border-gray-300 rounded w-80 ${className} ${error ? 'border-red-500 max-[1024px]:h-[47px] max-[1024px]:py-0 focus:border-red-500 focus:ring-red-500' : ''}`}
+          className={`mt-2 p-2 border border-gray-300 rounded w-80 ${className} ${error ? 'border-[#FD446F] max-[1024px]:h-[47px] max-[1024px]:py-0 focus:border-[#FD446F] focus:ring-[#FD446F]' : ''}`}
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
           {...rest}
@@ -65,7 +65,7 @@ export default function Input({
       </div>
       {error && (
         <div id={`${name}-error`} role="alert" className="mt-1 text-left">
-          <span className="text-[#B00020] font-medium text-[18px] max-[1024px]:text-[17px]">
+          <span className="text-[#FD446F] font-medium text-[18px] max-[1024px]:text-[17px]">
             {error}
           </span>
         </div>
