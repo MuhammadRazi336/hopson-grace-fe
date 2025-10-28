@@ -10,6 +10,7 @@ import ImageAndText from '~/components/ImageAndText';
 import BottleImg from '/assets/Images/BottleImg.png';
 import lineImg3 from '/assets/Images/line.png';
 import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
 import {NavLink} from '@remix-run/react';
 import {useState} from 'react';
 
@@ -100,7 +101,11 @@ const AboutUs = () => {
           >
             Let's Go
           </button>
-          {showPopup && <Popup onClose={handleClosePopup} />}
+          {showPopup && (
+            <ModalPortal>
+              <Popup onClose={handleClosePopup} />
+            </ModalPortal>
+          )}
         </div>
       </div>
 

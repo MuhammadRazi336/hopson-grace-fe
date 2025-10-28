@@ -8,6 +8,7 @@ import FooterBottom from './FooterBottom';
 import Copyright from './Copyright';
 import {useState} from 'react';
 import Popup from './Popup';
+import ModalPortal from './ModalPortal';
 import LiveChat from './LiveChat';
 
 /**
@@ -264,7 +265,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                           className="w-[12.135vw] h-[2.917vw] bg-[#F5F2ED] px-[12px] m-0 border-0 text-[#948E8A] rounded-none font-['bastardogrotesk'] font-[400] text-[0.885vw] leading-[1.25vw] tracking-[0.03em] max-md:w-[217px] max-md:h-[44px] max-md:text-[12px] max-md:leading-[24px]"
                          /> */}
                          {/* Klaviyo embedded form (as on coming-soon) */}
-                         <div className="klaviyo-form-WV2nJt" />
+                         <div className="klaviyo-custom-class klaviyo-form-WV2nJt" />
                       </div>
                     </li>
                   </ul>
@@ -281,7 +282,11 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
           </div>
         </div>
       </div>
-      {showPopup && <Popup onClose={handleClosePopup} />}
+      {showPopup && (
+        <ModalPortal>
+          <Popup onClose={handleClosePopup} />
+        </ModalPortal>
+      )}
     </div>
   );
 }

@@ -33,6 +33,7 @@ import arrowUp from '/assets/Images/arrowDown.png';
 import { Link, useLoaderData, json } from '@remix-run/react';
 import LiveChat from '~/components/LiveChat';
 import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
 export async function loader({ context }) {
   try {
     // Get user session if available (optional for non-logged in users)
@@ -384,8 +385,8 @@ const Home = () => {
       </section>
       <Footer />
       
-      {/* Back to Top Button */}
-      {/* <button
+      {/* Back to Top Button - commented out
+      <button
         onClick={scrollToTop}
         className={`fixed bottom-8 p-2 right-8 z-50 w-[85px] h-[85px] bg-black hover:bg-[#272727] text-white rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-110 ${
           showBackToTop 
@@ -396,8 +397,13 @@ const Home = () => {
       >
         <img src={arrowUp} className='text-white invert rotate-180 mx-auto w-[15px] h-[13px] mb-1' alt="arrowUp" />
         <span className="text-white text-sm">Back to Top</span>
-      </button> */}
-      {showPopup && <Popup onClose={handleCloseModal} />}
+      </button>
+      */}
+      {showPopup && (
+        <ModalPortal>
+          <Popup onClose={handleCloseModal} />
+        </ModalPortal>
+      )}
     </div>
   );
 };
