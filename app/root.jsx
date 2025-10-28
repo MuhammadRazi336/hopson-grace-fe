@@ -331,6 +331,16 @@ export function Layout({children}) {
 }
 
 export default function App() {
+  const location = useLocation();
+
+  // Reset scroll position when navigating
+  useEffect(() => {
+    const appClip = document.getElementById('app-clip');
+    if (appClip) {
+      appClip.scrollTop = 0;
+    }
+  }, [location.pathname]);
+
   return (
     <>
     <div id="app-clip">

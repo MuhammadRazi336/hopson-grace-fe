@@ -42,7 +42,7 @@ const ProductCard = ({
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute lg:h-[33.5vw] xl:h-[33.5vw] 2xl:h-[33.5vw] lg:min-h-[20vw] xl:min-h-[20vw] 2xl:min-h-[20vw] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
             <Link to={`/dashboard/addgifts/${productHandle}`}>
               <img

@@ -43,7 +43,7 @@ const ProductSlider = ({products = []}) => {
             nextEl: '.swiper-button-next-prod',
             prevEl: '.swiper-button-prev-prod',
           }}
-          className="px-[178px]"
+          className=""
           style={{}}
           loop={true}
           breakpoints={{

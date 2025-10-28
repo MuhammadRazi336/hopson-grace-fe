@@ -96,14 +96,14 @@ const ReadyMade = () => {
                        readyMadeRegistries.map((collection, index) => (
               <div key={collection.id} className='flex flex-col items-center w-full max-w-4xl'>
                <div 
-                 className={`rounded-full w-[100px] h-[100px] lg:w-[318px] lg:h-[318px] cursor-pointer transition-all duration-300 ${
+                 className={`rounded-full w-[100px] h-[100px] lg:w-[16.563vw] xl:w-[16.563vw] 2xl:w-[16.563vw] lg:h-[16.563vw] xl:h-[16.563vw] 2xl:h-[16.563vw] cursor-pointer transition-all duration-300 ${
                    selectedParentCollection?.id === collection.id ? 'ring-4 ring-[#446184] ring-offset-4' : ''
                  }`}
                  onClick={() => setSelectedParentCollection(selectedParentCollection?.id === collection.id ? null : collection)}
                >
                  <img 
                    src={collection.image?.url || '/assets/Images/placeholder.png'} 
-                   className='w-full h-full rounded-full object-cover lg:w-[16.563vw] lg:h-[16.563vw]' 
+                   className='w-full h-full rounded-full object-cover lg:w-[16.563vw] xl:w-[16.563vw] 2xl:w-[16.563vw] lg:h-[16.563vw] xl:h-[16.563vw] 2xl:h-[16.563vw]' 
                    alt={collection.image?.altText || collection.title} 
                  />
                </div>
