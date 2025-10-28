@@ -207,7 +207,7 @@ const index = () => {
           <h2 className="text-2xl font-bold mb-4">Registry Not Found</h2>
           <p className="text-gray-600">Unable to load registry data. Please try refreshing the page.</p>
           {loaderData.error && (
-            <p className="text-red-500 mt-2">Error: {loaderData.message}</p>
+            <p className="text-[#FD446F] mt-2">Error: {loaderData.message}</p>
           )}
         </div>
       </div>

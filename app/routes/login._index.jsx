@@ -12,6 +12,8 @@ import {Footer} from '~/components/Footer';
 import StepsAndImage from '~/components/StepsAndImage';
 import Heading from '~/components/Heading.jsx';
 import arrow from '/assets/Images/arrow.png';
+import Popup from '~/components/Popup';
+
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
   const {context} = args;
@@ -71,7 +73,16 @@ const LoginIndex = () => {
   const submit = useSubmit();
   const actionData = useActionData();
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
   console.log(actionData, 'ActionData');
+
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
   
   // Debug error conditions
   if (actionData?.statusCode >= 400) {
@@ -130,6 +141,11 @@ const LoginIndex = () => {
           totalSteps="1"
           showLoginLink={false}
           showPagination={false}
+          customImageFooter={
+            <h5 className="text-black lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
+              Not you? <Link to="#" onClick={handleOpenPopup} className="font-bold underline">CREATE AN ACCOUNT</Link>
+            </h5>
+          }
           content={
             <div className="flex h-full items-center">
               <form
@@ -187,7 +203,7 @@ const LoginIndex = () => {
                  !(Array.isArray(actionData?.message) && actionData?.message.some(msg => msg.toLowerCase().includes('email'))) &&
                  !(actionData?.message === 'user not found') &&
                  !(actionData?.message === 'Invalid password') && (
-                  <div className="text-center text-red-500 text-sm">
+                  <div className="text-center text-[#FD446F] text-sm">
                     {actionData?.statusCode === 500 
                       ? 'Server error. Please try again later.'
                       : Array.isArray(actionData?.message)
@@ -211,6 +227,7 @@ const LoginIndex = () => {
         />
       </div>
       <Footer />
+      {showPopup && <Popup onClose={handleClosePopup} />}
     </>
   );
 };

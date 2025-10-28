@@ -214,7 +214,7 @@ const Message = () => {
           </p>
 
           {error && (
-            <div className="max-w-xl mx-auto text-center text-red-500 mb-4 bg-white p-2 rounded">
+            <div className="max-w-xl mx-auto text-center text-[#FD446F] mb-4 bg-white p-2 rounded">
               {error}
             </div>
           )}
