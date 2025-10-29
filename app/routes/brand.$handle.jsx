@@ -228,33 +228,37 @@ const Brand = () => {
                 <div key={product.id} className="relative group h-[25vw]">
                   {/* Product Image and Info */}
                   <div className="p-4 z-10 relative">
-                    <img
-                      src={firstImage}
-                      alt={product.title}
-                      className="w-full h-[300px] object-cover"
-                    />
-                    <h3 className="text-sm font-[500] lg:text-[1.146vw] uppercase mt-3">
-                      {product.title}
-                    </h3>
-                    <p className="text-sm mt-1">{price}</p>
+                    <Link to={`/dashboard/addgifts/${product.handle}`}>
+                      <img
+                        src={firstImage}
+                        alt={product.title}
+                        className="w-full h-[300px] object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                      />
+                      <h3 className="text-sm font-[500] lg:text-[1.146vw] uppercase mt-3 cursor-pointer hover:text-gray-600 transition-colors">
+                        {product.title}
+                      </h3>
+                      <p className="text-sm mt-1">{price}</p>
+                    </Link>
                   </div>
 
                   {/* Expanding Overlay */}
                   <div className="absolute inset-0 z-40 bg-[#FAF9F6] lg:h-[35.313vw] px-[2.24vw] py-[2vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
-                    <div>
-                      <img
-                        src={firstImage}
-                        alt={product.title}
-                        className="w-full h-[220px] mx-auto object-cover mb-0"
-                      />
-                      <h4 className="text-xs font-[400] lg:text-[0.833vw] lg:leading-[0.833vw] uppercase lg:mt-[1.25vw] lg:mb-[0.521vw] text-left mb-1">
-                        {collection.title || 'BRAND NAME'}
-                      </h4>
-                      <h3 className="text-sm lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-2 font-[500] uppercase text-left leading-snug">
-                        {product.title}
-                      </h3>
-                      <p className="text-sm mt-2 lg:mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
-                    </div>
+                    <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
+                      <div>
+                        <img
+                          src={firstImage}
+                          alt={product.title}
+                          className="w-full h-[220px] mx-auto object-cover mb-0 cursor-pointer hover:opacity-80 transition-opacity"
+                        />
+                        <h4 className="text-xs font-[400] lg:text-[0.833vw] lg:leading-[0.833vw] uppercase lg:mt-[1.25vw] lg:mb-[0.521vw] text-left mb-1">
+                          {collection.title || 'BRAND NAME'}
+                        </h4>
+                        <h3 className="text-sm lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-2 font-[500] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
+                          {product.title}
+                        </h3>
+                        <p className="text-sm mt-2 lg:mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
+                      </div>
+                    </Link>
 
                     <div className="flex items-center justify-between mt-[3.906vw]">
                       {/* Quantity Controls */}
