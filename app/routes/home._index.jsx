@@ -53,10 +53,13 @@ export async function loader({ context }) {
       return readyMadeMetafield && parentCollectionMetafield;
     }) || [];
 
-    // Filter brand collections for the marquee - only show brands with featured metafield as true
-    const filteredBrands = brandCollections?.nodes?.filter(collection =>
-      collection.featuredMetafield?.value === 'true'
-    ) || [];
+    // Filter brand collections for the marquee - only show brands explicitly marked featured
+    // Be robust to different capitalizations or empty/undefined values from Shopify metafields
+    const filteredBrands = (brandCollections?.nodes || []).filter((collection) => {
+      const raw = collection?.featuredMetafield?.value;
+      const normalized = typeof raw === 'string' ? raw.trim().toLowerCase() : String(raw ?? '').toLowerCase();
+      return normalized === 'true';
+    });
 
     // Remove duplicates by title (keep first occurrence)
     const brands = filteredBrands.filter((brand, index, self) => 
@@ -190,6 +193,7 @@ const Home = () => {
 
   if (brands && brands.length > 0) {
     console.log('First brand sample:', brands[0]);
+    console.log('length of brands:', brands.length);
   }
 
   // Handle scroll to show/hide back to top button
@@ -276,7 +280,7 @@ const Home = () => {
 
       <section className="py-[70px] mt-[81px] max-[1024px]:py-[28px] bg-[#F5F2ED80] my-[3.958vw] lg:mb-0 lg:mt-[8.281vw]">
         <Heading
-          text="a few of our brands"
+          text="a few of our brand"
           classes={
             'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
           }

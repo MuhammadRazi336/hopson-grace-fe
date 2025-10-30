@@ -9,14 +9,14 @@ import { extractShopifyId } from '~/utils/helpers.js';
 import {formatPrice} from '~/utils/priceFormatter';
 
 const PRODUCTS_QUERY = `#graphql
-  query {
-    products(first: 250) {
+  query($query: String) {
+    products(first: 250, query: $query) {
       edges {
         node {
-    handle
+          handle
           description
-    id
-    title
+          id
+          title
           createdAt
           images(first: 10) {
             edges {
@@ -26,7 +26,7 @@ const PRODUCTS_QUERY = `#graphql
               }
             }
           }
-    variants(first: 1) {
+          variants(first: 1) {
             edges {
               node {
                 id
@@ -219,21 +219,26 @@ export async function loader({ request, context }) {
   }
 
   try {
+    // Build a robust product query to search across title, vendor, product type and tags
+    const escaped = searchQuery.replace(/"/g, '\\"');
+    const productQuery = `title:*${escaped}* OR product_type:*${escaped}* OR vendor:*${escaped}* OR tag:*${escaped}*`;
+
     // Fetch all data types
     const [{ products }, { collections }, { collections: allCollections }, { blogs }] = await Promise.all([
-      context.storefront.query(PRODUCTS_QUERY),
+      context.storefront.query(PRODUCTS_QUERY, { variables: { query: productQuery } }),
       context.storefront.query(COLLECTIONS_QUERY),
       context.storefront.query(CASH_FUND_QUERY),
       context.storefront.query(BLOGS_QUERY),
     ]);
 
-    // Filter products
+    // Filter products (fallback refinement to ensure inclusive match)
+    const term = searchQuery.toLowerCase();
     const filteredProducts = products?.edges?.filter(edge => {
-      const product = edge.node;
-      return (
-        product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const p = edge.node;
+      const inTitle = p.title?.toLowerCase().includes(term);
+      const inDesc = p.description?.toLowerCase().includes(term);
+      const inHandle = p.handle?.toLowerCase().includes(term);
+      return inTitle || inDesc || inHandle;
     }) || [];
 
     // Filter collections (excluding cash fund collections)
@@ -421,33 +426,37 @@ export default function SearchResults() {
       <div className="relative group h-[460px]">
         {/* Product Image and Info */}
         <div className="p-4 z-10 relative">
-          <img
-            src={firstImage}
-            alt={product.title}
-            className="w-full h-[300px] object-cover"
-          />
-          <h3 className="text-sm font-semibold uppercase mt-3">
-            {product.title}
-          </h3>
-          <p className="text-sm mt-1">{price}</p>
+          <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
+            <img
+              src={firstImage}
+              alt={product.title}
+              className="w-full h-[300px] object-cover cursor-pointer hover:opacity-80 transition-opacity"
+            />
+            <h3 className="text-sm font-semibold uppercase mt-3 cursor-pointer hover:text-gray-600 transition-colors">
+              {product.title}
+            </h3>
+            <p className="text-sm mt-1">{price}</p>
+          </Link>
         </div>
 
         {/* Expanding Overlay */}
         <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
-          <div>
-            <img
-              src={firstImage}
-              alt={product.title}
-              className="w-full h-[220px] mx-auto object-cover mb-2"
-            />
-            <h4 className="text-xs font-medium uppercase text-left mb-1">
-              {isCashFund ? (product.collectionTitle || 'CASH FUND') : 'GIFT'}
-            </h4>
-            <h3 className="text-sm font-bold uppercase text-left leading-snug">
-              {product.title}
-            </h3>
-            <p className="text-sm mt-2 text-left">{price}</p>
-          </div>
+          <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
+            <div>
+              <img
+                src={firstImage}
+                alt={product.title}
+                className="w-full h-[220px] mx-auto object-cover mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+              />
+              <h4 className="text-xs font-medium uppercase text-left mb-1">
+                {isCashFund ? (product.collectionTitle || 'CASH FUND') : 'GIFT'}
+              </h4>
+              <h3 className="text-sm font-bold uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
+                {product.title}
+              </h3>
+              <p className="text-sm mt-2 text-left">{price}</p>
+            </div>
+          </Link>
 
           <div className="flex items-center justify-between mt-4">
             <div className="flex flex-col w-full items-center text-xs">
