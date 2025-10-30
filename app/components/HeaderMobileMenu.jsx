@@ -58,21 +58,11 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
       </div>
       <nav className="flex-1">
         <ul className="">
-          <li className="group py-2.5">
-            <button onClick={handleBrandClick} className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full  px-8">
-              OUR BRANDS <img src={more} className={`w-2.5 ${isBrandSubMenuOpen ? 'rotate-180' : 'rotate-0'}`} alt="" />
-            </button>
-            {/* Submenu */}
-            <div className={`mt-2.5 ${isBrandSubMenuOpen ? 'flex' : 'hidden'} z-20 w-full py-8 px-8 bg-[#F5F2ED]`}>
-              <div className="flex flex-col ">
-                <div className="">
-                  <h4 className="text-[16px] font-semibold mb-4">BRANDS A-Z</h4>
-                </div>
-                <div className="relative">
-                  <img src={brandImg} alt="Our brands" />
-                </div>
-              </div>
-            </div>
+          <li className="py-2.5 px-8">
+            <NavLink to="/our-brands" onClick={onClose}
+              className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
+              OUR BRANDS
+            </NavLink>
           </li>
           <li className="group py-2.5">
             <button onClick={handleProductClick} className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full px-8">

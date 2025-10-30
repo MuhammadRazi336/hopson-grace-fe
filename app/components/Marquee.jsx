@@ -20,8 +20,23 @@ const Marquee = ({ brands = [] }) => {
     '/assets/Images/brands/image_9.png'
   ];
 
-  // Use dynamic brands if available, otherwise use fallback
-  const displayBrands = brands.length > 0 ? brands : fallbackBrands;
+  // Helper to normalize metafield boolean strings
+  const isFeaturedTrue = (val) => {
+    const normalized = typeof val === 'string' ? val.trim().toLowerCase() : String(val ?? '').toLowerCase();
+    return normalized === 'true' || normalized === '1' || normalized === 'yes';
+  };
+
+  // Filter to only featured brands if brand objects are provided
+  const filteredDynamic = Array.isArray(brands)
+    ? brands.filter((b) =>
+        typeof b === 'string' // keep string paths (used in fallback)
+          ? true
+          : isFeaturedTrue(b?.featuredMetafield?.value)
+      )
+    : [];
+
+  // Use dynamic featured brands if available, otherwise use fallback
+  const displayBrands = filteredDynamic.length > 0 ? filteredDynamic : fallbackBrands;
   
   console.log('Display brands:', displayBrands);
   console.log('Using dynamic brands:', brands.length > 0);

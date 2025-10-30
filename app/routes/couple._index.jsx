@@ -66,7 +66,7 @@ export default function FindCoupleForm() {
                   className="max-w-[315px] lg:max-w-[16.406vw] mb-4"
                 />
                 <p className="text-center tracking-[0.8px] lg:text-[1.042vw] lg:leading-[1.354vw] text-white uppercase max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-                Enter either person's first and last name
+                Enter either person's first or last name
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
