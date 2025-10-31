@@ -189,7 +189,7 @@ const LoginIndex = () => {
                     error={
                       // Invalid password error (check message content)
                       (actionData?.message === 'Invalid password')
-                        ? 'Invalid password'
+                        ? 'Password Not Recognized'
                         : undefined
                     }
                   />
