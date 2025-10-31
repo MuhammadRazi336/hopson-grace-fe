@@ -18,7 +18,7 @@ import { json } from '@shopify/remix-oxygen';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, Link } from '@remix-run/react';
 import ExploreCategories from '~/components/ExploreCategories';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
@@ -317,15 +317,17 @@ const GiftCards = () => {
                   
                   return (
                     <SwiperSlide key={productNode.id}>
-                      <img 
-                        src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                        alt={productNode.title || 'Product'} 
-                        className="w-full" 
-                      />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
-                        {productNode.title}
-                      </h3>
-                      <p className="lg:text-2xl text-sm">{formatShopifyPrice(price)}</p>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer hover:no-underline">
+                        <img 
+                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                          alt={productNode.title || 'Product'} 
+                          className="w-full cursor-pointer hover:opacity-80 transition-opacity" 
+                        />
+                        <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors">
+                          {productNode.title}
+                        </h3>
+                        <p className="lg:text-2xl text-sm">{formatShopifyPrice(price)}</p>
+                      </Link>
                     </SwiperSlide>
                   );
                 })

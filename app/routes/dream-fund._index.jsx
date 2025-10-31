@@ -498,15 +498,17 @@ const DreamFund = () => {
                   
                   return (
                     <SwiperSlide key={productNode.id}>
-                      <img 
-                        src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                        alt={productNode.title || 'Product'} 
-                        className="w-full rounded-none" 
-                      />
-                      <h3 className="mt-2.5 lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
-                        {productNode.title}
-                      </h3>
-                      <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">{formatShopifyPrice(price)}</p>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer hover:no-underline">
+                        <img 
+                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                          alt={productNode.title || 'Product'} 
+                          className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity" 
+                        />
+                        <h3 className="mt-2.5 lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors">
+                          {productNode.title}
+                        </h3>
+                        <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">{formatShopifyPrice(price)}</p>
+                      </Link>
                     </SwiperSlide>
                   );
                 })

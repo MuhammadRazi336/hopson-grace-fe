@@ -1,6 +1,7 @@
 import React from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Autoplay} from 'swiper/modules';
+import { Link } from '@remix-run/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
@@ -98,21 +99,37 @@ const Marquee = ({ brands = [] }) => {
         }}
       >
         {/* Render brands only once - Swiper will handle the loop internally */}
-        {displayBrands.map((brand, index) => (
-          <SwiperSlide key={`brand-${brand.id || index}`}>
+        {displayBrands.map((brand, index) => {
+          // For static fallback images, don't make them clickable
+          const isStaticFallback = typeof brand === 'string';
+          const brandHandle = isStaticFallback ? null : brand.handle;
+          
+          const brandContent = (
             <div className="flex items-center justify-center">
               <img 
                 src={getBrandImage(brand)} 
                 alt={getBrandAlt(brand)}
-                className="w-52" 
+                className="w-52 cursor-pointer hover:opacity-80 transition-opacity" 
                 onError={(e) => {
                   // Fallback to first fallback image if dynamic image fails
                   e.target.src = fallbackBrands[0];
                 }}
               />
             </div>
-          </SwiperSlide>
-        ))}
+          );
+          
+          return (
+            <SwiperSlide key={`brand-${brand.id || index}`}>
+              {brandHandle ? (
+                <Link to={`/brand/${brandHandle}`} className="hover:no-underline">
+                  {brandContent}
+                </Link>
+              ) : (
+                brandContent
+              )}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
     </div>
   );

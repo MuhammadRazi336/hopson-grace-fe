@@ -735,27 +735,33 @@ export default function ProductCollection() {
               breakpoints={{
                 345: {
                   spaceBetween: 10,
+                  slidesPerView: 1,
                   centeredSlides: true,
                 },
                 475: {
                   spaceBetween: 15,
+                  slidesPerView: 1,
                   centeredSlides: true,
                 },
                 768: {
                   spaceBetween: 20,
+                  slidesPerView: 2,
                   centeredSlides: true,
                 },
                 1024: {
                   spaceBetween: 30,
-                  centeredSlides: true,
+                  slidesPerView: 3,
+                  centeredSlides: false,
                 },
                 1366: {
                   spaceBetween: 39,
-                  centeredSlides: true,
+                  slidesPerView: 3,
+                  centeredSlides: false,
                 },
                 1600: {
                   spaceBetween: 39,
-                  centeredSlides: true,
+                  slidesPerView: 3,
+                  centeredSlides: false,
                 },
               }}
             >
@@ -768,15 +774,17 @@ export default function ProductCollection() {
                   
                   return (
                     <SwiperSlide key={productNode.id}>
-                      <img 
-                        src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                        alt={productNode.title || 'Product'} 
-                        className="w-full" 
-                      />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                        {productNode.title}
-                      </h3>
-                      <p className="lg:text-2xl text-sm">{formatShopifyPrice(price)}</p>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer hover:no-underline">
+                        <img 
+                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                          alt={productNode.title || 'Product'} 
+                          className="w-full cursor-pointer hover:opacity-80 transition-opacity" 
+                        />
+                        <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors">
+                          {productNode.title}
+                        </h3>
+                        <p className="lg:text-2xl text-sm">{formatShopifyPrice(price)}</p>
+                      </Link>
                     </SwiperSlide>
                   );
                 })
@@ -818,7 +826,7 @@ export default function ProductCollection() {
       </section>
 
       <div className="py-[5.26vw] px-0">
-          <ExploreCategories />
+          <ExploreCategories collections={collections} />
         </div>
 
       {/* Alert Component */}
