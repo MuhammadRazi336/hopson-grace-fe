@@ -48,7 +48,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="">
             <NavLink
               to="/our-brands"
-              className="text-black hover:no-underline tracking-[1.60px] menu-item-hover font-[800] uppercase"
+              className="text-black hover:no-underline tracking-[1.60px] menu-item-hover font-[800] uppercase lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw]"
             >
               OUR BRANDS
             </NavLink>
@@ -56,7 +56,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="group">
             <NavLink
               to="/products"
-              className="text-black mega-menu-triggers hover:no-underline menu-item-hover font-[800] tracking-[1.44px] uppercase"
+              className="text-black mega-menu-triggers hover:no-underline menu-item-hover font-[800] tracking-[1.44px] uppercase lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw]"
             >
               PRODUCTS
             </NavLink>
@@ -132,7 +132,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="">
             <NavLink
               to="/cash-funds"
-              className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black hover:no-underline menu-item-hover font-[800] uppercase lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw]"
             >
               CASH + TRAVEL FUNDS
             </NavLink>
@@ -140,7 +140,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="">
             <NavLink
               to="/ready-made-registries"
-              className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black hover:no-underline menu-item-hover font-[800] uppercase lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw]"
             >
               READY-MADE REGISTRIES
             </NavLink>
@@ -148,7 +148,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="">
             <NavLink
               to="/inspiration"
-              className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black hover:no-underline menu-item-hover font-[800] uppercase lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw]"
             >
               INSPIRATION
             </NavLink>
@@ -156,7 +156,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="">
             <NavLink
               to="/aboutus"
-              className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black hover:no-underline menu-item-hover font-[800] uppercase lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw]"
             >
               ABOUT US
             </NavLink>
@@ -164,7 +164,7 @@ const NavBarLinks = (mobileClasses) => {
           <li className="">
             <NavLink
               to="/contact-us"
-              className="text-black hover:no-underline menu-item-hover font-[800] uppercase"
+              className="text-black hover:no-underline menu-item-hover font-[800] uppercase lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw]"
             >
               CONTACT US
             </NavLink>
