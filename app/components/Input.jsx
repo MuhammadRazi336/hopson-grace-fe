@@ -65,7 +65,7 @@ export default function Input({
       </div>
       {error && (
         <div id={`${name}-error`} role="alert" className="mt-1 text-left">
-          <span className="text-[#FD446F] font-medium text-[18px] max-[1024px]:text-[17px]">
+          <span className="text-[#FD446F] font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
             {error}
           </span>
         </div>

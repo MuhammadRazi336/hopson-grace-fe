@@ -84,7 +84,7 @@ const GiftDetail = ({
           </h1>
 
           {/* Price */}
-          <div className="text-[28px] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] font-semibold text-gray-900 mb-[2.76vw]">
+          <div className="text-[28px] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] font-semibold mb-[2.76vw]">
             <Money data={productPrice} />
           </div>
 

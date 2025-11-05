@@ -412,7 +412,7 @@ const GiftDetailHandle = () => {
                                 alt={vendorProduct.title}
                                 className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
                               />
-                              <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                              <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                                 {vendorProduct.title}
                               </h3>
                               <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">
@@ -432,7 +432,7 @@ const GiftDetailHandle = () => {
                               alt="Marble Butter Keeper"
                               className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
                             />
-                            <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                            <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                               CLASSIC TUMBLER, SET OF 6
                             </h3>
                             <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$80.00</p>
@@ -445,7 +445,7 @@ const GiftDetailHandle = () => {
                               alt="Belle-V Icecream Scoop"
                               className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
                             />
-                            <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                            <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                               FARMHOUSE BOWL 11"
                             </h3>
                             <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
@@ -458,7 +458,7 @@ const GiftDetailHandle = () => {
                               alt="Staub Cast Iron Q4"
                               className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
                             />
-                            <h3 className="mt-2.5 lg:mt-[0.885vw] uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                            <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                               RAW HONEY
                             </h3>
                             <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>

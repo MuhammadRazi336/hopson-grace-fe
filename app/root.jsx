@@ -26,6 +26,7 @@ import {useEffect} from 'react';
 import {Elements} from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
 import GuidedVideo from '~/components/GuidedVideo';
+import {Preloader} from '~/components/Preloader';
 
 const stripePromise = loadStripe(
   'pk_test_51RHKe6ELfhE2pt9mxrrxK7hhAclxCvksadMtIQCvxowOQADlw5jCFRSoj1tq7JNEVqqIE3uThE9P6K0DTQ6X3Pam006Cn180x4',
@@ -53,6 +54,7 @@ export const shouldRevalidate = ({
 
 export function links() {
   return [
+    {rel: 'preload', href: '/assets/Images/hopson-loader.png', as: 'image'},
     {rel: 'stylesheet', href: tailwindCss},
     {rel: 'stylesheet', href: toastStyles},
     {rel: 'stylesheet', href: resetStyles},
@@ -296,8 +298,51 @@ export function Layout({children}) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            @keyframes rotateWithPause {
+              0% { transform: rotate(0deg); }
+              40% { transform: rotate(360deg); }
+              50% { transform: rotate(360deg); }
+              90% { transform: rotate(360deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `
+        }} />
       </head>
       <body className={isHome ? 'homepage' : ''}>
+        {/* Inline preloader for immediate display before React hydration */}
+        <div id="inline-preloader" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          transition: 'opacity 0.5s ease-out, visibility 0.5s ease-out'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <img 
+              src="/assets/Images/hopson-loader.png" 
+              alt="Loading" 
+              id="inline-preloader-logo"
+              style={{
+                width: '100px',
+                height: '100px',
+                animation: 'rotateWithPause 1.5s ease-in-out infinite'
+              }}
+            />
+          </div>
+        </div>
+        <Preloader />
         {/* Klaviyo onsite script for footer signup trigger (mirrors coming-soon) */}
         <script async type="text/javascript" src="https://static.klaviyo.com/onsite/js/SkJCe4/klaviyo.js?company_id=SkJCe4"></script>
         <script

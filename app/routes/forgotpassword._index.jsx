@@ -120,12 +120,12 @@ const ForgotPassword = () => {
                     <div className="text-center lg:pt-[3.646vw] xl:pt-[3.646vw] 2xl:pt-[3.646vw] m-0">
                       <Heading
                         text="email sent."
-                        classes="font-normal text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0 lg:mb-[1vw] xl:mb-[1vw] 2xl:mb-[1vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]"
+                        classes="ivyora font-[300] text-[22px] lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] tracking-[1.92px] m-0 lg:mb-[1.979vw] xl:mb-[1.979vw] 2xl:mb-[1.979vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]"
                       />
                     </div>
                     <div className="text-center">
-                      <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]">
-                        CHECK YOUR EMAIL INBOX FOR PASSWORD RESET INSTRUCTIONS.
+                      <p className="text-white text-[20px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px] tracking-[1.76px]">
+                        CHECK YOUR EMAIL INBOX FOR <br/>PASSWORD RESET INSTRUCTIONS.
                       </p>
                     </div>
                   </div>

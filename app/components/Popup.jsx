@@ -36,8 +36,8 @@ const Popup = ({ onClose }) => {
       className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[#1F1D1B]/90"
       style={{ zIndex: 99999, position: 'fixed' }}
     >
-      <div className="max-[1024px]:flex-col flex items-center justify-center gap-0 max-[1024px]:px-4">
-      <div className="relative lg:scale-90 xl:scale-90 2xl:scale-90 lg:w-[47.396vw] xl:w-[47.396vw] 2xl:w-[47.396vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw] max-[1024px]:w-full max-[1024px]:h-auto">
+      <div className="max-[1024px]:flex-col flex items-center justify-center gap-0 max-[1024px]:px-4 lg:scale-90 xl:scale-90 2xl:scale-90">
+      <div className="relative lg:w-[47.396vw] xl:w-[47.396vw] 2xl:w-[47.396vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw] max-[1024px]:w-full max-[1024px]:h-auto lg:left-[5vw] xl:left-[5vw] 2xl:left-[5vw]">
         <img
           src={popupimg}
           alt=""
@@ -45,13 +45,13 @@ const Popup = ({ onClose }) => {
         />
       </div>
 
-      <div className="w-[618px] lg:scale-90 xl:scale-90 2xl:scale-90 lg:w-[32.188vw] xl:w-[32.188vw] 2xl:w-[32.188vw] bg-[#446184] py-10 px-8 relative flex items-center justify-center text-white pb-[6.615vw] max-[1024px]:w-[95%] max-[1024px]:-top-[10vw] max-[1024px]:px-[24px] max-[1024px]:py-[27px]">
+      <div className="w-[618px] lg:w-[32.188vw] xl:w-[32.188vw] 2xl:w-[32.188vw] bg-[#446184] py-10 px-8 relative flex items-center justify-center text-white pb-[6.615vw] max-[1024px]:w-[95%] max-[1024px]:-top-[10vw] max-[1024px]:px-[24px] max-[1024px]:py-[27px] lg:right-[5vw] xl:right-[5vw] 2xl:right-[5vw]">
         <img
           src={reglogo}
           alt=""
           className="absolute lg:w-[8.698vw] xl:w-[8.698vw] 2xl:w-[8.698vw] -top-[71px] lg:-top-[3.8vw] xl:-top-[3.8vw] 2xl:-top-[3.8vw] max-[1024px]:w-[71px] max-[1024px]:-top-[20vw] max-[1024px]:right-[0px]"
         />
-        <button onClick={onClose} aria-label="Close modal">
+        <button onClick={onClose} className="cursor-pointer" aria-label="Close modal">
           <img src={closebtn} alt="Close" className="absolute right-7 top-7 max-[1024px]:w-6" />
         </button>
 

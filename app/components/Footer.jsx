@@ -33,7 +33,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
         <div className="lg:px-8 max-[1024px]:px-0 lg:max-w-[90%] max-[1024px]:w-full mx-auto">
           {/* Footer Logo */}
           <div className="footer-logo">
-            <Link to="/Home">
+            <Link to="/Home" className='w-[max-content] block max-w-full'>
               <img
                 src={footerImg}
                 alt="Footer Icon"

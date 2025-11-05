@@ -97,7 +97,7 @@ const AboutUs = () => {
           <button
             onClick={handleOpenPopup}
             
-            className="text-white font-[500] tracking-[0.8px] text-[18px] leading-[18px] bg-[#446184] py-0 lg:w-[332px] lg:h-[78px] mx-auto w-[280px] rounded-none button-cs"
+            className="text-white font-[500] cursor-pointer tracking-[0.8px] text-[18px] leading-[18px] bg-[#446184] py-0 lg:w-[332px] lg:h-[78px] mx-auto w-[280px] rounded-none button-cs"
           >
             Let's Go
           </button>
