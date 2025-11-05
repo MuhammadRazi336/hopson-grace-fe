@@ -32,6 +32,9 @@ export function Header() {
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [showStatusFeedback, setShowStatusFeedback] = useState(false);
   const [isLoadingRegistry, setIsLoadingRegistry] = useState(true);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [fixedHeaderTop, setFixedHeaderTop] = useState(0);
+  const headerRef = useRef(null);
   const isDraft = status === 'draft';
   const navigate = useNavigate();
   
@@ -434,11 +437,14 @@ export function Header() {
   };
 
   const handleScroll = () => {
-    const scrollY = window.scrollY;
+    // Get the app-clip element which is the scroll container
+    const appClip = document.getElementById('app-clip');
+    const scrollY = appClip ? appClip.scrollTop : window.scrollY;
     const threshold = 100; // Lower threshold for earlier activation
 
     if (scrollY > threshold) {
       setIsFixed(true);
+      setIsSearchExpanded(false); // Collapse search when header becomes fixed
     } else {
       setIsFixed(false);
     }
@@ -462,10 +468,19 @@ export function Header() {
   };
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    // Get the app-clip element which is the scroll container
+    const appClip = document.getElementById('app-clip');
+    if (appClip) {
+      appClip.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
     
     // Focus the search input after scrolling completes
     setTimeout(() => {
@@ -532,22 +547,104 @@ export function Header() {
       }
     };
 
-    window.addEventListener('scroll', throttledHandleScroll, {passive: true});
+    // Get the app-clip element which is the scroll container
+    const appClip = document.getElementById('app-clip');
+    const scrollTarget = appClip || window;
+
+    scrollTarget.addEventListener('scroll', throttledHandleScroll, {passive: true});
     return () => {
-      window.removeEventListener('scroll', throttledHandleScroll);
+      scrollTarget.removeEventListener('scroll', throttledHandleScroll);
     };
   }, []);
+
+  // Focus search input when it expands
+  useEffect(() => {
+    if (isSearchExpanded && searchInputRef.current) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+  }, [isSearchExpanded]);
+
+  // Calculate correct top position for fixed header in scaled container
+  useEffect(() => {
+    if (!isFixed) {
+      setFixedHeaderTop(0);
+      return;
+    }
+
+    const calculateTop = () => {
+      const isDesktop = window.innerWidth >= 1025;
+      if (!isDesktop) {
+        setFixedHeaderTop(0);
+        return;
+      }
+
+      const appScale = document.getElementById('app-scale');
+      const headerElement = headerRef.current;
+      
+      if (!appScale || !headerElement) {
+        setFixedHeaderTop(0);
+        return;
+      }
+
+      // Get app-scale's bounding rect to find its top position in viewport
+      const appScaleRect = appScale.getBoundingClientRect();
+      
+      // Find TopHeader (previous sibling of header's parent)
+      const headerWrapper = headerElement.parentElement;
+      if (headerWrapper) {
+        const topHeader = headerWrapper.previousElementSibling;
+        if (topHeader) {
+          // Get TopHeader's bottom position in viewport
+          const topHeaderRect = topHeader.getBoundingClientRect();
+          
+          // Calculate the offset: TopHeader's bottom minus app-scale's top
+          // This gives us the position relative to app-scale container
+          // Since position: fixed inside transform positions relative to transformed container,
+          // we need this offset
+          const offset = topHeaderRect.bottom - appScaleRect.top;
+          
+          setFixedHeaderTop(Math.max(0, offset));
+        } else {
+          // Fallback: calculate from CSS dimensions
+          // TopHeader: h-[3.333vw] + mb-[2.813vw] + py-[15px] = ~6.146vw + 30px
+          const vw = window.innerWidth / 100;
+          const calculatedHeight = (6.146 * vw) + 30;
+          setFixedHeaderTop(calculatedHeight);
+        }
+      }
+    };
+
+    // Calculate immediately and on resize
+    calculateTop();
+    window.addEventListener('resize', calculateTop);
+    
+    // Also recalculate when app-clip scrolls (in case TopHeader position changes)
+    const appClip = document.getElementById('app-clip');
+    if (appClip) {
+      appClip.addEventListener('scroll', calculateTop, { passive: true });
+      return () => {
+        window.removeEventListener('resize', calculateTop);
+        appClip.removeEventListener('scroll', calculateTop);
+      };
+    }
+    
+    return () => window.removeEventListener('resize', calculateTop);
+  }, [isFixed]);
 
   return (
     <div className={`${isFixed ? 'lg:h-[442px]' : ''}`}>
       <TopHeader />
 
       <header
+        ref={headerRef}
         className={`header-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out ${
           isFixed
-            ? 'fixed top-0 left-0 w-full z-50 bg-black shadow-lg h-[100px]'
+            ? 'fixed left-0 right-0 w-full z-50 bg-black shadow-lg h-[100px]'
             : 'relative bg-white h-[160px] max-[1024px]:h-[80px]'
         }`}
+        style={isFixed ? { top: `${fixedHeaderTop}px` } : {}}
       >
         {/* User Icon */}
         <div
@@ -569,21 +666,50 @@ export function Header() {
 
           {/* Search Icon */}
           {!isFixed && (
-            <form onSubmit={handleSearch} className="flex items-center justify-center bg-[#F5F2ED] py-1 px-[1.563vw] w-[22.448vw] h-[3.281vw] rounded-full">
-              <button type="submit" className="text-xl hover:text-blue-500 max-[1024px]:hidden">
+            <div className="flex items-end justify-center py-1 px-[1.563vw] max-[1024px]:hidden relative w-[22.448vw] h-[3.281vw]">
+              {/* Search Icon Button - fades out when expanded */}
+              <button 
+                type="button"
+                onClick={() => setIsSearchExpanded(true)}
+                className={`text-xl hover:text-blue-500 transition-opacity duration-300 ease-in-out absolute left-0 ${
+                  isSearchExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+                }`}
+              >
                 <span role="img" aria-label="Search Icon">
                   <img src={searchImg} className="w-[1.979vw] h-[1.979vw] min-w-[1.979vw] min-h-[1.979vw]" alt="Search Icon" />
                 </span>
               </button>
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent outline-none border-none text-[#999898] px-[15px] py-0 m-0 text-[18px] flex items-center leading-normal text-xl"
-                placeholder="find products, brands, vendors...."
-              />
-            </form>
+              
+              {/* Search Form - fades in when expanded */}
+              <form 
+                onSubmit={(e) => { handleSearch(e); setIsSearchExpanded(false); }} 
+                className={`flex items-end justify-center w-full h-full transition-opacity duration-300 ease-in-out absolute left-0 ${
+                  isSearchExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                }`}
+              >
+                <button type="submit" className="text-xl hover:text-blue-500">
+                  <span role="img" aria-label="Search Icon">
+                    <img src={searchImg} className="w-[1.979vw] h-[1.979vw] min-w-[1.979vw] min-h-[1.979vw]" alt="Search Icon" />
+                  </span>
+                </button>
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onBlur={() => {
+                    // Delay to allow form submission to work
+                    setTimeout(() => {
+                      if (!searchQuery.trim()) {
+                        setIsSearchExpanded(false);
+                      }
+                    }, 200);
+                  }}
+                  className="w-full bg-transparent font-normal outline-none rounded-none border border-[#1F1D1B] border-t-0 border-l-0 border-r-0 border-b-[1.5px] text-[#999898] px-[11px] py-0 m-0 text-[18px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[2.5vw] xl:leading-[2.5vw] 2xl:leading-[2.5vw] ml-[1.042vw] flex items-center leading-normal text-xl"
+                  placeholder="Find products, brands, vendors...."
+                />
+              </form>
+            </div>
           )}
           {isFixed && (
             <button 
