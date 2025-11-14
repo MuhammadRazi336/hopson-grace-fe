@@ -61,8 +61,9 @@ const Support = () => {
                 className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%] mx-auto"
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                We're available at 1-800-555-5555 <br />
-                10am–6pm (Mon–Sat) | 12pm–5pm (Sun).
+                We're available at: <br />
+                1-866-531-8616 (TOLL FREE)  or 1-437-564-8656 (LOCAL) <br />
+                10am–6pm (Mon–Sat) | 12pm–5pm (Sun)
               </p>
             </div>
             <div className="mt-14">

@@ -18,19 +18,28 @@ const OurPhilosophy = () => {
         alt=""
         className="w-full h-[400px] lg:h-[27.083vw] xl:h-[27.083vw] 2xl:h-[27.083vw] object-cover"
       />
-
-      <div className="container mx-auto pt-[5vw]">
-        <Heading
-          text="our philosophy "
-          classes={
-            'prata text-2xl lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[18.542vw] xl:w-[18.542vw] 2xl:w-[18.542vw]'}
-        />
-        <h2 className="text-center font-[500] text-[22px] leading-[36px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] m-0 pt-[1.771vw] pb-[4.427vw]">
+      <div className="absolute bottom-0 right-0 px-[11.094vw] pb-[8.083vw] max-[1024px]:px-[20px] max-[1024px]:pb-[0px]">
+        
+          <Heading
+            text="our philosophy"
+            classes={
+              'prata text-black text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[28px] max-[1024px]:mb-[15px]'
+            }
+            imageClasses={'max-[1024px]:max-w-[330px]'}
+          />
+          
+          <img
+            src={lineImghead}
+            alt=""
+            className="max-[1024px]:max-w-[230px] lg:w-[32.24vw] lg:h-[0.400vw] brightness-0 "
+          />
+          <h2 className="text-center text-black font-[500] text-2xl lg:text-[1.146vw] lg:leading-[1.875vw] pt-[1vw] pb-[3.333vw]">
           FEWER, BETTER THINGS.
         </h2>
+        </div>
+
+      <div className="container mx-auto pt-[5vw]">
+        
         <p className="text-center text-[26px] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.979vw] leading-[38px] font-normal lg:w-[75.469vw] xl:w-[75.469vw] 2xl:w-[75.469vw] mx-auto">
           We believe in fewer, better things. That the gifts you choose should
           be beautifully made, deeply personal, and built to last. That great

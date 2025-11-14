@@ -40,8 +40,8 @@ const ContactUs = () => {
         />
         <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center py-16 lg:pt-[5.365vw] xl:pt-[5.365vw] 2xl:pt-[5.365vw] lg:pb-[7.917vw] xl:pb-[7.917vw] 2xl:pb-[7.917vw] w-[40%] lg:w-[60%]  mx-auto">
           {user ? 
-            "Reach out if you'd like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
-            "We're here for you. From setup to shipping, or if you're purchasing a gift for a couple, you can reach us anytime for help, guidance, or just a second opinion."
+            "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
+            "We’re here for you. From setup to shipping, or if you’re purchasing a gift for a couple, you can reach us anytime for help, guidance, or just a second opinion."
           }
         </p>
 
@@ -89,7 +89,9 @@ const ContactUs = () => {
                   className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
                 />
                 <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
-                We’re available at 1-800-555-5555 <br /> 10am–6pm (Mon–Sat) | 12pm–5pm (Sun).
+                We’re available at: <br />
+                1-866-531-8616 (TOLL FREE)  or 1-437-564-8656 (LOCAL) 
+                <br /> 10am–6pm (Mon–Sat) | 12pm–5pm (Sun).
                 </p>
                 <h3 className="text-2xl mt-10 text-white lg:text-[1.146vw] lg:leading-[1.875vw] 3xl:w-full  text-center">
                   CHAT
@@ -100,7 +102,7 @@ const ContactUs = () => {
                   className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
                 />
                 <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
-                Chat with us live between 10am–6pm (Mon–Sat) or 12pm–5pm (Sun) EST. Offline? Leave a message we'll reply by email.
+                Chat with us live between 10am–6pm (Mon–Sat) or 12pm–5pm (Sun) EST. <br /> Offline? Leave a message we’ll reply by email. 
                 </p>
               </div>
             </div>

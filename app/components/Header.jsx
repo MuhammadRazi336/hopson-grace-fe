@@ -5,6 +5,7 @@ import searchImg from '/assets/Images/search.png';
 import searchImgscroll from '/assets/Images/searchwhite.png';
 import userImg from '/assets/Images/shape.png';
 import userImgscroll from '/assets/Images/shapewhite.png';
+import loginReplacementGif from '/assets/Images/login-replacement.gif';
 import hamburger from '/assets/Images/hamburger.png';
 import hamburgerscroll from '/assets/Images/Group 42.png';
 import TopHeader from './TopHeader';
@@ -690,9 +691,11 @@ export function Header() {
                       className="w-full h-full object-cover rounded-full"
                     />
                   ) : (
-                    <h2 className={`flex items-center font-prata justify-center m-0 max-[1024px]:text-[16px] max-[1024px]:leading-[20px] text-[1.25vw] leading-[0.938vw] ${
-                      isFixed ? 'text-white' : 'text-black'
-                    }`}>{getUserInitials()}</h2>
+                    <img
+                      src={loginReplacementGif}
+                      alt="Profile"
+                      className="w-full h-full object-cover rounded-full"
+                    />
                   )}
                 </div>
                 <div className="relative" ref={notificationRef}>

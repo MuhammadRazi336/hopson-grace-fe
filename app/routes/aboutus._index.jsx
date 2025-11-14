@@ -8,6 +8,7 @@ import RegistryLogo from '/assets/Images/registry-monogram.png';
 import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
 import BottleImg from '/assets/Images/BottleImg.png';
+import AboutUsHero from '/assets/Images/aboutusHero.jpg';
 import lineImg3 from '/assets/Images/line.png';
 import Popup from '~/components/Popup';
 import ModalPortal from '~/components/ModalPortal';
@@ -28,24 +29,40 @@ const AboutUs = () => {
   return (
     <section>
       <Header />
-      <img
-        src={AboutUsBg}
-        alt=""
-        className="w-full h-[520px] lg:h-[520px] object-cover"
-      />
-
-      <div className="container mx-auto py-16">
-        <Heading
-          text="about us"
-          classes={
-            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+      <div className="relative w-full h-[510px] lg:h-[27.083vw]">
+        <img
+          src={AboutUsHero}
+          alt=""
+          className="w-full h-full object-cover"
         />
-        <h2 className="text-center font-[500] text-2xl lg:text-[1.146vw] lg:leading-[1.875vw] pt-[3.75vw] pb-[3.333vw]">
+        {/* Heading with underline - Left aligned on image */}
+        <div className="absolute bottom-0 left-0 px-[11.094vw] pb-[2.083vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px]">
+          {/* <h1 className="">
+            about us
+          </h1> */}
+          <Heading
+            text="about us"
+            classes={
+              'prata text-white text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[28px] max-[1024px]:mb-[15px]'
+            }
+            imageClasses={'max-[1024px]:max-w-[330px]'}
+          />
+          
+          <img
+            src={lineImghead}
+            alt=""
+            className="max-[1024px]:max-w-[230px] lg:w-[32.24vw] lg:h-[0.400vw] brightness-0 invert"
+          />
+          <h2 className="text-center text-white font-[500] text-2xl lg:text-[1.146vw] lg:leading-[1.875vw] pt-[1vw] pb-[3.333vw]">
           ELEVATED, EFFORTLESS, YOURS.
         </h2>
+        </div>
+        
+      </div>
+
+      <div className="container mx-auto py-16">
+        
+        
         <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.875vw] font-normal">
           After years of working with engaged couples at our sister store,
           Hopson Grace, we noticed a shift: couples still wanted beautiful,

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
-import faqBg from '/assets/Images/faqBg.png';
+import faqBg from '/assets/Images/faqcouple.jpg';
 import Heading from '~/components/Heading';
 import lineImghead from '../assets/Images/heading-bottom-curve.png';
 import RegistryLogo from '/assets/Images/registry-monogram.png';
@@ -18,35 +18,68 @@ import ModalPortal from '~/components/ModalPortal';
 
 const FAQ = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [activeTab, setActiveTab] = useState('couples'); // 'couples' or 'guests'
+  
   const handleOpenPopup = () => {
     setShowPopup(true);
   };
   const handleClosePopup = () => {
     setShowPopup(false);
   };
+  
   return (
     <section>
       <Header />
 
-      <img
-        src={faqBg}
-        alt=""
-        className="w-full h-[510px] lg:h-[27.083vw] object-cover"
-      />
-
-      <div className="w-full h-fit pt-[6.615vw]">
-        <Heading
-          text="frequently asked questions"
-          classes={
-            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={
-            'max-[1024px]:max-w-[330px] lg:w-[32.24vw] lg:h-[0.400vw]'
-          }
+      {/* Hero Section with Background Image and Text Overlay */}
+      <div className="relative w-full h-[510px] lg:h-[27.083vw]">
+        <img
+          src={faqBg}
+          alt=""
+          className="w-full h-full object-cover"
         />
+        {/* Heading with underline - Left aligned on image */}
+        <div className="absolute bottom-0 left-0 px-[11.094vw] pb-[2.083vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px]">
+          <h1 className="prata text-white text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[28px] max-[1024px]:mb-[15px]">
+            frequently asked questions
+          </h1>
+          <img
+            src={lineImghead}
+            alt=""
+            className="max-[1024px]:max-w-[330px] lg:w-[32.24vw] lg:h-[0.400vw] brightness-0 invert"
+          />
+        </div>
+      </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[7.396vw] px-[11.094vw] ">
+      {/* Toggle Buttons - Centered below image */}
+      <div className="w-full flex justify-center pt-[2.083vw] pb-[4.167vw] max-[1024px]:pt-[30px] max-[1024px]:pb-[40px]">
+        <div className="flex gap-[1.042vw] max-[1024px]:gap-[15px]">
+          <button
+            onClick={() => setActiveTab('couples')}
+            className={`px-[2.083vw] py-[0.833vw] text-[0.833vw] lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] transition-all duration-200 max-[1024px]:px-[20px] max-[1024px]:py-[10px] max-[1024px]:text-[14px] ${
+              activeTab === 'couples'
+                ? 'bg-black text-white'
+                : 'bg-white text-black border border-black'
+            }`}
+          >
+            FOR COUPLES
+          </button>
+          <button
+            onClick={() => setActiveTab('guests')}
+            className={`px-[2.083vw] py-[0.833vw] text-[0.833vw] lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] transition-all duration-200 max-[1024px]:px-[20px] max-[1024px]:py-[10px] max-[1024px]:text-[14px] ${
+              activeTab === 'guests'
+                ? 'bg-black text-white'
+                : 'bg-white text-black border border-black'
+            }`}
+          >
+            FOR GUESTS
+          </button>
+        </div>
+      </div>
+
+      {/* FAQ Content Section */}
+      <div className="w-full h-fit pt-[2.083vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[2.083vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               1.
@@ -54,29 +87,43 @@ const FAQ = () => {
           </div>
           <div className="">
             <h2 className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] tracking-[1.2px] mb-[1.25vw] font-[600]">
-              Why Choose The Registry?
+              {activeTab === 'couples' ? 'Why Choose The Registry?' : "How Can I Find a Couple's Registry?"}
             </h2>
-            <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
-              Your wedding should reflect your taste and your future. That’s why
-              The Registry offers more than just beautiful gifts. From top-tier
-              brands to bespoke travel and personalized cash funds, we make it
-              easy (and inspiring) to create a registry that’s anything but
-              ordinary.
-            </p>{' '}
-            <br />
-            <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
-              Enjoy a seamless experience with tools like a customizable
-              dashboard, gift tracker, and thank-you note manager. Browse our
-              designer curated Ready-Made Registries or build your own from
-              scratch. After the wedding, take advantage of our 15% Newlywed
-              Discount for any items you wanted but didn’t receive and when
-              you’re ready, we’ll ship your gifts free of charge, anywhere in
-              continental North America.
-            </p>
+            {activeTab === 'couples' ? (
+              <>
+                <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
+                  Your wedding should reflect your taste and your future. That's why
+                  The Registry offers more than just beautiful gifts. From top-tier
+                  brands to bespoke travel and personalized cash funds, we make it
+                  easy (and inspiring) to create a registry that's anything but
+                  ordinary.
+                </p>{' '}
+                <br />
+                <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
+                  Enjoy a seamless experience with tools like a customizable
+                  dashboard, gift tracker, and thank-you note manager. Browse our
+                  designer curated Ready-Made Registries or build your own from
+                  scratch. After the wedding, take advantage of our 15% Newlywed
+                  Discount for any items you wanted but didn't receive and when
+                  you're ready, we'll ship your gifts free of charge, anywhere in
+                  continental North America.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
+                  Finding a couple's registry is easy! Simply use the "Find a Couple" search feature on our homepage. You can search by the couple's names, or if they've shared their registry link with you, you can access it directly.
+                </p>{' '}
+                <br />
+                <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[63.75vw]">
+                  Once you find their registry, you'll be able to browse all the items they've selected, contribute to cash funds or group gifts, and purchase items directly. The couple will be notified when you make a purchase, and you can add a personal message with your gift.
+                </p>
+              </>
+            )}
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               2.
@@ -113,7 +160,7 @@ const FAQ = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               3.
@@ -131,7 +178,7 @@ const FAQ = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               4.
@@ -156,7 +203,7 @@ const FAQ = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               5.
@@ -175,7 +222,7 @@ const FAQ = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[7.396vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               6.
@@ -203,7 +250,7 @@ const FAQ = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               7.
@@ -223,7 +270,7 @@ const FAQ = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw] px-[11.094vw]">
+        <div className="flex flex-col lg:flex-row gap-[4.115vw] pt-[5.833vw]">
           <div>
             <h2 className="prata text-4xl min-w-[80px] mb-0 lg:text-[4.792vw] lg:leading-[1.875vw] font-normal text-left">
               8.
