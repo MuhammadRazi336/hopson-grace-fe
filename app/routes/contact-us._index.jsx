@@ -199,7 +199,7 @@ const ContactUs = () => {
             
             {/* Content Grid */}
             <div className="flex justify-center">
-              <div className=" p-8 lg:py-[3.698vw] xl:py-[3.698vw] 2xl:py-[3.698vw] bg-[#FAF8F6] w-[50%] flex items-center justify-center">
+              <div className=" p-8 lg:py-[3.698vw] xl:py-[3.698vw] 2xl:py-[3.698vw] bg-[#FFFFFF] w-[50%] flex items-center justify-center">
                 <div className="text-center space-y-6">
                   <img src={HopsonGracePos} alt="Hopson Grace" className="lg:w-[15.156vw] xl:w-[15.156vw] 2xl:w-[15.156vw] object-cover block mx-auto mb-[2.5vw]" />
                   <div className="space-y-4">
