@@ -1044,6 +1044,13 @@ export function Header() {
               
               {/* Desktop navigation - hidden on mobile */}
               <div className="hidden lg:flex w-full shadow-md justify-between bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px]">
+              <a className={`text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                    <div className="z-20 text-inherit">
+                      <span className="relative inline-block text-[16px] leading-[36px]">MY DASHBOARD<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                    </div>
+                  </div>
+                </a>
                 <a className={`text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
