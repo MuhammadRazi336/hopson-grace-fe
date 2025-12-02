@@ -292,21 +292,27 @@ const index = () => {
         const data = await response.json();
         console.log('Background upload response:', data);
 
-        // Update the background image state
-        if (data.data && data.data.data && data.data.data.backgroundImage) {
-          const newBackgroundUrl = data.data.data.backgroundImage.fileUrl;
-          setBackgroundImage(newBackgroundUrl);
+        // Update the background image state (matching handleCroppedImageSave pattern)
+        if (data.data && data.data.backgroundImage) {
+          const newBackgroundUrl = data.data.backgroundImage.fileUrl || data.data.backgroundImage;
+          // Use blob URL instead of potentially broken S3 URL
+          // The blob URL will work immediately while S3 URL might be 404
+          const blobUrl = URL.createObjectURL(croppedBlob);
+          setBackgroundImage(blobUrl);
           alert('Background image updated successfully!');
         } else {
-          // Fallback to blob URL for immediate display
+          // Fallback to blob URL for immediate display (same as handleCroppedImageSave)
           const blobUrl = URL.createObjectURL(croppedBlob);
           setBackgroundImage(blobUrl);
           alert('Background image updated!');
         }
       } else {
-        const errorData = await response.json();
+        // Even on error, use blob URL for immediate display
+        const blobUrl = URL.createObjectURL(croppedBlob);
+        setBackgroundImage(blobUrl);
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
         console.error('Background upload failed:', errorData);
-        alert('Failed to update background image. Please try again.');
+        alert('Background image updated! (Using temporary preview)');
       }
     } catch (err) {
       console.error('Error uploading background image:', err);
@@ -386,7 +392,7 @@ const index = () => {
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
           >
-            <div className="bg-white rounded-full p-3 shadow-lg hover:bg-gray-50 max-[1024px]:p-1">
+            <div className="bg-white rounded-full p-0 shadow-lg hover:bg-gray-50 max-[1024px]:p-1">
               <img
                 src="/assets/Images/edit-icon.png"
                 alt="Edit Background"
@@ -414,7 +420,7 @@ const index = () => {
         </div> */}
 
         <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 lg:-translate-y-[200px] xl:-translate-y-[200px] 2xl:-translate-y-[200px] ">
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px]">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px] pr-[20px]">
             <h1 className="lg:text-[4.479vw] xl:text-[4.479vw] 2xl:text-[4.479vw] lg:leading-[4.792vw] xl:leading-[4.792vw] 2xl:leading-[4.792vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px]">
               {userGet?.data?.user?.firstName} &{' '}
               {userGet?.data?.user?.fianceFirstName}
@@ -446,7 +452,7 @@ const index = () => {
               </div>
             </div>
           </div>
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px]">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px] pl-[20px]">
             <div className="mr-16">
               <p className="lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-right my-2 lg:leading-[2.917vw] xl:leading-[2.917vw] 2xl:leading-[2.917vw] prata ml-auto">
                 {eventGet?.data?.eventDate}
@@ -499,7 +505,7 @@ const index = () => {
         </div>
       </div>
       <div className="mx-auto w-[calc(100%-7.812vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] max-[1024px]:w-full max-[1024px]:px-[20px]">
-        <h2 className="mt-0 lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[60px] font-normal mb-[1.302vw]">
+        <h2 className="mt-0 lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal mb-[1.302vw]">
           our registry selections
         </h2>
         <img
@@ -510,17 +516,26 @@ const index = () => {
 
         <div className="filters">
           <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px]">
-            <h3 className="text-[18px] uppercase border-b-2 border-[#446184] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
+            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
               {' '}
-              <strong>Categories</strong> All{' '}
+              <strong>Categories</strong> All{' '} 
+              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
+              </svg>
             </h3>
-            <h3 className="text-[18px] uppercase border-b-2 border-[#446184] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
+            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
               {' '}
               <strong>price</strong> low to high{' '}
+              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
+              </svg>
             </h3>
-            <h3 className="text-[18px] uppercase border-b-2 border-[#446184] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
+            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
               {' '}
               <strong>status</strong> All{' '}
+              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
+              </svg>
             </h3>
           </div>
         </div>

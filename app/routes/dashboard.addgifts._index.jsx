@@ -20,6 +20,7 @@ import youll3 from '/assets/Images/youll-3.png';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import Heading from '~/components/Heading';
 import lineImghead from '/assets/Images/line.png';
+import headingBottomCurve from '/assets/Images/heading-small-line.png';
 import CustomTab from '~/components/CustomTab';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
@@ -572,7 +573,7 @@ function SidebarFilter({
           <ul className="space-y-2 text-sm">
             {parentCollection.map((col) => (
               <li key={col.id}>
-                <label>
+                <label className="uppercase">
                   <input
                     type="checkbox"
                     className="mr-2"
@@ -640,7 +641,7 @@ function SidebarFilter({
           <ul className="space-y-2 text-sm">
             {subCollection.map((col) => (
               <li key={col.id}>
-                <label>
+                <label className="uppercase">
                   <input
                     type="checkbox"
                     className="mr-2"
@@ -861,8 +862,8 @@ export default function AddGifts() {
 
   return (
     <>
-      <div className="pt-[80px] relative p-4 mt-[80px]">
-        <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+      <div className="pt-[3.75vw] relative px-4">
+        <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
           {selectedSwiperCollectionId ? (
             <>
               <span className="prata uppercase">
@@ -873,16 +874,16 @@ export default function AddGifts() {
             </>
           ) : (
             <span className="prata">
-              ADD <span className="mx-2 ivyora italic">or</span> EDIT GIFTS
+              gifts
             </span>
           )}
         </h2>
         <img
-          src="/assets/Images/profile-view-page-bdr.png"
+          src={headingBottomCurve}
           alt="Couple"
-          className="max-w-[630px] mt-5 h-auto mx-auto"
+          className="w-[9.375vw] h-[6px] mt-2 mx-auto"
         />
-        <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
+        <p className="max-w-xl mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal leading-relaxed">
           {selectedSwiperCollectionId
             ? `Browse products from ${
                 collections.find((col) => col.id === selectedSwiperCollectionId)
@@ -890,13 +891,10 @@ export default function AddGifts() {
               } and its sub-categories.`
             : 'Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like.'}
         </p>
-        <Link to={`/couple/single/${userData?.data?.user?.id}`}>
-          <PreviewRegistry />
-        </Link>
       </div>
 
       <section className=" ">
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+        <div className=" relative items-start mb-10 max-[1024px]:my-10">
           <div className="flex flex-row items-center justify-center">
             {!selectedSwiperCollectionId && (
               <>
@@ -982,9 +980,9 @@ export default function AddGifts() {
                             col.image?.url || '/assets/Images/placeholder.png'
                           }
                           alt={col.title}
-                          className="w-[550px] h-[440px] object-cover"
+                          className="w-full h-[440px] object-cover"
                         />
-                        <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                        <h3 className="mt-[1.927vw] text-center uppercase text-[1.25vw] leading-[1.667vw] text-sm font-medium tracking-wider">
                           {col.title}
                         </h3>
                       </SwiperSlide>
@@ -1037,7 +1035,7 @@ export default function AddGifts() {
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       className="flex items-center gap-2 text-sm focus:outline-none"
                     >
-                      <span className="pr-3">
+                      <span className="pr-3 uppercase">
                         {priceSort === '' && dateSort === '' && 'Default'}
                         {priceSort === 'low-to-high' && 'Price: Low to High'}
                         {priceSort === 'high-to-low' && 'Price: High to Low'}
@@ -1203,15 +1201,17 @@ export default function AddGifts() {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] py-16 mt-[150px]">
+      <section className="bg-[#FFFFFF] pt-16 mt-[7.813vw]">
         <Heading
           text="ready-made registries"
           classes={
-            'prata text-3xl lg:text-[48px] font-normal text-center max-[1024px]:m-0'
+            'prata text-[2.5vw] leading-[3.542vw] mb-1 font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] mb-10'}
+          imageClasses={'max-[1024px]:max-w-[330px] w-[20.521vw] mb-[2.188vw]'}
         />
+
+        <p className="text-center text-[1.354vw] leading-[1.979vw] w-[50vw] max-w-full mx-auto mb-[1.667vw] font-normal text-gray-500 max-[1024px]:m-0">From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.</p>
 
         {/* Always render CustomTab - let it handle the data validation internally */}
         <CustomTab
@@ -1233,21 +1233,21 @@ export default function AddGifts() {
         <div className="text-center">
           <Link to="/ready-made-registries">
             <ButtonComponent
-              text="EXPLORE SAMPLE REGISTRIES"
-              className="button-cs text-[18px] text-black border-3 w-[380px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-11"
+              text="EXPLORE READY-MADE REGISTRIES"
+              className="button-cs text-[18px] text-black border-3 w-[380px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-[2.083vw]"
             />
           </Link>
         </div>
       </section>
 
-      <section className="py-[70px]  my-12 lg:my-[240px] container">
+      <section className="pt-[11.406vw]  my-12 lg:my-[240px] container">
         <Heading
           text="bestsellers"
           classes={
-            'prata text-3xl lg:text-[44px] font-normal text-center  max-[1024px]:m-0'
+            'prata text-[2.292vw] leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
           }
           image={brandline}
-          imageClasses={'max-[1024px]:max-w-[286px]'}
+          imageClasses={'w-[14.896vw] max-[1024px]:max-w-[286px]'}
         />
         <ProductSlider products={bestsellerProducts} />
         <div className="text-center">
@@ -1258,121 +1258,7 @@ export default function AddGifts() {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
-        <Heading
-          text="we think you'll love"
-          classes={
-            'prata text-2xl lg:text-[44px] font-normal text-center max-[1024px]:m-0'
-          }
-          image={brandline}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
-        />
-
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
-              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-            </div>
-
-            <Swiper
-              spaceBetween={15}
-              slidesPerView={3}
-              loop={true}
-              modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
-              }}
-              className="px-[178px]"
-              breakpoints={{
-                345: {
-                  spaceBetween: 10,
-                  centeredSlides: true,
-                },
-                475: {
-                  spaceBetween: 15,
-                  centeredSlides: true,
-                },
-                768: {
-                  spaceBetween: 20,
-                  centeredSlides: true,
-                },
-                1024: {
-                  spaceBetween: 30,
-                  centeredSlides: true,
-                },
-                1366: {
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-                1600: {
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-              }}
-            >
-              {/* Dynamic recommended products */}
-              {recommendedProducts && recommendedProducts.length > 0 ? (
-                recommendedProducts.map((product) => {
-                  const productNode = product.node;
-                  const firstImage = productNode.images?.edges?.[0]?.node;
-                  const price = productNode.priceRange?.minVariantPrice;
-                  
-                  return (
-                    <SwiperSlide key={productNode.id}>
-                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer">
-                        <img 
-                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                          alt={productNode.title || 'Product'} 
-                          className="w-[455px] h-[455px] hover:opacity-80 transition-opacity" 
-                        />
-                        <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
-                          {productNode.title}
-                        </h3>
-                        <p className="lg:text-[24px] text-sm py-2">{formatShopifyPrice(price)}</p>
-                      </Link>
-                    </SwiperSlide>
-                  );
-                })
-              ) : (
-                // Fallback to static slides if no recommended products
-                <>
-                  <SwiperSlide>
-                    <img src={youll1} alt="New Arrival" className="w-[455px] h-[455px]" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
-                      ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                    </h3>
-                    <p className="lg:text-[24px] text-sm py-2">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={youll2} alt="Tableware" className="w-[455px] h-[455px]" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
-                      SMEG TOASTER, 2 SLICE
-                    </h3>
-                    <p className="lg:text-[24px] text-sm py-2">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={youll3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
-                      THE BARISTA TOUCH ESPRESSO MAKER
-                    </h3>
-                    <p className="lg:text-[24px] text-sm py-2">$95.00</p>
-                  </SwiperSlide>
-                </>
-              )}
-            </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-              <img src={nextitem} className="rotate-270 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
-            </div>
-          </div>
-        </div>
-      </section>
+     
 
       {/* Alert Component */}
       {showAlert && (

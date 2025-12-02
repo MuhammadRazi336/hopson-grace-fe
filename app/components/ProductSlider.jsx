@@ -79,7 +79,7 @@ const ProductSlider = ({products = []}) => {
                   <img 
                     src={firstImage?.url || '/assets/Images/placeholder.jpg'} 
                     alt={firstImage?.altText || productNode.title} 
-                    className="rounded-none lg:w-[18.75vw] lg:h-[18.75vw] w-full h-[160px] object-cover" 
+                    className="rounded-none lg:h-[18.75vw] w-full h-[160px] object-cover" 
                   />
                   <h3 className="mt-2.5 uppercase lg:mt-[1.563vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] text-[12px] font-medium tracking-wider">
                     {productNode.title}
