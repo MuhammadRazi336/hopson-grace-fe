@@ -26,9 +26,9 @@ const ProductSlider = ({products = []}) => {
   }
 
   return (
-    <div className="relative items-start mt-10 lg:mt-[5.469vw] lg:mb-0 mb-10 max-[1024px]:my-[30px]">
-      <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] max-[1024px]:max-w-[78%] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-        <div className="swiper-button-prev-prod absolute top-0 max-[1024px]:left-0 left-[9%] h-[160px] cursor-pointer text-white uppercase flex w-[139px] items-center bg-[#446184] lg:w-[7.24vw] lg:h-[18.75vw] justify-center max-[1024px]:w-[28px]">
+    <div className="relative items-start mt-10 lg:mt-[3.958vw] xl:mt-[3.958vw] 2xl:mt-[3.958vw] lg:mb-0 mb-10 max-[1024px]:my-[30px]">
+      <div className="max-[1024px]:max-w-[78%] mx-auto">
+        <div className="swiper-button-prev-prod absolute top-0 max-[1024px]:left-0 left-[-5.323vw] h-[160px] cursor-pointer text-white uppercase flex w-[139px] items-center bg-[#446184] lg:w-[7.24vw] lg:h-[18.75vw] justify-center max-[1024px]:w-[28px]">
           <img src={nextitem} alt="" className="rotate-90 invert-100 w-[14px] h-[14px] lg:w-[1.042vw] lg:h-[1.042vw]" />
           <span className="-rotate-90 lg:text-[1.146vw] lg:leading-[1.667vw] text-white block tracking-wider max-[1024px]:hidden">
             more
@@ -43,7 +43,7 @@ const ProductSlider = ({products = []}) => {
             nextEl: '.swiper-button-next-prod',
             prevEl: '.swiper-button-prev-prod',
           }}
-          className=""
+          className="w-[81.25vw] mx-auto"
           style={{}}
           loop={true}
           breakpoints={{
@@ -73,13 +73,13 @@ const ProductSlider = ({products = []}) => {
             return (
               <SwiperSlide key={productNode.id}>
                 <div 
-                  className="cursor-pointer"
+                  className="cursor-pointer w-[18.75vw]"
                   onClick={() => handleProductClick(productNode.handle)}
                 >
                   <img 
                     src={firstImage?.url || '/assets/Images/placeholder.jpg'} 
                     alt={firstImage?.altText || productNode.title} 
-                    className="rounded-none lg:h-[18.75vw] w-full h-[160px] object-cover" 
+                    className="rounded-none w-full h-[18.75vw] object-cover" 
                   />
                   <h3 className="mt-2.5 uppercase lg:mt-[1.563vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] text-[12px] font-medium tracking-wider">
                     {productNode.title}
@@ -92,7 +92,7 @@ const ProductSlider = ({products = []}) => {
             );
           })}
         </Swiper>
-        <div className="swiper-button-next-prod absolute top-0 max-[1024px]:right-0 right-[9%] cursor-pointer text-white uppercase flex lg:w-[7.24vw] lg:h-[18.75vw] h-[160px] items-center bg-[#446184] justify-center max-[1024px]:w-[28px]">
+        <div className="swiper-button-next-prod absolute top-0 max-[1024px]:right-0 right-[-5.323vw] cursor-pointer text-white uppercase flex lg:w-[7.24vw] lg:h-[18.75vw] h-[160px] items-center bg-[#446184] justify-center max-[1024px]:w-[28px]">
           <span className="-rotate-270 lg:text-[1.146vw] lg:leading-[1.667vw] text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>

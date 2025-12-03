@@ -1,19 +1,22 @@
 import { Link } from "@remix-run/react";
 
-function PreviewRegistry() {
+function PreviewRegistry({ className = "", useAbsolutePosition = true }) {
   // Remove the loader and useLoaderData since this component is used in public routes
   // where user data might not be available
   
+  const positionClass = useAbsolutePosition ? "absolute top-0 right-12" : "";
+  const widthClass = useAbsolutePosition ? "w-[20%]" : "w-full";
+  
   return (
-    <div className="absolute top-0 right-12 max-w-[260px] w-[20%] min-h-[141px] bg-[#446184] z-10 flex flex-col items-center justify-center">
-      <div className="container mx-auto pt-3">
+    <div className={`max-w-full ${widthClass} min-h-[4.896vw] bg-[#446184] z-10 flex flex-col items-center justify-center ${positionClass} ${className}`}>
+      <div className="flex items-center justify-center gap-[1.042vw] w-full px-[1vw]">
         <img
           src="/assets/Images/share-icon.png"
           alt="preview"
-          className="w-10 mx-auto"
+          className="w-[2.188vw] h-[2.188vw]"
         />
-        <h2 className="text-white text-[18px] text-center font-bold mt-2">
-          PREVIEW MY <br /> REGISTRY
+        <h2 className="text-white text-[0.833vw] leading-[0.938vw] text-center font-bold m-0">
+          PREVIEW MY REGISTRY
         </h2>
       </div>
     </div>

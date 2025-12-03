@@ -21,6 +21,7 @@ import WhiteThemeButton from '~/components/WhiteThemeButton';
 import Heading from '~/components/Heading';
 import lineImghead from '/assets/Images/line.png';
 import headingBottomCurve from '/assets/Images/heading-small-line.png';
+import giftBottomCurve from '/assets/Images/gifts-bottom-line.png';
 import CustomTab from '~/components/CustomTab';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
@@ -294,26 +295,39 @@ export async function loader({request, context}) {
 
     // For each parent collection, get products from its sub-collections
     parentCollections.forEach((parentCollection) => {
-      // Get sub-collection GIDs from the parent's subMetafield
+      // Get sub-collection GIDs from the parent's subCollectionMetafield (Collection type) or subMetafield (JSON string)
       let subCollectionGids = [];
-      if (parentCollection.subMetafield?.value) {
+      let subCollections = [];
+      
+      // First, try to get from the new Collection type metafield (references)
+      if (parentCollection.subCollectionMetafield?.references?.edges) {
+        subCollections = parentCollection.subCollectionMetafield.references.edges.map(
+          (edge) => edge.node,
+        );
+        subCollectionGids = subCollections.map((sub) => sub.id);
+      } else if (parentCollection.subMetafield?.value) {
+        // Fallback to old JSON string format
         try {
           subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
+          // Find sub-collections by GID
+          subCollections = collections.filter(
+            (col) =>
+              col.parentMetafield?.value === 'false' &&
+              col.readyMadeMetafield?.value !== 'true' &&
+              subCollectionGids.includes(col.id),
+          );
         } catch (error) {
           // Handle any errors in parsing subMetafield
         }
       }
 
-      // Find sub-collections by GID
-      const subCollections = collections.filter(
-        (col) =>
-          col.parentMetafield?.value === 'false' &&
-          col.readyMadeMetafield?.value !== 'true' &&
-          subCollectionGids.includes(col.id),
-      );
-
       // Extract products from sub-collections
-      subCollections.forEach((subCollection) => {
+      subCollections.forEach((subCollectionRef) => {
+        // Find the full collection data from the main collections array
+        const subCollection = collections.find(
+          (col) => col.id === subCollectionRef.id,
+        ) || subCollectionRef; // Fallback to reference if not found
+        
         if (subCollection.products?.edges) {
           subCollection.products.edges.forEach((edge) => {
             const product = edge.node;
@@ -507,6 +521,7 @@ function SidebarFilter({
   collections,
   checkedCollectionIds,
   setCheckedCollectionIds,
+  selectedSwiperCollectionId,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
@@ -546,115 +561,123 @@ function SidebarFilter({
   };
 
   return (
-    <div className="w-[400px] p-6 h-fit bg-[#FAF9F6]">
-      <div className="mb-6">
-        <h2
-          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-          onClick={() => toggleSection('categories')}
-        >
-          Product Categories
-          <span className="text-lg relative -top-[3px]">
-            {openSections.categories ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.categories && (
-          <ul className="space-y-2 text-sm">
-            {parentCollection.map((col) => (
-              <li key={col.id}>
-                <label className="uppercase">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={checkedCollectionIds.includes(col.id)}
-                    onChange={() => handleSidebarCheckbox(col.id)}
-                  />
-                  {col.title}
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+    <div className="w-[400px] h-fit">
+      <div className=" bg-[#FAF9F6] p-6">
+        <div className="mb-6">
+          <h2
+            className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+            onClick={() => toggleSection('categories')}
+          >
+            Product Categories
+            <span className="text-lg relative -top-[3px]">
+              {openSections.categories ? (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="minus"
+                  className="w-[0.833vw] h-[0.833vw] rotate-180"
+                />
+              ) : (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="plus"
+                  className="w-[0.833vw] h-[0.833vw]"
+                />
+              )}
+            </span>
+          </h2>
+          {openSections.categories && (
+            <ul className="space-y-2 text-sm">
+              {parentCollection.map((col) => (
+                <li key={col.id}>
+                  <label className="uppercase">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={checkedCollectionIds.includes(col.id)}
+                      onChange={() => handleSidebarCheckbox(col.id)}
+                    />
+                    {col.title}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-      <div className="mb-6">
-        <h2
-          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-          onClick={() => toggleSection('brands')}
-        >
-          Our Brands
-          <span className="text-lg relative -top-[3px]">
-            {openSections.brands ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.brands && (
-          <p className="text-sm text-gray-500 italic">No data</p>
-        )}
-      </div>
+        <div className="mb-6">
+          <h2
+            className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+            onClick={() => toggleSection('brands')}
+          >
+            Our Brands
+            <span className="text-lg relative -top-[3px]">
+              {openSections.brands ? (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="minus"
+                  className="w-[0.833vw] h-[0.833vw] rotate-180"
+                />
+              ) : (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="plus"
+                  className="w-[0.833vw] h-[0.833vw]"
+                />
+              )}
+            </span>
+          </h2>
+          {openSections.brands && (
+            <p className="text-sm text-gray-500 italic">No data</p>
+          )}
+        </div>
 
-      <div>
-        <h2
-          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-          onClick={() => toggleSection('styles')}
-        >
-          Shop by Style
-          <span className="text-lg relative -top-[3px]">
-            {openSections.styles ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.styles && (
-          <ul className="space-y-2 text-sm">
-            {subCollection.map((col) => (
-              <li key={col.id}>
-                <label className="uppercase">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={checkedCollectionIds.includes(col.id)}
-                    onChange={() => handleSidebarCheckbox(col.id)}
-                  />
-                  {col.title}
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div>
+          <h2
+            className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+            onClick={() => toggleSection('styles')}
+          >
+            Shop by Style
+            <span className="text-lg relative -top-[3px]">
+              {openSections.styles ? (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="minus"
+                  className="w-[0.833vw] h-[0.833vw] rotate-180"
+                />
+              ) : (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="plus"
+                  className="w-[0.833vw] h-[0.833vw]"
+                />
+              )}
+            </span>
+          </h2>
+          {openSections.styles && (
+            <ul className="space-y-2 text-sm">
+              {subCollection.map((col) => (
+                <li key={col.id}>
+                  <label className="uppercase">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      checked={checkedCollectionIds.includes(col.id)}
+                      onChange={() => handleSidebarCheckbox(col.id)}
+                    />
+                    {col.title}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
+      {/* Show PreviewRegistry only after a parent collection is selected */}
+      {selectedSwiperCollectionId && (
+        <div className="mt-6">
+          <PreviewRegistry useAbsolutePosition={false} />
+        </div>
+      )}
     </div>
   );
 }
@@ -735,6 +758,7 @@ export default function AddGifts() {
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] =
     useState(null);
+  const [selectedSubCollections, setSelectedSubCollections] = useState([]);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
 
@@ -862,21 +886,14 @@ export default function AddGifts() {
 
   return (
     <>
+    {selectedSwiperCollectionId ? (
+      <></>  
+    ) : (
       <div className="pt-[3.75vw] relative px-4">
         <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
-          {selectedSwiperCollectionId ? (
-            <>
-              <span className="prata uppercase">
-                {collections.find(
-                  (col) => col.id === selectedSwiperCollectionId,
-                )?.title || ''}
-              </span>
-            </>
-          ) : (
-            <span className="prata">
-              gifts
-            </span>
-          )}
+          <span className="prata">
+            gifts
+          </span>
         </h2>
         <img
           src={headingBottomCurve}
@@ -884,16 +901,12 @@ export default function AddGifts() {
           className="w-[9.375vw] h-[6px] mt-2 mx-auto"
         />
         <p className="max-w-xl mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal leading-relaxed">
-          {selectedSwiperCollectionId
-            ? `Browse products from ${
-                collections.find((col) => col.id === selectedSwiperCollectionId)
-                  ?.title || 'this collection'
-              } and its sub-categories.`
-            : 'Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like.'}
+          Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like.
         </p>
       </div>
+      )}
 
-      <section className=" ">
+      <section className="">
         <div className=" relative items-start mb-10 max-[1024px]:my-10">
           <div className="flex flex-row items-center justify-center">
             {!selectedSwiperCollectionId && (
@@ -957,12 +970,25 @@ export default function AddGifts() {
                       <SwiperSlide
                         key={col.id}
                         onClick={() => {
-                          // Get sub-collection GIDs from the parent's subMetafield
+                          // Get sub-collections from the Collection type metafield references
+                          let subCollections = [];
                           let subCollectionGids = [];
-                          if (col.subMetafield?.value) {
+                          
+                          // First, try to get from the new Collection type metafield (references)
+                          if (col.subCollectionMetafield?.references?.edges) {
+                            subCollections = col.subCollectionMetafield.references.edges.map(
+                              (edge) => edge.node,
+                            );
+                            subCollectionGids = subCollections.map((sub) => sub.id);
+                          } else if (col.subMetafield?.value) {
+                            // Fallback to old JSON string format
                             try {
                               subCollectionGids = JSON.parse(
                                 col.subMetafield.value,
+                              );
+                              // Find sub-collections from collections array
+                              subCollections = collections.filter((c) =>
+                                subCollectionGids.includes(c.id),
                               );
                             } catch (error) {
                               // Handle any errors in parsing subMetafield
@@ -971,6 +997,7 @@ export default function AddGifts() {
 
                           // Set the checked collection IDs to all sub-collections of this parent
                           setCheckedCollectionIds(subCollectionGids);
+                          setSelectedSubCollections(subCollections);
                           setSelectedSwiperCollectionId(col.id);
                         }}
                         style={{cursor: 'pointer'}}
@@ -997,7 +1024,17 @@ export default function AddGifts() {
             {/* Selected collection image at 100% width */}
             {selectedSwiperCollectionId && (
               <div className="relative w-full">
-                <img
+                {/* <button
+                  onClick={() => {
+                    setSelectedSwiperCollectionId(null);
+                    setSelectedSubCollections([]);
+                    setCheckedCollectionIds([]);
+                  }}
+                  className="absolute top-4 left-4 z-20 bg-white bg-opacity-80 hover:bg-opacity-100 px-4 py-2 rounded-sm text-sm font-medium uppercase tracking-wider transition-all shadow-sm"
+                >
+                  ← Back
+                </button> */}
+                {/* <img
                   src={
                     collections.find(
                       (col) => col.id === selectedSwiperCollectionId,
@@ -1009,8 +1046,96 @@ export default function AddGifts() {
                     )?.title
                   }
                   className="w-full h-[500px] lg:h-[600px] object-cover"
-                />
+                /> */}
                 
+                {/* Sub-collections carousel */}
+                {selectedSubCollections && selectedSubCollections.length > 0 && (
+                  <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative">
+                    <div className="flex items-center gap-[8.698vw] w-full">
+                      <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px]">
+                        {collections.find(
+                          (col) => col.id === selectedSwiperCollectionId,
+                        )?.title?.toLowerCase() || 'collection'}
+                        <img
+                          src={giftBottomCurve}
+                          alt="Couple"
+                          className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto"
+                        />
+                      </h3>
+                      
+                      <div className="relative">
+                        <div className="z-10 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer text-white uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
+                          <img src={nextitem} alt="" className="rotate-90 size-6" />
+                        </div>
+
+                        <Swiper
+                          spaceBetween={18}
+                          slidesPerView={5} // Shows 3 full + a portion of 4th
+                          loop={false}
+                          modules={[Navigation]}
+                          navigation={{
+                            nextEl: '.swiper-button-next-sub',
+                            prevEl: '.swiper-button-prev-sub',
+                          }}
+                          className="relative w-full"
+                          breakpoints={{
+                            345: {
+                              slidesPerView: 1.25,
+                              spaceBetween: 10,
+                            },
+                            475: {
+                              slidesPerView: 2.25,
+                              spaceBetween: 15,
+                            },
+                            768: {
+                              slidesPerView: 2.25,
+                              spaceBetween: 18,
+                            },
+                            1024: {
+                              slidesPerView: 3,
+                              spaceBetween: 18,
+                            },
+                            1025: {
+                              slidesPerView: 4,
+                              spaceBetween: 18,
+                            },
+                            1365: {
+                              slidesPerView: 5,
+                              spaceBetween: 18,
+                            },
+                          }}
+                        >
+                          {selectedSubCollections.map((subCol) => (
+                            <SwiperSlide
+                              key={subCol.id}
+                              onClick={() => {
+                                setCheckedCollectionIds([subCol.id]);
+                              }}
+                              className="cursor-pointer group max-w-[13.542vw]"
+                            >
+                              <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
+                                <img
+                                  src={
+                                    subCol.image?.url || '/assets/Images/placeholder.png'
+                                  }
+                                  alt={subCol.title}
+                                  className="w-full h-[180px] lg:h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              </div>
+                              <h4 className="mt-3 text-center uppercase text-xs lg:text-sm font-medium tracking-wider text-black">
+                                {subCol.title}
+                              </h4>
+                            </SwiperSlide>
+                          ))}
+                        </Swiper>
+
+                        <div className="swiper-button-next-sub absolute right-[50px] cursor-pointer uppercase items-center bg-white z-10 top-[43%] translate-y-[-50%] px-8 py-10 justify-center text-white max-[1024px]:w-[33px]">
+                          <img src={nextitem} className="size-6 rotate-270" alt="" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1023,6 +1148,7 @@ export default function AddGifts() {
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
+            selectedSwiperCollectionId={selectedSwiperCollectionId}
           />
           <div className="flex flex-col">
             {/* Sort Filter */}
@@ -1201,53 +1327,65 @@ export default function AddGifts() {
         </div>
       </section>
 
-      <section className="bg-[#FFFFFF] pt-16 mt-[7.813vw]">
-        <Heading
-          text="ready-made registries"
-          classes={
-            'prata text-[2.5vw] leading-[3.542vw] mb-1 font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] w-[20.521vw] mb-[2.188vw]'}
-        />
-
-        <p className="text-center text-[1.354vw] leading-[1.979vw] w-[50vw] max-w-full mx-auto mb-[1.667vw] font-normal text-gray-500 max-[1024px]:m-0">From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.</p>
-
-        {/* Always render CustomTab - let it handle the data validation internally */}
-        <CustomTab
-          tabsData={[
-            {
-              label: 'REAL REGISTRIES',
-              value: 1,
-              route: 'realregistries',
-            },
-            {
-              label: 'THEMED REGISTRIES',
-              value: 2,
-              route: 'themedregistries',
+      {selectedSwiperCollectionId ? (
+        <></>
+      ):(
+        <section className="bg-[#FFFFFF] pt-16 mt-[7.813vw]">
+          <Heading
+            text="ready-made registries"
+            classes={
+              'prata text-[2.5vw] leading-[3.542vw] mb-1 font-normal text-center max-[1024px]:m-0'
             }
-          ]}
-          featuredRegistryData={readyMadeRegistries}
-          user={user}
-        />
-        <div className="text-center">
-          <Link to="/ready-made-registries">
-            <ButtonComponent
-              text="EXPLORE READY-MADE REGISTRIES"
-              className="button-cs text-[18px] text-black border-3 w-[380px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-[2.083vw]"
-            />
-          </Link>
-        </div>
-      </section>
+            image={lineImghead}
+            imageClasses={'max-[1024px]:max-w-[330px] w-[20.521vw] mb-[2.188vw]'}
+          />
 
-      <section className="pt-[11.406vw]  my-12 lg:my-[240px] container">
+          <p className="text-center text-[1.354vw] leading-[1.979vw] w-[50vw] max-w-full mx-auto mb-[1.667vw] font-normal text-gray-500 max-[1024px]:m-0">From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.</p>
+
+          {/* Always render CustomTab - let it handle the data validation internally */}
+          <CustomTab
+            tabsData={[
+              {
+                label: 'REAL REGISTRIES',
+                value: 1,
+                route: 'realregistries',
+              },
+              {
+                label: 'THEMED REGISTRIES',
+                value: 2,
+                route: 'themedregistries',
+              }
+            ]}
+            featuredRegistryData={readyMadeRegistries}
+            user={user}
+          />
+          <div className="text-center">
+            <Link to="/ready-made-registries">
+              <ButtonComponent
+                text="EXPLORE READY-MADE REGISTRIES"
+                className="button-cs text-[18px] text-black border-3 w-[380px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-[2.083vw]"
+              />
+            </Link>
+          </div>
+        </section>
+      )}
+      
+      <section className="pt-[9.01vw]  my-12 lg:my-[240px] container pb-[12.552vw]">
         <Heading
-          text="bestsellers"
+          text={
+            selectedSwiperCollectionId
+              ? `bestsellers in ${collections.find((col) => col.id === selectedSwiperCollectionId)?.title?.toLowerCase() || 'collection'}`
+              : 'bestsellers'
+          }
           classes={
             'prata text-[2.292vw] leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
           }
           image={brandline}
-          imageClasses={'w-[14.896vw] max-[1024px]:max-w-[286px]'}
+          imageClasses={
+            selectedSwiperCollectionId
+              ? 'w-[33.281vw] max-[1024px]:max-w-[286px]'
+              : 'w-[14.896vw] max-[1024px]:max-w-[286px]'
+          }
         />
         <ProductSlider products={bestsellerProducts} />
         <div className="text-center">
@@ -1258,7 +1396,121 @@ export default function AddGifts() {
         </div>
       </section>
 
-     
+      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px] flex items-center">
+        <Heading
+          text="we think you'll love"
+          classes={
+            'prata text-2xl lg:text-[44px] font-normal text-center max-[1024px]:m-0'
+          }
+          image={brandline}
+          imageClasses={'max-[1024px]:max-w-[330px]'}
+        />
+
+        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
+          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
+            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
+              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+            </div>
+
+            <Swiper
+              spaceBetween={15}
+              slidesPerView={3}
+              loop={true}
+              modules={[Navigation]}
+              navigation={{
+                nextEl: '.swiper-button-next-prod',
+                prevEl: '.swiper-button-prev-prod',
+              }}
+              className="px-[178px]"
+              breakpoints={{
+                345: {
+                  spaceBetween: 10,
+                  centeredSlides: true,
+                },
+                475: {
+                  spaceBetween: 15,
+                  centeredSlides: true,
+                },
+                768: {
+                  spaceBetween: 20,
+                  centeredSlides: true,
+                },
+                1024: {
+                  spaceBetween: 30,
+                  centeredSlides: true,
+                },
+                1366: {
+                  spaceBetween: 39,
+                  centeredSlides: true,
+                },
+                1600: {
+                  spaceBetween: 39,
+                  centeredSlides: true,
+                },
+              }}
+            >
+              {/* Dynamic recommended products */}
+              {recommendedProducts && recommendedProducts.length > 0 ? (
+                recommendedProducts.map((product) => {
+                  const productNode = product.node;
+                  const firstImage = productNode.images?.edges?.[0]?.node;
+                  const price = productNode.priceRange?.minVariantPrice;
+                  
+                  return (
+                    <SwiperSlide key={productNode.id}>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer">
+                        <img 
+                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                          alt={productNode.title || 'Product'} 
+                          className="w-[455px] h-[455px] hover:opacity-80 transition-opacity" 
+                        />
+                        <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                          {productNode.title}
+                        </h3>
+                        <p className="lg:text-[24px] text-sm py-2">{formatShopifyPrice(price)}</p>
+                      </Link>
+                    </SwiperSlide>
+                  );
+                })
+              ) : (
+                // Fallback to static slides if no recommended products
+                <>
+                  <SwiperSlide>
+                    <img src={youll1} alt="New Arrival" className="w-[455px] h-[455px]" />
+                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                      ARKE GLASS BOTTLE FOR CARBONATOR PRO
+                    </h3>
+                    <p className="lg:text-[24px] text-sm py-2">$95.00</p>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <img src={youll2} alt="Tableware" className="w-[455px] h-[455px]" />
+                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
+                      SMEG TOASTER, 2 SLICE
+                    </h3>
+                    <p className="lg:text-[24px] text-sm py-2">$95.00</p>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <img src={youll3} alt="Staub Cast Iron Q4" className="w-[455px] h-[455px]" />
+                    <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
+                      THE BARISTA TOUCH ESPRESSO MAKER
+                    </h3>
+                    <p className="lg:text-[24px] text-sm py-2">$95.00</p>
+                  </SwiperSlide>
+                </>
+              )}
+            </Swiper>
+            <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
+                more
+              </span>
+              <img src={nextitem} className="rotate-270 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Alert Component */}
       {showAlert && (
@@ -1319,6 +1571,13 @@ export default function AddGifts() {
         }
         .animate-fade-in-out {
           animation: fadeInOut 3s ease-in-out;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
       <Footer />
@@ -1382,6 +1641,29 @@ const COLLECTION_QUERY = `#graphql
         subMetafield: metafield(namespace: "sub", key: "collection") {
           id
           value
+        }
+        subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+          references(first: 20) {
+            edges {
+              node {
+                ... on Collection {
+                  id
+                  title
+                  handle
+                  description
+                  image {
+                    id
+                    url
+                    altText
+                    width
+                    height
+                  }
+                }
+              }
+            }
+          }
         }
         readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
           id
