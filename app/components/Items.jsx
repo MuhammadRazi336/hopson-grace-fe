@@ -36,9 +36,9 @@ const Items = ({ featuredRegistryData = null }) => {
 
   return (
     <div>
-      <div className="flex lg:justify-center items-center grid-cols-2 lg:grid-cols-[60%_40%] lg:grid-rows-2 max-[1024px]:gap-y-[20px]">
+      <div className="flex lg:justify-center items-center grid-cols-2 lg:grid-cols-[60.677vw_32.448vw] lg:grid-rows-2 max-[1024px]:gap-y-[20px]">
         {/* First item spans full width */}
-        <div className="lg:row-span-2 max-[1025px]:col-span-2 w-full h-[740px] max-[1024px]:h-[51vw]">
+        <div className="lg:row-span-2 max-[1025px]:col-span-2 w-[60.677vw] h-[32.292vw] max-[1024px]:h-[51vw]">
           <div className="featureImage relative insetshadow registrytag h-full max-[1024px]:h-[51vw]">
             <img 
               src={subCollection?.image?.url || parentCollection?.image?.url || img1} 
@@ -59,19 +59,19 @@ const Items = ({ featuredRegistryData = null }) => {
         </div>
 
         {/* Dynamic products from the first 6 products */}
-        <div className="flex flex-wrap gap-[1.146vw] w-full bg-[#F5F2ED] relative p-[2.5vw] lg:-left-[2.5vw] xl:-left-[2.5vw] 2xl:-left-[2.5vw]">
+        <div className="flex flex-wrap gap-[1.146vw] w-[41.3vw] bg-[#F5F2ED] relative p-[2.292vw] lg:-left-[2.5vw] xl:-left-[2.5vw] 2xl:-left-[2.5vw]">
           {products.slice(0, 6).map((product, index) => (
             <div 
               key={product.node.id || index} 
-              className="item cursor-pointer w-[calc(33.33%-1.146vw)]"
+              className="item cursor-pointer w-[11.458vw] h-[11.458vw]"
               onClick={() => handleProductClick(product.node.handle)}
             >
               <img 
                 src={product.node.images?.edges?.[0]?.node?.url || img1} 
                 alt={product.node.title || `Product ${index + 1}`} 
-                className="rounded-none w-[350px] h-[280px] max-[1024px]:w-full max-[1024px]:h-[30vw] object-cover" 
+                className="rounded-none w-full h-full object-cover" 
               />
-              <h3 className="mt-2 lg:mt-[21px] bastardogrotesk lg:leading-[1.146vw] lg:mb-[4px] font-[500] text-[11px] lg:text-[1.146vw] uppercase">
+              {/* <h3 className="mt-2 lg:mt-[21px] bastardogrotesk lg:leading-[1.146vw] lg:mb-[4px] font-[500] text-[11px] lg:text-[1.146vw] uppercase">
                 {product.node.title || `Product ${index + 1}`}
               </h3>
               <p className="text-[11px] mt-[9px] max-[1024px]:mt-[5px] lg:text-[1.146vw] lg:leading-[1.146vw] bastardogrotesk">
@@ -79,7 +79,7 @@ const Items = ({ featuredRegistryData = null }) => {
                   product.node.description.slice(0, 20) + (product.node.description.length > 20 ? '...' : '') : 
                   'Product Description'
                 }
-              </p>
+              </p> */}
             </div>
           ))}
         </div>

@@ -33,7 +33,7 @@ const ProductCard = ({
           <img
             src={image}
             alt={productName}
-            className="w-full h-[18.75vw] object-cover"
+            className="w-full h-[18.75vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
           />
           <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
             {productName}

@@ -29,7 +29,7 @@ const ContactUs = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-fit bg-[#FAF9F6] pt-[100px]">
+      <div className={`w-full h-fit pt-[100px] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
         <Heading
           text="questions?"
           classes={
@@ -38,9 +38,9 @@ const ContactUs = () => {
           image={lineCurve}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[16.25vw] xl:w-[16.25vw] 2xl:w-[16.25vw] h-[5px]'}
         />
-        <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center py-16 lg:pt-[5.365vw] xl:pt-[5.365vw] 2xl:pt-[5.365vw] lg:pb-[7.917vw] xl:pb-[7.917vw] 2xl:pb-[7.917vw] w-[40%] lg:w-[60%]  mx-auto">
+        <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center pt-[2.76vw] pb-[4.167vw] w-[63vw] max-w-full mx-auto">
           {user ? 
-            "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
+            "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
             "We’re here for you. From setup to shipping, or if you’re purchasing a gift for a couple, you can reach us anytime for help, guidance, or just a second opinion."
           }
         </p>
@@ -67,17 +67,9 @@ const ContactUs = () => {
                 <p className="text-sm">Chat with us live between 10am-6pm (Mon-Sat) or 12pm-5pm (Sun) EST. Offline? Leave a message we'll reply by email.</p>
               </div> */}
             <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10 lg:py-[3.958vw] xl:py-[3.958vw] 2xl:py-[3.958vw]">
-              <div className="flex flex-col items-center justify-center">
-                <h3 className="text-2xl text-white lg:text-[1.146vw] lg:leading-[1.875vw] xl:text-[1.146vw] 2xl:text-[1.146vw] 3xl:w-full  text-center">
-                  EMAIL
-                </h3>
-                <img
-                  src={smallHeadingLine}
-                  alt="lineimg"
-                  className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
-                />
-                <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] max-w-[500px] mt-4 mb-4 text-center text-white">
-                Email us anytime at <a href="mailto:hello@theregistry.ca" className="text-white">hello@theregistry.ca</a> <br/>We respond within one business day.
+              <div className="flex flex-col items-center justify-center">                
+                <p className="text-sm lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-w-[500px] mt-4 mb-4 text-center text-white">
+                  Our team is on call 7 days a week from 10am-6pm EST.
                 </p>
 
                 <h3 className="text-2xl mt-10 text-white lg:text-[1.146vw] lg:leading-[1.875vw] 3xl:w-full  text-center">
@@ -89,9 +81,8 @@ const ContactUs = () => {
                   className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
                 />
                 <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
-                We’re available at: <br />
-                1-866-531-8616 (TOLL FREE)  or 1-437-564-8656 (LOCAL) 
-                <br /> 10am–6pm (Mon–Sat) | 12pm–5pm (Sun).
+                  1-866-531-8616  (Toll Free within North America)
+                <br /> 1-437-564-8656  (Local Toronto Area)
                 </p>
                 <h3 className="text-2xl mt-10 text-white lg:text-[1.146vw] lg:leading-[1.875vw] 3xl:w-full  text-center">
                   CHAT
@@ -110,7 +101,7 @@ const ContactUs = () => {
         </section>
         <div className="pb-[13.125vw]"></div>
       </div>
-      <div className="w-full h-fit bg-[#FAF9F6]">
+      <div className={`w-full h-fit ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
         <Heading
           text="BOOK A VIRTUAL APPOINTMENT"
           classes={
