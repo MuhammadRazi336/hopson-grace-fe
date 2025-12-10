@@ -29,16 +29,16 @@ const ContactUs = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className={`w-full h-fit pt-[100px] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
+      <div className={`w-full h-fit pt-[100px] max-[1024px]:pt-[40px] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
         <Heading
           text="questions?"
           classes={
-            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
+            'prata text-[30px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineCurve}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[16.25vw] xl:w-[16.25vw] 2xl:w-[16.25vw] h-[5px]'}
         />
-        <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center pt-[2.76vw] pb-[4.167vw] w-[63vw] max-w-full mx-auto">
+        <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center pt-[2.76vw] pb-[4.167vw] w-[63vw] max-w-full max-[1024px]:w-full mx-auto">
           {user ? 
             "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
             "We’re here for you. From setup to shipping, or if you’re purchasing a gift for a couple, you can reach us anytime for help, guidance, or just a second opinion."
@@ -72,56 +72,50 @@ const ContactUs = () => {
                   Our team is on call 7 days a week from 10am-6pm EST.
                 </p>
 
-                <h3 className="text-2xl mt-10 text-white lg:text-[1.146vw] lg:leading-[1.875vw] 3xl:w-full  text-center">
+                <h3 className="text-[20px] mt-10 text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
                   CALL
                 </h3>
                 <img
                   src={smallHeadingLine}
                   alt="lineimg"
-                  className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
+                  className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
                 />
                 <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
-                  1-866-531-8616  (Toll Free within North America)
-                <br /> 1-437-564-8656  (Local Toronto Area)
+                  <strong>1-866-531-8616 </strong> (Toll Free within North America) 
+                <br /> <strong>1-437-564-8656 </strong> (Local Toronto Area)
                 </p>
-                <h3 className="text-2xl mt-10 text-white lg:text-[1.146vw] lg:leading-[1.875vw] 3xl:w-full  text-center">
-                  CHAT
+                <h3 className="text-[20px] mt-10 text-white lg:text-[1.146vw] lg:leading-[1.875vw] 3xl:w-full  text-center">
+                  EMAIL
                 </h3>
                 <img
                   src={smallHeadingLine}
                   alt="lineimg"
-                  className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
+                  className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
                 />
                 <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
-                Chat with us live between 10am–6pm (Mon–Sat) or 12pm–5pm (Sun) EST. <br /> Offline? Leave a message we’ll reply by email. 
+                  {user ? <strong>concierge@theregistry.ca</strong> : <strong>hello@theregistry.ca</strong>}
                 </p>
               </div>
             </div>
           </div>
         </section>
-        <div className="pb-[13.125vw]"></div>
+        <div className="pb-[10.521vw] max-[1024px]:pb-[20px]"></div>
       </div>
       <div className={`w-full h-fit ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
         <Heading
           text="BOOK A VIRTUAL APPOINTMENT"
           classes={
-            'prata text-4xl lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 lowercase'
+            'prata text-[30px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 lowercase'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[29.167vw] xl:w-[29.167vw] 2xl:w-[29.167vw] h-[5px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[29.167vw] xl:w-[29.167vw] 2xl:w-[29.167vw] h-[5px] mb-[5.365vw]'}
         />
-        <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center py-[5.365vw] w-[40%] lg:w-[60%]  mx-auto">
-          {user ? 
-            "Reach out if you'd like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
-            "We're here for you. From setup to shipping, or if you're purchasing a gift for a couple, you can reach us anytime for help, guidance, or just a second opinion."
-          }
-        </p>
 
         <section className="px-[5.677vw] mx-auto mb-10">
           <div className="flex flex-wrap xl:flex-nowrap justify-center">
             <div className="bg-[#446184] z-10 xl:-bottom-10 lg:left-[1.563vw] xl:left-[1.563vw] 2xl:left-[1.563vw] left-0 bottom-0 py-[4.74vw] relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10">
-              <div className="flex flex-col items-center justify-center">
-                <h3 className="text-2xl text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
+              <div className="flex flex-col items-center justify-center w-[35.208vw] mx-auto max-w-full max-[1024px]:w-full">
+                <h3 className="text-[20px] font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
                   SETTING UP YOUR REGISTRY
                 </h3>
                 <img
@@ -129,14 +123,11 @@ const ContactUs = () => {
                   alt="lineimg"
                   className="mb-2 mt-2 lg:w-[17.708vw] xl:w-[17.708vw] 2xl:w-[17.708vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
                 />
-                <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] max-w-[500px] mt-4 mb-4 text-center text-white">
-                  Need a hand getting started? Let our concierge help set up, manage or fulfill your registry. with
-                  our Registry Concierge. We’ll walk you through the process,
-                  answer your questions, and help you build a registry that
-                  reflects your style, your life, and your wishlist.
+                <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
+                  Need a hand getting started? Book a virtual appointment with a Registry Concierge. We’ll walk you through the process, answer your questions, and help you build your dream registry.
                 </p>
 
-                <h3 className="text-2xl mt-10 text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
+                <h3 className="text-[20px] mt-10 font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
                   ADVICE & REGISTRY FULFILLMENT
                 </h3>
                 <img
@@ -144,16 +135,12 @@ const ContactUs = () => {
                   alt="lineimg"
                   className="mb-2 mt-2 lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
                 />
-                <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] max-w-[500px] mt-4 mb-4 text-center text-white">
-                  Getting close to the big day—or already married? Book a
-                  session with our Concierge for help wrapping things up. From
-                  choosing your final gifts to coordinating delivery and
-                  fulfillment, we’re here to make the process seamless and
-                  stress-free.
+                <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
+                Getting close to the big day—or already married? Book a session with a Registry Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free.
                 </p>
               </div>
               <Link to={"https://calendly.com/concierge-theregistry/30min"}>
-                <button className="font-[500] px-2 mt-5 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100">
+                <button className="font-[800] px-2 mt-5 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
                   BOOK AN APPOINTMENT
                 </button>
               </Link>
@@ -169,7 +156,7 @@ const ContactUs = () => {
         </section>
 
         {/* Hopson Grace Store Section */}
-        <div className="w-full h-fit bg-[#FAF9F6] pt-[12.24vw]">
+        <div className={`w-full h-fit max-[1024px]:py-[40px] pt-[10.156vw] pb-[15.365vw] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
           <div className="px-[8.177vw] mx-auto px-4">
             {/* Logo */}
             <div className="text-center mb-[2.969vw]">
@@ -182,17 +169,17 @@ const ContactUs = () => {
             
             {/* Main Heading */}
             <div className="text-center mb-[4.688vw]">
-              <h2 className="text-2xl font-[500] mb-[1.302vw] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] tracking-[2.24px]">WANT TO SEE SOME OF OUR PRODUCTS IN PERSON?</h2>
-              <p className="text-base max-w-4xl mx-auto lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
-                If you're in Toronto, visit our sister store <strong>Hopson Grace</strong> for modern home essentials and timeless gifts, where you'll be able to see some products from The Registry in person.
+              <h2 className="text-[20px] font-[500] mb-[1.302vw] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] tracking-[2.24px] max-[1024px]:mb-[20px]">WANT TO SEE SOME OF OUR PRODUCTS IN PERSON?</h2>
+              <p className="text-base w-[62.292vw] max-w-full mx-auto lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
+              If you’re in Toronto, visit our sister store <strong>Hopson Grace</strong> for modern home essentials and timeless gifts, where you’ll be able to see some products from The Registry in person.
               </p>
             </div>
             
             {/* Content Grid */}
-            <div className="flex justify-center">
-              <div className=" p-8 lg:py-[3.698vw] xl:py-[3.698vw] 2xl:py-[3.698vw] bg-[#FFFFFF] w-[50%] flex items-center justify-center">
+            <div className="flex justify-center max-[1024px]:flex-col">
+              <div className={`p-8 lg:py-[3.698vw] xl:py-[3.698vw] 2xl:py-[3.698vw] w-[50%] flex items-center justify-center max-[1024px]:w-full ${user ? 'bg-[#FAF9F6]' : 'bg-[#FFFFFF]'}`}>
                 <div className="text-center space-y-6">
-                  <img src={HopsonGracePos} alt="Hopson Grace" className="lg:w-[15.156vw] xl:w-[15.156vw] 2xl:w-[15.156vw] object-cover block mx-auto mb-[2.5vw]" />
+                  <img src={HopsonGracePos} alt="Hopson Grace" className="lg:w-[15.156vw] xl:w-[15.156vw] 2xl:w-[15.156vw] object-cover block mx-auto mb-[2.5vw] max-[1024px]:mb-[20px]" />
                   <div className="space-y-4">
                     <div className='mb-[2.865vw]'>
                       <h4 className="text-base font-semibold mb-[9px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-[1.92px]">LOCATION</h4>
@@ -223,7 +210,7 @@ const ContactUs = () => {
                 </div>
               </div>
               
-              <div className="flex items-center w-[50%] justify-center">
+              <div className="flex items-center w-[50%] justify-center max-[1024px]:w-full">
                 <div className="w-full h-[37.396vw] bg-gray-200 overflow-hidden">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.123456789!2d-79.406307!3d43.653226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34d68bf33a9b%3A0x15edd8c4de1c7581!2s200%20Dupont%20St%2C%20Toronto%2C%20ON%20M5R%202E6%2C%20Canada!5e0!3m2!1sen!2sca!4v1234567890123!5m2!1sen!2sca"
@@ -241,7 +228,6 @@ const ContactUs = () => {
             </div>
           </div>
         </div>
-        <div className="pb-[15.365vw]"></div>
       </div>
 
       <Footer />

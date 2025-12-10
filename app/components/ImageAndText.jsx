@@ -26,7 +26,7 @@ const ImageAndText = ({
 
   return (
     <div
-      className={`flex lg:gap-[2.083vw] gap-2 ${
+      className={`flex lg:gap-[2.24vw] gap-2 ${
         direction === 'left'
           ? 'items-stretch'
           : 'items-stretch flex-row-reverse'
@@ -34,10 +34,10 @@ const ImageAndText = ({
     >
       <div
         className={`bg-[#F5F2ED] py-[3.333vw] relative flex justify-center flex-col lg:w-[36.406vw] w-[55%] lg:px-[4.219vw] xl:px-[4.219vw] 2xl:px-[4.219vw] max-[1024px]:p-[20px] ${
-          direction === 'left' ? 'mb-0 mt-6 lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw]' : 'mt-6 lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw]'
+          direction === 'left' ? 'mb-0' : ''
         }`}
       >
-        <h3 className="text-[20px] leading-[36px] text-center lg:mx-auto lg:text-[2.5vw] lg:leading-[3.125vw] prata max-w-[410px]">
+        <h3 className="text-[20px] leading-[36px] text-center lg:mx-auto lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[2.917vw] xl:leading-[2.917vw] 2xl:leading-[2.917vw] prata max-w-[410px]">
           {title}
         </h3>
 
@@ -48,7 +48,7 @@ const ImageAndText = ({
         {stepsCheck ? (
           <Steps className="max-w-[520px]" />
         ) : (
-          <p className="text-[12px] leading-[18px] font-[400] lg:text-[1.354vw] lg:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center">
+          <p className="text-[12px] leading-[18px] font-[400] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center">
             {description}
           </p>
         )}
@@ -92,14 +92,14 @@ const ImageAndText = ({
       </div>
 
       <div
-        className={`lg:w-[65%] w-[45%] min-w-[45%] ${
+        className={`lg:w-[65%] w-[45%] min-w-[45%] h-[34.375vw] relative top-[3.958vw] ${
           direction === 'left' ? 'lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw] mt-6' : 'lg:mb-[2.24vw] xl:mb-[2.24vw] 2xl:mb-[2.24vw] mb-6'
         }`}
       >
         <img
           src={imgBanner}
           alt="Image Banner"
-          className="w-full max-[1024px]:h-full lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] object-cover object-[80%] rounded-none"
+          className="w-full max-[1024px]:h-full h-full object-cover object-[80%] rounded-none"
         />
       </div>
     </div>
