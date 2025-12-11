@@ -21,7 +21,7 @@ const OurPhilosophy = () => {
           alt=""
           className="w-full h-[400px] lg:h-[27.083vw] xl:h-[27.083vw] 2xl:h-[27.083vw] object-cover"
         />
-        <div className="absolute top-[50%] -translate-y-1/2 right-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px] max-[1024px]:left-[50%] max-[1024px]:translate-x-[-50%]">
+        <div className="absolute top-[50%] -translate-y-1/2 right-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px] max-[1024px]:left-[50%] max-[1024px]:translate-x-[-50%] max-[1024px]:w-full">
           
             <Heading
               text="our philosophy"
@@ -34,7 +34,7 @@ const OurPhilosophy = () => {
             <img
               src={lineImghead}
               alt=""
-              className="max-[1024px]:max-w-[230px] lg:w-[18.542vw] xl:w-[18.542vw] 2xl:w-[18.542vw] brightness-0 "
+              className="max-[1024px]:max-w-[230px] lg:w-[18.542vw] xl:w-[18.542vw] 2xl:w-[18.542vw] brightness-0 max-[1024px]:mx-auto"
             />
             <h2 className="text-center text-black font-[500] text-2xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[1vw] mb-0 max-[1024px]:text-[18px] max-[1024px]:leading-[22px] max-[1024px]:pt-[15px]">
             FEWER, BETTER THINGS.
