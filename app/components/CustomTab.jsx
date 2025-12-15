@@ -79,7 +79,7 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
   const transformedData = transformData(featuredRegistryData, activeTab);
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="">
       {/* Render tabs if tabsData is provided */}
       {/* {tabsData && tabsData.length > 0 && (
         <div className="flex justify-center mb-8">

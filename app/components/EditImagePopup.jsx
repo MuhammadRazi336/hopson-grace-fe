@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, lazy, Suspense, useEffect } from 'react';
+import ModalPortal from './ModalPortal';
 
 const images = [
   '/assets/Images/registry-logo.png',
@@ -139,121 +140,126 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
-      <div className="bg-[#F5F2ED] w-[90%] max-w-5xl p-8 relative flex flex-col gap-6 shadow-2xl">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-2xl font-bold text-gray-500 hover:text-gray-800"
-        >
-          &times;
-        </button>
+    <ModalPortal>
+      <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
+        <div className="bg-[#F5F2ED] w-[85.313vw] min-h-[45.625vw] max-h-[90vh] max-w-[90vw] px-[5.26vw] py-[2.917vw] relative">
+          <h2 className="text-2xl font-[500] bastardogrotesk mt-0 mb-[20px] max-[1024px]:mb-[10px] max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">UPLOAD YOUR PROFILE IMAGE</h2>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="text-[29px] leading-[29px] font-bold text-[#000000] absolute top-[10px] right-[20px] cursor-pointer"
+          >
+            &times;
+          </button>
 
-        <div className="flex gap-6">
-          {/* Left: Cropper or Preview */}
-          <div className="w-1/2 relative flex flex-col items-center">
-            {imageSrc ? (
-              <div className="relative w-full h-[360px] bg-gray-100">
-                <Suspense fallback={<div>Loading cropper...</div>}>
-                  <div className="relative w-[360px] h-[360px] mx-auto">
-                    <Cropper
-                      image={imageSrc}
-                      crop={crop}
-                      zoom={zoom}
-                      aspect={1}
-                      onCropChange={setCrop}
-                      onZoomChange={setZoom}
-                      onCropComplete={onCropComplete}
-                      cropShape="round"
-                      showGrid={false}
-                      cropSize={{ width: 300, height: 300 }}
-                    />
-                  </div>
-                </Suspense>
-              </div>
-            ) : (
-              <img
-                src="/assets/Images/product-image.png"
-                alt="Selected"
-                className="w-full h-[360px] object-cover"
+          <div className="flex gap-[5vw] max-[1024px]:flex-col max-[1024px]:gap-[40px]">
+            {/* Left: Cropper or Preview */}
+            <div className="w-2/3 lg:w-[40.417vw] xl:w-[40.417vw] 2xl:w-[40.417vw] lg:min-h-[33.75vw] xl:min-h-[33.75vw] 2xl:min-h-[33.75vw] lg:h-[33.75vw] xl:h-[33.75vw] 2xl:h-[33.75vw] max-[1024px]:h-[300px] max-[1024px]:w-full">
+              {imageSrc ? (
+                <div className="relative w-full h-full bg-gray-100">
+                  <Suspense fallback={<div>Loading cropper...</div>}>
+                    <div className="relative w-full h-full mx-auto">
+                      <Cropper
+                        image={imageSrc}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={1}
+                        onCropChange={setCrop}
+                        onZoomChange={setZoom}
+                        onCropComplete={onCropComplete}
+                        cropShape="round"
+                        showGrid={false}
+                        cropSize={{ width: 300, height: 300 }}
+                      />
+                    </div>
+                  </Suspense>
+                </div>
+              ) : (
+                <img
+                  src="/assets/Images/product-image.png"
+                  alt="Selected"
+                  className="w-full h-full object-cover"
+                />
+              )}
+              <p className="text-right bastardogrotesk text-sm lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] mt-2 text-[#000000]">
+                DRAG TO REPOSITION
+              </p>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
               />
-            )}
-            <p className="text-center text-sm mt-2 text-gray-600">
-              DRAG TO REPOSITION
-            </p>
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-          </div>
+            </div>
 
-          {/* Image Picker */}
-          <div className="w-1/2 flex flex-wrap h-[220px] gap-x-4 gap-y-2 justify-start items-start overflow-y-auto">
-            {/* Predefined images */}
-            {images.map((img, index) => (
-              <div key={`predefined-${index}`} className="cursor-pointer relative">
-                <img
-                  src={img}
-                  alt={`thumb-${index}`}
-                  className="object-cover w-[100px] h-[100px]"
-                  onClick={() => setImageSrc(img)}
-                />
+            {/* Image Picker */}
+            <div className="w-1/3 lg:w-[32vw] xl:w-[32vw] 2xl:w-[32vw] max-[1024px]:w-full grid grid-cols-4 gap-[1.354vw] max-h-full items-start max-[1024px]:flex max-[1024px]:flex-wrap">
+              {/* Predefined images */}
+              {images.map((img, index) => (
+                <div key={`predefined-${index}`} className="cursor-pointer w-[5.885vw] h-[5.885vw] max-[1024px]:w-[60px] max-[1024px]:h-[60px]">
+                  <img
+                    src={img}
+                    alt={`thumb-${index}`}
+                    className="w-full h-full object-cover rounded-none"
+                    onClick={() => setImageSrc(img)}
+                  />
+                </div>
+              ))}
+              
+              {/* Uploaded images */}
+              {uploadedImages.map((uploadedImg) => (
+                <div key={uploadedImg.id} className="cursor-pointer w-[5.885vw] h-[5.885vw] max-[1024px]:w-[60px] max-[1024px]:h-[60px]">
+                  <img
+                    src={uploadedImg.data}
+                    alt="Uploaded"
+                    className="w-full h-full object-cover rounded-none"
+                    onClick={() => handleImageSelect(uploadedImg.data)}
+                  />
+                  {/* Remove button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveImage(uploadedImg.id);
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              
+              {/* Add Your Own Button */}
+              <div 
+                className="cursor-pointer border-2 border-dashed border-[#999898] relative w-[5.885vw] h-[5.885vw] max-[1024px]:w-[60px] max-[1024px]:h-[60px] flex flex-col items-center justify-center hover:border-blue-400"
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              >
+                <div className="text-3xl text-gray-400 mb-1">
+                  <svg width="1.563vw" height="1.563vw" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20.5" cy="20.5" r="20.5" fill="#D9D9D9"></circle><path fill-rule="evenodd" clip-rule="evenodd" d="M21.1474 11.7148C22.0161 11.7148 22.7202 12.419 22.7202 13.2876L22.7202 19.5786L29.0112 19.5786C29.8798 19.5786 30.584 20.2827 30.584 21.1514C30.584 22.02 29.8798 22.7241 29.0112 22.7241H22.7202L22.7202 29.0151C22.7202 29.8837 22.0161 30.5879 21.1474 30.5879C20.2788 30.5879 19.5747 29.8837 19.5747 29.0151L19.5747 22.7241H13.2837C12.4151 22.7241 11.7109 22.02 11.7109 21.1514C11.7109 20.2827 12.4151 19.5786 13.2837 19.5786H19.5747L19.5747 13.2876C19.5747 12.419 20.2788 11.7148 21.1474 11.7148Z" fill="white"></path></svg>
+                </div>
+                <p className="text-xs bastardogrotesk text-[#000000] text-center absolute lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] bottom-[-40px] max-[1024px]:bottom-[0px] max-[1024px]:relative max-[1024px]:text-[8px] max-[1024px]:leading-[10px]">ADD YOUR OWN</p>
               </div>
-            ))}
-            
-            {/* Uploaded images */}
-            {uploadedImages.map((uploadedImg) => (
-              <div key={uploadedImg.id} className="cursor-pointer relative group">
-                <img
-                  src={uploadedImg.data}
-                  alt="Uploaded"
-                  className="object-cover w-[100px] h-[100px]"
-                  onClick={() => handleImageSelect(uploadedImg.data)}
-                />
-                {/* Remove button */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveImage(uploadedImg.id);
-                  }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-            
-            {/* Add Your Own Button */}
-            <div 
-              className="cursor-pointer border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center w-[100px] h-[100px] hover:border-blue-400"
-              onClick={() => fileInputRef.current && fileInputRef.current.click()}
-            >
-              <div className="text-3xl text-gray-400 mb-1">+</div>
-              <p className="text-xs text-gray-600 text-center">ADD YOUR OWN</p>
             </div>
           </div>
-        </div>
-        <div className="flex justify-end gap-4 mt-4">
-          <button
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded"
-            onClick={onClose}
-            type="button"
-          >
-            Cancel
-          </button>
-          <button
-            className="px-4 py-2 bg-[#446184] text-white rounded"
-            onClick={handleSave}
-            type="button"
-            disabled={!imageSrc || !croppedAreaPixels}
-          >
-            Save
-          </button>
+          <div className="flex justify-end gap-4 mt-4">
+            <button
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded"
+              onClick={onClose}
+              type="button"
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-[#446184] text-white rounded"
+              onClick={handleSave}
+              type="button"
+              disabled={!imageSrc || !croppedAreaPixels}
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }

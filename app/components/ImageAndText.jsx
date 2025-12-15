@@ -26,7 +26,7 @@ const ImageAndText = ({
 
   return (
     <div
-      className={`flex lg:gap-[2.083vw] gap-2 ${
+      className={`flex lg:gap-[2.24vw] gap-2 ${
         direction === 'left'
           ? 'items-stretch'
           : 'items-stretch flex-row-reverse'
@@ -34,10 +34,10 @@ const ImageAndText = ({
     >
       <div
         className={`bg-[#F5F2ED] py-[3.333vw] relative flex justify-center flex-col lg:w-[36.406vw] w-[55%] lg:px-[4.219vw] xl:px-[4.219vw] 2xl:px-[4.219vw] max-[1024px]:p-[20px] ${
-          direction === 'left' ? 'mb-0 mt-6 lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw]' : 'mt-6 lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw]'
+          direction === 'left' ? 'mb-0' : ''
         }`}
       >
-        <h3 className="text-[20px] leading-[36px] text-center lg:mx-auto lg:text-[2.5vw] lg:leading-[3.125vw] prata max-w-[410px]">
+        <h3 className="text-[20px] leading-[36px] text-center lg:mx-auto lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[2.917vw] xl:leading-[2.917vw] 2xl:leading-[2.917vw] prata max-w-[410px]">
           {title}
         </h3>
 
@@ -48,7 +48,7 @@ const ImageAndText = ({
         {stepsCheck ? (
           <Steps className="max-w-[520px]" />
         ) : (
-          <p className="text-[12px] leading-[18px] font-[400] lg:text-[1.354vw] lg:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center">
+          <p className="text-[12px] leading-[18px] font-[400] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center">
             {description}
           </p>
         )}
@@ -66,7 +66,7 @@ const ImageAndText = ({
               ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
               ${buttontype == 'link'
                 ? 'text-[#1F1D1B] border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                : 'text-white bg-[#446184] rounded-none font-mono'}
+                : 'text-[#1F1D1B] bg-[#446184] rounded-none font-mono'}
               ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
             `}
             disabled={disabled}
@@ -75,12 +75,12 @@ const ImageAndText = ({
           // ✅ Link version: render NavLink as the interactive element itself
           <NavLink
             to={buttonLink}
-            className={`inline-flex items-center justify-center text-[10px] leading-[12px] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
+            className={`inline-flex items-center justify-center text-[12px] leading-[12px] lg:text-[0.938vw] xl:text-[0.938vw] font-[600] 2xl:text-[0.938vw] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
               ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
               ${buttontype == 'link'
                 ? 'text-[#1F1D1B] border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                : 'text-white bg-[#446184] rounded-none font-mono'}
-              ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
+                : 'text-[#1F1D1B] bg-[#446184] rounded-none font-mono'}
+              ${isContactPage ? '!bg-transparent lg:w-[19.531vw] xl:w-[19.531vw] 2xl:w-[19.531vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
             `}
             aria-label={buttontext}
           >
@@ -92,14 +92,14 @@ const ImageAndText = ({
       </div>
 
       <div
-        className={`lg:w-[65%] w-[45%] min-w-[45%] ${
-          direction === 'left' ? 'lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw] mt-6' : 'lg:mb-[2.24vw] xl:mb-[2.24vw] 2xl:mb-[2.24vw] mb-6'
+        className={`lg:w-[65%] w-[45%] min-w-[45%] h-[34.375vw] relative ${
+          direction === 'left' ? 'lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw] mt-6 top-[3.229vw]' : 'top-[-3.229vw]'
         }`}
       >
         <img
           src={imgBanner}
           alt="Image Banner"
-          className="w-full max-[1024px]:h-full lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] object-cover object-[80%] rounded-none"
+          className="w-full max-[1024px]:h-full h-full object-cover object-top rounded-none"
         />
       </div>
     </div>

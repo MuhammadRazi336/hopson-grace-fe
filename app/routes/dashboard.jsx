@@ -144,8 +144,8 @@ const Dashboard_index = ({context}) => {
   const getSVGStyle = (stepNumber) => {
     switch(stepNumber) {
       case 0: return { left: '9.74vw', top: '1.25vw', width: '25vw', height: '11vw' };
-      case 1: return { left: '21vw', top: '1.25vw', width: '18vw', height: '10vw' };
-      case 2: return { left: '39vw', top: '1.25vw', width: '23vw', height: '10vw' };
+      case 1: return { left: '31vw', top: '1.25vw', width: '18vw', height: '10vw' };
+      case 2: return { left: '39vw', top: '0.25vw', width: '23vw', height: '10vw' };
       case 3: return { left: '56vw', top: '1.25vw', width: '23vw', height: '9vw' };
       case 4: return { left: '71vw', top: '1.25vw', width: '23vw', height: '9vw' };
       case 5: return { left: '78vw', top: '1.25vw', width: '25vw', height: '11vw' };
@@ -271,9 +271,10 @@ const Dashboard_index = ({context}) => {
             {/* Welcome and couple name */}
             <div className="mt-[6.25vw] max-[1024px]:order-1 max-[1024px]:mt-[0px]">
               <div className="md:text-[42px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center xl:mt-0 mt-16 font-normal ivyora max-[1024px]:mt-0 max-[1024px]:text-[30px]">welcome to your dashboard</div>
-              <div className="font-serif text-[48px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mb-2">{coupleName}</div>
-              <img src={lineImg3} alt="line" className="w-[60%] mt-[1.615vw] lg:w-[23.438vw] xl:w-[23.438vw] 2xl:w-[23.438vw] h-auto mx-auto" />
-              <div className="uppercase mt-[2.031vw] mb-[2.865vw] text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center tracking-widest text-black/70">How this works</div>
+              <div className="prata text-[48px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mb-[3.385vw] mt-[1.615vw]">{coupleName}</div>
+              
+              {/* <img src={lineImg3} alt="line" className="w-[60%] mt-[1.615vw] lg:w-[23.438vw] xl:w-[23.438vw] 2xl:w-[23.438vw] h-auto mx-auto" /> */}
+              {/* <div className="uppercase mt-[2.031vw] mb-[2.865vw] text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center tracking-widest text-black/70">How this works</div> */}
             </div>
 
             {/* Right side cards */}

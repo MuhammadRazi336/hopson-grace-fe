@@ -6,78 +6,86 @@ import lineImg3 from '/assets/Images/line.png';
 import RegistryLogo from '/assets/Images/registry-monogram.png';
 import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
-import GlassBg from '/assets/Images/GlassBg.png';
+import GlassBg from '/assets/Images/your-registry-concierge-banner.jpg';
 import DinnerSetImg from '/assets/Images/DinnerSetImg.png';
+import BookVitual from '/assets/Images/book-a-virtual.jpg';
 
 const YourRegistryAdvisor = () => {
   return (
     <section>
       <Header />
-      <img
-        src={GlassBg}
-        alt=""
-        className="w-full h-[510px] lg:h-[800px] object-cover"
-      />
 
-      <div className="container mx-auto py-16">
-        <Heading
-          text="your registry concierge"
-          classes={
-            'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+      <div className="relative w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px] banner-overlay">
+        <img
+          src={GlassBg}
+          alt=""
+          className="w-full h-full object-cover"
         />
-        <h2 className="text-center font-[500] text-2xl lg:text-4xl py-16">
+        {/* Heading with underline - Left aligned on image */}
+        <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px] flex flex-col items-center ">
+          {/* <h1 className="">
+            about us
+          </h1> */}
+          <Heading
+            text="your registry concierge"
+            classes={
+              'prata text-white text-4xl lg:text-[2.5vw] lg:leading-[4vw] xl:leading-[4vw] 2xl:leading-[4vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[28px] max-[1024px]:mb-[15px] px-[1.406vw]'
+            }
+            imageClasses=""
+          />
+          <img
+              src={lineImghead}
+              alt=""
+              className="max-[1024px]:max-w-[230px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] brightness-0 invert-100 max-[1024px]:mx-auto"
+          />
+          <h2 className="text-center text-white font-[500] text-2xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[1vw] m-0 max-[1024px]:text-[18px] max-[1024px]:leading-[22px]">
           REAL PEOPLE, HERE TO HELP.
         </h2>
-        <p className="text-center text-2xl lg:text-3xl font-normal">
-          From styling your registry to managing gift fulfillment, our Registry
-          Concierge is here to guide you every step of the way. Whether you need
-          help choosing the perfect serving bowl, coordinating delivery timing,
-          or simply want a second opinion — we’re just a call, email, or chat
-          away.
-        </p>
-        <br />
-        <p className="text-center text-2xl lg:text-3xl font-normal py-4">
-          Based at our sister store, Hopson Grace in Toronto, our Concierge team
-          brings years of experience in weddings, design, gifting, and retail.
+        </div>
+        
+      </div>
+      
+      <div className="container mx-auto pt-[5.833vw] pb-[4.896vw] max-[1024px]:py-[50px]">
+        <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px] w-[67.396vw] max-w-full mx-auto">
+          From styling your registry to managing gift fulfillment, our team of Registry Concierges is here to guide you every step of the way. Whether you need help choosing the perfect serving bowl, coordinating delivery timing, or simply want a second opinion — we’re just a call, email, or chat away. 
         </p>
       </div>
-      <div className="w-full container mx-auto py-16">
+      
+      <div className="w-full container mx-auto">
         <img
           src={RegistryLogo}
           alt=""
-          className="w-[100px] object-cover mx-auto"
+          className="w-[100px] object-cover mx-auto max-[1024px]:w-[60px]"
         />
         <img
           src={lineImghead}
           alt=""
           width={100}
           height={100}
-          className="object-cover mx-auto"
+          className="object-cover mx-auto lg:w-[6.164vw] xl:w-[6.164vw] 2xl:w-[6.164vw] max-[1024px]:w-[60px]"
         />
 
-        <h2 className="text-center font-semibold text-2xl lg:text-4xl pt-16">
-        QUESTIONS? STYLE DILEMMAS? NOT SURE WHERE TO START?
+        <h2 className="text-center font-[500] text-2xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[2.865vw] mb-[0.625vw] max-[1024px]:text-[18px] max-[1024px]:leading-[22px] max-[1024px]:py-[20px]">
+          QUESTIONS? STYLE DILEMMAS? NOT SURE WHERE TO START?
         </h2>
-        <div className="flex justify-center py-16">
-          <Button
-            text="MEET YOUR REGISTRY CONCIERGE"
-            className="text-white bg-[#446184] py-[22px] lg:py-[30px] lg:w-[520px] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
-          />
+        <div className="flex justify-center pt-[2.292vw] max-[1024px]:py-[20px]">
+          <button
+            className="text-white font-[500] cursor-pointer tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[17.292vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
+          >
+            CONTACT A REGISTRY CONCIERGE
+          </button>
         </div>
       </div>
 
-      <div className="w-full py-16 text-center">
+      <div className="w-full pt-16 pb-[13.313vw] max-[1024px]:py-[50px]">
         <ImageAndText
           direction={'left'}
-          imgBanner={DinnerSetImg}
+          imgBanner={BookVitual}
           lineimg={lineImg3}
-          title="Work one-on-one with your registry concierge to build, refine, or complete your registry."
-          description="There’s no question too small or request too big for our Registry advisors.  We’re always at your service."
-          buttontext={'CONTACT US'}
-          buttontype={'Color'}
+          title="book a virtual appointment"
+          description="Our virtual appointments offer personalized guidance — without leaving home. "
+          buttontext={'BOOK NOW'}
+          buttontype={'link'}
           buttonLink={'/contact-us'}
         />
       </div>

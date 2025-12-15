@@ -8,53 +8,94 @@ import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import ShowroomImg from '/assets/Images/showroom.png';
 import lineImghead from '/assets/Images/line.png';
+import {useState} from 'react';
+import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
 
 const MeetOurTeam = () => {
+
+  const [showPopup, setShowPopup] = useState(false);
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
     <section>
       <Header />
-      <img
-        src={ShowroomImg}
-        alt=""
-        className="w-full h-[510px] lg:h-[27.083vw] object-cover"
-      />
 
-      <div className="mx-auto px-[12.24vw] py-[5vw]">
-        <Heading
-          text="meet our sister store"
-          classes={
-            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+      <div className="relative w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px] banner-overlay">
+        <img
+          src={ShowroomImg}
+          alt=""
+          className="w-full h-full object-cover"
         />
-        <h2 className="text-center font-[500] text-2xl lg:text-[1.146vw] m-0 lg:leading-[1.875vw] pb-[4.427vw] pt-[1.667vw]">
+        {/* Heading with underline - Left aligned on image */}
+        <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px] flex flex-col items-center ">
+          {/* <h1 className="">
+            about us
+          </h1> */}
+          <Heading
+            text="meet our sister store"
+            classes={
+              'prata text-[#1F1D1B] text-4xl lg:text-[2.5vw] lg:leading-[4vw] xl:leading-[4vw] 2xl:leading-[4vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[28px] max-[1024px]:mb-[15px] px-[1.406vw]'
+            }
+            imageClasses=""
+          />
+          <img
+              src={lineImghead}
+              alt=""
+              className="max-[1024px]:max-w-[230px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] brightness-0 max-[1024px]:mx-auto"
+          />
+          <h2 className="text-center text-[#1F1D1B] font-[500] text-2xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[1vw] m-0 max-[1024px]:text-[18px] max-[1024px]:leading-[22px]">
           HOPSON GRACE
         </h2>
-        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.979vw] font-normal">
-          The Registry was born out of Hopson
-          Grace, Toronto’s destination for beautifully curated homewares,
-          design-forward essentials, and timeless gifts. Hopson Grace is where
-          modern entertaining meets considered design. Whether you're looking
-          for an espresso cup, a serving platter, or a Belgian modular sofa this
-          is where you'll find it.
+        </div>
+        
+      </div>
+
+      <div className="container mx-auto pt-[5.833vw] pb-[4.896vw] max-[1024px]:py-[50px]">
+        <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
+        The Registry was born out of Hopson Grace, Toronto’s destination for beautifully curated homewares, design-forward essentials, and timeless gifts. Hopson Grace is where modern entertaining meets considered design. Whether you're looking for an espresso cup, a serving platter, or a Belgian modular sofa—this is where you'll find it. 
         </p>
       </div>
-      <div className="mx-auto px-[12.24vw]">
-        <h2 className="text-center font-semibold text-2xl lg:text-[1.146vw] lg:leading-[1.875vw]">
-          BEYOND THE WEDDING
+
+      <div className="w-full container mx-auto">
+        <img
+          src={RegistryLogo}
+          alt=""
+          className="w-[100px] object-cover mx-auto max-[1024px]:w-[60px]"
+        />
+        <img
+          src={lineImghead}
+          alt=""
+          width={100}
+          height={100}
+          className="object-cover mx-auto lg:w-[6.164vw] xl:w-[6.164vw] 2xl:w-[6.164vw] max-[1024px]:w-[60px]"
+        />
+
+        <h2 className="text-center font-[500] text-2xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[2.865vw] mb-[0.625vw] max-[1024px]:text-[18px] max-[1024px]:leading-[22px] max-[1024px]:py-[20px]">
+        PERFECT FOR POST-WEDDING LIFE
         </h2>
-        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.979vw] font-normal">
-          Like what you see? Many of the pieces featured on The Registry are
-          also available at Hopson Grace. Discover beautiful home essentials and
-          timeless gifts perfect for post-wedding life and every chapter that
-          follows.
+        <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
+        Visit Hopson Grace for beautiful home essentials and timeless gifts.
         </p>
-        <div className="flex justify-center pt-[2.292vw]">
-          <Button
-            text="TAKE ME THERE"
-            className="text-white font-[500] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-[22px] lg:py-[5px] lg:w-[17.292vw] lg:h-[4.063vw] cursor-pointer mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg"
-          />
+        <div className="flex justify-center pt-[2.292vw] max-[1024px]:py-[20px]">
+          <button
+            onClick={handleOpenPopup}
+            
+            className="text-white font-[500] cursor-pointer tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[17.292vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
+          >
+            TAKE ME THERE
+          </button>
+          {showPopup && (
+            <ModalPortal>
+              <Popup onClose={handleClosePopup} />
+            </ModalPortal>
+          )}
         </div>
       </div>
 
@@ -65,7 +106,7 @@ const MeetOurTeam = () => {
           lineimg={lineImg3}
           title="questions?"
           description="We’ve got answers."
-          buttontext={'PHONE, EMAIL OR LIVE CHAT'}
+          buttontext={'CONTACT US'}
           buttontype={'Color'}
           buttonLink={'/contact-us'}
           sx={{

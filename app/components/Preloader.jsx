@@ -1,22 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigation, useLocation } from '@remix-run/react';
 import preloaderLogo from '/assets/Images/hopson-loader.png';
 
 export function Preloader() {
+  const navigation = useNavigation();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [isHidden, setIsHidden] = useState(false);
-  const [minDisplayTime] = useState(Date.now() + 800); // Minimum 800ms display time
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const minDisplayTimeRef = useRef(Date.now() + 800);
+  const hideTimeoutRef = useRef(null);
 
-  useEffect(() => {
-    // Function to hide preloader with minimum display time
-    const hidePreloader = () => {
-      const now = Date.now();
-      const remainingTime = minDisplayTime - now;
-      
+  // Function to hide preloader
+  const hidePreloader = useCallback((isFirstLoad = false) => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+    }
+
+    const now = Date.now();
+    const remainingTime = minDisplayTimeRef.current - now;
+    
+    hideTimeoutRef.current = setTimeout(() => {
+      setIsHidden(true);
       setTimeout(() => {
-        setIsHidden(true);
-        // Remove from DOM after fade-out animation
-        setTimeout(() => {
-          setIsLoading(false);
+        setIsLoading(false);
+        if (isFirstLoad) {
+          setIsInitialLoad(false);
           // Remove inline preloader if it exists
           const inlinePreloader = document.getElementById('inline-preloader');
           if (inlinePreloader) {
@@ -26,34 +35,65 @@ export function Preloader() {
               inlinePreloader.remove();
             }, 500);
           }
-        }, 500);
-      }, remainingTime > 0 ? remainingTime : 0);
-    };
+        }
+      }, 500);
+    }, remainingTime > 0 ? remainingTime : 0);
+  }, []);
 
-    // Function to check if critical resources are loaded
-    const checkLoadState = () => {
-      // Check for window load event (all resources loaded)
-      const handleWindowLoad = () => {
-        // Wait a bit for images to render
-        setTimeout(() => {
-          hidePreloader();
-        }, 300);
+  // Show preloader when navigating (route changes)
+  useEffect(() => {
+    if (!isInitialLoad) {
+      // Show preloader when navigation starts
+      if (navigation.state === 'loading') {
+        setIsLoading(true);
+        setIsHidden(false);
+        minDisplayTimeRef.current = Date.now() + 800;
+      }
+    }
+  }, [navigation.state, isInitialLoad]);
+
+  // Hide preloader when navigation completes
+  useEffect(() => {
+    if (navigation.state === 'idle' && !isInitialLoad) {
+      // Wait for images to load on the new page
+      setTimeout(() => {
+        hidePreloader(false);
+      }, 300);
+    }
+  }, [navigation.state, isInitialLoad, hidePreloader]);
+
+  // Handle initial page load
+  useEffect(() => {
+    if (isInitialLoad) {
+      const checkLoadState = () => {
+        const handleWindowLoad = () => {
+          setTimeout(() => {
+            hidePreloader(true);
+          }, 300);
+        };
+
+        if (document.readyState === 'complete') {
+          handleWindowLoad();
+        } else {
+          window.addEventListener('load', handleWindowLoad, { once: true });
+          setTimeout(() => {
+            hidePreloader(true);
+          }, 3000);
+        }
       };
 
-      if (document.readyState === 'complete') {
-        handleWindowLoad();
-      } else {
-        window.addEventListener('load', handleWindowLoad, { once: true });
-        // Fallback: hide after max 3 seconds regardless
-        setTimeout(() => {
-          hidePreloader();
-        }, 3000);
+      checkLoadState();
+    }
+  }, [isInitialLoad, hidePreloader]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
       }
     };
-
-    // Start checking immediately
-    checkLoadState();
-  }, [minDisplayTime]);
+  }, []);
 
   if (!isLoading) return null;
 
@@ -65,7 +105,6 @@ export function Preloader() {
           alt="Loading" 
           className="preloader-logo"
           onLoad={(e) => {
-            // Ensure image is loaded before showing
             e.target.style.opacity = '1';
           }}
         />
