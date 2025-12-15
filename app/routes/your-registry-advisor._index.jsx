@@ -83,10 +83,11 @@ const YourRegistryAdvisor = () => {
           imgBanner={BookVitual}
           lineimg={lineImg3}
           title="book a virtual appointment"
-          description="Our virtual appointments offer personalized guidance — without leaving home. "
+          description="Our virtual appointments offer personalized guidance — without leaving home. "
           buttontext={'BOOK NOW'}
           buttontype={'link'}
           buttonLink={'/contact-us'}
+          buttonClassName="!text-[#1F1D1B]"
         />
       </div>
       <Footer />

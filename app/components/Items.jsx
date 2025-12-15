@@ -63,7 +63,7 @@ const Items = ({ featuredRegistryData = null }) => {
           {products.slice(0, 6).map((product, index) => (
             <div 
               key={product.node.id || index} 
-              className="item cursor-pointer w-[11.458vw] h-[11.458vw]"
+              className="item cursor-pointer w-[11.458vw] h-[11.458vw] max-[1024px]:w-[11.2vw] max-[1024px]:h-[11.2vw]"
               onClick={() => handleProductClick(product.node.handle)}
             >
               <img 
