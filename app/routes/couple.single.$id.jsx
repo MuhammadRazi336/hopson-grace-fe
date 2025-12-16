@@ -93,8 +93,8 @@ export async function loader({params, context}) {
     console.log('Loader: Gift products response:', res);
     console.log('Loader: Cash fund response:', cashRes);
 
-    // Get API base URL from environment
-    const apiBaseUrl = context.env?.API_BASE_URL || '';
+    // Get API base URL from environment with fallback
+    const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
 
     // Handle case where there are no gift products
     let mergedArray = [];
@@ -377,7 +377,7 @@ export default function CoupleProfile() {
     response = {},
     registryId = null,
     collections = [],
-    apiBaseUrl = '',
+    apiBaseUrl = 'https://dev-hopsongrace.codup.io',
     hasProducts = false,
     coupleId = null,
   } = loaderData || {};
@@ -470,8 +470,11 @@ export default function CoupleProfile() {
 
     setCartLoading(true);
     try {
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
-        `${apiBaseUrl}/api/cart/get-cart/${registryId}/${email}`,
+        `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
       );
       const apiData = await res.json();
 
@@ -713,7 +716,9 @@ export default function CoupleProfile() {
 
     setIsApiLoading(true);
     try {
-      const res = await fetch(`${apiBaseUrl}/api/cart`, {
+      // Ensure apiBaseUrl is set
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const res = await fetch(`${baseUrl}/api/cart`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -764,8 +769,11 @@ export default function CoupleProfile() {
       };
       console.log('Sending to Cart API:', payload);
 
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
-        `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
+        `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
@@ -798,8 +806,11 @@ export default function CoupleProfile() {
     try {
       console.log('Sending to Cart API with quantity:', payload);
 
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
-        `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
+        `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
@@ -1003,8 +1014,11 @@ export default function CoupleProfile() {
     if (emailForCart && registryId) {
       setCartLoading(true);
       try {
+        // Ensure apiBaseUrl is set and encode email for URL
+        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+        const encodedEmail = encodeURIComponent(emailForCart);
         const res = await fetch(
-          `${apiBaseUrl}/api/cart/get-cart/${registryId}/${emailForCart}`,
+          `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
         );
         const apiData = await res.json();
 
@@ -1237,8 +1251,11 @@ export default function CoupleProfile() {
     // If updatedItem is provided, this is a quantity update
     if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
       // Update quantity in cart
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       fetch(
-        `${apiBaseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`,
+        `${baseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${encodedEmail}`,
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
@@ -1270,8 +1287,11 @@ export default function CoupleProfile() {
         });
     } else {
       // Remove item from cart
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       fetch(
-        `${apiBaseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`,
+        `${baseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${encodedEmail}`,
         {
           method: 'DELETE',
           headers: {'Content-Type': 'application/json'},
