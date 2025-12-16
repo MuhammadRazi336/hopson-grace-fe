@@ -239,6 +239,19 @@ const Registry = () => {
 
       // Handle both processed products and edge structure
       const productNode = product.node || product;
+      
+      // Ensure product has an ID
+      if (!productNode || !productNode.id) {
+        setAlertMessage('Product ID not found.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+
       const firstVariant = productNode?.variants?.edges?.[0]?.node;
       if (!firstVariant) {
         setAlertMessage('Product variant not found.');
@@ -263,37 +276,50 @@ const Registry = () => {
         return;
       }
       
-             // Prepare the payload for adding to registry
-       const payload = {
-         productId: Number(extractShopifyId(productNode.id)),
-         amount: Number(firstVariant.priceV2.amount),
-         registryId: Number(registry.data[0].id),
-         productTypeId: 1,
-         quantity: selectedQuantity,
-         note: '',
-         isGroupGift: false
-       };
+      // Extract product ID safely
+      const productId = extractShopifyId(productNode.id);
+      if (!productId) {
+        setAlertMessage('Invalid product ID format.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+        return;
+      }
+      
+      // Prepare the payload for adding to registry
+      const payload = {
+        productId: Number(productId),
+        amount: Number(firstVariant.priceV2.amount),
+        registryId: Number(registry.data[0].id),
+        productTypeId: 1,
+        quantity: selectedQuantity,
+        note: '',
+        isGroupGift: false
+      };
 
-       // Debug: Log the payload and registry info
-       console.log('Adding to registry:', {
-         payload,
-         registry,
-         product: {
-           id: product.id,
-           extractedId: extractShopifyId(product.id),
-           title: product.title,
-           price: firstVariant.priceV2.amount
-         }
-       });
+      // Debug: Log the payload and registry info
+      console.log('Adding to registry:', {
+        payload,
+        registry,
+        product: {
+          id: productNode.id,
+          extractedId: productId,
+          title: productNode.title,
+          price: firstVariant.priceV2.amount
+        }
+      });
 
-              // Submit to action using fetcher
-       fetcher.submit(
-         {payload: JSON.stringify(payload)},
-         {
-           method: 'post',
-           encType: 'application/json',
-         },
-       );
+      // Submit to action using fetcher
+      fetcher.submit(
+        {payload: JSON.stringify(payload)},
+        {
+          method: 'post',
+          encType: 'application/json',
+        },
+      );
       
     } catch (error) {
       console.error('Error adding to registry:', error);
@@ -303,9 +329,9 @@ const Registry = () => {
       setTimeout(() => {
         setShowAlert(false);
         setAlertMessage('');
-             }, 3000);
-     }
-   };
+      }, 3000);
+    }
+  };
 
   return (
     <section>
@@ -351,12 +377,13 @@ const Registry = () => {
              {filteredProducts.slice(0, productsToShow).map((product, index) => {
                // Handle both processed products and edge structure
                const productNode = product.node || product;
+               const productId = productNode.id || product.id; // Use productNode.id first, fallback to product.id
                const firstImage = productNode.images?.edges?.[0]?.node?.url || productNode.images?.edges?.[0]?.node?.src || '/assets/Images/placeholder.png';
                const firstVariant = productNode.variants?.edges?.[0]?.node;
-               const price = formatPrice(firstVariant?.priceV2?.amount || product.price);
+               const price = formatPrice(firstVariant?.priceV2?.amount || product.price || productNode.price);
                
                return (
-                 <div key={product.id} className="relative group h-[460px]">
+                 <div key={productId} className="relative group h-[460px]">
                    {/* Product Image and Info */}
                    <div className="p-4 z-10 relative">
                      <img
@@ -396,7 +423,7 @@ const Registry = () => {
                             <button 
                               onClick={() => setQuantities(prev => ({
                                 ...prev,
-                                [product.id]: (prev[product.id] || 1) + 1
+                                [productId]: (prev[productId] || 1) + 1
                               }))}
                               className="flex items-center justify-center bg-white transition-colors"
                             >
@@ -404,7 +431,7 @@ const Registry = () => {
                             </button>
                             
                             <input
-                              value={quantities[product.id] || 1}
+                              value={quantities[productId] || 1}
                               className="w-16 h-8 text-center border-none outline-none text-sm"
                               readOnly
                             />
@@ -412,7 +439,7 @@ const Registry = () => {
                             <button 
                               onClick={() => setQuantities(prev => ({
                                 ...prev,
-                                [product.id]: Math.max(1, (prev[product.id] || 1) - 1)
+                                [productId]: Math.max(1, (prev[productId] || 1) - 1)
                               }))}
                               className="flex items-center justify-center bg-white transition-colors"
                             >
@@ -422,7 +449,7 @@ const Registry = () => {
 
                                                      {/* Add to Registry Button */}
                            <button 
-                             onClick={() => handleAddToRegistry(product, quantities[product.id] || 1)}
+                             onClick={() => handleAddToRegistry(product, quantities[productId] || 1)}
                              disabled={fetcher.state === 'submitting'}
                              className={`text-white text-xs font-bold py-4 px-6 ${
                                fetcher.state === 'submitting'

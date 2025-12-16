@@ -41,6 +41,7 @@ function deferred() {
 }
 
 export function extractShopifyId(id) {
+  if (!id) return null; // Return null if id is undefined, null, or empty
   const match = id.match(/\d+/); // Matches the first sequence of digits
   return match ? match[0] : null; // Returns the number or null if not found
 }

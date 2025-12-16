@@ -1,6 +1,6 @@
 import React, {useState, useRef} from 'react';
-import {useFetcher, useLoaderData} from '@remix-run/react';
-import {defer, redirect} from '@shopify/remix-oxygen';
+import {useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
+import {json, redirect} from '@shopify/remix-oxygen';
 import Input from '~/components/Input';
 import { Footer } from '~/components/Footer';
 
@@ -40,14 +40,15 @@ export async function action({request, context}) {
         },
       }
     );
-    return defer({response});
+    return json({response, success: true});
   } catch (e) {
-    return defer({e});
+    return json({error: e.message || 'Failed to create cash fund', success: false});
   }
 }
 
 function CreateNewCashFund() {
   const {registry} = useLoaderData();
+  const navigate = useNavigate();
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cashFundName, setCashFundName] = useState('');
@@ -79,27 +80,33 @@ function CreateNewCashFund() {
     }
   };
 
-  // Show feedback on fetcher.data change
+  // Show feedback on fetcher.data change and redirect on success
   React.useEffect(() => {
-    if (fetcher.data?.response) {
-      setAlertMessage('Cash fund has been created and added to your registry!');
-      setAlertType('success');
-      setShowAlert(true);
-      // Hide alert after 3 seconds
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
-    } else if (fetcher.data?.e) {
-      setAlertMessage('Failed to create cash fund. Please try again.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+    // Only process when fetcher is idle (submission complete) and we have data
+    if (fetcher.state === 'idle' && fetcher.data) {
+      // Check for success response
+      if (fetcher.data?.success === true || fetcher.data?.response) {
+        setAlertMessage('Cash fund has been created and added to your registry!');
+        setAlertType('success');
+        setShowAlert(true);
+        // Redirect to registry home page after showing success message for 2 seconds
+        const redirectTimer = setTimeout(() => {
+          navigate('/dashboard/registry');
+        }, 2000);
+        
+        // Cleanup timer on unmount
+        return () => clearTimeout(redirectTimer);
+      } else if (fetcher.data?.error || fetcher.data?.success === false) {
+        setAlertMessage(fetcher.data?.error || 'Failed to create cash fund. Please try again.');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertMessage('');
+        }, 3000);
+      }
     }
-  }, [fetcher.data]);
+  }, [fetcher.data, fetcher.state, navigate]);
 
   const handleFormSubmit = (e) => {
 
@@ -391,12 +398,20 @@ function CreateNewCashFund() {
               </div>
             </fetcher.Form>
 
-            {/* Alert Component */}
+            {/* Alert Component - Fixed to viewport, always visible at bottom-right */}
             {showAlert && (
               <div
-                className={`fixed top-4 right-4 ${
+                className={`success-alert-popup fixed bottom-4 right-4 ${
                   alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-                } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+                } text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in-out`}
+                style={{ 
+                  position: 'fixed', 
+                  bottom: '1rem',
+                  right: '1rem',
+                  zIndex: 9999,
+                  pointerEvents: 'auto',
+                  maxWidth: 'calc(100vw - 2rem)'
+                }}
               >
                 <div className="flex items-center">
                   {alertType === 'success' && (
