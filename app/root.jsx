@@ -367,7 +367,6 @@ export function Layout({children}) {
             {/* You might want to add a loading state or error message here */}
           </div>
         )}
-        <ToastContainer position="bottom-center" />
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
@@ -396,6 +395,23 @@ export default function App() {
 
     {/* Modal outside the scaled tree */}
     <div id="modal-root"></div>
+
+    {/* Alert outside the scaled tree */}
+    <div id="alert-root" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 99999 }}></div>
+
+    {/* ToastContainer outside the scaled tree */}
+    <ToastContainer 
+      position="top-right" 
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+    />
 
     {/* Guided Video Component */}
     <GuidedVideo />
