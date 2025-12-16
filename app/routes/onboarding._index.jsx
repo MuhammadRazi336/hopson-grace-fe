@@ -41,7 +41,7 @@ const COLLECTIONS_QUERY = `#graphql
   }
 `;
 
-// Define step titles (1-9)
+// Define step titles (1-8)
 const STEP_TITLES = {
   1: "let's get to know each other.",
   2: "and your partner?",
@@ -49,9 +49,8 @@ const STEP_TITLES = {
   4: "the countdown is on. mark your date.",
   5: "how many guest are you inviting?",
   6: "where would you like your gifts shipped after the wedding?",
-  7: "what type of gifts would you like?",
-  8: "what kind of gifts are you looking for?",
-  9: "you're nearly there!"
+  7: "what kind of gifts are you looking for?",
+  8: "you're nearly there!"
 };
 
 export async function loader({ request, context }) {
@@ -115,8 +114,8 @@ const OnboardingIndex = () => {
   
   // Create dynamic step titles
   const getStepTitle = (step) => {
-    if (step === 9) {
-      // Dynamic title for step 9 using user names
+    if (step === 8) {
+      // Dynamic title for step 8 using user names
       if (firstName && fianceFirstName) {
         const lowerFirstName = firstName.toLowerCase();
         const lowerFianceFirstName = fianceFirstName.toLowerCase();
@@ -137,9 +136,9 @@ const OnboardingIndex = () => {
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
         stepNo={currentStep}
-        totalSteps={9}
-        content={hydrated && <Onboarding onStepChange={(val) => setCurrentStep((val || 1) + 2)} />} 
-        className={currentStep === 8 || currentStep === 9 ? 'px-12' : ''}
+        totalSteps={8}
+        content={hydrated && <Onboarding onStepChange={(val) => setCurrentStep((val || 1) + 3)} />} 
+        className={currentStep === 8 ? 'px-12' : ''}
       />
       <Footer />
     </div>

@@ -97,6 +97,24 @@ const OnboardingClient = ({onStepChange}) => {
     }
   }, [eventTypes]);
 
+  // Auto-select default collections when collections are loaded
+  useEffect(() => {
+    if (collections?.nodes && selectedCollections.length === 0) {
+      // Filter parent collections (excluding ready-made)
+      const parentCollections = collections.nodes.filter((collection) => {
+        const isParentCollection = collection?.metafield?.value === 'true';
+        const isReadyMade = collection?.readyMadeMetafield?.value === 'true';
+        return isParentCollection && !isReadyMade;
+      });
+      
+      // Select first 3 collections by default (or all if less than 3)
+      if (parentCollections.length > 0) {
+        const defaultSelections = parentCollections.slice(0, Math.min(3, parentCollections.length));
+        setSelectedCollections(defaultSelections);
+      }
+    }
+  }, [collections, selectedCollections.length]);
+
   useEffect(() => {
     if (user) {
       const token = user.accessToken;
@@ -107,7 +125,7 @@ const OnboardingClient = ({onStepChange}) => {
         } else if (user.stepNumber === 2) {
           setStep(STEPS_CONSTANTS.SHIPPING_INFO);
         } else if (user.stepNumber === 3) {
-          setStep(STEPS_CONSTANTS.PREFER_GIFT_INFO);
+          setStep(STEPS_CONSTANTS.STYLE_INFO);
         } else {
           setStep(STEPS_CONSTANTS.EVENT_DATE_INFO);
         }
@@ -306,108 +324,45 @@ const OnboardingClient = ({onStepChange}) => {
     try {
       const data = await Registry_Services.updateOnBoarding(payload, token);
 
-      // First, store the selected sub-collections
+      // Handle collections and sub-collections from backend with default/empty values
+      // Send empty arrays to backend if no selections were made
+      if (user && user.user && user.user.id) {
+        const preferredCategoryTitles = selectedCollections && selectedCollections.length > 0 
+          ? selectedCollections.map((col) => col.title) 
+          : [];
+        const preferredSubCategoryTitles = selectedSubCollections && selectedSubCollections.length > 0
+          ? selectedSubCollections.map((col) => col.title)
+          : [];
+        
+        // Update preferred categories with empty arrays if no selections
+        try {
+          await Registry_Services.updatePreferredCategories(
+            user.user.id,
+            {
+              preferredCategory: preferredCategoryTitles,
+              preferredSubCategory: preferredSubCategoryTitles,
+            },
+            token
+          );
+        } catch (error) {
+          // If backend doesn't require these, continue anyway
+          console.log('Preferred categories update skipped or failed:', error);
+        }
+      }
+
+      // Store empty sub-collections array in localStorage if no selections
       try {
-        const collectionsString = JSON.stringify(selectedSubCollections);
+        const collectionsString = JSON.stringify(selectedSubCollections || []);
         localStorage.setItem('@SelectedSubCollections', collectionsString);
-
-        // Verify storage immediately
-        const storedCollections = localStorage.getItem(
-          '@SelectedSubCollections',
-        );
-
-        if (!storedCollections) {
-          throw new Error('Failed to store collections in localStorage');
-        }
       } catch (storageError) {
-        alert('There was an error saving your selections. Please try again.');
-        return; // Don't proceed if storage failed
+        // Continue even if storage fails
+        console.log('Storage error:', storageError);
       }
 
-      // Then fetch and store products
-      try {
-        const productsQuery = `#graphql
-          query GetProductsByCollection($collectionId: ID!) {
-            collection(id: $collectionId) {
-              id
-              title
-              products(first: 50) {
-                edges {
-                  node {
-                    id
-                    title
-                    handle
-                    description
-                    collections(first: 50) {
-                      edges {
-                        node {
-                          id
-                          title
-                          handle
-                        }
-                      }
-                    }
-                    images(first: 1) {
-                      edges {
-                        node {
-                          id
-                          src
-                        }
-                      }
-                    }
-                    variants(first: 1) {
-                      edges {
-                        node {
-                          id
-                          priceV2 {
-                            amount
-                            currencyCode
-                          }
-                          inventoryQuantity
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `;
-
-        // Process each sub-collection one at a time
-        for (const subCollection of selectedSubCollections) {
-          try {
-            // Fetch products for this collection
-            const result = await context.storefront.query(productsQuery, {
-              variables: {
-                collectionId: subCollection.id,
-              },
-            });
-
-            if (result?.collection?.products?.edges) {
-              // Store products for this collection
-              const productsKey = `@Products_${subCollection.id}`;
-              const productsString = JSON.stringify(
-                result.collection.products.edges,
-              );
-
-              localStorage.setItem(productsKey, productsString);
-
-              // Verify storage
-              const storedProducts = localStorage.getItem(productsKey);
-            }
-          } catch (error) {}
-        }
-
-        // Navigate after all operations are complete
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
-      } catch (error) {
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
-      }
+      // Navigate after all operations are complete
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (e) {
       setTimeout(() => {
         navigate('/');
@@ -481,56 +436,30 @@ const OnboardingClient = ({onStepChange}) => {
        setStep4Errors(errors);
        if (Object.keys(errors).length > 0) return;
        await handleShipping();
-    } else if (step === 4) {
-      // Validate that at least one gift preference is selected
-      if (!selectedGiftPreference) {
-        alert('Please select your gift preference to continue.');
+    } else if (step === STEPS_CONSTANTS.STYLE_INFO) {
+      // Step 4 is now STYLE_INFO (sub-collections selection)
+      // Validate that at least one sub-collection is selected
+      if (!selectedSubCollections || selectedSubCollections.length === 0) {
+        alert('Please select at least one style to continue.');
         return;
       }
-      setStep(step + 1);
-         } else if (step === 5) {
-       // Validate that at least one collection is selected
-       if (!selectedCollections || selectedCollections.length === 0) {
-         alert('Please select at least one collection to continue.');
-         return;
-       }
-       
-       // Call API to update preferred categories when finishing Step 5
-       if (user && user.user && user.user.id) {
-         const preferredCategoryTitles = selectedCollections.map((col) => col.title);
-         const token = user.accessToken;
-         Registry_Services.updatePreferredCategories(
-           user.user.id,
-           {
-             preferredCategory: preferredCategoryTitles,
-             preferredSubCategory: selectedSubCollections.map((col) => col.title),
-           },
-           token
-         );
-       }
-       setStep(step + 1);
-         } else if (step === 6) {
-       // Validate that at least one sub-collection is selected
-       if (!selectedSubCollections || selectedSubCollections.length === 0) {
-         alert('Please select at least one sub-collection to continue.');
-         return;
-       }
-       
-       // Call API to update preferred subcategories when finishing Step 6
-       if (user && user.user && user.user.id) {
-         const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
-         const token = user.accessToken;
-         Registry_Services.updatePreferredCategories(
-           user.user.id,
-           {
-             preferredCategory: selectedCollections.map((col) => col.title),
-             preferredSubCategory: preferredSubCategoryTitles,
-           },
-           token
-         );
-       }
-       setStep(step + 1);
-    } else if (step === 7) {
+      
+      // Call API to update preferred categories when finishing Step 4
+      if (user && user.user && user.user.id) {
+        const preferredCategoryTitles = selectedCollections.map((col) => col.title);
+        const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
+        const token = user.accessToken;
+        Registry_Services.updatePreferredCategories(
+          user.user.id,
+          {
+            preferredCategory: preferredCategoryTitles,
+            preferredSubCategory: preferredSubCategoryTitles,
+          },
+          token
+        );
+      }
+      setStep(5);
+    } else if (step === 5) {
       await handleOnboard();
     }
   }
@@ -550,7 +479,7 @@ const OnboardingClient = ({onStepChange}) => {
 
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
-    if (currentStep === 7) {
+    if (currentStep === 5) {
       return (
         <div className="flex flex-col items-center justify-center text-white py-6 rounded-md">
           <div className="uppercase tracking-widest font-semibold mb-4 text-center text-xl md:text-xl">
@@ -608,15 +537,6 @@ const OnboardingClient = ({onStepChange}) => {
             onSkip={handleSkip}
           />
         );
-      case STEPS_CONSTANTS.PREFER_GIFT_INFO:
-        return <Step5 onGiftPreferenceSelect={setSelectedGiftPreference} selectedGiftPreference={selectedGiftPreference} />;
-      case STEPS_CONSTANTS.COLLECTION_INFO:
-        return (
-          <Step6
-            collections={collections}
-            onCollectionsSelect={setSelectedCollections}
-          />
-        );
       case STEPS_CONSTANTS.STYLE_INFO:
         return (
           <Step7
@@ -639,7 +559,7 @@ const OnboardingClient = ({onStepChange}) => {
     <div className="flex justify-center items-center">
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
-      {step !== 7 && <Stepper step={step} totalSteps={8} />}
+      {step !== 5 && <Stepper step={step} totalSteps={5} />}
       <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
         <div className="mb-6">
@@ -647,7 +567,7 @@ const OnboardingClient = ({onStepChange}) => {
           {renderStepContent(step)}
         </div>
         {/* Back and Next buttons, hidden on last step */}
-        {step !== 7 && (
+        {step !== 5 && (
           <div className="flex justify-between mt-4">
             {/* Only show back button if not on step 1 */}
             {step !== STEPS_CONSTANTS.EVENT_DATE_INFO && (
@@ -667,7 +587,7 @@ const OnboardingClient = ({onStepChange}) => {
               text="Next"
               className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
             >
-              {step === 8 ? 'Submit' : 'Next'}{' '}
+              Next{' '}
               <img src={arrow} alt="" className="max-[768px]:w-4" />
             </button>
           </div>

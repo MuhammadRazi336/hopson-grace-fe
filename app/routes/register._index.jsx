@@ -398,7 +398,7 @@ const RegisterIndex = () => {
         <StepsAndImage
           title={stepTitles[currentStep]}
           stepNo={(currentStep <= 2 ? 1 : 2).toString()}
-          totalSteps="9"
+          totalSteps="8"
           showBackButton={currentStep > 1}
           onBackClick={goBack}
           content={
@@ -422,7 +422,7 @@ const RegisterIndex = () => {
           }
         />
         {/* Main content wrapper */}
-        <Stepper step={currentStep <= 2 ? 1 : 2} totalSteps={9} />
+        <Stepper step={currentStep <= 2 ? 1 : 2} totalSteps={8} />
       </div>
       <Footer />
     </>
