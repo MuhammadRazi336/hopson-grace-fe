@@ -19,6 +19,7 @@ const ImageAndText = ({
   className,
   showLiveChat = false,
   liveChatProps = {},
+  buttonClassName = '',
 }) => {
   const location = useLocation();
 
@@ -65,9 +66,10 @@ const ImageAndText = ({
             className={`text-[10px] block leading-[12px] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
               ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
               ${buttontype == 'link'
-                ? 'text-[#1F1D1B] border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                : 'text-[#1F1D1B] bg-[#446184] rounded-none font-mono'}
+                ? 'border-[3px] border-[#1F1D1B] text-white bg-transparent rounded-none font-semibold tracking-[8%] font-800'
+                : 'text-white bg-[#446184] rounded-none font-mono'}
               ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
+              ${buttonClassName}
             `}
             disabled={disabled}
           />
@@ -78,9 +80,10 @@ const ImageAndText = ({
             className={`inline-flex items-center justify-center text-[12px] leading-[12px] lg:text-[0.938vw] xl:text-[0.938vw] font-[600] 2xl:text-[0.938vw] steps-check-btn cursor-pointer w-[155px] h-[44px] max-[1024px]:mx-auto lg:w-[16.563vw] lg:text-[0.938vw] lg:leading-[0.938vw] lg:h-[3.958vw] mt-4 lg:mt-[1.042vw] bastardogrotesk button-cs 
               ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
               ${buttontype == 'link'
-                ? 'text-[#1F1D1B] border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                : 'text-[#1F1D1B] bg-[#446184] rounded-none font-mono'}
+                ? 'text-white border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
+                : 'text-white bg-[#446184] rounded-none font-mono'}
               ${isContactPage ? '!bg-transparent lg:w-[19.531vw] xl:w-[19.531vw] 2xl:w-[19.531vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
+              ${buttonClassName}
             `}
             aria-label={buttontext}
           >
@@ -99,7 +102,7 @@ const ImageAndText = ({
         <img
           src={imgBanner}
           alt="Image Banner"
-          className="w-full max-[1024px]:h-full h-full object-cover object-top rounded-none"
+          className="w-full max-[1024px]:h-full h-full object-cover object-center rounded-none"
         />
       </div>
     </div>
