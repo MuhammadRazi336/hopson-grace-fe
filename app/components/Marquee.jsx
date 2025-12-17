@@ -27,12 +27,13 @@ const Marquee = ({ brands = [] }) => {
     return normalized === 'true' || normalized === '1' || normalized === 'yes';
   };
 
-  // Filter to only featured brands if brand objects are provided
+  // Use brands as-is if they're already filtered, or filter to only featured brands
+  // If brands are passed from home page, they're already filtered by featuredMetafield
   const filteredDynamic = Array.isArray(brands)
     ? brands.filter((b) =>
         typeof b === 'string' // keep string paths (used in fallback)
           ? true
-          : isFeaturedTrue(b?.featuredMetafield?.value)
+          : true // Accept all brands passed in (they're already filtered by the loader)
       )
     : [];
 
