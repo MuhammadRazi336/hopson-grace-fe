@@ -4,6 +4,7 @@ import {Link} from '@remix-run/react';
 import SideCart from '~/components/SideCart';
 import {CoupleFooter} from '~/components/CoupleFooter';
 import {formatPrice} from '~/utils/priceFormatter';
+import ModalPortal from '~/components/ModalPortal';
 
 export default function CoupleProfileView() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -281,10 +282,11 @@ export default function CoupleProfileView() {
       </div>
 
       {isPopupOpen && selectedGiftData && (
-        <div
-          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
-          onClick={closePopup}
-        >
+        <ModalPortal>
+          <div
+            className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
+            onClick={closePopup}
+          >
           <div
             className="relative bg-white rounded-lg shadow-lg max-w-4xl w-full mx-auto my-8 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
@@ -415,6 +417,7 @@ export default function CoupleProfileView() {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
       {sideCartOpen && (
         <div

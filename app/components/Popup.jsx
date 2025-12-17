@@ -3,6 +3,7 @@ import reglogo from "/assets/Images/reglogo.png";
 import closebtn from "/assets/Images/closebtn.png";
 import { Link } from "@remix-run/react";
 import { useEffect, useRef } from "react";
+import ModalPortal from "./ModalPortal";
 
 const Popup = ({ onClose }) => {
   const overlayRef = useRef(null);
@@ -28,20 +29,21 @@ const Popup = ({ onClose }) => {
   };
 
   return (
-    <div
-      ref={overlayRef}
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-      className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[#1F1D1B]/90"
-      style={{ zIndex: 99999, position: 'fixed' }}
-    >
+    <ModalPortal>
+      <div
+        ref={overlayRef}
+        onClick={handleOverlayClick}
+        role="dialog"
+        aria-modal="true"
+        className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[#1F1D1B]/90"
+        style={{ zIndex: 99999, position: 'fixed' }}
+      >
       <div className="max-[1024px]:flex-col flex items-center justify-center gap-0 max-[1024px]:px-4 lg:scale-90 xl:scale-90 2xl:scale-90">
       <div className="relative lg:w-[47.396vw] xl:w-[47.396vw] 2xl:w-[47.396vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw] max-[1024px]:w-full max-[1024px]:h-auto lg:left-[5vw] xl:left-[5vw] 2xl:left-[5vw]">
         <img
           src={popupimg}
           alt=""
-          className="w-full h-full object-cover max-[1024px]:max-w-[95%]"
+          className="w-full h-full object-cover max-[1024px]:max-w-[95%] object-position-[-21vw_0px] max-[1024px]:object-center"
         />
       </div>
 
@@ -71,9 +73,10 @@ const Popup = ({ onClose }) => {
             LET'S GO
           </Link>
         </div>
-      </div>
+        </div>
       </div>
     </div>
+    </ModalPortal>
   );
 };
 

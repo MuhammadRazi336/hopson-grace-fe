@@ -173,9 +173,7 @@ const HeroSlider = () => {
                   className="text-white tracking-[1.28px] max-[1024px]:w-[224px] max-[1024px]:h-[44px] cursor-pointer text-[16px] lg:px-[5px] lg:text-[0.833vw] lg:leading-[0.938vw] leading-[18px] bg-[#446184] py-[2px] lg:h-[4.063vw] lg:w-[14.353vw] w-[275.58px] rounded-none button-cs max-[1024px]:text-[10px]"
                 />
                 {showPopup && (
-                  <ModalPortal>
-                    <Popup onClose={handleClosePopup} />
-                  </ModalPortal>
+                  <Popup onClose={handleClosePopup} />
                 )}
 
                 <NavLink to="/couple">

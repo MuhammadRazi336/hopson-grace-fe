@@ -351,6 +351,7 @@ const Home = () => {
             buttontext={'CONTACT US'}
             buttontype={'link'}
             buttonLink={'/contact-us'}
+            buttonClassName='!text-[#1F1D1B]'
           />
     </section>
 
@@ -368,6 +369,7 @@ const Home = () => {
           buttontext={'BOOK NOW'}
           buttontype={'link'}
           buttonLink={'/contact-us'}
+          buttonClassName='!text-[#1F1D1B]'
         />
       </section>
 
