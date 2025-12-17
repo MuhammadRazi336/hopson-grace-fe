@@ -1,4 +1,3 @@
-import {useLocation} from '@remix-run/react';
 import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
 import {defer} from '@shopify/remix-oxygen';
 import {
@@ -25,8 +24,6 @@ import {ToastContainer, toast as notify} from 'react-toastify';
 import {useEffect} from 'react';
 import {Elements} from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
-import GuidedVideo from '~/components/GuidedVideo';
-import {Preloader} from '~/components/Preloader';
 
 const stripePromise = loadStripe(
   'pk_test_51RHKe6ELfhE2pt9mxrrxK7hhAclxCvksadMtIQCvxowOQADlw5jCFRSoj1tq7JNEVqqIE3uThE9P6K0DTQ6X3Pam006Cn180x4',
@@ -54,7 +51,6 @@ export const shouldRevalidate = ({
 
 export function links() {
   return [
-    {rel: 'preload', href: '/assets/Images/hopson-loader.png', as: 'image'},
     {rel: 'stylesheet', href: tailwindCss},
     {rel: 'stylesheet', href: toastStyles},
     {rel: 'stylesheet', href: resetStyles},
@@ -281,8 +277,6 @@ export function Layout({children}) {
   const nonce = useNonce();
   /** @type {RootLoader} */
   const data = useRouteLoaderData('root');
-  const {pathname} = useLocation();
-  const isHome = pathname === '/Home';
 
   // Add null check before destructuring
   useEffect(() => {
@@ -298,59 +292,8 @@ export function Layout({children}) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes rotateWithPause {
-              0% { transform: rotate(0deg); }
-              40% { transform: rotate(360deg); }
-              50% { transform: rotate(360deg); }
-              90% { transform: rotate(360deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `
-        }} />
       </head>
-      <body className={isHome ? 'homepage' : ''}>
-        {/* Inline preloader for immediate display before React hydration */}
-        <div id="inline-preloader" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 99999,
-          transition: 'opacity 0.5s ease-out, visibility 0.5s ease-out'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <img 
-              src="/assets/Images/hopson-loader.png" 
-              alt="Loading" 
-              id="inline-preloader-logo"
-              style={{
-                width: '100px',
-                height: '100px',
-                animation: 'rotateWithPause 1.5s ease-in-out infinite'
-              }}
-            />
-          </div>
-        </div>
-        <Preloader />
-        {/* Klaviyo onsite script for footer signup trigger (mirrors coming-soon) */}
-        <script async type="text/javascript" src="https://static.klaviyo.com/onsite/js/SkJCe4/klaviyo.js?company_id=SkJCe4"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "!function(){if(!window.klaviyo){window._klOnsite=window._klOnsite||[];try{window.klaviyo=new Proxy({},{get:function(n,i){return'push'===i?function(){var n;(n=window._klOnsite).push.apply(n,arguments)}:function(){for(var n=arguments.length,o=new Array(n),w=0;w<n;w++)o[w]=arguments[w];var t='function'==typeof o[o.length-1]?o.pop():void 0,e=new Promise((function(n){window._klOnsite.push([i].concat(o,[function(i){t&&t(i),n(i)}]))}));return e}}})}catch(n){window.klaviyo=window.klaviyo||[],window.klaviyo.push=function(){var n;(n=window._klOnsite).push.apply(n,arguments)}}}}();",
-          }}
-        />
+      <body>
         {data ? (
           <Analytics.Provider
             cart={data.cart}
@@ -367,6 +310,7 @@ export function Layout({children}) {
             {/* You might want to add a loading state or error message here */}
           </div>
         )}
+        <ToastContainer position="bottom-center" />
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
@@ -375,49 +319,7 @@ export function Layout({children}) {
 }
 
 export default function App() {
-  const location = useLocation();
-
-  // Reset scroll position when navigating
-  useEffect(() => {
-    const appClip = document.getElementById('app-clip');
-    if (appClip) {
-      appClip.scrollTop = 0;
-    }
-  }, [location.pathname]);
-
-  return (
-    <>
-    <div id="app-clip">
-      <div id="app-scale">
-        <Outlet />
-      </div>
-    </div>
-
-    {/* Modal outside the scaled tree */}
-    <div id="modal-root"></div>
-
-    {/* Alert outside the scaled tree */}
-    <div id="alert-root" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 99999 }}></div>
-
-    {/* ToastContainer outside the scaled tree */}
-    <ToastContainer 
-      position="top-right" 
-      autoClose={3000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-    />
-
-    {/* Guided Video Component */}
-    <GuidedVideo />
-    </>
-    
-  );
+  return <Outlet />;
 }
 
 export function ErrorBoundary() {
