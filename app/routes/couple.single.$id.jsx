@@ -8,6 +8,7 @@ import Input from '~/components/Input';
 import Heading from '~/components/Heading';
 import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import {Footer} from '~/components/Footer';
+import ModalPortal from '~/components/ModalPortal';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -1996,6 +1997,7 @@ export default function CoupleProfile() {
       )}
 
       {showEmailModal && hasProducts && registryId && (
+        <ModalPortal>
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
           <div
             className="w-full max-w-4xl mx-4"
@@ -2082,6 +2084,7 @@ export default function CoupleProfile() {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
 
       <Footer />
