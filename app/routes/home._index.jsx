@@ -298,25 +298,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-[80px] my-12 lg:py-[10.625vw] max-[1024px]:px-0 lg:my-0">
-        <Heading
-          text="the registry bestsellers"
-          classes={
-            'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
-          }
-          image={brandline}
-          imageClasses={'max-[1024px]:max-w-[220px] lg:w-[33.021vw] lg:h-[0.450vw]'}
-        />
-        <ProductSlider products={bestsellerProducts} />
-        <div className="text-center">
-          <Link to="/products/bestsellers">
-            <ButtonComponent
-              text="BROWSE BESTSELLERS"
-              className="button-cs w-[224px] h-[44px] text-[#1F1D1B] lg:w-[18.75vw] lg:h-[4.01vw] cursor-pointer border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 lg:mt-[4.271vw] hover:bg-gray-100"
-            />
-          </Link>
-        </div>
-      </section>
+      <BestsellersSection bestsellerProducts={bestsellerProducts} />
 
       <section className="mb-[80px] mt-0 lg:mb-0">
         <Heading
