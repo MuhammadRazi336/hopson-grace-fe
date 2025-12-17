@@ -52,6 +52,7 @@ const RegisterIndex = () => {
     password: '',
     confirmPassword: '',
     confirmEmail: '',
+    preferTextNotifications: false,
   });
   const [errors, setErrors] = useState({});
 
@@ -187,7 +188,16 @@ const RegisterIndex = () => {
   };
 
   const handleInputChange = (e) => {
-    const {name, value} = e.target;
+    const {name, value, type, checked} = e.target;
+    
+    // Handle checkbox inputs
+    if (type === 'checkbox') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
+      return;
+    }
     
     // For name fields, allow any case but ensure first letter is capitalized
     let processedValue = value;
@@ -372,6 +382,20 @@ const RegisterIndex = () => {
             }
             showPasswordTooltip={true}
           />
+        </div>
+        <div className="mt-4">
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="preferTextNotifications"
+              checked={formData.preferTextNotifications}
+              onChange={handleInputChange}
+              className="mt-1"
+            />
+            <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-black">
+              Click here if you'd prefer to receive your notifications by text. We'll still send the occasional email (but no spam, we promise).
+            </span>
+          </label>
         </div>
       </div>
     </div>
