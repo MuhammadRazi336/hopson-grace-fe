@@ -397,7 +397,7 @@ export default function App() {
     <div id="modal-root"></div>
 
     {/* Alert outside the scaled tree */}
-    <div id="alert-root"></div>
+    <div id="alert-root" className='relative z-[100]'></div>
 
     {/* Sticky Header Portal - outside the scaled tree */}
     <div id="header-root"></div>

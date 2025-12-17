@@ -23,6 +23,7 @@ import {Navigation, Pagination} from 'swiper/modules';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 
 const images = [
     '/assets/Images/gift-prod-1.png',
@@ -503,6 +504,7 @@ const GiftDetailHandle = () => {
             />
           </div> */}
         </section>
+      <WeThinkYoullLove recommendedProducts={recommendedProducts} />
       <Footer />
     </>
 

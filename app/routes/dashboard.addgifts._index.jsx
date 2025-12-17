@@ -31,6 +31,8 @@ import arrowDown from '/assets/Images/arrowDown.png';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import WeThinkYoullLove from '~/components/WeThinkYoullLove';
+import BestsellersSection from '~/components/BestsellersSection';
 
 export async function loader({request, context}) {
   const {products} = await loadCriticalData({context});
@@ -821,6 +823,7 @@ export default function AddGifts() {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
+        
         setTimeout(() => {
           setShowAlert(false);
           setAlertMessage('');
@@ -858,6 +861,7 @@ export default function AddGifts() {
       setAlertMessage('Failed to add to registry. Please try again.');
       setAlertType('error');
       setShowAlert(true);
+      
       setTimeout(() => {
         setShowAlert(false);
         setAlertMessage('');
@@ -1371,152 +1375,23 @@ export default function AddGifts() {
         </section>
       )}
       
-      <section className="pt-[9.01vw]  my-12 lg:my-[240px] container pb-[12.552vw]">
-        <Heading
-          text={
-            selectedSwiperCollectionId
-              ? `bestsellers in ${collections.find((col) => col.id === selectedSwiperCollectionId)?.title?.toLowerCase() || 'collection'}`
-              : 'bestsellers'
-          }
-          classes={
-            'prata text-[2.292vw] leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
-          }
-          image={brandline}
-          imageClasses={
-            selectedSwiperCollectionId
-              ? 'w-[33.281vw] max-[1024px]:max-w-[286px]'
-              : 'w-[14.896vw] max-[1024px]:max-w-[286px]'
-          }
-        />
-        <ProductSlider products={bestsellerProducts} />
-        <div className="text-center">
-          <ButtonComponent
-            text="browse bestsellers"
-            className="button-cs text-[18px] w-[360px] text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
-          />
-        </div>
-      </section>
-
-      {selectedSwiperCollectionId ? (
-        <section className="bg-[#FAF9F6] py-[3.906vw] pl-[4.688vw] mb-[11.25vw] flex items-center justify-center gap-[5.521vw]">
-          <Heading
-            text={<>we think <span className='ivyora'>you'll love</span></>}
-            classes={
-              'prata text-[2.083vw] leading-[1.875vw] font-normal text-center'
-            }
-            image={brandline}
-            imageClasses={'max-[1024px]:max-w-[330px] w-[14.271vw] h-[6px]'}
-          />
-
-          <div className=" relative items-start w-[76vw]">
-            <div className="mx-auto">
-              <div className="z-10 mb-8 swiper-button-prev-prod absolute left-[35px] cursor-pointer text-white uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] swiper-button-lock swiper-button-disabled">
-                <img src={nextitem} alt="" className="rotate-90 size-6" />
-              </div>
-
-              <Swiper
-                spaceBetween={15}
-                slidesPerView={3.5}
-                loop={true}
-                modules={[Navigation]}
-                navigation={{
-                  nextEl: '.swiper-button-next-prod',
-                  prevEl: '.swiper-button-prev-prod',
-                }}
-                className=""
-                breakpoints={{
-                  345: {
-                    spaceBetween: 10,
-                    slidesPerView: 1.5,
-                  },
-                  475: {
-                    spaceBetween: 15,
-                    slidesPerView: 1.5,
-                  },
-                  768: {
-                    spaceBetween: 20,
-                    slidesPerView: 2.5,
-                  },
-                  1024: {
-                    spaceBetween: 30,
-                    slidesPerView: 3.5,
-                  },
-                  1366: {
-                    spaceBetween: 39,
-                    slidesPerView: 3.5,
-                  },
-                  1600: {
-                    spaceBetween: 39,
-                    slidesPerView: 3.5,
-                  },
-                }}
-              >
-                {/* Dynamic recommended products */}
-                {recommendedProducts && recommendedProducts.length > 0 ? (
-                  recommendedProducts.map((product) => {
-                    const productNode = product.node;
-                    const firstImage = productNode.images?.edges?.[0]?.node;
-                    const price = productNode.priceRange?.minVariantPrice;
-                    
-                    return (
-                      <SwiperSlide key={productNode.id} className='max-w-[18.75vw]'>
-                        <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer">
-                          <img 
-                            src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                            alt={productNode.title || 'Product'} 
-                            className="w-full h-[18.75vw] hover:opacity-80 transition-opacity" 
-                          />
-                          <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
-                            {productNode.title}
-                          </h3>
-                          <p className="lg:text-[24px] text-sm py-2">{formatShopifyPrice(price)}</p>
-                        </Link>
-                      </SwiperSlide>
-                    );
-                  })
-                ) : (
-                  // Fallback to static slides if no recommended products
-                  <>
-                    <SwiperSlide className='w-[18.75vw]'>
-                      <img src={youll1} alt="New Arrival" className="w-full h-[18.75vw]" />
-                      <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
-                        ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                      </h3>
-                      <p className="lg:text-[24px] text-sm py-2">$95.00</p>
-                    </SwiperSlide>
-                    <SwiperSlide className='w-[18.75vw]'>
-                      <img src={youll2} alt="Tableware" className="w-full h-[18.75vw]" />
-                      <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[22px] text-sm font-medium tracking-wider">
-                        SMEG TOASTER, 2 SLICE
-                      </h3>
-                      <p className="lg:text-[24px] text-sm py-2">$95.00</p>
-                    </SwiperSlide>
-                    <SwiperSlide className='w-[18.75vw]'>
-                      <img src={youll3} alt="Staub Cast Iron Q4" className="w-full h-[18.75vw]" />
-                      <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
-                        THE BARISTA TOUCH ESPRESSO MAKER
-                      </h3>
-                      <p className="lg:text-[24px] text-sm py-2">$95.00</p>
-                    </SwiperSlide>
-                    <SwiperSlide className='w-[18.75vw]'>
-                      <img src={youll3} alt="Staub Cast Iron Q4" className="w-full h-[18.75vw]" />
-                      <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-[22px] text-sm font-medium tracking-wider">
-                        THE BARISTA TOUCH ESPRESSO MAKER
-                      </h3>
-                      <p className="lg:text-[24px] text-sm py-2">$95.00</p>
-                    </SwiperSlide>
-                  </>
-                )}
-              </Swiper>
-              <div className="swiper-button-next-prod absolute right-[50px] cursor-pointer uppercase items-center bg-white z-10 top-[43%] translate-y-[-50%] px-8 py-10 justify-center text-white max-[1024px]:w-[33px] swiper-button-lock swiper-button-disabled">
-                <img src={nextitem} className="size-6 rotate-270" alt="" />
-              </div>
-            </div>
-          </div>
-        </section>
-        ):(
-        <></>
-      )}
+      <BestsellersSection
+        bestsellerProducts={bestsellerProducts}
+        title={
+          selectedSwiperCollectionId
+            ? `bestsellers in ${collections.find((col) => col.id === selectedSwiperCollectionId)?.title?.toLowerCase() || 'collection'}`
+            : 'bestsellers'
+        }
+        buttonText="browse bestsellers"
+        sectionClassName="pt-[9.01vw] my-12 lg:my-[240px] container pb-[12.552vw]"
+        headingClasses="prata text-[2.292vw] leading-[1.875vw] font-normal text-center max-[1024px]:m-0"
+        imageClasses={
+          selectedSwiperCollectionId
+            ? 'w-[33.281vw] max-[1024px]:max-w-[286px]'
+            : 'w-[14.896vw] max-[1024px]:max-w-[286px]'
+        }
+        buttonClassName="button-cs text-[18px] w-[360px] text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+      />
 
       {/* Other Collections Carousel - Only shows when a parent collection is selected */}
       {selectedSwiperCollectionId && (
@@ -1714,6 +1589,7 @@ export default function AddGifts() {
           display: none;
         }
       `}</style>
+      <WeThinkYoullLove recommendedProducts={recommendedProducts} />
       <Footer />
     </>
   );
