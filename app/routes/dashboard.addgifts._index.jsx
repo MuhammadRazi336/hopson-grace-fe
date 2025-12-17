@@ -820,6 +820,7 @@ export default function AddGifts() {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
+        
         setTimeout(() => {
           setShowAlert(false);
           setAlertMessage('');
@@ -857,6 +858,7 @@ export default function AddGifts() {
       setAlertMessage('Failed to add to registry. Please try again.');
       setAlertType('error');
       setShowAlert(true);
+      
       setTimeout(() => {
         setShowAlert(false);
         setAlertMessage('');
@@ -1643,12 +1645,20 @@ export default function AddGifts() {
         </section>
       )}
 
-      {/* Alert Component */}
+      {/* Alert Component - Fixed to viewport, always visible at bottom-right */}
       {showAlert && (
         <div
-          className={`fixed top-4 right-4 ${
+          className={`success-alert-popup fixed bottom-4 right-4 ${
             alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+          } text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in-out`}
+          style={{ 
+            position: 'fixed', 
+            bottom: '1rem',
+            right: '1rem',
+            zIndex: 9999,
+            pointerEvents: 'auto',
+            maxWidth: 'calc(100vw - 2rem)'
+          }}
         >
           <div className="flex items-center">
             {alertType === 'success' && (

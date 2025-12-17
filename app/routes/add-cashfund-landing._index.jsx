@@ -22,7 +22,7 @@ import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import GiftAnyAmount from '~/components/GiftAnyAmount';
-import { useLoaderData, json } from '@remix-run/react';
+import { useLoaderData, json, Link } from '@remix-run/react';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 
@@ -122,7 +122,7 @@ export default function AddGiftsLanding() {
       <div className="pt-[80px] relative p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
           <span className="prata uppercase">ADD CASH</span> or{' '}
-          <span className="prata uppercase">TRAVEL</span>
+          <span className="prata uppercase">TRAVELs</span>
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"
@@ -361,15 +361,17 @@ export default function AddGiftsLanding() {
                   
                   return (
                     <SwiperSlide key={productNode.id}>
-                      <img 
-                        src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                        alt={productNode.title || 'Product'} 
-                        className="w-full" 
-                      />
-                      <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                        {productNode.title}
-                      </h3>
-                      <p className="lg:text-2xl text-sm">{formatShopifyPrice(price)}</p>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
+                        <img 
+                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                          alt={productNode.title || 'Product'} 
+                          className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                        />
+                        <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
+                          {productNode.title}
+                        </h3>
+                        <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
+                      </Link>
                     </SwiperSlide>
                   );
                 })
