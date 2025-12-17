@@ -27,6 +27,8 @@ import {Navigation} from 'swiper/modules';
 import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
 import GiftCardBg from '/assets/Images/giftCardBg.png';
+import WeThinkYoullLove from '~/components/WeThinkYoullLove';
+import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 
 const tabsData = [
   {
@@ -185,10 +187,22 @@ export async function loader({request, context}) {
     console.log('Error fetching bestseller products:', error);
   }
   
+  // Fetch recommended products
+  let recommendedProducts = [];
+  try {
+    const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
+      variables: { first: 8 } 
+    });
+    recommendedProducts = recommendedProductsData?.edges || [];
+  } catch (error) {
+    console.log('Error fetching recommended products:', error);
+  }
+  
   return defer({
     products: products,
     collections: collections.nodes,
     bestsellerProducts,
+    recommendedProducts,
     registry: registry?.data?.[0] || null,
     user: user || null,
   });
@@ -228,7 +242,7 @@ async function loadCollectionData({context}) {
 }
 
 const Bestsellers = () => {
-  const {products, collections, bestsellerProducts, registry, user} = useLoaderData();
+  const {products, collections, bestsellerProducts, recommendedProducts, registry, user} = useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
@@ -406,6 +420,7 @@ const Bestsellers = () => {
           {alertMessage}
         </div>
       )}
+      <WeThinkYoullLove recommendedProducts={recommendedProducts || []} productLinkPrefix="/products/bestsellers" />
       <Footer />
     </>
   );

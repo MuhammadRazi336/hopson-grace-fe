@@ -20,6 +20,7 @@ import ButtonComponent from '~/components/Button';
 import lineImghead from '/assets/Images/line.png';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
+import BestsellersSection from '~/components/BestsellersSection';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import ExploreCategories from '~/components/ExploreCategories';
 import { useLoaderData, json, Link } from '@remix-run/react';
@@ -178,23 +179,15 @@ export default function CategoryLanding() {
         </div>
       </section> */}
 
-      <section className="py-[70px]  my-12 lg:my-[240px] container">
-        <Heading
-          text="bestsellers in kitchen & pantry"
-          classes={
-            'prata text-3xl lg:text-5xl font-normal text-center  max-[1024px]:m-0'
-          }
-          image={brandline}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
-        />
-        <ProductSlider />
-        <div className="text-center">
-          <ButtonComponent
-            text="browse bestsellers"
-            className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
-          />
-        </div>
-      </section>
+      <BestsellersSection
+        bestsellerProducts={[]}
+        title="bestsellers in kitchen & pantry"
+        buttonText="browse bestsellers"
+        sectionClassName="py-[70px] my-12 lg:my-[240px] container"
+        headingClasses="prata text-3xl lg:text-5xl font-normal text-center max-[1024px]:m-0"
+        imageClasses="max-[1024px]:max-w-[330px]"
+        buttonClassName="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
+      />
 
       <ExploreCategories />
 
