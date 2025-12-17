@@ -3,7 +3,7 @@ import React from 'react';
 const NotificationCard = ({ count = 0, onView, className, loading = false, refreshing = false }) => (
   <div className={`bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px] ${className}`}>
     {/* Notification Bell with Red Dot */}
-    <div className="absolute top-4 right-4">
+    <div className="absolute top-[25vh] right-4">
       <span className="relative inline-block">
         {/* Bell Icon (SVG) */}
         <svg width="24" height="29" fill="none" viewBox="0 0 24 24" className="inline-block align-middle">

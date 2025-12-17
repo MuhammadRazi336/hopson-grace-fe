@@ -1,8 +1,9 @@
 // app/components/SideCart.jsx
 import {Link, useFetcher, useNavigate} from '@remix-run/react';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import Heading from './Heading';
 import {formatPrice} from '~/utils/priceFormatter';
+import ModalPortal from './ModalPortal';
 
 export default function SideCart({
   open,
@@ -19,6 +20,7 @@ export default function SideCart({
 }) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
+  const overlayRef = useRef(null);
   const [items, setItems] = useState(() => {
     try {
       console.log('Initial cart items:', initialCartItems);
@@ -53,6 +55,39 @@ export default function SideCart({
   useEffect(() => {
     console.log('Items state updated:', items);
   }, [items]);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  // Close on ESC key
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose?.();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open, onClose]);
+
+  // Click outside to close
+  const handleOverlayClick = (e) => {
+    if (e.target === overlayRef.current) {
+      onClose?.();
+    }
+  };
 
   const handleDelete = (itemId) => {
     if (!itemId) return;
@@ -90,7 +125,7 @@ export default function SideCart({
   });
 
   return (
-    <>
+    <ModalPortal>
       <style>{`
         .sidecart-scroll::-webkit-scrollbar {
           width: 8px;
@@ -112,11 +147,28 @@ export default function SideCart({
         }
       `}</style>
       <div
-        className={`fixed top-0 right-0 h-full w-[65%] bg-white shadow-lg z-50 transform transition-transform duration-300 ${
-          open ? 'translate-x-0' : 'translate-x-full'
+        ref={overlayRef}
+        onClick={handleOverlayClick}
+        role="dialog"
+        aria-modal="true"
+        className={`fixed top-0 left-0 right-0 bottom-0 z-50 transition-opacity duration-300 ${
+          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
-        style={{willChange: 'transform'}}
+        style={{ zIndex: 99999 }}
       >
+        {/* Backdrop overlay */}
+        <div className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
+          open ? 'opacity-100' : 'opacity-0'
+        }`} />
+        
+        {/* Side cart panel */}
+        <div
+          className={`absolute top-0 right-0 h-full w-[65%] bg-white shadow-lg transform transition-transform duration-300 ease-out ${
+            open ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          style={{willChange: 'transform'}}
+          onClick={(e) => e.stopPropagation()}
+        >
         <div className="flex justify-end items-center p-4">
           <button onClick={onClose} className="text-2xl cursor-pointer">
             &times;
@@ -391,6 +443,7 @@ export default function SideCart({
           )}
         </div>
       </div>
-    </>
+      </div>
+    </ModalPortal>
   );
 }
