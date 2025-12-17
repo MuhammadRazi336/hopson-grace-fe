@@ -526,31 +526,25 @@ const CashFund = () => {
                 nextEl: '.swiper-button-next-prod',
                 prevEl: '.swiper-button-prev-prod',
               }}
-              className="px-[178px]"
+              className=""
               breakpoints={{
                 345: {
                   spaceBetween: 10,
-                  centeredSlides: true,
                 },
                 475: {
                   spaceBetween: 15,
-                  centeredSlides: true,
                 },
                 768: {
                   spaceBetween: 20,
-                  centeredSlides: true,
                 },
                 1024: {
                   spaceBetween: 30,
-                  centeredSlides: true,
                 },
                 1366: {
                   spaceBetween: 39,
-                  centeredSlides: true,
                 },
                 1600: {
                   spaceBetween: 66,
-                  centeredSlides: true,
                 },
               }}
             >

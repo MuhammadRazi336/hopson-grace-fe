@@ -399,6 +399,9 @@ export default function App() {
     {/* Alert outside the scaled tree */}
     <div id="alert-root"></div>
 
+    {/* Sticky Header Portal - outside the scaled tree */}
+    <div id="header-root"></div>
+
     {/* Guided Video Component */}
     <GuidedVideo />
     </>
