@@ -34,6 +34,7 @@ import { Link, useLoaderData, json } from '@remix-run/react';
 import LiveChat from '~/components/LiveChat';
 import Popup from '~/components/Popup';
 import ModalPortal from '~/components/ModalPortal';
+import BestsellersSection from '~/components/BestsellersSection';
 export async function loader({ context }) {
   try {
     // Get user session if available (optional for non-logged in users)
@@ -481,7 +482,7 @@ query getHomeSubCollection($id: ID!) {
 
 const BRAND_QUERY = `#graphql
 query getHomeBrands {
-  collections(first: 50) {
+  collections(first: 250) {
     nodes {
       id
       title
@@ -493,6 +494,10 @@ query getHomeBrands {
         altText
         width
         height
+      }
+      metafield(namespace: "custom", key: "brand") {
+        id
+        value
       }
       featuredMetafield: metafield(namespace: "custom", key: "featured") {
         id
