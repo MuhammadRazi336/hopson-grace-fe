@@ -17,7 +17,7 @@ import {Navigation} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
-import {Link, useLoaderData, useFetcher, redirect, json} from '@remix-run/react';
+import {Link, useLoaderData, useFetcher, useLocation, redirect, json} from '@remix-run/react';
 import {formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
@@ -248,22 +248,22 @@ const ProductCard = React.memo(
     };
 
     return (
-      <div key={product.id} className="relative group mb-[4.844vw]">
+      <div key={product.id} className="relative group mb-[4.844vw] w-[18.75vw] max-[1024px]:w-auto">
         {/* Product Image and Info */}
         <div className="p-0 z-10 relative">
           <img
             src={firstImage}
             alt={product.title}
-            className="w-full h-[18.75vw] object-cover"
+            className="w-full h-[18.75vw] max-[767px]:h-[20vw] max-[550px]:h-[30vw] object-cover"
           />
-          <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
+          <h3 className="text-sm font-[500] tracking-[0.057vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
-          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw]">{price}</p>
+          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{price}</p>
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute w-[116%] left-[-8%] lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
           <div>
             <img
               src={firstImage}
@@ -285,14 +285,14 @@ const ProductCard = React.memo(
                 to={`/dashboard/cashfunds/${product.id}`}
                 className="w-full"
               >
-                <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] lg:mb-[0.729vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
+                <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
                   personalize fund
                 </button>
               </Link>
               <button
                 onClick={handleAddToRegistry}
                 disabled={fetcher.state === 'submitting'}
-                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
               >
                 {fetcher.state === 'submitting'
                   ? 'Adding...'
@@ -308,6 +308,7 @@ const ProductCard = React.memo(
 
 const CashFund = () => {
   const {products, collections, searchQuery, registryId, user, recommendedProducts} = useLoaderData();
+  const location = useLocation();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
@@ -380,7 +381,7 @@ const CashFund = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-fit pt-[5.313vw]">
+      <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[550px]:pt-[50px]">
         <Heading
           text={
             searchQuery
@@ -388,10 +389,10 @@ const CashFund = () => {
               : 'cash & travel funds'
           }
           classes={
-            'prata text-4xl lg:text-[2.5vw] lg:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
+            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
           }
           image={headingBottomCurve}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] lg:h-[0.417vw]'}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
         />
         {searchQuery && (
           <p className="text-center my-5 text-lg">
@@ -399,13 +400,13 @@ const CashFund = () => {
             {filteredProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
         )}
-        <p className="text-center my-[1.875vw] font-[500] text-2xl lg:text-[1.25vw] lg:leading-[1.25vw]">
+        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px]">
           ASK FOR WHAT YOU REALLY WANT
         </p>
-        <p className="text-center text-2xl lg:text-[1.25vw] lg:leading-[1.667vw] font-normal w-[80%] lg:w-[60%] mx-auto">
+        <p className="text-center text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
           {searchQuery
             ? 'Browse the search results below or use the filters to refine your search.'
-            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, build your own, or work with Porte Travel to create a custom trip that's so you. Because life together should start with something unforgettable."}
+            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that’s so you. Because life together should start with something unforgettable."}
         </p>
       </div>
 
@@ -423,50 +424,43 @@ const CashFund = () => {
       {/* Regular Cash Funds Content - Only show when no search query */}
       {!searchQuery && (
         <>
-          <div className="w-full flex flex-row justify-center items-center gap-[4.167vw] mt-[3.906vw] mb-[10.833vw] px-4 md:px-16">
-            <div className="rounded-full w-[100px] h-[100px] md:w-[200px] md:h-[200px] lg:w-[23.958vw] lg:h-[23.958vw]">
-              <Link to="/dream-fund">
-                <img
-                  src={dreamFunds}
-                  className="w-full h-full rounded-full object-fit"
-                  alt=""
-                />
-              </Link>
+          <div className="w-full flex flex-row justify-center items-center gap-[1.25vw] mt-[3.906vw] mb-[5.833vw] px-4 md:px-16 max-[767px]:flex-wrap max-[767px]:gap-[10px]">
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase text-[#1F1D1B] w-[13.229vw] h-[3.125vw] border-2 border-[#1F1D1B] flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw]${
+                location.pathname === '/dream-fund' || location.pathname === '/cash-funds'
+                  ? ' active'
+                  : ''
+              }`}
+            >
+              <Link to="/dream-fund">Dream Funds</Link>
             </div>
-            <div className="rounded-full w-[100px] h-[100px] lg:w-[23.958vw] lg:h-[23.958vw] bg-[#F5F2ED] relative">
-              <Link
-                to="/dashboard/cashfunds/create-new"
-                className="block w-full h-full"
-              >
-                <img
-                  src="/assets/Images/registrylogoSteps.png"
-                  alt="Create New Cash Fund"
-                  className="max-[1024px]:h-full object-cover object-[80%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:opacity-80 transition-opacity"
-                />
-              </Link>
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase text-[#1F1D1B] w-[13.229vw] h-[3.125vw] border-2 border-[#1F1D1B] flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw]${
+                location.pathname.startsWith('/dashboard/cashfunds/create-new') ? ' active' : ''
+              }`}
+            >
+              <Link to="/dashboard/cashfunds/create-new">Create Your Own</Link>
             </div>
-            <div className="rounded-full w-[100px] h-[100px] md:w-[200px] md:h-[200px] lg:w-[23.958vw] lg:h-[23.958vw]">
-              <Link to="/porte-travel">
-                <img
-                  src={porteTravel}
-                  className="w-full h-full rounded-full object-fit"
-                  alt=""
-                />
-              </Link>
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase text-[#1F1D1B] w-[13.229vw] h-[3.125vw] border-2 border-[#1F1D1B] flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw]${
+                location.pathname.startsWith('/porte-travel') ? ' active' : ''
+              }`}
+            >
+              <Link to="/porte-travel">Porte Travel</Link>
             </div>
           </div>
         </>
       )}
 
-      <section className="px-[8.594vw] mx-auto">
+      <section className="px-[8.594vw] mx-auto max-[1024px]:px-[30px]">
         <div className="flex flex-col md:flex-row gap-[3.75vw] w-full mx-auto">
-          <SidebarFilter 
+          {/* <SidebarFilter 
             collections={collections}
             checkedCategories={checkedCategories}
             setCheckedCategories={setCheckedCategories}
-          />
-          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0">
-            {filteredProducts.map((product) => {
+          /> */}
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 max-[1024px]:grid-cols-4 max-[767px]:grid-cols-3 max-[550px]:grid-cols-2 gap-[2.083vw] pt-0 p-0 relative z-0 lg:w-[81.25vw] xl:w-[81.25vw] 2xl:w-[81.25vw] mx-auto">
+            {filteredProducts.slice(0, 16).map((product) => {
               // Find the collection for this product
               const collection = collections.find(col => col.id === product.collectionId);
               return (
@@ -485,41 +479,43 @@ const CashFund = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="w-full xl:w-1/4 "> </div>
-          <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">LOADING 12 of 427</p>
+          <div className="w-full flex flex-col items-center">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
+              LOADING {Math.min(16, filteredProducts.length)} of {filteredProducts.length}
+            </p>
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-[9.167vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] hover:bg-gray-100">
+            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
               Back to Top
             </button>
           </div>
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] py-[5.26vw] mb-[9.323vw]">
+      <section className="bg-[#FAF9F6] py-[3.906vw] flex items-center pl-[5.833vw] mb-[9.01vw] gap-[5.521vw] justify-center max-[767px]:flex-col max-[767px]:py-[50px] max-[767px]:mb-[50px] max-[767px]:px-[20px]">
         <Heading
-          text="we think you’ll love"
+          text={
+            <>
+              we think <span className="ivyora">you’ll love</span>
+            </>
+          }
           classes={
-            'prata text-2xl lg:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={headingBottomCurve}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw] lg:h-[0.417vw]'}
+          imageClasses={'max-[1024px]:max-w-[330px] w-[14.271vw] h-[6px] object-right object-cover'}
         />
 
-        <div className=" relative items-start mt-[5.573vw] max-[1024px]:my-10">
-          <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
-              <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
+        <div className=" relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
+          <div className="w-full mx-auto">
+            <div className="swiper-button-prev-prod absolute top-[25%] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10">
+              <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
             </div>
 
             <Swiper
-              spaceBetween={15}
-              slidesPerView={3}
+              spaceBetween={35}
+              slidesPerView={3.5}
               loop={true}
               modules={[Navigation]}
               navigation={{
@@ -528,23 +524,29 @@ const CashFund = () => {
               }}
               className=""
               breakpoints={{
-                345: {
+                320: {
                   spaceBetween: 10,
+                  slidesPerView: 1.5,
                 },
                 475: {
                   spaceBetween: 15,
+                  slidesPerView: 2.5,
                 },
                 768: {
                   spaceBetween: 20,
+                  slidesPerView: 3.5,
                 },
                 1024: {
                   spaceBetween: 30,
+                  slidesPerView: 3.5,
                 },
                 1366: {
-                  spaceBetween: 39,
+                  spaceBetween: 30,
+                  slidesPerView: 3.5,
                 },
                 1600: {
-                  spaceBetween: 66,
+                  spaceBetween: 35,
+                  slidesPerView: 3.5,
                 },
               }}
             >
@@ -556,17 +558,17 @@ const CashFund = () => {
                   const price = productNode.priceRange?.minVariantPrice;
                   
                   return (
-                    <SwiperSlide key={productNode.id}>
+                    <SwiperSlide key={productNode.id} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
                       <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
                         <img 
                           src={firstImage?.url || '/assets/Images/placeholder.png'} 
                           alt={productNode.title || 'Product'} 
-                          className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                          className="w-full h-[18.75vw] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
                         />
-                        <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
+                        <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                           {productNode.title}
                         </h3>
-                        <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
+                        <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
                       </Link>
                     </SwiperSlide>
                   );
@@ -598,11 +600,8 @@ const CashFund = () => {
                 </>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-              <img src={nextitem} className="rotate-270 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
+            <div className="swiper-button-next-prod absolute top-[25%] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10">
+              <img src={nextitem} alt="" className="rotate-270 w-[1.3vw] h-[1.3vw]" />
             </div>
           </div>
         </div>
