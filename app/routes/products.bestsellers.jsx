@@ -27,6 +27,7 @@ import {Navigation} from 'swiper/modules';
 import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
 import GiftCardBg from '/assets/Images/giftCardBg.png';
+import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 
@@ -412,13 +413,15 @@ const Bestsellers = () => {
         <ExploreCategories collections={collections} />
       </div>
 
-      {/* Alert */}
+      {/* Alert - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-          alertType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`}>
-          {alertMessage}
-        </div>
+        <AlertPortal>
+          <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            alertType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+          }`}>
+            {alertMessage}
+          </div>
+        </AlertPortal>
       )}
       <WeThinkYoullLove recommendedProducts={recommendedProducts || []} productLinkPrefix="/products/bestsellers" />
       <Footer />
