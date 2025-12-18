@@ -4,6 +4,7 @@ import {useState, useEffect, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
 import { Footer } from '~/components/Footer';
 import Input from '~/components/Input';
+import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({context}) {
   const user = await context.session.get('@User');
@@ -203,44 +204,46 @@ const ThankYou = () => {
   return (
     <>
     <div className="pt-[80px]">
-      {/* Alert Component */}
+      {/* Alert Component - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div
-          key={`alert-${alertType}-${Date.now()}`}
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50`}
-          style={{animation: 'fadeInOut 3s ease-in-out'}}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' ? (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            ) : (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+        <AlertPortal>
+          <div
+            key={`alert-${alertType}-${Date.now()}`}
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50`}
+            style={{animation: 'fadeInOut 3s ease-in-out'}}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' ? (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
+        </AlertPortal>
       )}
       <style jsx>{`
         @keyframes fadeInOut {

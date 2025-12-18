@@ -22,6 +22,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
+import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({context}) {
   try {
@@ -581,51 +582,45 @@ const CashFunds = () => {
 
       <GiftAnyAmount />
 
-      {/* Alert Component - Fixed to viewport, always visible at bottom-right */}
+      {/* Alert Component - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div
-          className={`success-alert-popup fixed bottom-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in-out`}
-          style={{ 
-            position: 'fixed', 
-            bottom: '1rem',
-            right: '1rem',
-            zIndex: 9999,
-            pointerEvents: 'auto',
-            maxWidth: 'calc(100vw - 2rem)'
-          }}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+        <AlertPortal>
+          <div
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              {alertType === 'error' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
+        </AlertPortal>
       )}
       <style jsx>{`
         @keyframes fadeInOut {

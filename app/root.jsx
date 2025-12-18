@@ -397,21 +397,10 @@ export default function App() {
     <div id="modal-root"></div>
 
     {/* Alert outside the scaled tree */}
-    <div id="alert-root" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 99999 }}></div>
+    <div id="alert-root" className='relative z-[100]'></div>
 
-    {/* ToastContainer outside the scaled tree */}
-    <ToastContainer 
-      position="top-right" 
-      autoClose={3000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      closeOnClick
-      rtl={false}
-      pauseOnFocusLoss
-      draggable
-      pauseOnHover
-      theme="light"
-    />
+    {/* Sticky Header Portal - outside the scaled tree */}
+    <div id="header-root"></div>
 
     {/* Guided Video Component */}
     <GuidedVideo />

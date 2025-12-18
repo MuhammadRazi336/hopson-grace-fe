@@ -13,6 +13,7 @@ import {Navbar} from '@material-tailwind/react';
 import NavBarLinks from './NavBarLinks';
 import HeaderMobileMenu from './HeaderMobileMenu';
 import {useState, useEffect, useRef} from 'react';
+import {createPortal} from 'react-dom';
 import Popup from './Popup';
 import ModalPortal from './ModalPortal';
 import {useLocation} from 'react-router-dom';
@@ -38,6 +39,9 @@ export function Header() {
   const headerRef = useRef(null);
   const isDraft = status === 'draft';
   const navigate = useNavigate();
+  const [stickyMenuCollections, setStickyMenuCollections] = useState([]);
+  const [stickyMenuLoading, setStickyMenuLoading] = useState(true);
+  const [isProductSubMenuOpen, setIsProductSubMenuOpen] = useState(false);
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
@@ -634,19 +638,50 @@ export function Header() {
     return () => window.removeEventListener('resize', calculateTop);
   }, [isFixed]);
 
-  return (
-    <div className={`${isFixed ? 'lg:h-[442px]' : ''}`}>
-      <TopHeader />
+  // Get portal target for sticky header
+  const [headerPortalTarget, setHeaderPortalTarget] = useState(null);
+  
+  useEffect(() => {
+    setHeaderPortalTarget(document.getElementById('header-root'));
+  }, []);
 
-      <header
-        ref={headerRef}
-        className={`header-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out ${
-          isFixed
-            ? 'fixed left-0 right-0 w-full z-50 bg-black shadow-lg h-[100px]'
-            : 'relative bg-white h-[160px] max-[1024px]:h-[80px]'
-        }`}
-        style={isFixed ? { top: `${fixedHeaderTop}px` } : {}}
-      >
+  // Fetch collections for sticky menu
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await fetch('/api/navigation-collections', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setStickyMenuCollections(data.collections || []);
+        } else {
+          console.error('Failed to fetch collections');
+          setStickyMenuCollections([]);
+        }
+      } catch (error) {
+        console.error('Error fetching collections:', error);
+        setStickyMenuCollections([]);
+      } finally {
+        setStickyMenuLoading(false);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
+  return (
+    <>
+      {/* Sticky Header - Rendered via Portal outside app-scale */}
+      {isFixed && headerPortalTarget && createPortal(
+        <header
+          className="header-sticky-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out fixed top-0 left-0 right-0 w-full z-50 bg-black shadow-lg h-[6.823vw]"
+        >
         {/* User Icon */}
         <div
           className={`flex lg:w-[33%] mt-[-0.625vw] max-[1024px]:hidden ${
@@ -732,14 +767,14 @@ export function Header() {
         </div>
 
         {/* Logo */}
-        <div className="font-bold text-xl lg:w-[34%] lg:mb-[4vw] flex max-[1024px]:order-2 items-center justify-center max-[1024px]:absolute max-[1024px]:left-[50%] max-[1024px]:translate-x-[-50%]">
+        <div className="font-bold text-xl lg:w-[34%] mb-0 flex max-[1024px]:order-2 items-center justify-center max-[1024px]:absolute max-[1024px]:left-[50%] max-[1024px]:translate-x-[-50%]">
           <NavLink to="/Home" className="text-black flex justify-center">
             <img
               src={isFixed ? registryLogoScroll : registryLogo}
               alt="Registry Logo"
               className={`transition-all duration-600 ease-in-out lg:w-[4vw] ${
                 isFixed
-                  ? 'max-[1024px]:w-[60px]'
+                  ? 'max-[1024px]:w-[60px] w-[5.53vw] h-auto'
                   : 'lg:w-[19.2vw] max-[1024px]:w-[133px]'
               }`}
             />
@@ -1000,15 +1035,504 @@ export function Header() {
             <Popup onClose={handleClosePopup} />
           </ModalPortal>
         )}
-      </header>
+      </header>,
+        headerPortalTarget
+      )}
 
+      {/* Sticky Vertical Menu - Rendered via Portal outside app-scale */}
+      {isFixed && headerPortalTarget && createPortal(
+        <div
+          className={`max-[1024px]:hidden fixed transition-all duration-300 ${
+            isMenuOpenBottom 
+              ? 'top-[100px] opacity-100 pointer-events-auto' 
+              : 'top-[-500px] opacity-0 pointer-events-none'
+          } left-0 w-full z-40 bg-white shadow-lg max-h-[calc(100vh-100px)] overflow-y-auto`}
+        >
+          <div className="container mx-auto px-4 lg:px-[3.854vw] py-8">
+            <nav>
+              <ul className="flex flex-col space-y-4">
+                <li>
+                  <NavLink
+                    to="/our-brands"
+                    onClick={() => setIsMenuOpenBottom(false)}
+                    className="text-black hover:no-underline font-[800] uppercase tracking-[1.60px] text-lg py-2 block hover:text-gray-600 transition-colors"
+                  >
+                    OUR BRANDS
+                  </NavLink>
+                </li>
+                <li className="group">
+                  <button
+                    onClick={() => setIsProductSubMenuOpen(!isProductSubMenuOpen)}
+                    className="text-black hover:no-underline font-[800] uppercase tracking-[1.44px] text-lg py-2 flex items-center justify-between w-full hover:text-gray-600 transition-colors"
+                  >
+                    PRODUCTS
+                    <span className={`transform transition-transform ${isProductSubMenuOpen ? 'rotate-180' : ''}`}>
+                      ▼
+                    </span>
+                  </button>
+                  {/* Products Submenu */}
+                  <div className={`mt-2 pl-4 space-y-2 overflow-hidden transition-all duration-300 ${
+                    isProductSubMenuOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                  }`}>
+                    <NavLink
+                      to="/products/new-arrivals"
+                      onClick={() => setIsMenuOpenBottom(false)}
+                      className="block text-black hover:text-gray-600 py-2 text-base"
+                    >
+                      NEW ARRIVALS
+                    </NavLink>
+                    <NavLink
+                      to="/products/bestsellers"
+                      onClick={() => setIsMenuOpenBottom(false)}
+                      className="block text-black hover:text-gray-600 py-2 text-base"
+                    >
+                      BESTSELLERS
+                    </NavLink>
+                    {stickyMenuLoading ? (
+                      <div className="text-gray-500 py-2 text-base">Loading collections...</div>
+                    ) : stickyMenuCollections.length > 0 ? (
+                      stickyMenuCollections.map((collection) => (
+                        <NavLink
+                          key={collection.id}
+                          to={`/products/${collection.handle}`}
+                          onClick={() => setIsMenuOpenBottom(false)}
+                          className="block text-black hover:text-gray-600 py-2 text-base"
+                        >
+                          {collection.title.toUpperCase()}
+                        </NavLink>
+                      ))
+                    ) : null}
+                    <NavLink
+                      to="/dashboard/giftcards"
+                      onClick={() => setIsMenuOpenBottom(false)}
+                      className="block text-black hover:text-gray-600 py-2 text-base"
+                    >
+                      GIFT CARDS
+                    </NavLink>
+                  </div>
+                </li>
+                <li>
+                  <NavLink
+                    to="/cash-funds"
+                    onClick={() => setIsMenuOpenBottom(false)}
+                    className="text-black hover:no-underline font-[800] uppercase tracking-[1.44px] text-lg py-2 block hover:text-gray-600 transition-colors"
+                  >
+                    CASH + TRAVEL FUNDS
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/ready-made-registries"
+                    onClick={() => setIsMenuOpenBottom(false)}
+                    className="text-black hover:no-underline font-[800] uppercase tracking-[1.44px] text-lg py-2 block hover:text-gray-600 transition-colors"
+                  >
+                    READY-MADE REGISTRIES
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/inspiration"
+                    onClick={() => setIsMenuOpenBottom(false)}
+                    className="text-black hover:no-underline font-[800] uppercase tracking-[1.44px] text-lg py-2 block hover:text-gray-600 transition-colors"
+                  >
+                    INSPIRATION
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/aboutus"
+                    onClick={() => setIsMenuOpenBottom(false)}
+                    className="text-black hover:no-underline font-[800] uppercase tracking-[1.44px] text-lg py-2 block hover:text-gray-600 transition-colors"
+                  >
+                    ABOUT US
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/contact-us"
+                    onClick={() => setIsMenuOpenBottom(false)}
+                    className="text-black hover:no-underline font-[800] uppercase tracking-[1.44px] text-lg py-2 block hover:text-gray-600 transition-colors"
+                  >
+                    CONTACT US
+                  </NavLink>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>,
+        headerPortalTarget
+      )}
+
+      {/* Default Header - Hidden when sticky */}
+      <div className={`${isFixed ? 'lg:h-[442px]' : ''}`}>
+        <TopHeader />
+
+        <header
+          ref={headerRef}
+          className={`header-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out relative bg-white h-[160px] max-[1024px]:h-[80px] ${
+            isFixed ? 'invisible' : ''
+          }`}
+        >
+          {/* User Icon */}
+          <div
+            className={`flex lg:w-[33%] mt-[-0.625vw] max-[1024px]:hidden ${
+              isFixed ? 'items-center' : 'items-start'
+            }`}
+          >
+            {isFixed && (
+              <button className="" onClick={toggleMenuDesktop}>
+                <span role="img" aria-label="Search Icon">
+                  <img
+                    src={hamburgerscroll}
+                    alt="hamburger Icon"
+                    className="max-[1024px]:hidden w-8"
+                  />
+                </span>
+              </button>
+            )}
+
+            {/* Search Icon */}
+            {!isFixed && (
+              <div className="flex items-end justify-center py-1 px-[1.563vw] max-[1024px]:hidden relative w-[22.448vw] h-[3.281vw]">
+                {/* Search Icon Button - fades out when expanded */}
+                <button 
+                  type="button"
+                  onClick={() => setIsSearchExpanded(true)}
+                  className={`text-xl hover:text-blue-500 transition-opacity duration-300 ease-in-out absolute left-0 ${
+                    isSearchExpanded ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+                  }`}
+                >
+                  <span role="img" aria-label="Search Icon">
+                    <img src={searchImg} className="w-[1.979vw] h-[1.979vw] min-w-[1.979vw] min-h-[1.979vw]" alt="Search Icon" />
+                  </span>
+                </button>
+                
+                {/* Search Form - fades in when expanded */}
+                <form 
+                  onSubmit={(e) => { handleSearch(e); setIsSearchExpanded(false); }} 
+                  className={`flex items-end justify-center w-full h-full transition-opacity duration-300 ease-in-out absolute left-0 ${
+                    isSearchExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                  }`}
+                >
+                  <button type="submit" className="text-xl hover:text-blue-500">
+                    <span role="img" aria-label="Search Icon">
+                      <img src={searchImg} className="w-[1.979vw] h-[1.979vw] min-w-[1.979vw] min-h-[1.979vw]" alt="Search Icon" />
+                    </span>
+                  </button>
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onBlur={() => {
+                      // Delay to allow form submission to work
+                      setTimeout(() => {
+                        if (!searchQuery.trim()) {
+                          setIsSearchExpanded(false);
+                        }
+                      }, 200);
+                    }}
+                    className="w-full bg-transparent font-normal outline-none rounded-none border border-[#1F1D1B] border-t-0 border-l-0 border-r-0 border-b-[1.5px] text-[#999898] px-[11px] py-0 m-0 text-[18px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[2.5vw] xl:leading-[2.5vw] 2xl:leading-[2.5vw] ml-[1.042vw] flex items-center leading-normal text-xl"
+                    placeholder="Find products, brands, vendors...."
+                  />
+                </form>
+              </div>
+            )}
+            {isFixed && (
+              <button 
+                className="text-xl pl-[44px] hover:text-blue-500 max-[1601px]:w-8"
+                onClick={scrollToTop}
+                title="Scroll to top"
+              >
+                <span role="img" aria-label="Search Icon">
+                  <img
+                    src={searchImgscroll}
+                    alt="Search Icon"
+                    className="max-[1601px]:w-8"
+                  />
+                </span>
+              </button>
+            )}
+
+            <button className="text-xl hover:text-blue-500"></button>
+          </div>
+
+          {/* Logo */}
+          <div className="font-bold text-xl lg:w-[34%] lg:mb-[4vw] flex max-[1024px]:order-2 items-center justify-center max-[1024px]:absolute max-[1024px]:left-[50%] max-[1024px]:translate-x-[-50%]">
+            <NavLink to="/Home" className="text-black flex justify-center">
+              <img
+                src={isFixed ? registryLogoScroll : registryLogo}
+                alt="Registry Logo"
+                className={`transition-all duration-600 ease-in-out lg:w-[4vw] ${
+                  isFixed
+                    ? 'max-[1024px]:w-[60px]'
+                    : 'lg:w-[19.2vw] max-[1024px]:w-[133px]'
+                }`}
+              />
+            </NavLink>
+          </div>
+
+          <div className="min-[1025px]:hidden max-[1024px]:order-1 hamburger" onClick={toggleMenu}>
+            <img
+              src={isFixed ? hamburgerscroll : hamburger}
+              alt=""
+              className={`w-8 max-[1024px]:w-[20px] ${isFixed ? 'brightness-unset' : 'brightness-0'}`}
+            />
+          </div>
+
+          {/* Icons and CTA */}
+          <div className={`flex max-[1024px]:order-3 justify-end lg:w-[33%] ${isFixed ? 'mt-[0] items-center' : 'mt-[-0.625vw] items-start'}`}>
+            {!user && (
+              <div className="flex items-center gap-[1.406vw]">
+                  {!isFixed && (
+                    <div className="bg-[#F5F2ED] rounded-full p-2 w-[2.917vw] h-[2.917vw] max-[1024px]:h-[40px] max-[1024px]:w-[40px] flex items-center justify-center">
+                      <NavLink
+                        to="/login"
+                        className="text-xl hover:text-blue-500"
+                      >
+                        <span role="img" aria-label="User Icon">
+                          <img className='w-[1.25vw] h-[1.25vw] max-[1024px]:w-[18px] max-[1024px]:h-[17px]' src={userImg} alt="User Icon" />
+                        </span>
+                      </NavLink>
+                    </div>
+                  )}
+                  {isFixed && (
+                    <NavLink to="/login" className="text-xl hover:text-blue-500">
+                      <span role="img" aria-label="User Icon">
+                        <img
+                          src={userImgscroll}
+                          alt="User Icon"
+                          className="max-[1590px]:w-7"
+                        />
+                      </span>
+                    </NavLink>
+                  )}
+
+                  <div className="flex items-center gap-4 max-[1024px]:hidden">
+                    {/* link Button */}
+                    <NavLink
+                      to="/couple"
+                      className={`text-center flex justify-center items-center hover:opacity-90 lg:text-[0.833vw] lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] ${
+                        isFixed ? 'text-white mr-[15px]' : 'text-[#1F1D1B] bg-[#F5F2ED] lg:w-[11.719vw] lg:h-[3.095vw]'
+                      }`}
+                    >
+                      FIND A COUPLE
+                    </NavLink>
+                    {/* CTA Button */}
+                    <button
+                      onClick={handleOpenPopup}
+                      className="text-[0.833vw] leading-[0.938vw] cursor-pointer h-[3.095vw] bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[11.719vw] text-center"
+                    >
+                      CREATE A REGISTRY
+                    </button>
+                  </div>
+              </div>
+            )}
+            {user && (
+              <>
+                <div className='flex items-start justify-end gap-[1.042vw]'>
+                  <div className={`rounded-full p-0 w-[2.917vw] h-[2.917vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px] flex items-center justify-center border-2 ${
+                    isFixed 
+                      ? 'bg-[#F5F2ED] border-white' 
+                      : 'bg-[#F5F2ED] border-black'
+                  }`}>
+                    {hasEventImage() ? (
+                      <img
+                        src={getEventImage()}
+                        alt="Event"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <img
+                        src={loginReplacementGif}
+                        alt="Profile"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    )}
+                  </div>
+                  <div className="relative" ref={notificationRef}>
+                    <button 
+                      onClick={toggleNotificationDropdown}
+                      className="relative inline-block hover:opacity-80 transition-opacity"
+                    >
+                      {/* Bell Icon (SVG) */}
+                      <svg width="60" height="60" className="w-[3.125vw] h-[3.125vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/>
+                      </svg>
+
+                      {/* Red Dot for unread notifications */}
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
+                          <span className="text-xs text-white font-bold">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </span>
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Notification Dropdown */}
+                    {showNotificationDropdown && (
+                      <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                          <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+                          {unreadCount > 0 && (
+                            <button
+                              onClick={markAllAsRead}
+                              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                              Mark all as read
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Notifications List */}
+                        <div className="max-h-80 overflow-y-auto">
+                          {notifications.length === 0 ? (
+                            <div className="p-4 text-center text-gray-500">
+                              <p>No notifications yet</p>
+                            </div>
+                          ) : (
+                            notifications.map((notification) => (
+                              <div
+                                key={notification.id}
+                                className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
+                                  notification.status === 'unread' ? 'bg-blue-50' : ''
+                                }`}
+                                onClick={() => {
+                                  if (notification.status === 'unread') {
+                                    markNotificationAsRead(notification.id);
+                                  }
+                                }}
+                              >
+                                <div className="flex items-start space-x-3">
+                                  <div className={`w-2 h-2 rounded-full mt-2 ${
+                                    notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
+                                  }`}></div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-gray-900">
+                                      {notification.title}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                      {notification.message}
+                                    </p>
+                                    <p className="text-xs text-gray-400 mt-2">
+                                      {new Date(notification.createdAt).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+
+                        {/* Footer */}
+                        {notifications.length > 0 && (
+                          <div className="p-3 border-t border-gray-200 text-center">
+                            <button
+                              onClick={() => setShowNotificationDropdown(false)}
+                              className="text-sm text-gray-600 hover:text-gray-800"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {isLoadingRegistry ? (
+                    <div className='pt-1'>
+                      <div className={`text-xs font-medium tracking-wide text-center mb-2 ${
+                        isFixed ? 'text-white' : 'text-black'
+                      }`}>
+                        Registry Status
+                      </div>
+                      <div className={`text-xs text-center ${
+                        isFixed ? 'text-white' : 'text-black'
+                      }`}>
+                        Loading...
+                      </div>
+                    </div>
+                  ) : registryData?.id ? (
+                  <div className='pt-1'>
+                    <button
+                      type="button"
+                      aria-pressed={!isDraft}
+                        aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
+                      onClick={handleToggle}
+                        disabled={isUpdatingStatus}
+                        className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] max-[1024px]:w-[30px] max-[1024px]:h-[16px] focus:outline-none overflow-hidden ${
+                        isDraft
+                          ? 'bg-white border-black'
+                          : 'bg-white border-black'
+                      }`}
+                    >
+                      <span
+                        className={`rounded-full shadow-md transform h-full transition-transform duration-200 ${
+                          isDraft
+                            ? 'translate-x-0 bg-gray-300 w-[2.031vw] w-[16px]'
+                            : 'translate-x-[1.094vw] bg-[#C52248]  w-full'
+                        }`}
+                      />
+                    </button>
+                      <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] max-[1024px]:text-[10px] max-[1024px]:leading-[14px] ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>
+                        {isUpdatingStatus ? 'Updating...' : (isDraft ? 'Draft' : 'Published')}
+                      </div>
+                    </div>
+                  ) : (
+                  <div className='pt-1'>
+                    <button
+                      type="button"
+                      aria-pressed={!isDraft}
+                        aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
+                      onClick={handleToggle}
+                        disabled={isUpdatingStatus}
+                        className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none overflow-hidden ${
+                        isDraft
+                          ? 'bg-white border-black'
+                          : 'bg-white border-black'
+                      }`}
+                    >
+                      <span
+                        className={`rounded-full shadow-md transform w-[2.031vw] h-full transition-transform duration-200 ${
+                          isDraft
+                            ? 'translate-x-0 bg-gray-300'
+                            : 'translate-x-[1.094vw] bg-[#C52248]'
+                        }`}
+                      />
+                    </button>
+                      <div className={`uppercase text-lg font-bold tracking-wide mt-[0.365vw] text-[0.729vw] leading-[0.938vw] ${
+                      isFixed ? 'text-white' : 'text-black'
+                    }`}>
+                        {isUpdatingStatus ? 'Updating...' : (isDraft ? 'Draft' : 'Published')}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          
+          </div>
+          {showPopup && (
+            <ModalPortal>
+              <Popup onClose={handleClosePopup} />
+            </ModalPortal>
+          )}
+        </header>
+      </div>
+
+      {/* Default Menu - Hidden when sticky (menu is rendered via portal) */}
       <div
-        className={`mt-0 max-[1024px]:hidden  ${
-          isFixed
-            ? `fixed transition-all ${
-                isMenuOpenBottom ? 'top-[70px] bg-white' : 'top-[-50px]'
-              } left-0 w-full z-10`
-            : ''
+        className={`mt-0 max-[1024px]:hidden ${
+          isFixed ? 'hidden' : ''
         }`}
       >
         <NavBarLinks />
@@ -1270,6 +1794,6 @@ export function Header() {
       >
         <HeaderMobileMenu onClose={toggleMenu} onPopup={handleOpenPopup} />
       </div>
-    </div>
+    </>
   );
 }
