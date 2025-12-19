@@ -233,7 +233,7 @@ const ProductCard = React.memo(
     };
 
     return (
-      <div key={product.id} className="relative group mb-[4.844vw] w-[18.75vw]">
+      <div key={product.id} className="relative group mb-[4.844vw] w-[18.75vw] max-[1024px]:w-auto">
         {/* Product Image and Info */}
         <div className="p-0 z-10 relative">
           <img
@@ -367,7 +367,7 @@ const DreamFund = () => {
     <section>
       <Header />
       
-      <div className="w-full h-fit pt-[5.313vw]">
+      <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[767px]:pt-[50px]">
         <Heading
           text={
             searchQuery
@@ -375,7 +375,7 @@ const DreamFund = () => {
               : 'cash & travel funds'
           }
           classes={
-            'prata text-4xl lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
+            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
           }
           image={headingBottomCurve}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
@@ -386,10 +386,10 @@ const DreamFund = () => {
             {filteredProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
         )}
-        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-2xl lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">
+        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px]">
           ASK FOR WHAT YOU REALLY WANT
         </p>
-        <p className="text-center text-2xl lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
+        <p className="text-center text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
           {searchQuery
             ? 'Browse the search results below or use the filters to refine your search.'
             : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that’s so you. Because life together should start with something unforgettable."}
@@ -410,9 +410,9 @@ const DreamFund = () => {
       {/* Regular Cash Funds Content - Only show when no search query */}
       {!searchQuery && (
         <>
-          <div className="w-full flex flex-row justify-center items-center gap-[1.25vw] mt-[3.906vw] mb-[5.833vw] px-4 md:px-16">
+          <div className="w-full flex flex-row justify-center items-center gap-[1.25vw] mt-[3.906vw] mb-[5.833vw] px-4 md:px-16 max-[767px]:flex-wrap max-[767px]:gap-[10px]">
             <div
-              className={`fund-tabs bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
                 location.pathname === '/dream-fund'
                   ? 'bg-[#1F1D1B]'
                   : ''
@@ -425,7 +425,7 @@ const DreamFund = () => {
               }`}>Dream Funds</Link>
             </div>
             <div
-              className={`fund-tabs bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
                 location.pathname.startsWith('/dashboard/cashfunds/create-new')
                   ? 'bg-[#1F1D1B]'
                   : ''
@@ -438,7 +438,7 @@ const DreamFund = () => {
               }`}>Create Your Own</Link>
             </div>
             <div
-              className={`fund-tabs bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
                 location.pathname.startsWith('/porte-travel')
                   ? 'bg-[#1F1D1B]'
                   : ''
@@ -454,25 +454,25 @@ const DreamFund = () => {
         </>
       )}
 
-      <div className="w-full h-[22.917vw] flex flex-row items-center justify-center">
-        <div className="w-[50%] h-full bg-[#F5F2ED] relative">
-          <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
+      <div className="w-full h-[30vw] flex flex-row items-center justify-center max-[1024px]:h-[350px] max-[767px]:flex-col max-[767px]:h-auto">
+        <div className="w-[50%] h-full bg-[#F5F2ED] relative max-[767px]:w-full">
+          <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%] max-[767px]:w-full max-[767px]:relative max-[767px]:translate-x-0 max-[767px]:translate-y-0 max-[767px]:top-0 max-[767px]:left-0 max-[767px]:py-[30px]">
             <Heading
               text={'dream funds'}
               classes={
-                'prata text-4xl lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black'
               }
               image={lineImghead}
               imageClasses={'w-[150px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] lg:h-[0.417vw] xl:h-[0.417vw] 2xl:h-[0.417vw]'}
             />
-            <p className="text-base sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw]">
+            <p className="text-[20px] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
               Think: flight upgrades, home projects, or a honeymoon you'll
               actually remember. These ready-to-go funds make it easy for guests
               to chip in on the good stuff.
             </p>
           </div>
         </div>
-        <div className="w-[50%] h-full">
+        <div className="w-[50%] h-full max-[767px]:w-full">
           <img
             src={'/assets/Images/dream-fund.jpg'}
             className="w-full h-full object-cover"
@@ -481,14 +481,14 @@ const DreamFund = () => {
         </div>
       </div>
 
-      <section className="px-[8.594vw] mx-auto">
+      <section className="px-[8.594vw] mx-auto max-[1024px]:px-[30px]">
         <div className="flex flex-col md:flex-row gap-[3.75vw] pt-[8.958vw]">
           {/* <SidebarFilter 
             collections={collections}
             checkedCategories={checkedCategories}
             setCheckedCategories={setCheckedCategories}
           /> */}
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-[2.083vw] pt-0 p-0 relative z-0 lg:w-[81.25vw] xl:w-[81.25vw] 2xl:w-[81.25vw] mx-auto">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 max-[1024px]:grid-cols-4 max-[767px]:grid-cols-3 max-[550px]:grid-cols-2 gap-[2.083vw] pt-0 p-0 relative z-0 lg:w-[81.25vw] xl:w-[81.25vw] 2xl:w-[81.25vw] mx-auto">
             {filteredProducts.map((product) => {
               // Find the collection for this product
               const collection = collections.find(col => col.id === product.collectionId);
@@ -509,18 +509,18 @@ const DreamFund = () => {
 
         <div className="flex justify-center items-center">
           <div className="w-full flex flex-col items-center">
-            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">LOADING 12 of 427</p>
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">LOADING 12 of 427</p>
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100">
+            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
               Back to Top
             </button>
           </div>
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] py-[3.906vw] flex items-center pl-[5.833vw] mb-[9.01vw] gap-[5.521vw] justify-center">
+      <section className="bg-[#FAF9F6] py-[3.906vw] flex items-center pl-[5.833vw] mb-[9.01vw] gap-[5.521vw] justify-center max-[767px]:flex-col max-[767px]:py-[50px] max-[767px]:mb-[50px] max-[767px]:px-[20px]">
         <Heading
           text={<>we think <span className="ivyora">you'll love</span></>}
           classes={
@@ -530,9 +530,9 @@ const DreamFund = () => {
           imageClasses={'max-[1024px]:max-w-[330px] w-[14.271vw] h-[6px] object-right object-cover'}
         />
 
-        <div className="relative items-start w-full max-w-[71.094vw]">
+        <div className="relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
           <div className="w-full mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[25%] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[19%] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
               <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
             </div>
 
@@ -545,31 +545,31 @@ const DreamFund = () => {
                 nextEl: '.swiper-button-next-prod',
                 prevEl: '.swiper-button-prev-prod',
               }}
-              className="px-[178px]"
+              className=""
               breakpoints={{
-                345: {
+                320: {
                   spaceBetween: 10,
-                  centeredSlides: true,
+                  slidesPerView: 1.5,
                 },
                 475: {
                   spaceBetween: 15,
-                  centeredSlides: true,
+                  slidesPerView: 2.5,
                 },
                 768: {
                   spaceBetween: 20,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
                 1024: {
                   spaceBetween: 30,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
                 1366: {
                   spaceBetween: 30,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
                 1600: {
                   spaceBetween: 35,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
               }}
             >
@@ -581,7 +581,7 @@ const DreamFund = () => {
                   const price = productNode.priceRange?.minVariantPrice;
                   
                   return (
-                    <SwiperSlide key={productNode.id} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw]'>
+                    <SwiperSlide key={productNode.id} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
                       <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
                         <img 
                           src={firstImage?.url || '/assets/Images/placeholder.png'} 
@@ -623,7 +623,7 @@ const DreamFund = () => {
                 </>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-[25%] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[19%] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
               <img src={nextitem} className="rotate-270 w-[1.3vw] h-[1.3vw]" alt="" />
             </div>
           </div>

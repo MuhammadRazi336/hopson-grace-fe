@@ -381,7 +381,7 @@ const CashFund = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[550px]:pt-[50px]">
+      <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[767px]:pt-[50px]">
         <Heading
           text={
             searchQuery
@@ -509,7 +509,7 @@ const CashFund = () => {
 
         <div className=" relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
           <div className="w-full mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[25%] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10">
+            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[19%] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10">
               <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
             </div>
 
@@ -600,7 +600,7 @@ const CashFund = () => {
                 </>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-[25%] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10">
+            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[19%] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10">
               <img src={nextitem} alt="" className="rotate-270 w-[1.3vw] h-[1.3vw]" />
             </div>
           </div>
