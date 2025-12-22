@@ -330,7 +330,7 @@ const Home = () => {
             imgBanner={atyourserviceGif}
             lineimg={lineImg}
             title=" at your service"
-            description="There's no question too small or request too big for our Registry advisors. We're always at your service."
+            description="There’s no question too small or request too big for one of our Registry concierges. We’re always at your service."
             buttontext={'CONTACT US'}
             buttontype={'link'}
             buttonLink={'/contact-us'}
@@ -348,7 +348,7 @@ const Home = () => {
           imgBanner={virtualappointmentImg}
           lineimg={lineImg2}
           title=<>book a virtual <br/>appointment</>
-          description="Our virtual appointments offer the  same personalized guidance — without leaving home. "
+          description="Our virtual appointments offer personalized guidance without leaving home."
           buttontext={'BOOK NOW'}
           buttontype={'link'}
           buttonLink={'/contact-us'}

@@ -2,6 +2,7 @@ import React, {useState, useCallback} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
+import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import Heading from '~/components/Heading';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
@@ -14,7 +15,7 @@ import {Navigation} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
-import {Link, useLoaderData, useFetcher, redirect, json} from '@remix-run/react';
+import {Link, useLoaderData, useFetcher, useLocation, redirect, json} from '@remix-run/react';
 import {formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
@@ -22,6 +23,10 @@ import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
+  
+  // Extract search query from URL
+  const url = new URL(request.url);
+  const searchQuery = url.searchParams.get('q') || null;
   
   // Only fetch registry data if user is logged in
   let registry = null;
@@ -93,6 +98,7 @@ export async function loader({request, context}) {
     registryId,
     user,
     recommendedProducts,
+    searchQuery,
   };
 }
 
@@ -288,7 +294,8 @@ const ProductCard = React.memo(
 );
 
 const PorteTravel = () => {
-  const {products, collections, registryId, user, recommendedProducts} = useLoaderData();
+  const {products, collections, registryId, user, recommendedProducts, searchQuery} = useLoaderData();
+  const location = useLocation();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
@@ -364,43 +371,127 @@ const PorteTravel = () => {
   return (
     <section>
       <Header />
-      <div className="w-full h-[2px] bg-black"></div>
+      
+      <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[767px]:pt-[50px]">
+        <Heading
+          text={
+            searchQuery
+              ? `search results for "${searchQuery}"`
+              : 'cash & travel funds'
+          }
+          classes={
+            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
+          }
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
+        />
+        {searchQuery && (
+          <p className="text-center my-5 text-lg">
+            Found {filteredProducts.length} cash fund
+            {filteredProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
+          </p>
+        )}
+        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px]">
+          ASK FOR WHAT YOU REALLY WANT
+        </p>
+        <p className="text-center text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
+          {searchQuery
+            ? 'Browse the search results below or use the filters to refine your search.'
+            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that's so you. Because life together should start with something unforgettable."}
+        </p>
+      </div>
 
-      <div className="w-full h-[500px] lg:h-[800px] flex flex-row items-center justify-center">
-        <div className="w-[50%] h-full bg-[#F5F2ED] relative">
-          <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
+      {/* No Search Results */}
+      {searchQuery && filteredProducts.length === 0 && (
+        <section className="container mx-auto py-16 text-center">
+          <h3 className="text-2xl font-semibold mb-4">No cash funds found</h3>
+          <p className="text-gray-600 mb-8">
+            No cash funds match your search for "{searchQuery}". Try different
+            keywords or browse our categories below.
+          </p>
+        </section>
+      )}
+
+      {/* Regular Cash Funds Content - Only show when no search query */}
+      {!searchQuery && (
+        <>
+          <div className="w-full flex flex-row justify-center items-center gap-[1.25vw] mt-[3.906vw] mb-[5.833vw] px-4 md:px-16 max-[767px]:flex-wrap max-[767px]:gap-[10px]">
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+                location.pathname === '/dream-fund'
+                  ? 'bg-[#1F1D1B]'
+                  : ''
+              }`}
+            >
+              <Link to="/dream-fund" className={`${
+                location.pathname === '/dream-fund'
+                  ? 'text-white'
+                  : 'text-[#1F1D1B]'
+              }`}>Dream Funds</Link>
+            </div>
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+                location.pathname.startsWith('/dashboard/cashfunds/create-new')
+                  ? 'bg-[#1F1D1B]'
+                  : ''
+              }`}
+            >
+              <Link to="/dashboard/cashfunds/create-new" className={`${
+                location.pathname.startsWith('/dashboard/cashfunds/create-new')
+                  ? 'text-white'
+                  : 'text-[#1F1D1B]'
+              }`}>Create Your Own</Link>
+            </div>
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+                location.pathname.startsWith('/porte-travel')
+                  ? 'bg-[#1F1D1B]'
+                  : ''
+              }`}
+            >
+              <Link to="/porte-travel" className={`${
+                location.pathname.startsWith('/porte-travel')
+                  ? 'text-white'
+                  : 'text-[#1F1D1B]'
+              }`}>Porte Travel</Link>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className="w-full h-[30vw] flex flex-row items-center justify-center max-[1024px]:h-[350px] max-[767px]:flex-col max-[767px]:h-auto">
+        <div className="w-[50%] h-full bg-[#F5F2ED] relative max-[767px]:w-full">
+          <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%] max-[767px]:w-full max-[767px]:relative max-[767px]:translate-x-0 max-[767px]:translate-y-0 max-[767px]:top-0 max-[767px]:left-0 max-[767px]:py-[30px]">
             <Heading
-              text={'porte travel'}
+              text={<>bespoke experiences <span className='flex items-center justify-center gap-[0.521vw]'>BY <img src="/assets/Images/porte-logo.png" className='w-[14.025vw] h-[auto]' alt="porte travel" /></span></>}
               classes={
-                'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black'
               }
               image={lineImghead}
-              imageClasses={'w-[150px] lg:w-[330px]'}
+              imageClasses={'w-[150px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] lg:h-[0.417vw] xl:h-[0.417vw] 2xl:h-[0.417vw]'}
             />
-            <p className="text-base sm:text-lg lg:text-xl text-black leading-relaxed mx-auto mt-10">
-              Think: flight upgrades, home projects, or a honeymoon you'll
-              actually remember. These ready-to-go funds make it easy for guests
-              to chip in on the good stuff.
+            <p className="text-[20px] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
+            This is next-level. Our friends at Porte design fully <br className='max-[767px]:hidden' /> custom trips built around you—whether it's wine <br className='max-[767px]:hidden' /> tasting in Sicily or glamping in the Sahara.
             </p>
           </div>
         </div>
-        <div className="w-[50%] h-full">
+        <div className="w-[50%] h-full max-[767px]:w-full">
           <img
             src={'/assets/Images/porteTravels.png'}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
             alt=""
           />
         </div>
       </div>
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
-          <SidebarFilter 
+      <section className="px-[8.594vw] mx-auto max-[1024px]:px-[30px]">
+        <div className="flex flex-col md:flex-row gap-[3.75vw] pt-[8.958vw]">
+          {/* <SidebarFilter 
             collections={collections}
             checkedCategories={checkedCategories}
             setCheckedCategories={setCheckedCategories}
-          />
-          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
+          /> */}
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 max-[1024px]:grid-cols-4 max-[767px]:grid-cols-3 max-[550px]:grid-cols-2 gap-[2.083vw] pt-0 p-0 relative z-0 lg:w-[81.25vw] xl:w-[81.25vw] 2xl:w-[81.25vw] mx-auto">
             {filteredProducts.map((product) => {
               // Find the collection for this product
               const collection = collections.find(col => col.id === product.collectionId);
@@ -420,13 +511,12 @@ const PorteTravel = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="w-full xl:w-1/4 "> </div>
-          <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">LOADING 12 of 427</p>
+          <div className="w-full flex flex-col items-center">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">LOADING 12 of 427</p>
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
+            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
               Back to Top
             </button>
           </div>

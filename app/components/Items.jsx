@@ -2,6 +2,7 @@ import { Link, useNavigate } from '@remix-run/react';
 import kyleanderik from '/assets/Images/KYLE-ERIK-EDITS-20 1.png';
 import kyleanderikmobile from '/assets/Images/kyleerikmobile.png';
 import img1 from '/assets/Images/Mask group.png';
+import linkIcon from '/assets/Images/hopson-linkicon.png';
 
 const Items = ({ featuredRegistryData = null }) => {
   const navigate = useNavigate();
@@ -36,9 +37,9 @@ const Items = ({ featuredRegistryData = null }) => {
 
   return (
     <div>
-      <div className="flex lg:justify-center items-center grid-cols-2 lg:grid-cols-[60.677vw_32.448vw] lg:grid-rows-2 max-[1024px]:gap-y-[20px]">
+      <div className="flex lg:justify-center items-center grid-cols-2 lg:grid-cols-[60.677vw_32.448vw] lg:grid-rows-2 max-[1024px]:gap-y-[20px] max-[767px]:flex-col max-[767px]:px-[23px]">
         {/* First item spans full width */}
-        <div className="lg:row-span-2 max-[1025px]:col-span-2 w-[60.677vw] h-[32.292vw] max-[1024px]:h-[51vw]">
+        <div className="lg:row-span-2 max-[1025px]:col-span-2 w-[60.677vw] h-[42.292vw] max-[1024px]:h-[51vw] max-[767px]:w-full">
           <div className="featureImage relative insetshadow registrytag h-full max-[1024px]:h-[51vw]">
             <img 
               src={subCollection?.image?.url || parentCollection?.image?.url || img1} 
@@ -59,11 +60,11 @@ const Items = ({ featuredRegistryData = null }) => {
         </div>
 
         {/* Dynamic products from the first 6 products */}
-        <div className="flex flex-wrap gap-[1.146vw] w-[41.3vw] bg-[#F5F2ED] relative p-[2.292vw] lg:-left-[2.5vw] xl:-left-[2.5vw] 2xl:-left-[2.5vw]">
+        <div className="flex flex-wrap gap-[1.146vw] w-[47.3vw] bg-[#F5F2ED] max-[767px]:bg-[#ffffff] max-[767px]:p-0 max-[767px]:gap-x-[7px] relative p-[2.292vw] lg:-left-[2.5vw] xl:-left-[2.5vw] 2xl:-left-[2.5vw] max-[767px]:w-full">
           {products.slice(0, 6).map((product, index) => (
             <div 
               key={product.node.id || index} 
-              className="item cursor-pointer w-[11.458vw] h-[11.458vw] max-[1024px]:w-[11.2vw] max-[1024px]:h-[11.2vw]"
+              className="item cursor-pointer w-[13.458vw] h-[13.458vw] max-[1024px]:w-[11.2vw] max-[1024px]:h-[11.2vw] max-[767px]:w-[calc(50%-3.5px)] max-[767px]:h-[29.85vw]"
               onClick={() => handleProductClick(product.node.handle)}
             >
               <img 
@@ -82,7 +83,10 @@ const Items = ({ featuredRegistryData = null }) => {
               </p> */}
             </div>
           ))}
+
+          <div className='item w-full flex justify-center items-center pt-4'><a href="#" className='w-full h-full flex items-center justify-center text-[0.938vw] leading-[1.042vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] gap-[10px]'>VIEW THIS REGISTRY <img src={linkIcon} alt='link icon' className='w-[1.563vw] h-auto max-[1024px]:w-[20px]' /></a></div>
         </div>
+
         
         {/* Fallback items if no dynamic products */}
         {products.length === 0 && (
