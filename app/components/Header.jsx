@@ -680,7 +680,7 @@ export function Header() {
       {/* Sticky Header - Rendered via Portal outside app-scale */}
       {isFixed && headerPortalTarget && createPortal(
         <header
-          className="header-sticky-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out fixed top-0 left-0 right-0 w-full z-50 bg-black shadow-lg h-[6.823vw]"
+          className="header-sticky-animated flex justify-between px-4 lg:px-[3.854vw] max-[1024px]:items-center transition-all duration-200 ease-in-out fixed top-0 left-0 right-0 w-full z-50 bg-black shadow-lg h-[4.823vw] max-[1024px]:h-[60px]"
         >
         {/* User Icon */}
         <div
@@ -1044,7 +1044,7 @@ export function Header() {
         <div
           className={`max-[1024px]:hidden fixed transition-all duration-300 ${
             isMenuOpenBottom 
-              ? 'top-[100px] opacity-100 pointer-events-auto' 
+              ? 'top-[72px] opacity-100 pointer-events-auto' 
               : 'top-[-500px] opacity-0 pointer-events-none'
           } left-0 w-full z-40 bg-white shadow-lg max-h-[calc(100vh-100px)] overflow-y-auto`}
         >
