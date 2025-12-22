@@ -67,7 +67,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                     <li>
                       <Link className="text-white" to="/why-the-registry">
-                      WHY THE REGISTRY?
+                      WHY THE REGISTRY
                       </Link>
                     </li>
                     <li>
@@ -123,12 +123,12 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                     <li>
                       <Link className="text-white" to="/inspiration">
-                        INSPIRATION
+                        FIND INSPIRATION
                       </Link>
                     </li>
                     <li>
                       <Link className="text-white" to="/ready-made-registries">
-                        READY MADE REGISTRIES
+                        READY-MADE REGISTRIES
                       </Link>
                     </li>
                     <li>
@@ -197,7 +197,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                           buttonText="LIVE CHAT"
                           showTitle={false}
                           showDescription={false}
-                          className="text-white bg-transparent border-none cursor-pointer hover:underline font-[500] text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] leading-[1.875vw] tracking-[0.08em] p-0 m-0"
+                          className="text-white bg-transparent border-none cursor-pointer hover:underline font-[500] text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] leading-[1.875vw] tracking-[0.08em] !p-0 m-0"
                         />
                       </div>
                     </li>
