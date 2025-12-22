@@ -239,7 +239,7 @@ const ProductCard = React.memo(
           <img
             src={firstImage}
             alt={product.title}
-            className="w-full h-[18.75vw] object-cover"
+            className="w-full h-[18.75vw] max-[767px]:h-[20vw] max-[550px]:h-[30vw] object-cover"
           />
           <h3 className="text-sm font-[500] tracking-[0.057vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
