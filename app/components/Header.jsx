@@ -55,6 +55,10 @@ export function Header() {
   const socketRef = useRef(null);
   const searchInputRef = useRef(null);
 
+  // User avatar dropdown state
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const userDropdownRef = useRef(null);
+
 
   // Update status when registry data changes
   useEffect(() => {
@@ -360,6 +364,10 @@ export function Header() {
   // Toggle notification dropdown
   const toggleNotificationDropdown = () => {
     setShowNotificationDropdown(prev => !prev);
+    // Close user dropdown when opening notification dropdown
+    if (!showNotificationDropdown) {
+      setShowUserDropdown(false);
+    }
   };
 
   // Close dropdown when clicking outside
@@ -368,6 +376,9 @@ export function Header() {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
         setShowNotificationDropdown(false);
       }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setShowUserDropdown(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -375,6 +386,37 @@ export function Header() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Toggle user dropdown
+  const toggleUserDropdown = () => {
+    setShowUserDropdown(prev => !prev);
+    // Close notification dropdown when opening user dropdown
+    if (!showUserDropdown) {
+      setShowNotificationDropdown(false);
+    }
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    // Clear all localStorage
+    localStorage.clear();
+    
+    // Clear all sessionStorage
+    sessionStorage.clear();
+    
+    // Clear specific items to be sure
+    localStorage.removeItem('@token');
+    localStorage.removeItem('@Token');
+    localStorage.removeItem('@User');
+    localStorage.removeItem('@Registry');
+    
+    // Submit form to logout route to clear server-side session
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/logout';
+    document.body.appendChild(form);
+    form.submit();
+  };
 
   // Generate user initials from fetched user data
   const getUserInitials = () => {
@@ -840,23 +882,42 @@ export function Header() {
           {user && (
             <>
               <div className='flex items-start justify-end gap-[1.042vw]'>
-                <div className={`rounded-full p-0 w-[2.917vw] h-[2.917vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px] flex items-center justify-center border-2 ${
-                  isFixed 
-                    ? 'bg-[#F5F2ED] border-white' 
-                    : 'bg-[#F5F2ED] border-black'
-                }`}>
-                  {hasEventImage() ? (
-                    <img
-                      src={getEventImage()}
-                      alt="Event"
-                      className="w-full h-full object-cover rounded-full"
-                    />
-                  ) : (
-                    <img
-                      src={loginReplacementGif}
-                      alt="Profile"
-                      className="w-full h-full object-cover rounded-full"
-                    />
+                <div className="relative" ref={userDropdownRef}>
+                  <button
+                    onClick={toggleUserDropdown}
+                    className={`useravat rounded-full p-0 w-[2.917vw] h-[2.917vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px] flex items-center justify-center border-2 cursor-pointer hover:opacity-80 transition-opacity ${
+                      isFixed 
+                        ? 'bg-[#F5F2ED] border-white' 
+                        : 'bg-[#F5F2ED] border-black'
+                    }`}
+                  >
+                    {hasEventImage() ? (
+                      <img
+                        src={getEventImage()}
+                        alt="Event"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <img
+                        src={loginReplacementGif}
+                        alt="Profile"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    )}
+                  </button>
+
+                  {/* User Dropdown Menu */}
+                  {showUserDropdown && (
+                    <div className="absolute w-[80px] h-[51px] flex items-center justify-center top-full mt-4 left-[50%] translate-x-[-50%] bg-[#F5F2ED] shadow-lg z-50 before:content-[''] before:absolute before:top-[-8px] before:left-[50%] before:translate-x-[-50%] before:w-0 before:h-0 before:border-l-[8px] before:border-r-[8px] before:border-b-[8px] before:border-l-transparent before:border-r-transparent before:border-b-[#F5F2ED]">
+                      <div className="px-2">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-center border-b-2 cursor-pointer uppercase tracking-[0.016vw] text-[10px] leading-[12px] text-[#1F1D1B] transition-colors flex items-center"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
                 <div className="relative" ref={notificationRef}>
@@ -1331,23 +1392,42 @@ export function Header() {
             {user && (
               <>
                 <div className='flex items-start justify-end gap-[1.042vw]'>
-                  <div className={`rounded-full p-0 w-[2.917vw] h-[2.917vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px] flex items-center justify-center border-2 ${
-                    isFixed 
-                      ? 'bg-[#F5F2ED] border-white' 
-                      : 'bg-[#F5F2ED] border-black'
-                  }`}>
-                    {hasEventImage() ? (
-                      <img
-                        src={getEventImage()}
-                        alt="Event"
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : (
-                      <img
-                        src={loginReplacementGif}
-                        alt="Profile"
-                        className="w-full h-full object-cover rounded-full"
-                      />
+                  <div className="relative" ref={userDropdownRef}>
+                    <button
+                      onClick={toggleUserDropdown}
+                      className={`useravat rounded-full p-0 w-[2.917vw] h-[2.917vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px] flex items-center justify-center border-2 cursor-pointer hover:opacity-80 transition-opacity ${
+                        isFixed 
+                          ? 'bg-[#F5F2ED] border-white' 
+                          : 'bg-[#F5F2ED] border-black'
+                      }`}
+                    >
+                      {hasEventImage() ? (
+                        <img
+                          src={getEventImage()}
+                          alt="Event"
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        <img
+                          src={loginReplacementGif}
+                          alt="Profile"
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      )}
+                    </button>
+
+                    {/* User Dropdown Menu */}
+                    {showUserDropdown && (
+                      <div className="absolute w-[80px] h-[51px] flex items-center justify-center top-full mt-4 left-[50%] translate-x-[-50%] bg-[#F5F2ED] shadow-lg z-50 before:content-[''] before:absolute before:top-[-8px] before:left-[50%] before:translate-x-[-50%] before:w-0 before:h-0 before:border-l-[8px] before:border-r-[8px] before:border-b-[8px] before:border-l-transparent before:border-r-transparent before:border-b-[#F5F2ED]">
+                        <div className="px-2">
+                          <button
+                            onClick={handleLogout}
+                            className="w-full text-center border-b-2 cursor-pointer uppercase tracking-[0.016vw] text-[10px] leading-[12px] text-[#1F1D1B] transition-colors flex items-center"
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      </div>
                     )}
                   </div>
                   <div className="relative" ref={notificationRef}>
@@ -1624,35 +1704,6 @@ export function Header() {
                     </div>
                   </div>
                 </a>
-                <button 
-                  className="text-center px-1 py-1 text-xs transition-all ease-in-out relative hover:font-bold group font-normal text-gray-600" 
-                  onClick={() => {
-                    // Clear all localStorage
-                    localStorage.clear();
-                    
-                    // Clear all sessionStorage
-                    sessionStorage.clear();
-                    
-                    // Clear specific items to be sure
-                    localStorage.removeItem('@token');
-                    localStorage.removeItem('@Token');
-                    localStorage.removeItem('@User');
-                    localStorage.removeItem('@Registry');
-                    
-                    // Submit form to logout route to clear server-side session
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '/logout';
-                    document.body.appendChild(form);
-                    form.submit();
-                  }}
-                >
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="LOGOUT">
-                    <div className="z-20 text-inherit">
-                      <span className="relative inline-block">LOGOUT<span className="block h-0.5 mt-1 rounded transition-all duration-300 mx-auto bg-transparent group-hover:bg-gray-300 group-hover:w-full" style={{width: '0%', minWidth: '24px'}}></span></span>
-                    </div>
-                  </div>
-                </button>
               </div>
               
               {/* Mobile Drawer */}
