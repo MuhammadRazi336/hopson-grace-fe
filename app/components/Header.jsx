@@ -912,7 +912,7 @@ export function Header() {
                       <div className="px-2">
                         <button
                           onClick={handleLogout}
-                          className="w-full text-center border-b-2 cursor-pointer uppercase tracking-[0.016vw] text-[10px] leading-[12px] text-[#1F1D1B] transition-colors flex items-center"
+                          className="w-full text-center border-b-2 cursor-pointer uppercase tracking-[0.016vw] text-[12px] leading-[12px] text-[#1F1D1B] transition-colors flex items-center"
                         >
                           Logout
                         </button>
@@ -1422,7 +1422,7 @@ export function Header() {
                         <div className="px-2">
                           <button
                             onClick={handleLogout}
-                            className="w-full text-center border-b-2 cursor-pointer uppercase tracking-[0.016vw] text-[10px] leading-[12px] text-[#1F1D1B] transition-colors flex items-center"
+                            className="w-full text-center border-b-2 cursor-pointer uppercase tracking-[0.016vw] text-[12px] leading-[12px] text-[#1F1D1B] transition-colors flex items-center"
                           >
                             Logout
                           </button>
