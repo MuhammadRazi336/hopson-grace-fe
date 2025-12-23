@@ -54,14 +54,12 @@ const AboutUs = () => {
         
       </div>
 
-      <div className="container mx-auto pt-[5.833vw] pb-[4.896vw] max-[1024px]:py-[50px]">
+      <div className="mx-auto pt-[5.833vw] pb-[4.896vw] px-[20px] max-[1024px]:py-[50px] lg:w-[69.635vw] xl:w-[69.635vw] 2xl:w-[69.635vw] max-w-full">
         
         
         <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
-          After years of working with engaged couples at our sister store,
-          Hopson Grace, we noticed a shift: couples still wanted beautiful,
-          lasting things but they wanted to build their registries online
-          without compromising on style, service, or experience. So we created
+          After years of working with engaged couples at our sister store, Hopson Grace, we noticed a shift: couples still wanted beautiful, lasting things—but they wanted to build their registries online without compromising on style, service, or experience. So we created <strong>The Registry: a digital destination that marries ease with elegance.</strong> 
+          
           <span>
             {' '}
             The Registry: a digital destination that marries ease with elegance.
@@ -69,19 +67,11 @@ const AboutUs = () => {
         </p>
         <br />
         <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal py-4 max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
-          Where thoughtful design meets exceptional quality. Where registries
-          feel less like checklists and more like reflections of who you are and
-          the life you're building together. We’ve curated timeless pieces,
-          iconic brands and meaningful extras from bespoke honeymoon experiences
-          to flexible cash funds so you can build a registry that reflects your
-          taste, values, and lifestyle. Use our tools to build it your way, or
-          lean on our team for support and inspiration.
+          Where thoughtful design meets exceptional quality. Where registries feel less like checklists and more like reflections of who you are—and the life you're building together. We’ve curated timeless pieces, iconic brands and meaningful extras—from bespoke honeymoon experiences to flexible cash funds—so you can build a registry that reflects your taste, values, and lifestyle. Use our tools to build it your way, or lean on our team for support and inspiration. 
         </p>
         <br />
         <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
-          <span>Our philosophy?</span> Fewer, better things. A registry that’s
-          elevated and personal. And a wedding gift experience that’s as
-          thoughtful as the day itself.
+          <strong>Our philosophy?</strong> Fewer, better things. A registry that’s elevated and personal. <br />And a wedding gift experience that’s as thoughtful as the day itself. 
         </p>
       </div>
       <div className="w-full container mx-auto">
@@ -126,10 +116,11 @@ const AboutUs = () => {
           imgBanner={BottleImg}
           lineimg={lineImg3}
           title="at your service?"
-          description="There's no question too small or request too big for our Registry advisors. We're always at your service."
+          description="There’s no question too small or request too big for one of our Registry concierges. We’re always at your service."
           buttontext={'CONTACT US'}
           buttontype={'link'}
           buttonLink={'/contact-us'}
+          buttonClassName='!text-[#1F1D1B] mx-auto'
         />
       </div>
       <Footer />

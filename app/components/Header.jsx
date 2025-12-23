@@ -1805,31 +1805,7 @@ export function Header() {
                     >
                       SUPPORT
                     </a>
-                    <button 
-                      className="block w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-[#FD446F]"
-                      onClick={() => {
-                        // Clear all localStorage
-                        localStorage.clear();
-                        
-                        // Clear all sessionStorage
-                        sessionStorage.clear();
-                        
-                        // Clear specific items to be sure
-                        localStorage.removeItem('@token');
-                        localStorage.removeItem('@Token');
-                        localStorage.removeItem('@User');
-                        localStorage.removeItem('@Registry');
-                        
-                        // Submit form to logout route to clear server-side session
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = '/logout';
-                        document.body.appendChild(form);
-                        form.submit();
-                      }}
-                    >
-                      LOGOUT
-                    </button>
+                    
                   </div>
                 </div>
               </div>
