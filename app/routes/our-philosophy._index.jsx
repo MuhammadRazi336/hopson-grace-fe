@@ -8,6 +8,7 @@ import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
 import OurPhilosophyBg from '/assets/Images/OurPhilosophyBg.png';
 import teaImg from '/assets/Images/tea.png';
+import { Link } from '@remix-run/react';
 
 const OurPhilosophy = () => {
   return (
@@ -54,10 +55,12 @@ const OurPhilosophy = () => {
         </div>
         <div className="w-full container mx-auto pb-[8.281vw]">
           <div className="flex justify-center pt-[30px] max-[1024px]:pt-0">
-            <Button
-              text="BROWSE OUR CURATED COLLECTION   "
-              className="text-white font-normal cursor-pointer bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
-            />
+            <Link to="/products">
+              <Button
+                text="BROWSE OUR CURATED COLLECTION   "
+                className="text-white font-normal cursor-pointer bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
+              />
+            </Link>
           </div>
         </div>
 
