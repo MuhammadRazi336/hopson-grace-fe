@@ -49,12 +49,12 @@ const ImageAndText = ({
         {stepsCheck ? (
           <Steps className="max-w-[520px]" />
         ) : (
-          <p className="text-[12px] leading-[18px] font-[500] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center">
+          <p className="text-[12px] leading-[18px] font-[400] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center">
             {description}
           </p>
         )}
 
-      <div className="lg:mx-auto">
+      <div className="lg:mx-auto text-center">
         {showLiveChat ? (
           <LiveChat {...liveChatProps} />
         ) : onClick ? (
@@ -67,7 +67,7 @@ const ImageAndText = ({
               ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
               ${buttontype == 'link'
                 ? 'border-[3px] border-[#1F1D1B] text-white bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                : 'text-white bg-[#446184] rounded-none font-mono'}
+                : 'text-white bg-[#446184] rounded-none'}
               ${isContactPage ? '!bg-transparent lg:w-[375px] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
               ${buttonClassName}
             `}
@@ -81,7 +81,7 @@ const ImageAndText = ({
               ${stepsCheck ? 'max-[768px]:w-4/5 max-[768px]:m-0 max-[1024px]:p-[5px]' : ''}  
               ${buttontype == 'link'
                 ? 'text-white border-[3px] border-[#1F1D1B] bg-transparent rounded-none font-semibold tracking-[8%] font-800'
-                : 'text-white bg-[#446184] rounded-none font-mono'}
+                : 'text-white bg-[#446184] rounded-none'}
               ${isContactPage ? '!bg-transparent lg:w-[19.531vw] xl:w-[19.531vw] 2xl:w-[19.531vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] !lg:py-[22px] text-[#1F1D1B] border-2 border-[#1F1D1B]' : ''} 
               ${buttonClassName}
             `}
