@@ -1293,7 +1293,7 @@ export function Header() {
                         }
                       }, 200);
                     }}
-                    className="w-full bg-transparent font-normal outline-none rounded-none border border-[#1F1D1B] border-t-0 border-l-0 border-r-0 border-b-[1.5px] text-[#999898] px-[11px] py-0 m-0 text-[18px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[2.5vw] xl:leading-[2.5vw] 2xl:leading-[2.5vw] ml-[1.042vw] flex items-center leading-normal text-xl"
+                    className="w-full bg-transparent font-normal outline-none rounded-none border border-[#1F1D1B] border-t-0 border-l-0 border-r-0 border-b-[1.5px] text-[#1F1D1B] px-[11px] py-0 m-0 text-[18px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[2.5vw] xl:leading-[2.5vw] 2xl:leading-[2.5vw] ml-[1.042vw] flex items-center leading-normal text-xl"
                     placeholder="Find products, brands, vendors...."
                   />
                 </form>
@@ -1805,31 +1805,7 @@ export function Header() {
                     >
                       SUPPORT
                     </a>
-                    <button 
-                      className="block w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-[#FD446F]"
-                      onClick={() => {
-                        // Clear all localStorage
-                        localStorage.clear();
-                        
-                        // Clear all sessionStorage
-                        sessionStorage.clear();
-                        
-                        // Clear specific items to be sure
-                        localStorage.removeItem('@token');
-                        localStorage.removeItem('@Token');
-                        localStorage.removeItem('@User');
-                        localStorage.removeItem('@Registry');
-                        
-                        // Submit form to logout route to clear server-side session
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = '/logout';
-                        document.body.appendChild(form);
-                        form.submit();
-                      }}
-                    >
-                      LOGOUT
-                    </button>
+                    
                   </div>
                 </div>
               </div>

@@ -40,8 +40,8 @@ const ContactUs = () => {
         />
         <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center pt-[2.76vw] pb-[4.167vw] w-[63vw] max-w-full max-[1024px]:w-full mx-auto">
           {user ? 
-            "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
-            "We’re here for you. From setup to shipping, or if you’re purchasing a gift for a couple, you can reach us anytime for help, guidance, or just a second opinion."
+            "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
+            "We’re here for you. From setup to shipping, or if you’re purchasing a gift for a couple, reach us anytime for help, guidance, or just a second opinion. "
           }
         </p>
 
@@ -69,7 +69,7 @@ const ContactUs = () => {
             <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10 lg:py-[3.958vw] xl:py-[3.958vw] 2xl:py-[3.958vw]">
               <div className="flex flex-col items-center justify-center">                
                 <p className="text-sm lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-w-[500px] mt-4 mb-4 text-center text-white">
-                  Our team is on call 7 days a week from 10am-6pm EST.
+                  Our team is on call 7 days a week from 10-6pm EST.
                 </p>
 
                 <h3 className="text-[20px] mt-10 text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
@@ -92,8 +92,8 @@ const ContactUs = () => {
                   alt="lineimg"
                   className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
                 />
-                <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
-                  {user ? <strong>concierge@theregistry.ca</strong> : <strong>hello@theregistry.ca</strong>}
+                <p className="text-sm underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
+                  <a href={user ? 'mailto:concierge@theregistry.ca' : 'mailto:hello@theregistry.ca'} className="text-white font-[500]">{user ? <span>concierge@theregistry.ca</span> : <span>hello@theregistry.ca</span>}</a>
                 </p>
               </div>
             </div>
@@ -124,7 +124,7 @@ const ContactUs = () => {
                   className="mb-2 mt-2 lg:w-[17.708vw] xl:w-[17.708vw] 2xl:w-[17.708vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
                 />
                 <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
-                  Need a hand getting started? Book a virtual appointment with a Registry Concierge. We’ll walk you through the process, answer your questions, and help you build your dream registry.
+                  {user ? "Need a hand getting started? Book a virtual appointment with our Registry Concierge. We’ll walk you through the process, answer your questions, and help you build a registry that reflects your style, your life, and your wishlist." : "Need a hand getting started? Book a virtual appointment with a Registry Concierge. We’ll walk you through the process, answer your questions, and help you build your dream registry."}
                 </p>
 
                 <h3 className="text-[20px] mt-10 font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
@@ -136,7 +136,7 @@ const ContactUs = () => {
                   className="mb-2 mt-2 lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
                 />
                 <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
-                Getting close to the big day—or already married? Book a session with a Registry Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free.
+                  {user ? "Getting close to the big day—or already married? Book a session with our Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free." : "Getting close to the big day—or already married? Book a session with a Registry Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free."}
                 </p>
               </div>
               <Link to={"https://calendly.com/concierge-theregistry/30min"}>
@@ -171,7 +171,7 @@ const ContactUs = () => {
             <div className="text-center mb-[4.688vw]">
               <h2 className="text-[20px] font-[500] mb-[1.302vw] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] tracking-[2.24px] max-[1024px]:mb-[20px]">WANT TO SEE SOME OF OUR PRODUCTS IN PERSON?</h2>
               <p className="text-base w-[62.292vw] max-w-full mx-auto lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
-              If you’re in Toronto, visit our sister store <strong>Hopson Grace</strong> for modern home essentials and timeless gifts, where you’ll be able to see some products from The Registry in person.
+              If you’re in Toronto, visit our sister store <a href="https://www.hopsongrace.com" target="_blank" rel="noopener noreferrer" className="text-[#1F1D1B] underline font-[600]">Hopson Grace</a> for modern home essentials and timeless gifts, where you’ll be able to see some products from The Registry in person.
               </p>
             </div>
             
@@ -195,12 +195,12 @@ const ContactUs = () => {
                     <div className='mb-0'>
                       <h4 className="text-base font-semibold mb-[9px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-[1.92px]">GET IN TOUCH</h4>
                       <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">416-926-1120</p>
-                      <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
+                      <p className="text-base underline mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
                         <a href="mailto:INFO@HOPSONGRACE.COM" className="hover:text-gray-600">
                           INFO@HOPSONGRACE.COM
                         </a>
                       </p>
-                      <p className="text-base lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
+                      <p className="text-base underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
                         <a href="https://www.hopsongrace.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">
                           WWW.HOPSONGRACE.COM
                         </a>

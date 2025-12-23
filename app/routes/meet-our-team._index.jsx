@@ -109,6 +109,7 @@ const MeetOurTeam = () => {
           buttontext={'CONTACT US'}
           buttontype={'Color'}
           buttonLink={'/contact-us'}
+          buttonClassName='!text-[#1F1D1B]'
           sx={{
             button: {
               backgroundColor: 'transparent',
