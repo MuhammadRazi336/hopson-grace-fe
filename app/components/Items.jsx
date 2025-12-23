@@ -84,7 +84,14 @@ const Items = ({ featuredRegistryData = null }) => {
             </div>
           ))}
 
-          <div className='item w-full flex justify-center items-center pt-4'><a href="#" className='w-full h-full flex items-center justify-center text-[0.938vw] leading-[1.042vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] gap-[10px]'>VIEW THIS REGISTRY <img src={linkIcon} alt='link icon' className='w-[1.563vw] h-auto max-[1024px]:w-[20px]' /></a></div>
+          <div className='item w-full flex justify-center items-center pt-4'>
+            <Link 
+              to={`/registry/${subCollection?.handle}`} 
+              className='w-full h-full flex items-center justify-center text-[0.938vw] leading-[1.042vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] gap-[10px]'
+            >
+              VIEW THIS REGISTRY <img src={linkIcon} alt='link icon' className='w-[1.563vw] h-auto max-[1024px]:w-[20px]' />
+            </Link>
+          </div>
         </div>
 
         
