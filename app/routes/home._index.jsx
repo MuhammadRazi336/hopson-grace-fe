@@ -281,7 +281,7 @@ const Home = () => {
 
       <section className="py-[70px] mt-[81px] max-[1024px]:py-[28px] bg-[#F5F2ED80] my-[3.958vw] lg:mb-0 lg:mt-[8.281vw]">
         <Heading
-          text="a few of our brand"
+          text="a few of our brands"
           classes={
             'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
           }
