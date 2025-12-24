@@ -95,7 +95,7 @@ const ImageAndText = ({
       </div>
 
       <div
-        className={`lg:w-[65%] w-[45%] min-w-[45%] h-[42vw] max-[767px]:h-[320px] relative ${
+        className={`lg:w-[70%] xl:w-[70%] 2xl:w-[70%] w-[45%] min-w-[45%] h-[42vw] max-[767px]:h-[320px] relative ${
           direction === 'left' ? 'lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw] mt-6 top-[3.229vw]' : 'top-[-3.229vw]'
         }`}
       >

@@ -139,7 +139,7 @@ const ContactUs = () => {
                   {user ? "Getting close to the big day—or already married? Book a session with our Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free." : "Getting close to the big day—or already married? Book a session with a Registry Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free."}
                 </p>
               </div>
-              <Link to={"https://calendly.com/concierge-theregistry/30min"}>
+              <Link to={"https://calendly.com/concierge-theregistry/30min"} target="_blank" rel="noopener noreferrer">
                 <button className="font-[800] px-2 mt-5 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
                   BOOK AN APPOINTMENT
                 </button>

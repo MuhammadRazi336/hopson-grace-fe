@@ -37,9 +37,9 @@ const Items = ({ featuredRegistryData = null }) => {
 
   return (
     <div>
-      <div className="flex lg:justify-center items-center grid-cols-2 lg:grid-cols-[60.677vw_32.448vw] lg:grid-rows-2 max-[1024px]:gap-y-[20px] max-[767px]:flex-col max-[767px]:px-[23px]">
+      <div className="flex relative items-center grid-cols-2 lg:grid-cols-[77.73vw_52.08vw] lg:grid-rows-2 max-[1024px]:gap-y-[20px] max-[767px]:flex-col max-[767px]:px-[23px]">
         {/* First item spans full width */}
-        <div className="lg:row-span-2 max-[1025px]:col-span-2 w-[60.677vw] h-[42.292vw] max-[1024px]:h-[51vw] max-[767px]:w-full">
+        <div className="lg:row-span-2 max-[1025px]:col-span-2 w-[77.73vw] h-[40.36vw] max-[1024px]:h-[51vw] max-[767px]:w-full">
           <div className="featureImage relative insetshadow registrytag h-full max-[1024px]:h-[51vw]">
             <img 
               src={subCollection?.image?.url || parentCollection?.image?.url || img1} 
@@ -60,11 +60,11 @@ const Items = ({ featuredRegistryData = null }) => {
         </div>
 
         {/* Dynamic products from the first 6 products */}
-        <div className="flex flex-wrap gap-[1.146vw] w-[47.3vw] bg-[#F5F2ED] max-[767px]:bg-[#ffffff] max-[767px]:p-0 max-[767px]:gap-x-[7px] relative p-[2.292vw] lg:-left-[2.5vw] xl:-left-[2.5vw] 2xl:-left-[2.5vw] max-[767px]:w-full">
+        <div className="flex flex-wrap gap-[1.146vw] absolute max-[767px]:relative top-[50%] max-[767px]:top-0 max-[767px]:translate-y-0 translate-y-[-50%] right-0 w-[52.08vw] bg-[#F5F2ED] max-[767px]:bg-[#ffffff] max-[767px]:p-0 max-[767px]:gap-x-[7px] p-[3.12vw] max-[767px]:w-full">
           {products.slice(0, 6).map((product, index) => (
             <div 
               key={product.node.id || index} 
-              className="item cursor-pointer w-[13.458vw] h-[13.458vw] max-[1024px]:w-[11.2vw] max-[1024px]:h-[11.2vw] max-[767px]:w-[calc(50%-3.5px)] max-[767px]:h-[29.85vw]"
+              className="item cursor-pointer w-[14.32vw] h-[14.32vw] max-[767px]:w-[calc(50%-3.5px)] max-[767px]:h-[29.85vw]"
               onClick={() => handleProductClick(product.node.handle)}
             >
               <img 
@@ -84,7 +84,7 @@ const Items = ({ featuredRegistryData = null }) => {
             </div>
           ))}
 
-          <div className='item w-full flex justify-center items-center pt-4'>
+          <div className='item w-full flex justify-center items-center pt-1'>
             <Link 
               to={`/registry/${subCollection?.handle}`} 
               className='w-full h-full flex items-center justify-center text-[0.938vw] leading-[1.042vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] gap-[10px]'
