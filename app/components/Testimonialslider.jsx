@@ -59,15 +59,15 @@ const Testimonialslider = ({ blogs = [] }) => {
             spaceBetween: 0,
           },
           768: {
-            slidesPerView: 1.5,
+            slidesPerView: 1.7,
             spaceBetween: 40,
           },
           1600: {
-            slidesPerView: 1.5,
+            slidesPerView: 1.7,
             // spaceBetween handled by base prop (5vw)
           },
           2000: {
-            slidesPerView: 1.5,
+            slidesPerView: 1.7,
             // spaceBetween handled by base prop (5vw)
           },
         }}
@@ -78,14 +78,14 @@ const Testimonialslider = ({ blogs = [] }) => {
           const excerpt = cleanContent.slice(0, 300) + (cleanContent.length > 300 ? '...' : '');
           
           return (
-            <SwiperSlide key={article.id} className='lg:w-[55.573vw] xl:w-[55.573vw] 2xl:w-[55.573vw]'>
+            <SwiperSlide key={article.id} className='!lg:w-[70.96vw] xl:w-[70.96vw] 2xl:w-[70.96vw]'>
               <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[450px]">
                 <img
                   src={article.image?.url || "/assets/Images/couple-logo.png"}
                   alt={article.image?.altText || cleanTitle}
-                  className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[52vw] xl:w-[52vw] 2xl:w-[52vw] lg:h-[36.458vw] xl:h-[36.458vw] 2xl:h-[36.458vw] rounded-none"
+                  className="max[1024px]:w-full h-full relative object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] rounded-none"
                 />
-                <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[29.167vw] lg:h-[36.042vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
+                <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
                   <p className="text-xl lg:text-[1.1vw] lg:leading-[1.9vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal max-[1024px]:line-clamp-15">
                     {excerpt}
                   </p>
@@ -113,14 +113,14 @@ const Testimonialslider = ({ blogs = [] }) => {
             </SwiperSlide>
           );
         }) : (
-          <SwiperSlide className='lg:w-[55.573vw] xl:w-[55.573vw] 2xl:w-[55.573vw]'>
+          <SwiperSlide className='lg:w-[70.96vw] xl:w-[70.96vw] 2xl:w-[70.96vw]'>
             <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[700px]">
               <img
                 src="/assets/Images/couple-logo.png"
                 alt="No articles available"
                 className="max[1024px]:w-full h-full object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[52vw] xl:w-[52vw] 2xl:w-[52vw] lg:h-[36.458vw] xl:h-[36.458vw] 2xl:h-[36.458vw] rounded-none"
               />
-              <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[29.167vw] lg:h-[36.042vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
+              <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
                 <p className="text-xl lg:text-[1.1vw] lg:leading-[1.9vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
                   We're working on bringing you amazing blog content. Check back soon for inspiring stories and helpful tips!
                 </p>

@@ -70,7 +70,7 @@ const ShipGifts = () => {
                 a registry concierge and we’ll do this with you.
               </p>
               <div>
-                <Link to={'https://calendly.com/concierge-theregistry/30min'}>
+                <Link to={'https://calendly.com/concierge-theregistry/30min'} target="_blank" rel="noopener noreferrer">
                   <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
                     BOOK AN APPOINTMENT
                   </button>
