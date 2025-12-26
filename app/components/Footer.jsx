@@ -9,7 +9,6 @@ import Copyright from './Copyright';
 import {useState} from 'react';
 import Popup from './Popup';
 import ModalPortal from './ModalPortal';
-import LiveChat from './LiveChat';
 
 /**
  * @param {FooterProps}
@@ -86,7 +85,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/meet-our-team" target='_blank'>
+                      <Link className="text-white" to="/meet-our-team">
                       MEET OUR SISTER STORE HOPSON GRACE
                       </Link>
                     </li>
@@ -193,7 +192,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     <li>
                       <a
                         className="text-white"
-                        href="https://pinterest.com"
+                        href="https://ca.pinterest.com/TheRegistrybyHopsonGrace/"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -203,7 +202,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     <li>
                       <a
                         className="text-white"
-                        href="https://instagram.com"
+                        href="https://www.instagram.com/the__registry/"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -217,7 +216,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     <li>
                       <a
                         className="text-white"
-                        href="https://facebook.com"
+                        href="https://www.facebook.com/profile.php?id=61579373301428"
                         target="_blank"
                         rel="noopener noreferrer"
                       >

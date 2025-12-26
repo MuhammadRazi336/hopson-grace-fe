@@ -98,7 +98,7 @@ const SubmitWedding = () => {
               <input
                 type="text"
                 name="coupleName"
-                placeholder="Name of Couple*"
+                placeholder="Your First Name*"
                 value={formData.coupleName}
                 onChange={handleInputChange}
                 required
