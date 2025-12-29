@@ -128,3 +128,10 @@ code {
   font-family: monospace;
   padding: 0.25rem;
 }
+
+
+@media (min-width: 1025px){
+  input, textarea{
+    font-size: 1.042vw;
+  }
+}
