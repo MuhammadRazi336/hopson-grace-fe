@@ -62,7 +62,7 @@ const FAQ = () => {
         <div className="flex gap-[1.719vw] max-[1024px]:gap-[15px]">
           <button
             onClick={() => setActiveTab('couples')}
-            className={`px-[2.083vw] text-[0.833vw] cursor-pointer lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] transition-all duration-200 max-[1024px]:px-[20px] max-[1024px]:py-[10px] max-[1024px]:text-[12px] ${
+            className={`px-[2.083vw] lg:w-[13.22vw] xl:w-[13.22vw] 2xl:w-[13.22vw] lg:h-[3.125vw] xl:h-[3.125vw] 2xl:h-[3.125vw] text-[0.833vw] cursor-pointer lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] transition-all duration-200 max-[1024px]:px-[20px] max-[1024px]:py-[10px] max-[1024px]:text-[12px] ${
               activeTab === 'couples'
                 ? 'bg-black text-white'
                 : 'bg-white text-black border border-black'
@@ -72,7 +72,7 @@ const FAQ = () => {
           </button>
           <button
             onClick={() => setActiveTab('guests')}
-            className={`px-[2.083vw] py-[0.833vw] cursor-pointer text-[0.833vw] lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] transition-all duration-200 max-[1024px]:px-[20px] max-[1024px]:py-[10px] max-[1024px]:text-[12px] ${
+            className={`px-[2.083vw] py-[0.833vw] lg:w-[13.22vw] xl:w-[13.22vw] 2xl:w-[13.22vw] lg:h-[3.125vw] xl:h-[3.125vw] 2xl:h-[3.125vw] cursor-pointer text-[0.833vw] lg:leading-[0.938vw] font-[800] uppercase tracking-[0.48px] transition-all duration-200 max-[1024px]:px-[20px] max-[1024px]:py-[10px] max-[1024px]:text-[12px] ${
               activeTab === 'guests'
                 ? 'bg-black text-white'
                 : 'bg-white text-black border border-black'
@@ -116,7 +116,7 @@ const FAQ = () => {
                 ) : (
                   <>
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      Simply click Find a Registry on our homepage and enter the couple’s name. You’ll be taken directly to their registry. 
+                    Simply click Find a Couple on our homepage and enter the couple’s name. You’ll be taken directly to their registry.
                     </p>
                   </>
                 )}
@@ -407,7 +407,7 @@ const FAQ = () => {
                 ) : (
                   <>
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      If something you love has been discontinued,we'll suggest a similar item or let you contribute toward a fund instead.
+                      If something you love has been discontinued, we'll suggest a similar item or let you contribute toward a fund instead.
                     </p>
                   </>
                 )}
@@ -445,7 +445,7 @@ const FAQ = () => {
                 ) : (
                   <>
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      We're available to help with any questions, from navigating the site to choosing the perfect gift. Reach us anytime at <a href="mailto:hello@theregistry.ca" className="text-blue-500" target="_blank">hello@theregistry.ca</a>.
+                      We're available to help with any questions, from navigating the site to choosing the perfect gift. Reach us anytime at <span className="underline" target="_blank">hello@theregistry.ca</span>.
                     </p>
                   </>
                 )}
@@ -475,7 +475,7 @@ const FAQ = () => {
                 {openFAQ === 10 && (
                   <div className="mt-[1.25vw] transition-all duration-300">
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      Your dashboard automatically records each gift and message as it’s purchased. You’ll have an organized list ready for thank-you notes — no guesswork required.
+                      Your dashboard automatically records each gift and note as it’s purchased. You’ll have an organized list ready for thank-you notes — no guesswork required.
                     </p>
                   </div>
                 )}
@@ -631,7 +631,7 @@ const FAQ = () => {
                 {openFAQ === 16 && (
                   <div className="mt-[1.25vw] transition-all duration-300">
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      We want accessing your cash funds to feel as seamless as the rest of your experience. Simply log into your dashboard, click 'fulfill my gifts', then head to Withdraw Funds and select Request Funds — and voilà. Once processed, your funds will arrive within 1–5 business days. Enjoy two complimentary withdrawals on us. After that, a small processing fee applies for additional transfers. 
+                      Accessing your cash funds is seamless. Request a withdrawal from your dashboard and receive your funds within 5 business days. Two withdrawals are on us; additional transfers include a small processing fee. 
                     </p>
                   </div>
                 )}

@@ -2,90 +2,89 @@ import React from 'react'
 import { Footer } from '~/components/Footer';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import LiveChat from '~/components/LiveChat';
+import LineCurve from '/assets/Images/line.png';
 
 const Support = () => {
 
   return (
-    <div className="pt-[80px]">
-        <div className=" p-4 mt-[80px]">
-        <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+    <div className="w-full h-fit pt-[3.75vw] max-[1024px]:pt-[40px] bg-[#FFFFFF]">
+        <div className="flex items-center flex-col gap-2 lg:gap-[0.833vw]">
+        <h2 className="prata text-[30px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0">
           need <span className="prata uppercase">support</span>
         </h2>
         <img
-          src="/assets/Images/profile-view-page-bdr.png"
+          src={LineCurve}
           alt="Couple"
-          className="max-w-[630px] mt-5 h-auto mx-auto"
+          className="max-[1024px]:max-w-[330px] lg:w-[16.25vw] xl:w-[16.25vw] 2xl:w-[16.25vw] h-[5px]"
         />
-        <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
+        <p className="text-1xl px-[20px] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center pt-[2.76vw] pb-[4.167vw] w-[63vw] max-w-full max-[1024px]:w-full mx-auto">
           Enjoy one-time free shipping after the wedding—just let us know when
           you're ready. Prefer to receive something sooner? You can ship gifts
           anytime; standard shipping rates will apply.
         </p>
       </div>
 
-      <div className="mb-16"></div>
-      <section className="container mx-auto mb-10">
-        <div className="flex lg:gap-8 gap-2 flex-wrap xl:flex-nowrap items-stretch">
-          <div className="lg:w-[40%] w-full">
+      <section className="lg:px-[7.24vw] xl:px-[7.24vw] 2xl:px-[7.24vw] mx-auto mb-10">
+        <div className="flex justify-center flex-wrap xl:flex-nowrap">
+          <div className="lg:w-[37.552vw] xl:w-[37.552vw] 2xl:w-[37.552vw] w-full">
             <img
               src="/assets/Images/need-support-img.png"
               alt="Image Banner"
               className="max-[1024px]:h-full object-cover object-[80%]"
             />
           </div>
-          <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[60%] w-full max-[768px]:p-10">
+          <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10 lg:py-[3.958vw] xl:py-[3.958vw] 2xl:py-[3.958vw]">
             <div className="flex flex-col items-center justify-center">
-              <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full  text-center">
+              <h3 className="text-[20px] mt-0 text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
                 QUESTIONS, PRODUCT REQUESTS, OR ISSUES?
               </h3>
               <img
-                src="/assets/Images/white-bdr.png"
+                src="/assets/Images/small-heading-line.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%]"
+                className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
               />
-              <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
+              <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
                 Email us anytime at{' '}
-                <a href="mailto:support@theregistry.ca" className="text-white">
+                <span className="text-white">
                   {' '}
                   support@theregistry.ca{' '}
-                </a>{' '}
+                </span>{' '}
                 <br /> We respond within one business day.
               </p>
 
-              <h3 className="text-2xl mt-10 text-white lg:text-5xl 2xl:text-xl 3xl:w-full  text-center">
+              <h3 className="text-[20px] mt-10 text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
                 PREFER A PHONE CALL?
               </h3>
               <img
-                src="/assets/Images/white-bdr.png"
+                src="/assets/Images/small-heading-line.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%] mx-auto"
+                className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
               />
-              <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
+              <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
                 We're available at: <br />
                 1-866-531-8616 (TOLL FREE)  or 1-437-564-8656 (LOCAL) <br />
-                10am–6pm (Mon–Sat) | 12pm–5pm (Sun)
+                10–6pm (Mon–Sat) | 12–5pm (Sun)
               </p>
             </div>
-            <div className="mt-14">
+            <div className="mt-4">
               <LiveChat />
             </div>
           </div>
         </div>
       </section>
-      <div className="mt-[120px]"></div>
 
-      <div className="container  mx-auto flex flex-col items-center justify-center">
+      <div className="w-full h-fit max-[1024px]:py-[40px] pt-[10.156vw] pb-[15.365vw] bg-[#FFFFFF] px-[8.177vw] mx-auto px-4">
         <img
           src="/assets/Images/registrylogoSteps.png"
           width={100}
           alt="Image Banner"
-          className="max-[1024px]:h-full object-cover object-[80%]"
+          className="max-[1024px]:h-full object-cover object-[80%] mx-auto"
         />
-        <h3 className="text-xl text-center mt-10">
+        <h3 className="text-[20px] font-[500] mt-[2.969vw] text-center mb-[1.302vw] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] tracking-[2.24px] max-[1024px]:mb-[20px]">
           NEED A REFRESHER ON SETTING UP YOUR DASHBOARD?
         </h3>
 
-        <WhiteThemeButton className="w-[400px]" Text="SEE OUR QUICK-START GUIDE" link="/quick-start-guide" />
+        <WhiteThemeButton className="" Text="SEE OUR QUICK-START GUIDE" link="/quick-start-guide" />
       </div>
 
       <Footer />

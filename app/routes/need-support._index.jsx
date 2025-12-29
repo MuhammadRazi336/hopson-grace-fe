@@ -5,7 +5,7 @@ import WhiteThemeButton from '~/components/WhiteThemeButton';
 
 export default function NeedSupport() {
   return (
-    <div className="pt-[80px]">
+    <div className="">
       <CoupleProfileViewHeader />
       <div className=" p-4 mt-[80px]">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
