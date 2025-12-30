@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, EffectFade} from 'swiper/modules';
 import 'swiper/css';
@@ -56,25 +56,49 @@ const stepsData = [
 const Steps = () => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+  const swiperRef = useRef(null);
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = stepsData.length;
+
+  // Helper function to initialize navigation
+  const initNavigation = () => {
+    if (swiperRef.current && prevRef.current && nextRef.current) {
+      swiperRef.current.params.navigation.prevEl = prevRef.current;
+      swiperRef.current.params.navigation.nextEl = nextRef.current;
+      swiperRef.current.navigation.init();
+      swiperRef.current.navigation.update();
+    }
+  };
+
+  // Update navigation after component mounts and refs are attached
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      initNavigation();
+      // Also try after a small delay as a fallback
+      setTimeout(initNavigation, 100);
+    });
+  }, []);
 
   return (
     <div className="relative w-full max-w-[550px] mx-auto step-slider">
       <div className="h-[220px] max-[767px]:h-[190px]">
         <Swiper
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+            // Initialize navigation when swiper is ready
+            requestAnimationFrame(() => {
+              initNavigation();
+              // Also try after a small delay as a fallback
+              setTimeout(initNavigation, 100);
+            });
+          }}
           direction="vertical"
           spaceBetween={50}
           modules={[Navigation, EffectFade]}
           navigation={{
             prevEl: prevRef.current,
             nextEl: nextRef.current,
-          }}
-          onInit={(swiper) => {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
-            swiper.navigation.init();
-            swiper.navigation.update();
           }}
           allowTouchMove={false}
           loop={true}

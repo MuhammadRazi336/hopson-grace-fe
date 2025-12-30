@@ -191,7 +191,7 @@ const ContactUs = () => {
                   <div className="space-y-4">
                     <div className='mb-[2.865vw]'>
                       <h4 className="text-base font-semibold mb-[9px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-[1.92px]">LOCATION</h4>
-                      <p className="text-base lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]"><a href="https://www.google.com/maps/place/Hopson+Grace/@43.6756579,-79.407044,17z/data=!3m1!4b1!4m6!3m5!1s0x882b3357e8ee4cdf:0x8b95f40a5c1da6f!8m2!3d43.675654!4d-79.4044691!16s%2Fg%2F11c0w87pyg?authuser=0&entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoASAFQAw%3D%3D" target='_blank'>200 DUPONT STREET<br />TORONTO, ON M5R 2E6</a></p>
+                      <p className="text-base underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]"><a className='hover:text-gray-600' href="https://www.google.com/maps/place/Hopson+Grace/@43.6756579,-79.407044,17z/data=!3m1!4b1!4m6!3m5!1s0x882b3357e8ee4cdf:0x8b95f40a5c1da6f!8m2!3d43.675654!4d-79.4044691!16s%2Fg%2F11c0w87pyg?authuser=0&entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoASAFQAw%3D%3D" target='_blank'>200 DUPONT STREET<br />TORONTO, ON M5R 2E6</a></p>
                     </div>
                     
                     <div className='mb-[2.865vw]'>
@@ -203,8 +203,8 @@ const ContactUs = () => {
                     <div className='mb-0'>
                       <h4 className="text-base font-semibold mb-[9px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-[1.92px]">GET IN TOUCH</h4>
                       <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">416-926-1120</p>
-                      <p className="text-base underline mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
-                        <span className="hover:text-gray-600">
+                      <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
+                        <span className="">
                           INFO@HOPSONGRACE.COM
                         </span>
                       </p>
