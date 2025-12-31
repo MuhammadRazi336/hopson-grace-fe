@@ -168,15 +168,15 @@ function CreateNewCashFund() {
         <Heading
           text="cash & travel funds"
           classes={
-            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
+            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0 max-[767px]:text-[30px]'
           }
           image={headingBottomCurve}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] max-[767px]:max-w-[250px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
         />
-        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px]">
+        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px] max-[767px]:text-[18px]">
           ASK FOR WHAT YOU REALLY WANT
         </p>
-        <p className="text-center text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
+        <p className="text-center text-[16px] max-[767px]:w-[90%] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
           From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that's so you. Because life together should start with something unforgettable.
         </p>
       </div>
@@ -229,12 +229,12 @@ function CreateNewCashFund() {
             <Heading
               text={'create your own'}
               classes={
-                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black max-[767px]:text-[30px]'
               }
               image={lineImghead}
               imageClasses={'w-[150px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] lg:h-[0.417vw] xl:h-[0.417vw] 2xl:h-[0.417vw]'}
             />
-            <p className="text-[20px] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
+            <p className="text-[16px] max-[767px]:w-[90%] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
             Got your eye on a Belgian sofa for your new condo? Planning a surf trip in Costa Rica? <br className="max-[767px]:hidden" />Set up a fund for literally anything—this one’s all you.
             </p>
           </div>
@@ -257,10 +257,10 @@ function CreateNewCashFund() {
           <img
             src="/assets/Images/new-cash-bdr.png"
             alt="Create New Cash Fund"
-            className="max-w-[630px] lg:w-[39.219vw] lg:h-[0.417vw] mt-0 h-auto mx-auto"
+            className="max-w-[630px] lg:w-[39.219vw] lg:h-[0.417vw] mt-0 h-auto mx-auto max-[767px]:max-w-[300px]"
           />
 
-          <p className="w-[46.927vw] max-w-full mb-[5.26vw] text-[26px] lg:text-[1.354vw] lg:leading-[1.875vw] mx-auto text-center text-white mt-5 font-normal leading-relaxed">
+          <p className="w-[46.927vw] max-w-full mb-[5.26vw] text-[26px] lg:text-[1.354vw] lg:leading-[1.875vw] mx-auto text-center text-white mt-5 font-normal leading-relaxed max-[767px]:text-[18px] max-[767px]:w-[90%]">
             Create your own custom cash fund for anything you dream of - from honeymoon adventures to home improvements. 
             Design it exactly how you want it and share it with your loved ones.
           </p>
@@ -323,14 +323,14 @@ function CreateNewCashFund() {
                         id="cashFundName"
                         name="name"
                         value={cashFundName}
-                        className="bg-white lg:text-[0.938vw] font-bold uppercase w-full p-4 !m-0 h-[4.271vw]"
+                        className="bg-white lg:text-[0.938vw] font-bold uppercase w-full p-4 !m-0 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0"
                         placeholder="e.g., HONEYMOON FUND, HOME RENOVATION"
                         onChange={(e) => setCashFundName(e.target.value)}
                       />
                     </div>
 
                     {/* Payment Type Toggle */}
-                    <div className="flex mt-[1.7vw] gap-4 lg:gap-[1.042vw] mb-[6.354vw] items-center justify-center">
+                    <div className="flex mt-[1.7vw] gap-4 lg:gap-[1.042vw] mb-[6.354vw] items-center justify-center max-[767px]:mt-[20px] max-[767px]:mb-[40px]">
                       <span className="text-white text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold tracking-wide text-center">
                         ANY <br /> AMOUNT
                       </span>
@@ -342,7 +342,7 @@ function CreateNewCashFund() {
                           setAllowFixedAmount(false);
                           setTotalGoal(''); // Clear total goal when any amount is selected
                         }}
-                        className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                        className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors max-[767px]:h-[40px] max-[767px]:w-[40px] max-[767px]:p-1 ${
                           allowAnyAmount
                             ? 'bg-[#223247] text-white'
                             : 'bg-gray-200 text-white  hover:bg-gray-300'
@@ -352,7 +352,7 @@ function CreateNewCashFund() {
                           <img
                             src="/assets/Images/check-icon.png"
                             alt="check"
-                            className="w-[1.875vw] h-[1.875vw] mx-auto"
+                            className="w-[1.875vw] h-[1.875vw] mx-auto max-[767px]:w-[20px] max-[767px]:h-[20px]"
                           />
                         ) : (
                           <span className="w-[1.875vw] h-[1.875vw]">&nbsp;</span>
@@ -368,7 +368,7 @@ function CreateNewCashFund() {
                           setAllowAnyAmount(false);
                           setAllowFixedAmount(true);
                         }}
-                        className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors ${
+                        className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors max-[767px]:h-[40px] max-[767px]:w-[40px] max-[767px]:p-1 ${
                           allowFixedAmount
                             ? 'bg-[#223247] text-white'
                             : 'bg-gray-200 text-white hover:bg-gray-300'
@@ -378,7 +378,7 @@ function CreateNewCashFund() {
                           <img
                             src="/assets/Images/check-icon.png"
                             alt="check"
-                            className="w-[1.875vw] h-[1.875vw] mx-auto"
+                            className="w-[1.875vw] h-[1.875vw] mx-auto max-[767px]:w-[20px] max-[767px]:h-[20px]"
                           />
                         ) : (
                           <span className="w-[1.875vw] h-[1.875vw]">&nbsp;</span>
@@ -393,7 +393,7 @@ function CreateNewCashFund() {
                           id="totalGoal"
                           name="amount"
                           value={totalGoal}
-                          className={`bg-white w-full !m-0 p-4 h-[4.271vw] ${allowAnyAmount ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className={`bg-white w-full !m-0 p-4 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0 ${allowAnyAmount ? 'opacity-50 cursor-not-allowed' : ''}`}
                           placeholder="Total Goal*"
                           onChange={(e) => setTotalGoal(e.target.value)}
                           disabled={allowAnyAmount}
@@ -409,7 +409,7 @@ function CreateNewCashFund() {
                         <button
                           type="button"
                           onClick={() => setHideFromGuests(!hideFromGuests)}
-                          className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-colors ${
+                          className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-colors max-[767px]:h-[40px] max-[767px]:w-[40px] max-[767px]:p-1 ${
                             hideFromGuests
                               ? 'bg-[#223247] text-white'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
@@ -419,7 +419,7 @@ function CreateNewCashFund() {
                             <img
                               src="/assets/Images/check-icon.png"
                               alt="check"
-                              className="w-[1.875vw] h-[1.875vw] mx-auto"
+                              className="w-[1.875vw] h-[1.875vw] mx-auto max-[767px]:w-[20px] max-[767px]:h-[20px]"
                             />
                           ) : (
                             <span className="w-[1.875vw] h-[1.875vw]">&nbsp;</span>
@@ -479,7 +479,7 @@ function CreateNewCashFund() {
                     }
                   }}
                   maxLength={500}
-                  className="w-full h-[14.375vw] mb-[0.938vw] p-[2.344vw] text-[24px] lg:text-[1.25vw] lg:leading-[1.563vw] bg-white resize-none border-none outline-none"
+                  className="w-full h-[14.375vw] mb-[0.938vw] p-[2.344vw] text-[24px] lg:text-[1.25vw] lg:leading-[1.563vw] bg-white resize-none border-none outline-none max-[767px]:text-[16px] max-[767px]:p-[15px] max-[767px]:h-[100px]"
                 />
                 <p className={`ivyora text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] m-0 italic tracking-wide font-[400] ${
                   (500 - noteToFamily.length) < 50 ? 'text-[#FD446F]' : 'text-[#FFFCFC]'
@@ -569,7 +569,7 @@ function CreateNewCashFund() {
 
         <div className="relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
           <div className="w-full mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[19%] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[75px] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
               <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
             </div>
 
@@ -623,7 +623,7 @@ function CreateNewCashFund() {
                         <img 
                           src={firstImage?.url || '/assets/Images/placeholder.png'} 
                           alt={productNode.title || 'Product'} 
-                          className="w-full h-[18.75vw] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
                         />
                         <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                           {productNode.title}
@@ -640,7 +640,7 @@ function CreateNewCashFund() {
                 </SwiperSlide>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[19%] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[75px] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
               <img src={nextitem} className="rotate-270 w-[1.3vw] h-[1.3vw]" alt="" />
             </div>
           </div>
