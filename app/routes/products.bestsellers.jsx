@@ -26,7 +26,7 @@ import {Footer} from '~/components/Footer';
 import {Navigation} from 'swiper/modules';
 import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
-import GiftCardBg from '/assets/Images/giftCardBg.png';
+import GiftCardBg from '/assets/Images/bestsellers-banner.jpg';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';

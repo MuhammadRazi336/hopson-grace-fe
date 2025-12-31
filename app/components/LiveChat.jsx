@@ -182,8 +182,6 @@ const LiveChat = ({
   const addCloseButtonToChat = () => {
     // Wait for chat popup to be fully loaded
     const checkForChatPopup = () => {
-      // Hide welcome messages again when checking
-      hideWelcomeMessages();
       
       // Find the opened chat popup/window
       const chatPopup = document.querySelector('[class*="tawk-widget"], [class*="tawk-chat"], [class*="tawk-window"], iframe[src*="tawk"]');
