@@ -238,48 +238,48 @@ const ProductCard = React.memo(
     };
 
     return (
-      <div key={product.id} className="relative group h-[460px]">
+      <div key={product.id} className="relative group mb-[4.844vw] w-[18.75vw] max-[1024px]:w-auto">
         {/* Product Image and Info */}
-        <div className="p-4 z-10 relative">
+        <div className="p-0 z-10 relative">
           <img
             src={firstImage}
             alt={product.title}
-            className="w-full h-[300px] object-cover"
+            className="w-full h-[18.75vw] max-[767px]:h-[20vw] max-[550px]:h-[30vw] object-cover"
           />
-          <h3 className="text-sm font-semibold uppercase mt-3">
+          <h3 className="text-sm font-[500] tracking-[0.057vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
-          <p className="text-sm mt-1">{price}</p>
+          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{price}</p>
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute w-[116%] left-[-8%] lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
           <div>
             <img
               src={firstImage}
               alt={product.title}
-              className="w-full h-[220px] mx-auto object-cover mb-2"
+              className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
             />
-            <h4 className="text-xs font-medium uppercase text-left mb-1">
+            <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {collection.title || 'BRAND NAME'}
             </h4>
-            <h3 className="text-sm font-bold uppercase text-left leading-snug">
+            <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 text-left">{price}</p>
+            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-[2.813vw]">
             <div className="flex flex-col w-full items-center text-xs">
-              <Link to={`/dashboard/cashfunds/${product.id}`}>
-                <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+              <Link to={`/dashboard/cashfunds/${product.id}`} className='w-full'>
+                <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
                   personalize fund
                 </button>
               </Link>
               <button
                 onClick={handleAddToRegistry}
                 disabled={fetcher.state === 'submitting'}
-                className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
               >
                 {fetcher.state === 'submitting'
                   ? 'Adding...'
@@ -380,10 +380,10 @@ const PorteTravel = () => {
               : 'cash & travel funds'
           }
           classes={
-            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
+            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0 max-[767px]:text-[30px]'
           }
           image={headingBottomCurve}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] max-[767px]:max-w-[250px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
         />
         {searchQuery && (
           <p className="text-center my-5 text-lg">
@@ -391,10 +391,10 @@ const PorteTravel = () => {
             {filteredProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
         )}
-        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px]">
+        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px] max-[767px]:text-[18px]">
           ASK FOR WHAT YOU REALLY WANT
         </p>
-        <p className="text-center text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
+        <p className="text-center text-[16px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] max-[767px]:w-[90%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
           {searchQuery
             ? 'Browse the search results below or use the filters to refine your search.'
             : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that's so you. Because life together should start with something unforgettable."}
@@ -465,12 +465,12 @@ const PorteTravel = () => {
             <Heading
               text={<>bespoke experiences <span className='flex items-center justify-center gap-[0.521vw]'>BY <img src="/assets/Images/porte-logo.png" className='w-[14.025vw] h-[auto]' alt="porte travel" /></span></>}
               classes={
-                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black max-[767px]:text-[30px]'
               }
               image={lineImghead}
               imageClasses={'w-[150px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] lg:h-[0.417vw] xl:h-[0.417vw] 2xl:h-[0.417vw]'}
             />
-            <p className="text-[20px] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
+            <p className="text-[16px] max-[767px]:w-[90%] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
             This is next-level. Our friends at Porte design fully <br className='max-[767px]:hidden' /> custom trips built around you—whether it's wine <br className='max-[767px]:hidden' /> tasting in Sicily or glamping in the Sahara.
             </p>
           </div>
@@ -523,59 +523,56 @@ const PorteTravel = () => {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+      <section className="bg-[#FAF9F6] py-[3.906vw] flex items-center pl-[5.833vw] mb-[9.01vw] gap-[5.521vw] justify-center max-[767px]:flex-col max-[767px]:py-[50px] max-[767px]:mb-[50px] max-[767px]:px-[20px]">
         <Heading
-          text="we think you'll love"
+          text={<>we think <span className="ivyora">you'll love</span></>}
           classes={
-            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] w-[14.271vw] h-[6px] object-right object-cover'}
         />
 
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 " />
-              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
+        <div className="relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
+          <div className="w-full mx-auto">
+            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[75px] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+              <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
             </div>
 
             <Swiper
-              spaceBetween={15}
-              slidesPerView={3}
+              spaceBetween={35}
+              slidesPerView={3.5}
               loop={true}
               modules={[Navigation]}
               navigation={{
                 nextEl: '.swiper-button-next-prod',
                 prevEl: '.swiper-button-prev-prod',
               }}
-              className="px-[178px]"
+              className=""
               breakpoints={{
-                345: {
+                320: {
                   spaceBetween: 10,
-                  centeredSlides: true,
+                  slidesPerView: 1.5,
                 },
                 475: {
                   spaceBetween: 15,
-                  centeredSlides: true,
+                  slidesPerView: 2.5,
                 },
                 768: {
                   spaceBetween: 20,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
                 1024: {
                   spaceBetween: 30,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
                 1366: {
-                  spaceBetween: 39,
-                  centeredSlides: true,
+                  spaceBetween: 30,
+                  slidesPerView: 3.5,
                 },
                 1600: {
-                  spaceBetween: 39,
-                  centeredSlides: true,
+                  spaceBetween: 35,
+                  slidesPerView: 3.5,
                 },
               }}
             >
@@ -587,17 +584,17 @@ const PorteTravel = () => {
                   const price = productNode.priceRange?.minVariantPrice;
                   
                   return (
-                    <SwiperSlide key={productNode.id}>
+                    <SwiperSlide key={productNode.id} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
                       <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
                         <img 
                           src={firstImage?.url || '/assets/Images/placeholder.png'} 
                           alt={productNode.title || 'Product'} 
-                          className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
                         />
-                        <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
+                        <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                           {productNode.title}
                         </h3>
-                        <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
+                        <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
                       </Link>
                     </SwiperSlide>
                   );
@@ -606,34 +603,31 @@ const PorteTravel = () => {
                 // Fallback to static slides if no recommended products
                 <>
                   <SwiperSlide>
-                    <img src={product1} alt="New Arrival" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                    <img src={product1} alt="New Arrival" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       ARKE GLASS BOTTLE FOR CARBONATOR PRO
                     </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
                   <SwiperSlide>
-                    <img src={product2} alt="Tableware" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                    <img src={product2} alt="Tableware" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       SMEG TOASTER, 2 SLICE
                     </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
                   <SwiperSlide>
-                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       THE BARISTA TOUCH ESPRESSO MAKER
                     </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
                 </>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-              <img src={nextitem} className="" alt="" />
+            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[75px] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+              <img src={nextitem} className="rotate-270 w-[1.3vw] h-[1.3vw]" alt="" />
             </div>
           </div>
         </div>

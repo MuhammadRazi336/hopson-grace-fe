@@ -375,10 +375,10 @@ const DreamFund = () => {
               : 'cash & travel funds'
           }
           classes={
-            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0'
+            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0 max-[767px]:text-[30px]'
           }
           image={headingBottomCurve}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
+          imageClasses={'max-[1024px]:max-w-[330px] max-[767px]:max-w-[250px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
         />
         {searchQuery && (
           <p className="text-center my-5 text-lg">
@@ -386,10 +386,10 @@ const DreamFund = () => {
             {filteredProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
         )}
-        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px]">
+        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px] max-[767px]:text-[18px]">
           ASK FOR WHAT YOU REALLY WANT
         </p>
-        <p className="text-center text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
+        <p className="text-center text-[16px] max-[767px]:w-[90%] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
           {searchQuery
             ? 'Browse the search results below or use the filters to refine your search.'
             : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that’s so you. Because life together should start with something unforgettable."}
@@ -460,12 +460,12 @@ const DreamFund = () => {
             <Heading
               text={'dream funds'}
               classes={
-                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black max-[767px]:text-[30px]'
               }
               image={lineImghead}
               imageClasses={'w-[150px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] lg:h-[0.417vw] xl:h-[0.417vw] 2xl:h-[0.417vw]'}
             />
-            <p className="text-[20px] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
+            <p className="text-[16px] max-[767px]:w-[90%] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
               Think: flight upgrades, home projects, or a honeymoon you'll
               actually remember. These ready-to-go funds make it easy for guests
               to chip in on the good stuff.
@@ -532,7 +532,7 @@ const DreamFund = () => {
 
         <div className="relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
           <div className="w-full mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[19%] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[75px] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
               <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
             </div>
 
@@ -586,7 +586,7 @@ const DreamFund = () => {
                         <img 
                           src={firstImage?.url || '/assets/Images/placeholder.png'} 
                           alt={productNode.title || 'Product'} 
-                          className="w-full h-[18.75vw] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
                         />
                         <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                           {productNode.title}
@@ -599,31 +599,31 @@ const DreamFund = () => {
               ) : (
                 // Fallback to static slides if no recommended products
                 <>
-                  <SwiperSlide>
-                    <img src={product1} alt="New Arrival" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                  <SwiperSlide className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
+                    <img src={product1} alt="New Arrival" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       ARKE GLASS BOTTLE FOR CARBONATOR PRO
                     </h3>
-                    <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={product2} alt="Tableware" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                  <SwiperSlide className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
+                    <img src={product2} alt="Tableware" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       SMEG TOASTER, 2 SLICE
                     </h3>
-                    <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                  <SwiperSlide className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
+                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       THE BARISTA TOUCH ESPRESSO MAKER
                     </h3>
-                    <p className="lg:text-[1.25vw] lg:leading-[1.25vw] text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
                 </>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[19%] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[75px] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
               <img src={nextitem} className="rotate-270 w-[1.3vw] h-[1.3vw]" alt="" />
             </div>
           </div>
