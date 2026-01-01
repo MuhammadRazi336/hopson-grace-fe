@@ -4,7 +4,6 @@ import {Footer} from '~/components/Footer';
 import {useState} from 'react';
 import teaImg from '/assets/Images/reading-image.png';
 import NotificationCard from '~/components/NotificationCard';
-import RegistryStatusCard from '~/components/RegistryStatusCard';
 
 export default function DashboardHome() {
   return (

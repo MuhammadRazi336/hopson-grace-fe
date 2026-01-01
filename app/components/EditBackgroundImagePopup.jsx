@@ -87,6 +87,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
 
   // Load stored images when component mounts
@@ -101,9 +102,8 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  const handleFileChange = async (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+  const processImageFile = (file) => {
+    if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.addEventListener('load', () => {
         const imageData = reader.result;
@@ -116,6 +116,34 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
         }
       });
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processImageFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -145,10 +173,10 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
   return (
     <ModalPortal>
       <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
-        <div className="bg-[#F5F2ED] w-[85.313vw] min-h-[45.625vw] max-h-[90vh] max-w-[90vw] px-[5.26vw] py-[2.917vw] relative">
+        <div className="bg-[#F5F2ED] w-[68.25vw] h-[38vw] max-h-[80vh] max-w-[90vw] px-[6.12vw] py-[2.75vw] relative">
           {/* Header */}
-          <div className="flex justify-between items-center mb-[20px] max-[1024px]:mb-[10px]">
-            <h2 className="text-2xl font-[500] bastardogrotesk m-0 max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">ADD YOUR BACKGROUND IMAGE</h2>
+          <div className="flex justify-between items-center mb-[0.833] max-[1024px]:mb-[10px]">
+            <h2 className="text-2xl lg:text-[1vw] xl:text-[1vw] 2xl:text-[1vw] lg:leading-[1.5v] xl:leading-[1.5v] 2xl:leading-[1.5v] font-[500] bastardogrotesk m-0 max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">ADD YOUR BACKGROUND IMAGE</h2>
             <button
               onClick={onClose}
               className="text-[29px] leading-[29px] font-bold text-[#000000] absolute top-[10px] right-[20px] cursor-pointer"
@@ -157,10 +185,15 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
             </button>
           </div>
 
-          <div className="flex gap-[5vw] max-[1024px]:flex-col max-[1024px]:gap-[40px]">
+          <div className="flex gap-[5vw] lg:h-[27.12vw] xl:h-[27.12vw] 2xl:h-[27.12vw] max-[1024px]:flex-col max-[1024px]:gap-[40px]">
             {/* Left: Large Preview Area */}
-            <div className="w-2/3 lg:w-[40.417vw] xl:w-[40.417vw] 2xl:w-[40.417vw] lg:min-h-[33.75vw] xl:min-h-[33.75vw] 2xl:min-h-[33.75vw] max-[1024px]:h-[300px] max-[1024px]:w-full">
-              <div className="relative w-full h-full bg-gray-100">
+            <div className="w-2/3 lg:w-[32.33vw] xl:w-[32.33vw] 2xl:w-[32.33vw] h-full max-[1024px]:h-[300px] max-[1024px]:w-full">
+              <div 
+                className={`relative w-full h-full bg-gray-100 ${isDragging ? 'border-4 border-blue-400 border-dashed bg-blue-50' : ''} transition-all`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              >
                 {imageSrc ? (
                   <Suspense fallback={<div>Loading cropper...</div>}>
                     <Cropper
@@ -178,7 +211,16 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
                   </Suspense>
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-500">
-                    No image selected
+                    {isDragging ? (
+                      <div className="text-center">
+                        <p className="text-lg font-semibold text-blue-600">Drop image here</p>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <p className="text-lg font-semibold">No image selected</p>
+                        <p className="text-sm text-gray-400 mt-2">Drag and drop an image here</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -257,14 +299,14 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
           
           <div className="flex justify-end gap-4 mt-6">
             <button
-              className="px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+              className="px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 cursor-pointer"
               onClick={onClose}
               type="button"
             >
               Cancel
             </button>
             <button
-              className="px-6 py-2 bg-[#446184] text-white rounded hover:bg-[#3a5470]"
+              className="px-6 py-2 bg-[#446184] text-white rounded hover:bg-[#3a5470] cursor-pointer"
               onClick={handleSave}
               type="button"
               disabled={!imageSrc || !croppedAreaPixels}

@@ -587,7 +587,7 @@ const OnboardingClient = ({onStepChange}) => {
                   href="/terms-conditions"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline hover:opacity-80"
+                  className="underline hover:opacity-80 text-white"
                 >
                   Terms & Conditions
                 </a>
@@ -757,7 +757,7 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
       <div className="mt-4">
         <button
           onClick={handleSkipLater}
-          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-black underline hover:opacity-80"
+          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80 mt-3"
         >
           I'll Add this later
         </button>
@@ -808,7 +808,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
       <div className="mt-4 text-center">
         <button
           onClick={handleSkipLater}
-          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-black underline hover:opacity-80"
+          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
         >
           I'll add this later
         </button>
@@ -927,7 +927,7 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
       <div className="mt-4 text-center">
         <button
           onClick={handleSkipLater}
-          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-black underline hover:opacity-80"
+          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
         >
           I'll add this later
         </button>

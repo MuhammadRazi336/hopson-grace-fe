@@ -344,14 +344,7 @@ const index = () => {
         </div>
 
         <div className="w-[300px] flex flex-col gap-y-4 max-[1024px]:w-full">
-          <div>
-            <RegistryStatusCard
-              status={registryData?.status}
-              registryId={registryData?.id}
-              token={user?.accessToken}
-            />
-          </div>
-
+        
 <Link to={`/couple/single/${registryData?.userId}`}>
           <div className="w-[260px] min-h-[100px] bg-[#F5F2ED] z-10 max-[1024px]:w-full">
             <div className="container mx-auto pt-5 flex items-center justify-center flex-col">
@@ -366,6 +359,14 @@ const index = () => {
             </div>
           </div>
           </Link>
+
+          <div>
+            <RegistryStatusCard
+              status={registryData?.status}
+              registryId={registryData?.id}
+              token={user?.accessToken}
+            />
+          </div>
         </div>
       </div>
 

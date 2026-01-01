@@ -392,7 +392,7 @@ const RegisterIndex = () => {
               onChange={handleInputChange}
               className="mt-1"
             />
-            <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-black">
+            <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white">
               Click here if you'd prefer to receive your notifications by text. We'll still send the occasional email (but no spam, we promise).
             </span>
           </label>
