@@ -47,7 +47,7 @@ const Testimonialslider = ({ blogs = [] }) => {
       <Swiper
         key={`swiper-${Math.floor(windowWidth / 50)}`} // Force re-render on width changes to update vw calculations
         loop={true}
-        slidesPerView={1.5}
+        slidesPerView={1.64}
         spaceBetween={getSpaceBetween()}
         centeredSlides={true}
         pagination={{clickable: true}}
@@ -59,15 +59,15 @@ const Testimonialslider = ({ blogs = [] }) => {
             spaceBetween: 0,
           },
           768: {
-            slidesPerView: 1.7,
+            slidesPerView: 1.64,
             spaceBetween: 40,
           },
           1600: {
-            slidesPerView: 1.7,
+            slidesPerView: 1.66,
             // spaceBetween handled by base prop (5vw)
           },
           2000: {
-            slidesPerView: 1.7,
+            slidesPerView: 1.66,
             // spaceBetween handled by base prop (5vw)
           },
         }}
@@ -78,7 +78,7 @@ const Testimonialslider = ({ blogs = [] }) => {
           const excerpt = cleanContent.slice(0, 300) + (cleanContent.length > 300 ? '...' : '');
           
           return (
-            <SwiperSlide key={article.id} className='!lg:w-[70.96vw] xl:w-[70.96vw] 2xl:w-[70.96vw]'>
+            <SwiperSlide key={article.id} className='!lg:w-[83.96vw] xl:w-[83.96vw] 2xl:w-[83.96vw]'>
               <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[450px]">
                 <img
                   src={article.image?.url || "/assets/Images/couple-logo.png"}
@@ -113,7 +113,7 @@ const Testimonialslider = ({ blogs = [] }) => {
             </SwiperSlide>
           );
         }) : (
-          <SwiperSlide className='lg:w-[70.96vw] xl:w-[70.96vw] 2xl:w-[70.96vw]'>
+          <SwiperSlide className='lg:w-[80.96vw] xl:w-[80.96vw] 2xl:w-[80.96vw]'>
             <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[700px]">
               <img
                 src="/assets/Images/couple-logo.png"
