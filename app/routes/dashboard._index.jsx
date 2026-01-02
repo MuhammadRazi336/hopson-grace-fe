@@ -7,7 +7,6 @@ import RegistryChecklist from '~/components/RegistryChecklist';
 import {json, redirect} from '@shopify/remix-oxygen';
 import FooterBottom from '~/components/FooterBottom';
 import NotificationCard from '~/components/NotificationCard';
-import RegistryStatusCard from '~/components/RegistryStatusCard';
 import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
@@ -353,9 +352,6 @@ const index = () => {
               loading={loading}
               refreshing={refreshing}
             />
-          </div>
-          <div className='flex justify-end'>
-            <RegistryStatusCard status={registry?.status} registryId={registry?.id} token={user?.accessToken}/>
           </div>
         </div>
       </div>

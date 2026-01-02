@@ -9,7 +9,6 @@ import {useEffect, useState, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
 import { Footer } from '~/components/Footer';
 import NotificationCard from '~/components/NotificationCard';
-import RegistryStatusCard from '~/components/RegistryStatusCard';
 
 export async function loader({request, context, params}) {
   if (!params.handle || params.handle === '[object Object]') {
@@ -416,9 +415,6 @@ export default function Index() {
           <div className="w-full xl:w-3/12 flex flex-col gap-y-4">
             <div>
               <NotificationCard />
-            </div>
-            <div>
-              <RegistryStatusCard status={registry?.status} registryId={registry?.id} token={user?.accessToken}/>
             </div>
           </div>
         </div>
