@@ -236,12 +236,12 @@ const Inspiration = () => {
               {/* Text Overlay - Left Side */}
               <div className="absolute left-0 top-0 h-full w-full flex items-center">
                 <div className="text-white text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[32px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
+                  <h2 className="text-[25px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
                     lorem ipsum title
                   </h2>
-                  <p className="text-[12px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
                     LOREM IPSUM SUB-TITLE BLURB
-                    <br className="max-[1024px]:hidden" />DOLR SIT AMIT LOREM
+                    <br />DOLR SIT AMIT LOREM
                   </p>
                   <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
@@ -364,20 +364,20 @@ const Inspiration = () => {
       </div>
 
       <div ref={blogCategoriesRef} className="blogCategories mx-auto w-full">
-        <div className="h-[10.729vw] flex items-center justify-center z-50 bg-[#446184] w-full shadow-lg gap-8 lg:gap-16 px-4">
+        <div className="h-[10.729vw] max-[767px]:h-auto max-[767px]:py-3 max-[767px]:flex-wrap flex items-center justify-center z-50 bg-[#446184] w-full shadow-lg gap-8 lg:gap-16 px-4">
           <div
             className="relative cursor-pointer"
             onClick={() => { setClickedSection('wedding'); setArticlesToShow(12); }}
           >
-            <div className="h-[6.25vw] flex items-center justify-center">
-              <img src="/assets/Images/real-weddings.png" alt="" className='w-[6.146vw] h-[6.146vw] object-contain' />
+            <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
+              <img src="/assets/Images/real-weddings.png" alt="" className='w-[6.146vw] max-[767px]:w-[50px] h-[6.146vw] max-[767px]:h-[50px] object-contain' />
             </div>
             <span className="text-white text-xs lg:[0.833vw] xl:[0.833vw] 2xl:[0.833vw] font-semibold uppercase tracking-[0.067vw]">
               REAL WEDDINGS
             </span>
             {clickedSection === 'wedding' && (
                 <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
                 </div>
             )}
           </div>
@@ -385,15 +385,15 @@ const Inspiration = () => {
             className="relative cursor-pointer"
             onClick={() => { setClickedSection('planning'); setArticlesToShow(12); }}
           >
-            <div className="h-[6.25vw] flex items-center justify-center">
-              <img src="/assets/Images/planning-edit.png" alt="" className='w-[4.688vw] h-[4.688vw] object-contain' />
+            <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
+              <img src="/assets/Images/planning-edit.png" alt="" className='w-[4.688vw] max-[767px]:w-[40px] h-[4.688vw] max-[767px]:h-[40px] object-contain' />
             </div>
             <span className="text-white text-xs lg:[0.833vw] xl:[0.833vw] 2xl:[0.833vw] font-semibold uppercase tracking-[0.067vw]">
               THE PLANNING EDIT
             </span>
             {clickedSection === 'planning' && (
               <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
               </div>
             )}
           </div>
@@ -401,7 +401,7 @@ const Inspiration = () => {
             className="relative cursor-pointer"
             onClick={() => { setClickedSection('design'); setArticlesToShow(12); }}
           >
-            <div className="h-[6.25vw] flex items-center justify-center">
+            <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
               <img src="/assets/Images/at-home.png" alt="" className='w-full h-full object-contain' />
             </div>
             <span className="text-white text-xs lg:[0.833vw] xl:[0.833vw] 2xl:[0.833vw] font-semibold uppercase tracking-[0.067vw]">
@@ -409,7 +409,7 @@ const Inspiration = () => {
             </span>
             {clickedSection === 'design' && (
               <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
               </div>
             )}
           </div>
@@ -417,15 +417,15 @@ const Inspiration = () => {
             className="relative cursor-pointer"
             onClick={() => { setClickedSection('taste'); setArticlesToShow(12); }}
           >
-            <div className="h-[6.25vw] flex items-center justify-center">
-              <img src="/assets/Images/travel-culture.png" alt="" className='w-[5.573vw] h-[5.573vw] object-contain' />
+            <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
+              <img src="/assets/Images/travel-culture.png" alt="" className='w-[5.573vw] max-[767px]:w-[40px] h-[5.573vw] max-[767px]:h-[40px] object-contain' />
             </div>
             <span className="text-white text-xs lg:[0.833vw] xl:[0.833vw] 2xl:[0.833vw] font-semibold uppercase tracking-[0.067vw]">
               TRAVEL & CULTURE
             </span>
             {clickedSection === 'taste' && (
                 <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
                 </div>
             )}
           </div>

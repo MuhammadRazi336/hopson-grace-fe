@@ -1227,6 +1227,10 @@ body.homepage .guided-video {
     height: 10px;
   }
 
+  .hero-carousel-slider .hero-carousel-bullet-active {
+    width: 20px;
+  }
+
   .button-cs > p {
     font-size: 12px;
   }
