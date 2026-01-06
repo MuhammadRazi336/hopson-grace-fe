@@ -203,6 +203,25 @@ const OnboardingClient = ({onStepChange}) => {
   };
 
   const handleRegistry = async () => {
+    // Ensure event type is selected
+    if (!eventData.selectedOption || !eventData.selectedOption.id) {
+      // Try to use first available event type
+      if (eventTypes.length > 0) {
+        setEventData((prev) => ({
+          ...prev,
+          selectedOption: {label: eventTypes[0].label, id: eventTypes[0].id},
+        }));
+        // Wait for state update and retry
+        setTimeout(async () => {
+          await handleRegistry();
+        }, 100);
+        return;
+      } else {
+        setEventDateError('Event types are loading. Please wait...');
+        return;
+      }
+    }
+
     const payload = {
       name: eventData.eventName || 'My Event', // Default event name if not provided
       ...(eventData.selectedDate && {eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD')}),
@@ -210,7 +229,18 @@ const OnboardingClient = ({onStepChange}) => {
       ...(eventData.id && {id: eventData.id}),
     };
 
+    // Validate eventTypeId is a valid number
+    if (!payload.eventTypeId || isNaN(payload.eventTypeId)) {
+      setEventDateError('Invalid event type. Please refresh the page.');
+      return;
+    }
+
     const token = localStorage.getItem('@Token');
+    if (!token) {
+      setEventDateError('Authentication required. Please log in again.');
+      return;
+    }
+
     let data = null;
     try {
       if (payload.id) {
@@ -374,6 +404,66 @@ const OnboardingClient = ({onStepChange}) => {
   // Update goNext to validate before calling handleRegistry
   async function goNext() {
     if (step === 1) {
+      // Validate that a date is selected
+      if (!eventData.selectedDate) {
+        setEventDateError('Please select an event date');
+        return;
+      }
+      // Ensure event type is selected - use first available if not set
+      if (!eventData.selectedOption || !eventData.selectedOption.id) {
+        if (eventTypes.length > 0) {
+          // Auto-select first event type
+          const updatedEventData = {
+            ...eventData,
+            selectedOption: {label: eventTypes[0].label, id: eventTypes[0].id},
+          };
+          setEventData(updatedEventData);
+          // Use updated data for registry creation
+          const payload = {
+            name: updatedEventData.eventName || 'My Event',
+            ...(updatedEventData.selectedDate && {eventDate: moment(updatedEventData.selectedDate).format('YYYY-MM-DD')}),
+            eventTypeId: Number(eventTypes[0].id),
+            ...(updatedEventData.id && {id: updatedEventData.id}),
+          };
+          const token = localStorage.getItem('@Token');
+          if (!token) {
+            setEventDateError('Authentication required. Please log in again.');
+            return;
+          }
+          try {
+            const data = updatedEventData.id 
+              ? await Registry_Services.updateRegistry(payload, token)
+              : await Registry_Services.createRegistry(payload, token);
+            if (data) {
+              const registryId = data.data.registry?.id || data.data.id || updatedEventData.id;
+              const eventId = data.data.event?.id || updatedEventData.eventId;
+              const event = {
+                ...updatedEventData,
+                id: registryId,
+                eventId: eventId,
+              };
+              localStorage.setItem('@EventData', JSON.stringify(event));
+              setEventData(event);
+              setEventDateError('');
+              setStep(step + 1);
+            }
+          } catch (e) {
+            let backendMsg = e?.response?.data?.message || e?.message;
+            if (Array.isArray(backendMsg)) backendMsg = backendMsg[0];
+            if (backendMsg && backendMsg.toLowerCase().includes('event date must be a future date')) {
+              setEventDateError('Event date must be a future date');
+            } else {
+              setEventDateError(backendMsg || 'An error occurred');
+            }
+          }
+          return;
+        } else {
+          setEventDateError('Event types are loading. Please wait...');
+          return;
+        }
+      }
+      // Clear any previous errors
+      setEventDateError('');
       // Skip step 2 (event name selection) and go directly to step 3 (guest info)
       // Auto-create registry with first event type
       await handleRegistry();
@@ -548,7 +638,7 @@ const OnboardingClient = ({onStepChange}) => {
           <Step1
             setSelectedDate={setSelectedDate}
             selectedDate={eventData.selectedDate}
-            onSkip={handleSkip}
+            eventDateError={eventDateError}
           />
         );
       case STEPS_CONSTANTS.GUEST_INFO:
@@ -591,7 +681,7 @@ const OnboardingClient = ({onStepChange}) => {
     <div className="flex justify-center items-center">
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
-      {step !== 5 && <Stepper step={step} totalSteps={5} />}
+      {step !== 5 && <Stepper step={step} totalSteps={6} />}
       <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
         <div className="mb-6">
@@ -629,7 +719,7 @@ const OnboardingClient = ({onStepChange}) => {
   );
 };
 
-const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
+const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
   const {useState, useEffect} = React;
   // Create disabled dates array - disable all dates before today
   const today = new Date();
@@ -654,18 +744,13 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
     setSelectedDate(date);
   };
 
-  const handleSkipLater = () => {
-    setSelectedDate(null);
-    onSkip();
-  };
-
   return (
     <div className="text-center">
       <div className="p-4 w-[300px] mx-auto customdatepicker">
         <DatePicker
           selectedDate={localSelectedDate}
           onDateChange={handleDateChange}
-          placeholder="Select a date"
+          placeholder="Select a date *"
           inputProps={{
             className:
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
@@ -674,14 +759,11 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
           disabledDates={disabledDates}
         />
       </div>
-      <div className="mt-4">
-        <button
-          onClick={handleSkipLater}
-          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80 mt-3"
-        >
-          I'll Add this later
-        </button>
-      </div>
+      {eventDateError && (
+        <div className="mt-4 text-[#B00020] text-[18px]">
+          {eventDateError}
+        </div>
+      )}
     </div>
   );
 };
@@ -835,14 +917,49 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
         )}
 
         {/* Country */}
-        <Input
-          placeholder="Country *"
-          name="country"
-          value={formData.country}
-          onChange={handleInputChange}
-          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-          error={step4Errors?.country}
-        />
+        <div className="flex flex-col mb-2 relative w-full">
+          <div className="relative">
+            <select
+              name="country"
+              id="country"
+              value={formData.country}
+              onChange={handleInputChange}
+              className={`rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
+                step4Errors?.country ? 'border-[#FD446F] focus:border-[#FD446F] focus:ring-[#FD446F]' : ''
+              }`}
+              aria-invalid={!!step4Errors?.country}
+              aria-describedby={step4Errors?.country ? 'country-error' : undefined}
+            >
+              <option value="">Select Country *</option>
+              <option value="USA">USA</option>
+              <option value="Canada">Canada</option>
+            </select>
+            {/* Custom dropdown arrow */}
+            <div className="absolute right-5 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-black"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+          {step4Errors?.country && (
+            <div id="country-error" role="alert" className="mt-1 text-left">
+              <span className="text-[#FD446F] font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
+                {step4Errors.country}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
       <div className="mt-4 text-center">
         <button
@@ -877,6 +994,12 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
       id: 3,
       label: 'Gifts + Cash',
       image: Both,
+      selectedImage: selected,
+    },
+    {
+      id: 4,
+      label: 'Not Sure',
+      image: placeholder,
       selectedImage: selected,
     },
   ];

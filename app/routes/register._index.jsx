@@ -56,11 +56,11 @@ const RegisterIndex = () => {
   });
   const [errors, setErrors] = useState({});
 
-  // Step titles
+  // Step titles - matching onboarding structure
   const stepTitles = {
     1: "let's get to know each other.",
     2: "and your partner?",
-    3: "who should we keep in the loop?."
+    3: "let's secure your account."
   };
 
   // Navigation functions
@@ -240,7 +240,7 @@ const RegisterIndex = () => {
           <Input
             value={formData.firstName}
             onChange={handleInputChange}
-            placeholder="First *"
+            placeholder="First Name *"
             name="firstName"
             className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
             classNameLabel="max-[580px]:text-left"
@@ -249,7 +249,7 @@ const RegisterIndex = () => {
           <Input
             value={formData.lastName}
             onChange={handleInputChange}
-            placeholder="Last *"
+            placeholder="Last Name *"
             name="lastName"
             className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
             classNameLabel="max-[580px]:text-left"
@@ -274,7 +274,7 @@ const RegisterIndex = () => {
             <Input
               value={formData.firstName}
               onChange={handleInputChange}
-              placeholder="First *"
+              placeholder="First Name *"
               name="firstName"
               className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
               classNameLabel="max-[580px]:text-left"
@@ -283,7 +283,7 @@ const RegisterIndex = () => {
             <Input
               value={formData.lastName}
               onChange={handleInputChange}
-              placeholder="Last *"
+              placeholder="Last Name *"
               name="lastName"
               className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
               classNameLabel="max-[580px]:text-left"
@@ -301,7 +301,7 @@ const RegisterIndex = () => {
           <Input
             value={formData.fianceFirstName}
             onChange={handleInputChange}
-            placeholder="First *"
+            placeholder="Fiance First Name *"
             name="fianceFirstName"
             className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
             classNameLabel="max-[580px]:text-left"
@@ -310,7 +310,7 @@ const RegisterIndex = () => {
           <Input
             value={formData.fianceLastName}
             onChange={handleInputChange}
-            placeholder="Last *"
+            placeholder="Fiance Last Name *"
             name="fianceLastName"
             className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
             classNameLabel="max-[580px]:text-left"
@@ -421,8 +421,8 @@ const RegisterIndex = () => {
       <div className="flex justify-center items-center min-h-screen bg-white">
         <StepsAndImage
           title={stepTitles[currentStep]}
-          stepNo={(currentStep <= 2 ? 1 : 2).toString()}
-          totalSteps="8"
+          stepNo={currentStep === 2 ? 1 : currentStep === 3 ? 2 : currentStep}
+          totalSteps={6}
           showBackButton={currentStep > 1}
           onBackClick={goBack}
           content={
@@ -438,7 +438,7 @@ const RegisterIndex = () => {
                     className="flex items-center uppercase font-bold gap-2 text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px] bg-transparent border-none"
                     style={{ cursor: 'pointer', zIndex: 9999 }}
                   >
-                    {currentStep === 3 ? 'Submit' : 'Next'} <img src={arrow} className="lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" alt="" />
+                    Next <img src={arrow} className="lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] w-[24px] max-[1024px]:w-[17px]" alt="" />
                   </button>
                 </div>
               </div>
@@ -446,7 +446,7 @@ const RegisterIndex = () => {
           }
         />
         {/* Main content wrapper */}
-        <Stepper step={currentStep <= 2 ? 1 : 2} totalSteps={8} />
+        <Stepper step={currentStep === 2 ? 1 : currentStep === 3 ? 2 : currentStep} totalSteps={6} />
       </div>
       <Footer />
     </>
