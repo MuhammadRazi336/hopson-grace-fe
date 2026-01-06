@@ -16,10 +16,10 @@ export default function BlogArticle({article, processedContent}) {
 
         /* Custom H2 styling */
         .blog-content-custom h2 {
-          font-size: 32px;
-          margin: 2rem 0 1rem 0;
+          font-size: 2.292vw;
+          margin: 0 0 2.344vw 0;
           color: #1F1D1B;
-          line-height: 1.3;
+          line-height: 2.917vw;
           display: flex;
           flex-wrap: wrap;
           align-items: flex-start;
@@ -29,10 +29,10 @@ export default function BlogArticle({article, processedContent}) {
 
         /* Custom P styling */
         .blog-content-custom p {
-          font-size: 26px;
-          margin: 1rem 0;
+          font-size: 1.354vw;
+          margin: 0 0 3.073vw;
           color: #1F1D1B;
-          line-height: 1.7;
+          line-height: 1.875vw;
           font-family: 'bastardogrotesk';
         }
 

@@ -1074,9 +1074,9 @@ html, body { height: 100%; margin: 0; }
   bottom: 20px;
   display: none;
 }
-body.homepage .guided-video {
+/* body.homepage .guided-video {
   display: block;
-}
+} */
 
 /* .steps-btns-hover:hover {
   transform: translateY(-3px);
