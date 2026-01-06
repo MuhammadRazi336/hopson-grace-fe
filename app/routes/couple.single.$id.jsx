@@ -8,6 +8,8 @@ import Input from '~/components/Input';
 import Heading from '~/components/Heading';
 import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import {Footer} from '~/components/Footer';
+import AlertPortal from '~/components/AlertPortal';
+import ModalPortal from '~/components/ModalPortal';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -93,8 +95,8 @@ export async function loader({params, context}) {
     console.log('Loader: Gift products response:', res);
     console.log('Loader: Cash fund response:', cashRes);
 
-    // Get API base URL from environment
-    const apiBaseUrl = context.env?.API_BASE_URL || '';
+    // Get API base URL from environment with fallback
+    const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
 
     // Handle case where there are no gift products
     let mergedArray = [];
@@ -377,7 +379,7 @@ export default function CoupleProfile() {
     response = {},
     registryId = null,
     collections = [],
-    apiBaseUrl = '',
+    apiBaseUrl = 'https://dev-hopsongrace.codup.io',
     hasProducts = false,
     coupleId = null,
   } = loaderData || {};
@@ -470,8 +472,11 @@ export default function CoupleProfile() {
 
     setCartLoading(true);
     try {
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
-        `${apiBaseUrl}/api/cart/get-cart/${registryId}/${email}`,
+        `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
       );
       const apiData = await res.json();
 
@@ -713,7 +718,9 @@ export default function CoupleProfile() {
 
     setIsApiLoading(true);
     try {
-      const res = await fetch(`${apiBaseUrl}/api/cart`, {
+      // Ensure apiBaseUrl is set
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const res = await fetch(`${baseUrl}/api/cart`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -764,8 +771,11 @@ export default function CoupleProfile() {
       };
       console.log('Sending to Cart API:', payload);
 
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
-        `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
+        `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
@@ -798,8 +808,11 @@ export default function CoupleProfile() {
     try {
       console.log('Sending to Cart API with quantity:', payload);
 
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
-        `${apiBaseUrl}/api/cart/add-to-cart/${registryId}/${email}`,
+        `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
@@ -1003,8 +1016,11 @@ export default function CoupleProfile() {
     if (emailForCart && registryId) {
       setCartLoading(true);
       try {
+        // Ensure apiBaseUrl is set and encode email for URL
+        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+        const encodedEmail = encodeURIComponent(emailForCart);
         const res = await fetch(
-          `${apiBaseUrl}/api/cart/get-cart/${registryId}/${emailForCart}`,
+          `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
         );
         const apiData = await res.json();
 
@@ -1237,8 +1253,11 @@ export default function CoupleProfile() {
     // If updatedItem is provided, this is a quantity update
     if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
       // Update quantity in cart
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       fetch(
-        `${apiBaseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${email}`,
+        `${baseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${encodedEmail}`,
         {
           method: 'PUT',
           headers: {'Content-Type': 'application/json'},
@@ -1270,8 +1289,11 @@ export default function CoupleProfile() {
         });
     } else {
       // Remove item from cart
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
       fetch(
-        `${apiBaseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${email}`,
+        `${baseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${encodedEmail}`,
         {
           method: 'DELETE',
           headers: {'Content-Type': 'application/json'},
@@ -1449,40 +1471,42 @@ export default function CoupleProfile() {
   return (
     <>
       {showAlert && (
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' ? (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            ) : (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+        <AlertPortal>
+          <div
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' ? (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
+        </AlertPortal>
       )}
       <CoupleProfileViewHeader
         onCartClick={handleCartClick}
@@ -1976,6 +2000,7 @@ export default function CoupleProfile() {
       )}
 
       {showEmailModal && hasProducts && registryId && (
+        <ModalPortal>
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
           <div
             className="w-full max-w-4xl mx-4"
@@ -2062,6 +2087,7 @@ export default function CoupleProfile() {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
 
       <Footer />

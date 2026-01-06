@@ -94,31 +94,31 @@ export default function FeaturesGrid() {
   ];
 
   return (
-    <div className="py-7 pb-[150px] px-4 sm:px-6 lg:px-8">
-      <div className="max-w-[120rem] mx-auto">
-        <div className="flex justify-center gap-y-10 flex-wrap">
+    <div className="pt-[6.563vw] pb-[11.823vw] px-2">
+      <div className="max-w-[96.615vw] mx-auto">
+        <div className="flex justify-center gap-y-[7.031vw] gap-x-[4.167vw] flex-wrap">
           {features.map((feature, index) => {
             return (
               <div
                 key={index}
-                className="text-center space-y-4 lg:w-3/12 md:w-4/12 w-1/2"
+                className="text-center space-y-4 lg:w-[20.24vw] max-[1024px]:w-[45%] max-[600px]:w-[90%]"
               >
                 {/* Icon Circle */}
-                <div className="mx-auto w-[180px] h-[180px] bg-[#446184] rounded-full flex items-center justify-center">
+                <div className="mx-auto w-[11.563vw] h-[11.563vw] max-[600px]:w-[100px] max-[600px]:h-[100px] bg-[#446184] rounded-full flex items-center justify-center mb-[2.135vw]">
                   <img
                     src={feature.icon}
                     alt={feature.title}
-                    className="w-[130px] object-contain"
+                    className="w-[8.906vw] object-contain max-[600px]:w-[80px] max-[600px]:h-[80px]"
                   />
                 </div>
 
                 {/* Title */}
-                <h3 className="text-2xl h-20 lg:text-[1.042vw] lg:leading-[1.354vw] font-semibold tracking-wider uppercase text-gray-900 py-4">
+                <h3 className="text-[20px] leading-[26px] min-h-[3vw] max-[1024px]:min-h-[56px] max-[600px]:min-h-[unset] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] font-semibold tracking-wider uppercase text-gray-900">
                   {feature.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-2xl lg:text-[1.146vw] lg:leading-[1.354vw] text-gray-600 leading-relaxed max-w-xs mx-auto">
+                <p className="text-[22px] leading-[26px] max-[1024px]:text-[18px] max-[1024px]:leading-[24px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-[#1F1D1B mx-auto">
                   {feature.description}
                 </p>
               </div>

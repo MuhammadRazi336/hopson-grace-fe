@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, EffectFade} from 'swiper/modules';
 import 'swiper/css';
@@ -15,6 +15,8 @@ const stepsData = [
         <Link 
           to="https://calendly.com/concierge-theregistry/setting-up-your-registry" 
           className="text-black hover:text-black underline cursor-pointer font-medium"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           click here
         </Link>{' '}
@@ -54,31 +56,58 @@ const stepsData = [
 const Steps = () => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+  const swiperRef = useRef(null);
   const [currentStep, setCurrentStep] = useState(0);
   const totalSteps = stepsData.length;
 
+  // Helper function to initialize navigation
+  const initNavigation = () => {
+    if (swiperRef.current && prevRef.current && nextRef.current) {
+      swiperRef.current.params.navigation.prevEl = prevRef.current;
+      swiperRef.current.params.navigation.nextEl = nextRef.current;
+      swiperRef.current.navigation.init();
+      swiperRef.current.navigation.update();
+    }
+  };
+
+  // Update navigation after component mounts and refs are attached
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      initNavigation();
+      // Also try after a small delay as a fallback
+      setTimeout(initNavigation, 100);
+    });
+  }, []);
+
   return (
     <div className="relative w-full max-w-[550px] mx-auto step-slider">
-      <Swiper
-        spaceBetween={50}
-        modules={[Navigation, EffectFade]}
-        navigation={{
-          prevEl: prevRef.current,
-          nextEl: nextRef.current,
-        }}
-        onInit={(swiper) => {
-          swiper.params.navigation.prevEl = prevRef.current;
-          swiper.params.navigation.nextEl = nextRef.current;
-          swiper.navigation.init();
-          swiper.navigation.update();
-        }}
-        allowTouchMove={false}
-        loop={true}
-        onSlideChange={(swiper) => {
-          // Swiper's realIndex is 0-based and ignores loop duplicates
-          setCurrentStep(swiper.realIndex);
-        }}
-      >
+      <div className="h-[220px] max-[767px]:h-[190px]">
+        <Swiper
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+            // Initialize navigation when swiper is ready
+            requestAnimationFrame(() => {
+              initNavigation();
+              // Also try after a small delay as a fallback
+              setTimeout(initNavigation, 100);
+            });
+          }}
+          direction="vertical"
+          spaceBetween={50}
+          modules={[Navigation, EffectFade]}
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          allowTouchMove={false}
+          loop={true}
+          onSlideChange={(swiper) => {
+            // Swiper's realIndex is 0-based and ignores loop duplicates
+            setCurrentStep(swiper.realIndex);
+          }}
+          className="h-full"
+        >
         {stepsData.map((step, idx) => (
           <SwiperSlide key={idx}>
             <div className="flex items-start py-6 max-[1024px]:py-0">
@@ -94,14 +123,15 @@ const Steps = () => {
                     {step.title}
                   </h2>
                 </div>
-                <p className="text-[11px] leading-[18px] lg:text-[1.25vw] lg:leading-[1.979vw] text-gray-700 w-[90%] max-[1024px]:mt-[10px] mb-[14px]">
+                <p className="text-[11px] leading-[18px] h-[150px] max-[767px]:h-[125px] overflow-hidden lg:text-[1.25vw] lg:leading-[1.979vw] text-gray-700 w-[90%] max-[1024px]:mt-[10px] mb-[14px]">
                   {step.description}
                 </p>
               </div>
             </div>
           </SwiperSlide>
         ))}
-      </Swiper>
+        </Swiper>
+      </div>
 
       {/* Custom Navigation */}
       <div className="absolute z-10 lg:right-0 lg:top-[80px] max-[1024px]:bottom-[26px] max-[1024px]:-right-[17px] flex flex-col items-center text-lg">

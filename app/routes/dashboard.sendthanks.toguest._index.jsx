@@ -1,8 +1,10 @@
-import {Form, Link, redirect, useActionData, useLoaderData, useSubmit} from '@remix-run/react';
-import {useState, useEffect} from 'react';
+import {Form, Link, redirect, useActionData, useLoaderData, useSubmit, useNavigate, useFetcher} from '@remix-run/react';
+import {json} from '@shopify/remix-oxygen';
+import {useState, useEffect, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
 import { Footer } from '~/components/Footer';
 import Input from '~/components/Input';
+import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({context}) {
   const user = await context.session.get('@User');
@@ -25,38 +27,114 @@ export async function action({request, context}) {
   try {
     const body = await request.json();
     const {payload} = body;
+    
+    // Parse the payload if it's a string
+    const parsedPayload = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
-    const response = await context.ClientPost(payload, `greetings`, context);
+    const response = await context.ClientPost(parsedPayload, `greetings`, context);
+
+    console.log('Action - API Response:', response);
+    console.log('Action - Response code:', response?.code);
+    console.log('Action - Response message:', response?.message);
 
     if (response?.code === 200) {
-      return {success: true, message: 'Thank you email sent successfully!'};
+      // Return success with the API message or default message
+      return json({
+        success: true, 
+        message: response?.message || 'Thank you email sent successfully!'
+      });
     } else {
-      return {error: response?.message || 'Failed to send message'};
+      // Check if the error message indicates email was already sent
+      const errorMsg = response?.message || 'Failed to send message';
+      const isAlreadySent = errorMsg.toLowerCase().includes('email already sent') || 
+                           errorMsg.toLowerCase().includes('already sent for this registry');
+      
+      if (isAlreadySent) {
+        // Treat "already sent" as success case
+        return json({
+          success: true,
+          message: 'Email has already been sent for this registry.'
+        });
+      }
+      
+      return json({error: errorMsg});
     }
   } catch (error) {
-    return {success: false, error: error.message};
+    console.error('Error sending thank you message:', error);
+    return json({success: false, error: error.message});
   }
 }
 
 const ThankYou = () => {
-  const actionData = useActionData();
   const {user, registry} = useLoaderData();
-  const submit = useSubmit();
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const [message, setMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
   const maxLength = 500;
+  const processedResponseRef = useRef(null);
 
-  // Handle action data to show alerts
+  // Handle fetcher data to show alerts and redirect
   useEffect(() => {
-    if (actionData) {
-      if (actionData.success === true) {
-        setAlertMessage(actionData.message || 'Thank you email sent successfully!');
+    // Only process when fetcher is idle (request completed) and we have data
+    // Also check if we've already processed this response
+    if (fetcher.state === 'idle' && fetcher.data && processedResponseRef.current !== fetcher.data) {
+      processedResponseRef.current = fetcher.data;
+      console.log('Fetcher data received:', fetcher.data);
+      console.log('Fetcher data type:', typeof fetcher.data);
+      console.log('Success value:', fetcher.data.success);
+      console.log('Success === true?', fetcher.data.success === true);
+      console.log('Success == true?', fetcher.data.success == true);
+      
+      // Check both error and message fields for success indicators
+      const errorMessage = fetcher.data.error || '';
+      const successMessage = fetcher.data.message || '';
+      const allMessages = `${errorMessage} ${successMessage}`.toLowerCase();
+      
+      // Check if message indicates email was already sent
+      const isEmailAlreadySent = allMessages.includes('email already sent') || 
+                                 allMessages.includes('already sent for this registry');
+      
+      // Check if message indicates success (even if in error field)
+      const indicatesSuccess = allMessages.includes('sent successfully') ||
+                               allMessages.includes('email sent successfully') ||
+                               allMessages.includes('successfully');
+      
+      // Check for success flag
+      const hasSuccessFlag = fetcher.data.success === true || fetcher.data.success == true;
+      
+      // Determine if this is a success case
+      const isSuccess = hasSuccessFlag || (indicatesSuccess && fetcher.data.success !== false);
+      
+      // Handle both success cases: email sent successfully OR email already sent
+      // Both cases should show success message and redirect to dashboard/gifttracker
+      if (isSuccess || isEmailAlreadySent || indicatesSuccess) {
+        console.log('SUCCESS CASE DETECTED!');
+        console.log('hasSuccessFlag:', hasSuccessFlag);
+        console.log('indicatesSuccess:', indicatesSuccess);
+        console.log('isEmailAlreadySent:', isEmailAlreadySent);
+        console.log('Setting alert and redirecting to /dashboard/gifttracker...');
+        
+        // Set alert type first, then message, then show
         setAlertType('success');
+        
+        // Determine the message to show
+        let displayMessage = 'Thank you email sent successfully!';
+        if (isEmailAlreadySent) {
+          displayMessage = 'Email has already been sent for this registry.';
+        } else if (successMessage) {
+          displayMessage = successMessage;
+        } else if (errorMessage && indicatesSuccess) {
+          // If error message contains success indicator, use it
+          displayMessage = errorMessage;
+        }
+        
+        setAlertMessage(displayMessage);
         setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 5000);
+        
         // Reset form after successful send
         setFormData({
           to: '',
@@ -64,19 +142,36 @@ const ThankYou = () => {
           message: 'Thank you for your generosity and for celebrating this milestone moment with us. It means so much!',
         });
         setShowPreview(false);
-      } else if (actionData.error) {
-        setAlertMessage(actionData.error);
+        
+        // Redirect to dashboard/gifttracker after showing success message (2 seconds)
+        // This applies to BOTH: email sent successfully AND email already sent cases
+        const redirectTimer = setTimeout(() => {
+          console.log('Redirecting to /dashboard/gifttracker');
+          window.location.href = '/dashboard/gifttracker';
+        }, 2000);
+        
+        // Cleanup timer on unmount
+        return () => clearTimeout(redirectTimer);
+      } else if (fetcher.data.error && !indicatesSuccess) {
+        console.log('ERROR CASE DETECTED:', fetcher.data.error);
         setAlertType('error');
+        setAlertMessage(fetcher.data.error);
         setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 5000);
-      } else if (actionData.success === false) {
+        const errorTimer = setTimeout(() => setShowAlert(false), 5000);
+        return () => clearTimeout(errorTimer);
+      } else if (fetcher.data.success === false) {
+        console.log('FAILED CASE DETECTED');
+        setAlertType('error');
         setAlertMessage('Failed to send email. Please try again.');
-        setAlertType('error');
         setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 5000);
+        const errorTimer = setTimeout(() => setShowAlert(false), 5000);
+        return () => clearTimeout(errorTimer);
+      } else {
+        // Fallback - if we have data but don't match any case, log it
+        console.log('UNHANDLED CASE - fetcher.data:', fetcher.data);
       }
     }
-  }, [actionData, user]);
+  }, [fetcher.data, fetcher.state, user, navigate]);
 
   const handlePreview = (e) => {
     e.preventDefault();
@@ -103,49 +198,52 @@ const ThankYou = () => {
       message: formData.message,
       registryId: Number(registry.id),
     };
-    submit({payload}, {method: 'post', encType: 'application/json'});
+    fetcher.submit({payload: JSON.stringify(payload)}, {method: 'post', encType: 'application/json'});
   };
 
   return (
     <>
     <div className="pt-[80px]">
-      {/* Alert Component */}
+      {/* Alert Component - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' && response?.code === 200 ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && response?.code === 200 && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+        <AlertPortal>
+          <div
+            key={`alert-${alertType}-${Date.now()}`}
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50`}
+            style={{animation: 'fadeInOut 3s ease-in-out'}}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' ? (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
+        </AlertPortal>
       )}
       <style jsx>{`
         @keyframes fadeInOut {
@@ -185,7 +283,7 @@ const ThankYou = () => {
       </p>
 
       <div className="container mx-auto bg-[#446184] py-16">
-        <Form method="post" onSubmit={handleSubmit}>
+        <fetcher.Form method="post" onSubmit={handleSubmit}>
           <div className="relative max-w-4xl mx-auto">
             <img
               src="/assets/Images/checkout-bg.png"
@@ -272,14 +370,15 @@ const ThankYou = () => {
               <div className="absolute right-12 top-1/2 -translate-y-1/2">
                 <button 
                   type="submit"
-                  className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-[800] text-black w-[225px] max-[1601px]:w-[280px] text-center"
+                  disabled={fetcher.state === 'submitting'}
+                  className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-[800] text-black w-[225px] max-[1601px]:w-[280px] text-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Send
+                  {fetcher.state === 'submitting' ? 'Sending...' : 'Send'}
                 </button>
               </div>
             )}
           </div>
-        </Form>
+        </fetcher.Form>
       </div>
     </div>
       <Footer/>

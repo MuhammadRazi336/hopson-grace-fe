@@ -22,6 +22,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
+import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({context}) {
   try {
@@ -39,13 +40,14 @@ export async function loader({context}) {
   // Fetch collections data for the swiper and products
   let collections = [];
   let allProducts = [];
+  let recommendedProducts = [];
   try {
     const [{collections: collectionsData}, { products: recommendedProductsData }] = await Promise.all([
       context.storefront.query(COLLECTION_QUERY),
       context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { variables: { first: 8 } })
     ]);
     collections = collectionsData?.nodes || [];
-    const recommendedProducts = recommendedProductsData?.edges || [];
+    recommendedProducts = recommendedProductsData?.edges || [];
     
     // Extract products from collections: include cashfund=true OR titles matching categories (Honeymoon/Home/Date Night)
     collections.forEach(collection => {
@@ -119,6 +121,8 @@ const CashFunds = () => {
     collections: collections?.length || 0,
     hasUser: !!user,
     registryId,
+    recommendedProducts: recommendedProducts?.length || 0,
+    recommendedProductsData: recommendedProducts,
   });
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
@@ -388,7 +392,7 @@ const CashFunds = () => {
               productsToShow < sortedProducts.length && (
                 <WhiteThemeButton
                   Text="VIEW MORE"
-                  buttonClassName="border cursor-pointer mb-[2.344vw] lg:w-[18.75vw] uppercase text-center justify-center lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold bg-white text-black px-2 mt-0 py-0 text-[18px] leading-[18px] hover:bg-gray-100 flex items-center gap-2"
+                  buttonClassName="border cursor-pointer mb-[2.344vw] lg:w-[18.75vw] xl:w-[18.75vw] 2xl:w-[18.75vw] uppercase text-center justify-center lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold bg-white text-black px-2 mt-0 py-0 text-[18px] leading-[18px] hover:bg-gray-100 flex items-center gap-2"
                   link="#"
                   onClick={() =>
                     setProductsToShow((prev) =>
@@ -511,7 +515,7 @@ const CashFunds = () => {
               }}
             >
               {/* Dynamic recommended products */}
-              {recommendedProducts.length > 0 ? (
+              {recommendedProducts && recommendedProducts.length > 0 ? (
                 recommendedProducts.map((product) => {
                   const productNode = product.node;
                   const firstImage = productNode.images?.edges?.[0]?.node;
@@ -519,15 +523,17 @@ const CashFunds = () => {
                   
                   return (
                     <SwiperSlide key={productNode.id}>
-                      <img 
-                        src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                        alt={productNode.title || 'Product'} 
-                        className="w-full rounded-none" 
-                      />
-                      <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
-                        {productNode.title}
-                      </h3>
-                      <p className="lg:text-[1.25vw] text-sm py-2">{formatShopifyPrice(price)}</p>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
+                        <img 
+                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
+                          alt={productNode.title || 'Product'} 
+                          className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                        />
+                        <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
+                          {productNode.title}
+                        </h3>
+                        <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
+                      </Link>
                     </SwiperSlide>
                   );
                 })
@@ -535,25 +541,31 @@ const CashFunds = () => {
                 // Fallback to static slides if no recommended products
                 <>
                   <SwiperSlide>
-                    <img src={product1} alt="New Arrival" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
-                      ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                    </h3>
-                    <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
+                    <div className="block cursor-pointer hover:no-underline pointer-events-auto">
+                      <img src={product1} alt="New Arrival" className="w-full rounded-none pointer-events-none" />
+                      <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider pointer-events-none">
+                        ARKE GLASS BOTTLE FOR CARBONATOR PRO
+                      </h3>
+                      <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
+                    </div>
                   </SwiperSlide>
                   <SwiperSlide>
-                    <img src={product2} alt="Tableware" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
-                      SMEG TOASTER, 2 SLICE
-                    </h3>
-                    <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
+                    <div className="block cursor-pointer hover:no-underline pointer-events-auto">
+                      <img src={product2} alt="Tableware" className="w-full rounded-none pointer-events-none" />
+                      <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider pointer-events-none">
+                        SMEG TOASTER, 2 SLICE
+                      </h3>
+                      <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
+                    </div>
                   </SwiperSlide>
                   <SwiperSlide>
-                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
-                      THE BARISTA TOUCH ESPRESSO MAKER
-                    </h3>
-                    <p className="lg:text-[1.25vw] text-sm py-2">$95.00</p>
+                    <div className="block cursor-pointer hover:no-underline pointer-events-auto">
+                      <img src={product3} alt="Staub Cast Iron Q4" className="w-full rounded-none pointer-events-none" />
+                      <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider pointer-events-none">
+                        THE BARISTA TOUCH ESPRESSO MAKER
+                      </h3>
+                      <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
+                    </div>
                   </SwiperSlide>
                 </>
               )}
@@ -570,43 +582,45 @@ const CashFunds = () => {
 
       <GiftAnyAmount />
 
-      {/* Alert Component */}
+      {/* Alert Component - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+        <AlertPortal>
+          <div
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              {alertType === 'error' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
+        </AlertPortal>
       )}
       <style jsx>{`
         @keyframes fadeInOut {

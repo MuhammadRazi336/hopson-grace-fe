@@ -13,6 +13,8 @@ import newArrivals from '/assets/Images/newArrivals.png';
 import bestSellers from '/assets/Images/bestSellers.png';
 import giftCards from '/assets/Images/giftCard.png';
 import {extractShopifyId} from '~/utils/helpers.js';
+import AlertPortal from '~/components/AlertPortal';
+import BestsellersSection from '~/components/BestsellersSection';
 
 const COLLECTION_QUERY = `#graphql
     query {
@@ -393,25 +395,12 @@ const Products = () => {
             </div>
       </div>
 
-      <section className="pt-0 pb-[9.531vw] my-12">
-        <Heading
-          text="the registry bestsellers"
-          classes={
-            'prata text-3xl lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center  max-[1024px]:m-0'
-          }
-          image={brandline}
-          imageClasses={'max-[1024px]:max-w-[220px] lg:w-[33.021vw] lg:h-[0.450vw]'}
-        />
-            <ProductSlider products={bestsellerProducts} />
-        <div className="text-center">
-          <Link to="/products/bestsellers">
-            <ButtonComponent
-              text="BROWSE BESTSELLERS"
-              className="button-cs text-[#1F1D1B] bastardogrotesk lg:text-[0.938vw] lg:leading-[0.938vw] text-[18px] leading-[18px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.271vw]"
-            />
-          </Link>
-        </div>
-      </section>
+      <BestsellersSection
+        bestsellerProducts={bestsellerProducts}
+        sectionClassName="pt-0 pb-[9.531vw] my-12"
+        headingClasses="prata text-3xl lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0"
+        buttonClassName="button-cs text-[#1F1D1B] bastardogrotesk lg:text-[0.938vw] lg:leading-[0.938vw] text-[18px] leading-[18px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.271vw]"
+      />
 
           {/* <div className="py-[120px] px-12">
             <ExploreCategories collections={collections} />
@@ -421,43 +410,45 @@ const Products = () => {
 
       <Footer />
 
-      {/* Alert Component */}
+      {/* Alert Component - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+        <AlertPortal>
+          <div
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              {alertType === 'error' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
+        </AlertPortal>
       )}
       <style jsx>{`
         @keyframes fadeInOut {

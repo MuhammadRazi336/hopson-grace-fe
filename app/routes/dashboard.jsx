@@ -3,7 +3,6 @@ import {Outlet, useLoaderData} from '@remix-run/react';
 
 import {useEffect, useRef, useState} from 'react';
 import NotificationCard from '~/components/NotificationCard';
-import RegistryStatusCard from '~/components/RegistryStatusCard';
 import { Footer } from '~/components/Footer';
 import lineImg3 from '/assets/Images/heading-bottom-curve.png';
 import { Header } from '~/components/Header';
@@ -144,12 +143,12 @@ const Dashboard_index = ({context}) => {
   const getSVGStyle = (stepNumber) => {
     switch(stepNumber) {
       case 0: return { left: '9.74vw', top: '1.25vw', width: '25vw', height: '11vw' };
-      case 1: return { left: '31vw', top: '1.25vw', width: '18vw', height: '10vw' };
-      case 2: return { left: '39vw', top: '0.25vw', width: '23vw', height: '10vw' };
-      case 3: return { left: '56vw', top: '1.25vw', width: '23vw', height: '9vw' };
-      case 4: return { left: '71vw', top: '1.25vw', width: '23vw', height: '9vw' };
-      case 5: return { left: '78vw', top: '1.25vw', width: '25vw', height: '11vw' };
-      case 6: return { left: '84vw', top: '1.25vw', width: '25vw', height: '11vw' };
+      case 1: return { left: '19vw', top: '1.25vw', width: '18vw', height: '10vw' };
+      case 2: return { left: '36vw', top: '0.25vw', width: '23vw', height: '10vw' };
+      case 3: return { left: '67vw', top: '1.25vw', width: '23vw', height: '9vw' };
+      case 4: return { left: '50vw', top: '1.25vw', width: '23vw', height: '9vw' };
+      case 5: return { left: '92vw', top: '1.25vw', width: '25vw', height: '11vw' };
+      case 6: return { left: '81vw', top: '-4.75vw', width: '25vw', height: '11vw' };
       case 7: return { left: '84vw', top: '4.25vw', width: '25vw', height: '11vw' };
       case 8: return { left: '86vw', top: '20vw', width: '25vw', height: '11vw' };
       default: return { left: '50%', top: '1.25vw', width: '200px', height: '100px' };
@@ -285,12 +284,6 @@ const Dashboard_index = ({context}) => {
                   count={2}
                   onView={() => { } } />
               </div>
-              <div ref={(node) => setStatusNode(node)}>
-                <RegistryStatusCard
-                  className={currentStep === 8 ? 'border-2 border-black' : ''}
-                  status="draft"
-                  onToggle={() => { } } />
-              </div>
             </div>
 
             {/* Blue card */}
@@ -311,7 +304,19 @@ const Dashboard_index = ({context}) => {
 
             {/* Pagination centered below the card */}
             <div className="flex flex-col items-center mt-[35px] lg:mt-[1.823vw] xl:mt-[1.823vw] 2xl:mt-[1.823vw] w-full max-w-lg lg:w-[41.354vw] lg:max-w-[41.354vw] max-[1024px]:order-4 max-[1024px]:w-full max-[1024px]:max-w-full">
-              <div className="w-full flex justify-end">
+              <div className="w-full flex justify-between items-center">
+                {currentStep > 0 ? (
+                  <button
+                    className="font-bold cursor-pointer lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-wide text-black max-[1024px]:text-base"
+                    onClick={() => {
+                      setCurrentStep(s => s - 1);
+                    }}
+                  >
+                    ← Back
+                  </button>
+                ) : (
+                  <div></div>
+                )}
                 <button
                   className="font-bold cursor-pointer lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-wide text-black max-[1024px]:text-base"
                   onClick={() => {

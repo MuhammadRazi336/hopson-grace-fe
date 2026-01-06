@@ -16,14 +16,27 @@ const LiveChat = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  const handleStartLiveChat = () => {
-    if (chatScriptLoaded) {
-      // If script is already loaded, just open the chat widget
-      if (window.Tawk_API && window.Tawk_API.maximize) {
-        window.Tawk_API.maximize();
-        setIsChatOpen(true);
-        onChatStart && onChatStart();
-      }
+  // Function to initialize Tawk.to chat script
+  const initializeChat = () => {
+    // Check if Tawk.to API is already available and fully loaded
+    if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
+      setChatScriptLoaded(true);
+      return;
+    }
+
+    // Check if script tag already exists
+    const existingScript = document.querySelector('script[src*="tawk.to"]');
+    if (existingScript) {
+      // Script exists, wait for it to load
+      const checkInterval = setInterval(() => {
+        if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
+          setChatScriptLoaded(true);
+          clearInterval(checkInterval);
+        }
+      }, 100);
+      
+      // Stop checking after 5 seconds
+      setTimeout(() => clearInterval(checkInterval), 5000);
       return;
     }
 
@@ -41,17 +54,36 @@ const LiveChat = ({
     window.Tawk_API = window.Tawk_API || {};
     window.Tawk_LoadStart = new Date();
     
-    // Configure Tawk to position on the left side
+    // Hide welcome message and icon
+    window.Tawk_API.hideWelcomeMessage = true;
+    window.Tawk_API.hideWidget = false; // Keep widget visible, just hide welcome message
+    
+    // Callback when Tawk.to widget loads - hide welcome message
+    window.Tawk_API.onLoad = function() {
+      // Hide welcome message elements
+      setTimeout(() => {
+        const welcomeElements = document.querySelectorAll(
+          '[class*="welcome"], [id*="welcome"], [class*="we-are-here"], [data-tawk-welcome]'
+        );
+        welcomeElements.forEach(el => {
+          el.style.display = 'none';
+          el.style.visibility = 'hidden';
+          el.style.opacity = '0';
+        });
+      }, 500);
+    };
+    
+    // Configure Tawk to position on the right side
     window.Tawk_API.customStyle = {
       zIndex: 1000,
       visibility: {
         desktop: {
-          position: 'bl', // bottom-left
+          position: 'br', // bottom-right
           xOffset: 20,
           yOffset: 20
         },
         mobile: {
-          position: 'bl', // bottom-left
+          position: 'br', // bottom-right
           xOffset: 20,
           yOffset: 20
         }
@@ -63,43 +95,37 @@ const LiveChat = ({
       setChatScriptLoaded(true);
       setIsLoading(false);
       
-      // Open the chat widget immediately after script loads
-      if (window.Tawk_API && window.Tawk_API.maximize) {
+      // Don't auto-open, let Tawk.to show its default bubble
+      // Just add close button functionality when chat opens
+      setTimeout(() => {
+        addCloseButtonToChat();
+        
+        // Watch for DOM changes to catch chat popup when it appears
+        const observer = new MutationObserver(() => {
+          addCloseButtonToChat();
+        });
+        
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class', 'id']
+        });
+        
+        // Stop observing after 30 seconds
         setTimeout(() => {
-          window.Tawk_API.maximize();
-          setIsChatOpen(true);
-          onChatStart && onChatStart();
-          
-          // Add close button to chat widget after it opens
-          setTimeout(() => {
-            addCloseButtonToChat();
-          }, 1000);
-          
-          // Also watch for DOM changes to catch chat popup when it appears
-          const observer = new MutationObserver(() => {
-            addCloseButtonToChat();
-          });
-          
-          observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ['class', 'id']
-          });
-          
-          // Stop observing after 10 seconds
-          setTimeout(() => {
-            observer.disconnect();
-          }, 10000);
-        }, 500);
-      }
+          observer.disconnect();
+        }, 30000);
+      }, 1000);
+      
+      onChatStart && onChatStart();
     };
 
     // Handle script load errors
     script.onerror = () => {
       setIsLoading(false);
       const errorMessage = 'Failed to load chat. Please try again or contact us via email/phone.';
-      alert(errorMessage);
+      console.error(errorMessage);
       onChatError && onChatError(errorMessage);
     };
 
@@ -115,8 +141,32 @@ const LiveChat = ({
     } catch (error) {
       setIsLoading(false);
       const errorMessage = 'Failed to initialize chat. Please try again or contact us via email/phone.';
-      alert(errorMessage);
+      console.error(errorMessage, error);
       onChatError && onChatError(errorMessage);
+    }
+  };
+
+  // Auto-initialize chat on component mount
+  useEffect(() => {
+    // Check if Tawk.to is already fully loaded
+    if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
+      setChatScriptLoaded(true);
+      return;
+    }
+
+    // Initialize chat automatically
+    initializeChat();
+  }, []);
+
+  const handleStartLiveChat = () => {
+    if (chatScriptLoaded && window.Tawk_API && window.Tawk_API.maximize) {
+      // If script is already loaded, just open the chat widget
+      window.Tawk_API.maximize();
+      setIsChatOpen(true);
+      onChatStart && onChatStart();
+    } else {
+      // Initialize if not already loaded
+      initializeChat();
     }
   };
 
@@ -132,6 +182,7 @@ const LiveChat = ({
   const addCloseButtonToChat = () => {
     // Wait for chat popup to be fully loaded
     const checkForChatPopup = () => {
+      
       // Find the opened chat popup/window
       const chatPopup = document.querySelector('[class*="tawk-widget"], [class*="tawk-chat"], [class*="tawk-window"], iframe[src*="tawk"]');
       const chatHeader = document.querySelector('[class*="tawk-header"], [class*="tawk-title"], [class*="tawk-widget-header"], [class*="chat-header"]');
@@ -217,44 +268,49 @@ const LiveChat = ({
     }
   }, []);
 
-  // Apply left-side positioning CSS when chat is loaded
+  // Apply positioning CSS on mount to ensure Tawk.to widget is positioned correctly
   useEffect(() => {
-    if (chatScriptLoaded) {
-      // Add CSS to position the Tawk.to widget on the left side
-      const style = document.createElement('style');
-      style.textContent = `
-        /* Position Tawk.to widget on the left side */
+    // Add CSS to position the Tawk.to widget on the right side
+    // Check if style already exists to avoid duplicates
+    if (document.getElementById('tawk-positioning-style')) {
+      return;
+    }
+
+    const style = document.createElement('style');
+    style.id = 'tawk-positioning-style';
+    style.textContent = `
+        /* Position Tawk.to widget on the right side */
         #tawk-widget,
         .tawk-widget,
         [id*="tawk"],
         [class*="tawk"] {
-          left: 20px !important;
-          right: auto !important;
+          right: 20px !important;
+          left: auto !important;
         }
         
-        /* Position the chat bubble/button on the left */
+        /* Position the chat bubble/button on the right */
         .tawk-widget-bubble,
         .tawk-widget-button,
         [class*="tawk-bubble"],
         [class*="tawk-button"] {
-          left: 20px !important;
-          right: auto !important;
+          right: 20px !important;
+          left: auto !important;
         }
         
-        /* Position the chat window on the left */
+        /* Position the chat window on the right */
         .tawk-widget-chat,
         .tawk-widget-window,
         [class*="tawk-chat"],
         [class*="tawk-window"] {
-          left: 20px !important;
-          right: auto !important;
+          right: 20px !important;
+          left: auto !important;
         }
         
         /* Style the close button */
         .tawk-chat-close-btn {
           position: fixed;
           top: 20px;
-          left: 20px;
+          right: 20px;
           background: #ff4444;
           color: white;
           border: none;
@@ -338,16 +394,49 @@ const LiveChat = ({
         iframe[src*="tawk"],
         div[class*="tawk"],
         div[id*="tawk"] {
-          left: 20px !important;
-          right: auto !important;
+          right: 20px !important;
+          left: auto !important;
+        }
+        
+        /* Hide welcome message and icon */
+        .tawk-welcome-message,
+        [class*="welcome"],
+        [class*="welcome-message"],
+        [id*="welcome"],
+        .tawk-widget-welcome,
+        [class*="tawk-welcome"],
+        [class*="tawk-widget-welcome"],
+        div[class*="welcome"],
+        span[class*="welcome"],
+        .tawk-widget-bubble[class*="welcome"],
+        [data-tawk-welcome] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          height: 0 !important;
+          width: 0 !important;
+          overflow: hidden !important;
+        }
+        
+        /* Hide any notification or announcement messages */
+        .tawk-notification,
+        .tawk-announcement,
+        [class*="notification"],
+        [class*="announcement"],
+        [class*="we-are-here"],
+        [class*="we-are-here-to-help"] {
+          display: none !important;
+          visibility: hidden !important;
         }
       `;
       document.head.appendChild(style);
-    }
-  }, [chatScriptLoaded]);
+  }, []);
 
+  // Determine if this is a minimal widget (no title/description)
+  const isMinimalWidget = !showTitle && !showDescription;
+  
   // Default button styles
-  const defaultButtonClassName = `font-bold px-6 mt-3 py-4 text-sm transition-colors duration-200 ${
+  const defaultButtonClassName = `font-bold px-6 ${isMinimalWidget ? 'mt-0' : 'mt-3'} py-4 text-sm cursor-pointer lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] transition-colors duration-200 ${
     isLoading 
       ? 'bg-gray-300 text-gray-600 cursor-not-allowed' 
       : 'bg-white text-black hover:bg-gray-100'
@@ -355,7 +444,7 @@ const LiveChat = ({
 
   // If className is provided, use it; otherwise use default
   const finalButtonClassName = className ? 
-    `font-bold px-6 mt-3 py-4 text-sm transition-colors duration-200 ${
+    `font-bold px-6 ${isMinimalWidget ? 'mt-0' : 'mt-3'} py-4 text-sm lg:text-[0.938vw] cursor-pointer lg:h-[3.958vw] xl:h-[3.958vw] 2xl:h-[3.958vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] transition-colors duration-200 ${
       isLoading 
         ? 'bg-gray-300 text-gray-600 cursor-not-allowed' 
         : className
@@ -363,30 +452,36 @@ const LiveChat = ({
     defaultButtonClassName;
 
   // Default styles
-  const defaultTitleClassName = "text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center";
-  const defaultDescriptionClassName = "text-sm lg:text-xl mt-4 mb-4 text-center text-white";
+  const defaultTitleClassName = "text-[20px] mt-10 text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center";
+  const defaultDescriptionClassName = "text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white";
   
   const finalTitleClassName = titleClassName || defaultTitleClassName;
   const finalDescriptionClassName = descriptionClassName || defaultDescriptionClassName;
 
+  // If this is a minimal widget (no title/description), don't render the button
+  // The Tawk.to widget will show its own bubble automatically
+  if (isMinimalWidget) {
+    return null; // Return nothing - Tawk.to will handle the UI
+  }
+
   return (
     <>
-      <div className="flex flex-col items-center justify-center">
+      <div className={`flex flex-col items-center justify-center ${!showTitle && !showDescription ? 'm-0' : ''}`}>
         {showTitle && (
           <>
             <h3 className={finalTitleClassName}>
               {title}
             </h3>
             <img
-              src="/assets/Images/white-bdr.png"
+              src="/assets/Images/small-heading-line.png"
               alt="lineimg"
-              className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%] mx-auto"
+              className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
             />
           </>
         )}
         {showDescription && (
           <p className={finalDescriptionClassName}>
-            Chat with us live between 10am–6pm (Mon–Sat) or 12pm–5pm (Sun).
+            Chat with us live between 10–6pm (Mon–Sat) or 12–5pm (Sun).
             <br /> Offline? Leave a message—we'll reply by email.
           </p>
         )}

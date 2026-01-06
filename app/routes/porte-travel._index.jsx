@@ -2,6 +2,7 @@ import React, {useState, useCallback} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
+import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import Heading from '~/components/Heading';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
@@ -14,13 +15,18 @@ import {Navigation} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
-import {Link, useLoaderData, useFetcher, redirect, json} from '@remix-run/react';
+import {Link, useLoaderData, useFetcher, useLocation, redirect, json} from '@remix-run/react';
 import {formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
+import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
+  
+  // Extract search query from URL
+  const url = new URL(request.url);
+  const searchQuery = url.searchParams.get('q') || null;
   
   // Only fetch registry data if user is logged in
   let registry = null;
@@ -92,6 +98,7 @@ export async function loader({request, context}) {
     registryId,
     user,
     recommendedProducts,
+    searchQuery,
   };
 }
 
@@ -231,48 +238,48 @@ const ProductCard = React.memo(
     };
 
     return (
-      <div key={product.id} className="relative group h-[460px]">
+      <div key={product.id} className="relative group mb-[4.844vw] w-[18.75vw] max-[1024px]:w-auto">
         {/* Product Image and Info */}
-        <div className="p-4 z-10 relative">
+        <div className="p-0 z-10 relative">
           <img
             src={firstImage}
             alt={product.title}
-            className="w-full h-[300px] object-cover"
+            className="w-full h-[18.75vw] max-[767px]:h-[20vw] max-[550px]:h-[30vw] object-cover"
           />
-          <h3 className="text-sm font-semibold uppercase mt-3">
+          <h3 className="text-sm font-[500] tracking-[0.057vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
-          <p className="text-sm mt-1">{price}</p>
+          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{price}</p>
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute w-[116%] left-[-8%] lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
           <div>
             <img
               src={firstImage}
               alt={product.title}
-              className="w-full h-[220px] mx-auto object-cover mb-2"
+              className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
             />
-            <h4 className="text-xs font-medium uppercase text-left mb-1">
+            <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {collection.title || 'BRAND NAME'}
             </h4>
-            <h3 className="text-sm font-bold uppercase text-left leading-snug">
+            <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 text-left">{price}</p>
+            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
           </div>
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-[2.813vw]">
             <div className="flex flex-col w-full items-center text-xs">
-              <Link to={`/dashboard/cashfunds/${product.id}`}>
-                <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
+              <Link to={`/dashboard/cashfunds/${product.id}`} className='w-full'>
+                <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
                   personalize fund
                 </button>
               </Link>
               <button
                 onClick={handleAddToRegistry}
                 disabled={fetcher.state === 'submitting'}
-                className="bg-[#446184] uppercase w-full block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
               >
                 {fetcher.state === 'submitting'
                   ? 'Adding...'
@@ -287,7 +294,8 @@ const ProductCard = React.memo(
 );
 
 const PorteTravel = () => {
-  const {products, collections, registryId, user, recommendedProducts} = useLoaderData();
+  const {products, collections, registryId, user, recommendedProducts, searchQuery} = useLoaderData();
+  const location = useLocation();
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
@@ -363,43 +371,127 @@ const PorteTravel = () => {
   return (
     <section>
       <Header />
-      <div className="w-full h-[2px] bg-black"></div>
+      
+      <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[767px]:pt-[50px]">
+        <Heading
+          text={
+            searchQuery
+              ? `search results for "${searchQuery}"`
+              : 'cash & travel funds'
+          }
+          classes={
+            'prata text-[38px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal m-0 text-center max-[1024px]:m-0 max-[767px]:text-[30px]'
+          }
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] max-[767px]:max-w-[250px] lg:w-[20.833vw] xl:w-[20.833vw] 2xl:w-[20.833vw] lg:h-[6px] xl:h-[6px] 2xl:h-[6px]'}
+        />
+        {searchQuery && (
+          <p className="text-center my-5 text-lg">
+            Found {filteredProducts.length} cash fund
+            {filteredProducts.length !== 1 ? 's' : ''} matching "{searchQuery}"
+          </p>
+        )}
+        <p className="text-center tracking-[0.1vw] my-[1.823vw] font-[500] text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[767px]:my-[20px] max-[767px]:text-[18px]">
+          ASK FOR WHAT YOU REALLY WANT
+        </p>
+        <p className="text-center text-[16px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] max-[767px]:w-[90%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
+          {searchQuery
+            ? 'Browse the search results below or use the filters to refine your search.'
+            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that's so you. Because life together should start with something unforgettable."}
+        </p>
+      </div>
 
-      <div className="w-full h-[500px] lg:h-[800px] flex flex-row items-center justify-center">
-        <div className="w-[50%] h-full bg-[#F5F2ED] relative">
-          <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
+      {/* No Search Results */}
+      {searchQuery && filteredProducts.length === 0 && (
+        <section className="container mx-auto py-16 text-center">
+          <h3 className="text-2xl font-semibold mb-4">No cash funds found</h3>
+          <p className="text-gray-600 mb-8">
+            No cash funds match your search for "{searchQuery}". Try different
+            keywords or browse our categories below.
+          </p>
+        </section>
+      )}
+
+      {/* Regular Cash Funds Content - Only show when no search query */}
+      {!searchQuery && (
+        <>
+          <div className="w-full flex flex-row justify-center items-center gap-[1.25vw] mt-[3.906vw] mb-[5.833vw] px-4 md:px-16 max-[767px]:flex-wrap max-[767px]:gap-[10px]">
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+                location.pathname === '/dream-fund'
+                  ? 'bg-[#1F1D1B]'
+                  : ''
+              }`}
+            >
+              <Link to="/dream-fund" className={`${
+                location.pathname === '/dream-fund'
+                  ? 'text-white'
+                  : 'text-[#1F1D1B]'
+              }`}>Dream Funds</Link>
+            </div>
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+                location.pathname.startsWith('/dashboard/cashfunds/create-new')
+                  ? 'bg-[#1F1D1B]'
+                  : ''
+              }`}
+            >
+              <Link to="/dashboard/cashfunds/create-new" className={`${
+                location.pathname.startsWith('/dashboard/cashfunds/create-new')
+                  ? 'text-white'
+                  : 'text-[#1F1D1B]'
+              }`}>Create Your Own</Link>
+            </div>
+            <div
+              className={`fund-tabs max-[1024px]:text-[16px] max-[767px]:text-[14px] max-[1024px]:px-[20px] max-[1024px]:w-auto max-[1024px]:h-[50px] bastardogrotesk font-[800] uppercase w-[13.229vw] h-[3.125vw] border-2 flex items-center justify-center text-[0.833vw] leading-[1.042vw] tracking-[0.067vw] ${
+                location.pathname.startsWith('/porte-travel')
+                  ? 'bg-[#1F1D1B]'
+                  : ''
+              }`}
+            >
+              <Link to="/porte-travel" className={`${
+                location.pathname.startsWith('/porte-travel')
+                  ? 'text-white'
+                  : 'text-[#1F1D1B]'
+              }`}>Porte Travel</Link>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className="w-full h-[30vw] flex flex-row items-center justify-center max-[1024px]:h-[350px] max-[767px]:flex-col max-[767px]:h-auto">
+        <div className="w-[50%] h-full bg-[#F5F2ED] relative max-[767px]:w-full">
+          <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%] max-[767px]:w-full max-[767px]:relative max-[767px]:translate-x-0 max-[767px]:translate-y-0 max-[767px]:top-0 max-[767px]:left-0 max-[767px]:py-[30px]">
             <Heading
-              text={'porte travel'}
+              text={<>bespoke experiences <span className='flex items-center justify-center gap-[0.521vw]'>BY <img src="/assets/Images/porte-logo.png" className='w-[14.025vw] h-[auto]' alt="porte travel" /></span></>}
               classes={
-                'prata text-4xl lg:text-7xl font-normal text-center max-[1024px]:m-0 text-black'
+                'prata text-[34px] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 text-black max-[767px]:text-[30px]'
               }
               image={lineImghead}
-              imageClasses={'w-[150px] lg:w-[330px]'}
+              imageClasses={'w-[150px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] lg:h-[0.417vw] xl:h-[0.417vw] 2xl:h-[0.417vw]'}
             />
-            <p className="text-base sm:text-lg lg:text-xl text-black leading-relaxed mx-auto mt-10">
-              Think: flight upgrades, home projects, or a honeymoon you'll
-              actually remember. These ready-to-go funds make it easy for guests
-              to chip in on the good stuff.
+            <p className="text-[16px] max-[767px]:w-[90%] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
+            This is next-level. Our friends at Porte design fully <br className='max-[767px]:hidden' /> custom trips built around you—whether it's wine <br className='max-[767px]:hidden' /> tasting in Sicily or glamping in the Sahara.
             </p>
           </div>
         </div>
-        <div className="w-[50%] h-full">
+        <div className="w-[50%] h-full max-[767px]:w-full">
           <img
             src={'/assets/Images/porteTravels.png'}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
             alt=""
           />
         </div>
       </div>
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
-          <SidebarFilter 
+      <section className="px-[8.594vw] mx-auto max-[1024px]:px-[30px]">
+        <div className="flex flex-col md:flex-row gap-[3.75vw] pt-[8.958vw]">
+          {/* <SidebarFilter 
             collections={collections}
             checkedCategories={checkedCategories}
             setCheckedCategories={setCheckedCategories}
-          />
-          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
+          /> */}
+          <div className="w-full grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 max-[1024px]:grid-cols-4 max-[767px]:grid-cols-3 max-[550px]:grid-cols-2 gap-[2.083vw] pt-0 p-0 relative z-0 lg:w-[81.25vw] xl:w-[81.25vw] 2xl:w-[81.25vw] mx-auto">
             {filteredProducts.map((product) => {
               // Find the collection for this product
               const collection = collections.find(col => col.id === product.collectionId);
@@ -419,72 +511,68 @@ const PorteTravel = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="w-full xl:w-1/4 "> </div>
-          <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md my-10">LOADING 12 of 427</p>
+          <div className="w-full flex flex-col items-center">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">LOADING 12 of 427</p>
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100">
+            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
               Back to Top
             </button>
           </div>
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] pt-12 pb-8 mb-[100px]">
+      <section className="bg-[#FAF9F6] py-[3.906vw] flex items-center pl-[5.833vw] mb-[9.01vw] gap-[5.521vw] justify-center max-[767px]:flex-col max-[767px]:py-[50px] max-[767px]:mb-[50px] max-[767px]:px-[20px]">
         <Heading
-          text="we think you'll love"
+          text={<>we think <span className="ivyora">you'll love</span></>}
           classes={
-            'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+            'prata text-2xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          image={headingBottomCurve}
+          imageClasses={'max-[1024px]:max-w-[330px] w-[14.271vw] h-[6px] object-right object-cover'}
         />
 
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 " />
-              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
+        <div className="relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
+          <div className="w-full mx-auto">
+            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[75px] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+              <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
             </div>
 
             <Swiper
-              spaceBetween={15}
-              slidesPerView={3}
+              spaceBetween={35}
+              slidesPerView={3.5}
               loop={true}
               modules={[Navigation]}
               navigation={{
                 nextEl: '.swiper-button-next-prod',
                 prevEl: '.swiper-button-prev-prod',
               }}
-              className="px-[178px]"
+              className=""
               breakpoints={{
-                345: {
+                320: {
                   spaceBetween: 10,
-                  centeredSlides: true,
+                  slidesPerView: 1.5,
                 },
                 475: {
                   spaceBetween: 15,
-                  centeredSlides: true,
+                  slidesPerView: 2.5,
                 },
                 768: {
                   spaceBetween: 20,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
                 1024: {
                   spaceBetween: 30,
-                  centeredSlides: true,
+                  slidesPerView: 3.5,
                 },
                 1366: {
-                  spaceBetween: 39,
-                  centeredSlides: true,
+                  spaceBetween: 30,
+                  slidesPerView: 3.5,
                 },
                 1600: {
-                  spaceBetween: 39,
-                  centeredSlides: true,
+                  spaceBetween: 35,
+                  slidesPerView: 3.5,
                 },
               }}
             >
@@ -496,17 +584,17 @@ const PorteTravel = () => {
                   const price = productNode.priceRange?.minVariantPrice;
                   
                   return (
-                    <SwiperSlide key={productNode.id}>
-                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="cursor-pointer hover:no-underline">
+                    <SwiperSlide key={productNode.id} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
+                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
                         <img 
                           src={firstImage?.url || '/assets/Images/placeholder.png'} 
                           alt={productNode.title || 'Product'} 
-                          className="w-full cursor-pointer hover:opacity-80 transition-opacity" 
+                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
                         />
-                        <h3 className="mt-2.5 lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors">
+                        <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                           {productNode.title}
                         </h3>
-                        <p className="lg:text-2xl text-sm">{formatShopifyPrice(price)}</p>
+                        <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
                       </Link>
                     </SwiperSlide>
                   );
@@ -515,76 +603,75 @@ const PorteTravel = () => {
                 // Fallback to static slides if no recommended products
                 <>
                   <SwiperSlide>
-                    <img src={product1} alt="New Arrival" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                    <img src={product1} alt="New Arrival" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       ARKE GLASS BOTTLE FOR CARBONATOR PRO
                     </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
                   <SwiperSlide>
-                    <img src={product2} alt="Tableware" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                    <img src={product2} alt="Tableware" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       SMEG TOASTER, 2 SLICE
                     </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
                   <SwiperSlide>
-                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
+                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" />
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       THE BARISTA TOUCH ESPRESSO MAKER
                     </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
+                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">$95.00</p>
                   </SwiperSlide>
                 </>
               )}
             </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-              <img src={nextitem} className="" alt="" />
+            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[75px] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
+              <img src={nextitem} className="rotate-270 w-[1.3vw] h-[1.3vw]" alt="" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Alert Component */}
+      {/* Alert Component - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
+        <AlertPortal>
+          <div
+            className={`fixed top-4 right-4 ${
+              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+          >
+            <div className="flex items-center">
+              {alertType === 'success' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M5 13l4 4L19 7"></path>
+                </svg>
+              )}
+              {alertType === 'error' && (
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              )}
+              <span>{alertMessage}</span>
+            </div>
           </div>
-        </div>
+        </AlertPortal>
       )}
       <style jsx>{`
         @keyframes fadeInOut {

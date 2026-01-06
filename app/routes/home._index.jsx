@@ -34,6 +34,7 @@ import { Link, useLoaderData, json } from '@remix-run/react';
 import LiveChat from '~/components/LiveChat';
 import Popup from '~/components/Popup';
 import ModalPortal from '~/components/ModalPortal';
+import BestsellersSection from '~/components/BestsellersSection';
 export async function loader({ context }) {
   try {
     // Get user session if available (optional for non-logged in users)
@@ -46,12 +47,60 @@ export async function loader({ context }) {
       context.storefront.query(BLOGS_QUERY)
     ]);
     
-    // Filter collections where both ready_made AND parent_collection metafields are true
-    const realRegistries = collections?.nodes?.filter(collection => {
-      const readyMadeMetafield = collection.readyMadeMetafield?.value === 'true';
-      const parentCollectionMetafield = collection.parentCollectionMetafield?.value === 'true';
-      return readyMadeMetafield && parentCollectionMetafield;
-    }) || [];
+    // Helper function to normalize boolean metafield values
+    // Handles both string "true"/"false" and boolean true/false
+    const normalizeBool = (raw) => {
+      if (raw === true || raw === 'true' || raw === 'True' || raw === 'TRUE') return 'true';
+      if (raw === false || raw === 'false' || raw === 'False' || raw === 'FALSE') return 'false';
+      if (typeof raw === 'string') return raw.trim().toLowerCase();
+      if (raw == null) return '';
+      return String(raw).trim().toLowerCase();
+    };
+    
+    // Log ALL collections with their metafield values for debugging
+    console.log('=== DEBUGGING ALL COLLECTIONS ===');
+    collections?.nodes?.forEach((collection, index) => {
+      const readyMadeRaw = collection.readyMadeMetafield?.value;
+      const featuredRaw = collection.featuredMetafield?.value;
+      const readyMadeNormalized = normalizeBool(readyMadeRaw);
+      const featuredNormalized = normalizeBool(featuredRaw);
+      
+      console.log(`Collection ${index + 1} (${collection.title}):`, {
+        readyMadeRaw: readyMadeRaw,
+        readyMadeNormalized: readyMadeNormalized,
+        readyMadeIsTrue: readyMadeNormalized === 'true',
+        featuredRaw: featuredRaw,
+        featuredNormalized: featuredNormalized,
+        featuredIsTrue: featuredNormalized === 'true',
+        readyMadeMetafield: collection.readyMadeMetafield,
+        featuredMetafield: collection.featuredMetafield
+      });
+    });
+    
+    // Filter collections where: ready_made = true AND featured = true
+    // No parent collection condition - just filter by these two metafields
+    const featuredReadyMadeCollections = (collections?.nodes ?? []).filter((collection) => {
+      const readyMadeNormalized = normalizeBool(collection.readyMadeMetafield?.value);
+      const featuredNormalized = normalizeBool(collection.featuredMetafield?.value);
+      
+      const isReadyMade = readyMadeNormalized === 'true';
+      const isFeatured = featuredNormalized === 'true';
+      
+      const matches = isReadyMade && isFeatured;
+      
+      if (matches) {
+        console.log(`✓ MATCH: "${collection.title}" - ready_made: ${readyMadeNormalized}, featured: ${featuredNormalized}`);
+      }
+      
+      return matches;
+    });
+    
+    console.log('=== FILTERING RESULTS ===');
+    console.log('All collections:', collections?.nodes?.length || 0);
+    console.log('Featured ready-made collections (ready_made=true AND featured=true):', featuredReadyMadeCollections.length);
+    console.log('Featured ready-made collection titles:', featuredReadyMadeCollections.map(c => c.title));
+    
+    const realRegistries = featuredReadyMadeCollections;
 
     // Filter brand collections for the marquee - only show brands explicitly marked featured
     // Be robust to different capitalizations or empty/undefined values from Shopify metafields
@@ -83,91 +132,38 @@ export async function loader({ context }) {
       });
     });
     
-    // Log each collection with its title and metafields for debugging
-    realRegistries.forEach((collection, index) => {
-      console.log(`Collection ${index + 1}:`, {
-        title: collection.title,
-        readyMade: collection.readyMadeMetafield?.value,
-        parentCollection: collection.parentCollectionMetafield?.value,
-        subCollection: collection.subCollectionMetafield?.value
-      });
-    });
-    
-    // Fetch sub-collections and their products for the "Real Registries" specifically
+    // Fetch products for each featured ready-made collection directly
+    // No parent collection logic - just fetch products for collections that match the filter
     let featuredRegistryData = null;
     if (realRegistries.length > 0) {
-      // Find the "Real Registries" collection specifically (not just the first one)
-      // Priority order: 1. "Real" in title, 2. "Authentic" in title, 3. "Couple" in title, 4. Not "Themed"/"Minimalist"
-      let realRegistriesCollection = null;
+      const collectionsWithProducts = [];
       
-      // First priority: collections with "real" in the title
-      realRegistriesCollection = realRegistries.find(collection => 
-        collection.title.toLowerCase().includes('real')
-      );
-      
-      // Second priority: collections with "authentic" in the title
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries.find(collection => 
-          collection.title.toLowerCase().includes('authentic')
-        );
-      }
-      
-      // Third priority: collections with "couple" or "wedding" in the title
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries.find(collection => 
-          collection.title.toLowerCase().includes('couple') ||
-          collection.title.toLowerCase().includes('wedding')
-        );
-      }
-      
-      // Fourth priority: any collection that's NOT "Themed" or "Minimalist"
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries.find(collection => 
-          !collection.title.toLowerCase().includes('themed') && 
-          !collection.title.toLowerCase().includes('minimalist') &&
-          !collection.title.toLowerCase().includes('style') &&
-          !collection.title.toLowerCase().includes('curated')
-        );
-      }
-      
-      // Final fallback: first collection
-      if (!realRegistriesCollection) {
-        realRegistriesCollection = realRegistries[0];
-      }
-      
-      if (realRegistriesCollection.subCollectionMetafield?.value) {
-        try {
-          const subCollectionIds = JSON.parse(realRegistriesCollection.subCollectionMetafield.value);
-          
-          // Fetch ALL sub-collections for display (not just the first one)
-          if (subCollectionIds.length > 0) {
-            
-            // Fetch all sub-collections
-            const subCollectionsData = [];
-            for (const subCollectionId of subCollectionIds) {
-              
-              const subCollectionData = await context.storefront.query(SUB_COLLECTION_QUERY, {
-                variables: { id: subCollectionId }
-              });
-              
-              if (subCollectionData.collection) {
-                subCollectionsData.push(subCollectionData.collection);
-              }
-            }
-            
-            if (subCollectionsData.length > 0) {
-              // Return all sub-collections data
-              featuredRegistryData = {
-                parentCollection: realRegistriesCollection,
-                subCollections: subCollectionsData
-              };
-            } else {
-              console.log('No sub-collections found');
-            }
-          }
-        } catch (e) {
-          console.log('Error parsing subCollectionMetafield:', e);
+      for (const collection of realRegistries) {
+        // Fetch collection with products
+        const collectionData = await context.storefront.query(SUB_COLLECTION_QUERY, {
+          variables: { id: collection.id }
+        });
+        
+        if (collectionData.collection) {
+          collectionsWithProducts.push(collectionData.collection);
+          console.log(`✓ Added collection "${collectionData.collection.title}" with products`);
         }
+      }
+      
+      console.log('Total collections with products:', collectionsWithProducts.length);
+      
+      // Format data for CustomTab component
+      if (collectionsWithProducts.length > 0) {
+        // Use the first collection as the parent (for structure compatibility with CustomTab)
+        const parentCollection = realRegistries[0];
+        
+        featuredRegistryData = {
+          parentCollection: parentCollection,
+          subCollections: collectionsWithProducts
+        };
+        console.log('Formatted featuredRegistryData with', collectionsWithProducts.length, 'collections');
+      } else {
+        console.log('No collections found with ready_made=true AND featured=true');
       }
     }
     
@@ -271,7 +267,7 @@ const Home = () => {
         <div className="text-center">
         <Link to="/ready-made-registries">
           <ButtonComponent
-            text="BROWSE READY-MADE REGISTRIES"
+            text="EXPLORE READY-MADE REGISTRIES"
             className="button-cs text-black cursor-pointer border-3 w-[224px] h-[44px] lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-black py-[2px] lg:py-[5px] bg-transparent rounded-none mt-11 lg:mt-[3.125vw] hover:bg-gray-100"
           />
           </Link>
@@ -280,7 +276,7 @@ const Home = () => {
 
       <section className="py-[70px] mt-[81px] max-[1024px]:py-[28px] bg-[#F5F2ED80] my-[3.958vw] lg:mb-0 lg:mt-[8.281vw]">
         <Heading
-          text="a few of our brand"
+          text="a few of our brands"
           classes={
             'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
           }
@@ -298,23 +294,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-[80px] my-12 lg:py-[10.625vw] max-[1024px]:px-0 lg:my-0">
-        <Heading
-          text="the registry bestsellers"
-          classes={
-            'prata text-[22px] leading-[36px] lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center lg:mb-[0.833vw] max-[1024px]:m-0'
-          }
-          image={brandline}
-          imageClasses={'max-[1024px]:max-w-[220px] lg:w-[33.021vw] lg:h-[0.450vw]'}
-        />
-        <ProductSlider products={bestsellerProducts} />
-        <div className="text-center">
-          <ButtonComponent
-            text="BROWSE BESTSELLERS"
-            className="button-cs w-[224px] h-[44px] text-[#1F1D1B] lg:w-[18.75vw] lg:h-[4.01vw] cursor-pointer border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 lg:mt-[4.271vw] hover:bg-gray-100"
-          />
-        </div>
-      </section>
+      <BestsellersSection bestsellerProducts={bestsellerProducts} />
 
       <section className="mb-[80px] mt-0 lg:mb-0">
         <Heading
@@ -345,10 +325,11 @@ const Home = () => {
             imgBanner={atyourserviceGif}
             lineimg={lineImg}
             title=" at your service"
-            description="There's no question too small or request too big for our Registry advisors. We're always at your service."
+            description="There’s no question too small or request too big for one of our Registry concierges. We’re always at your service."
             buttontext={'CONTACT US'}
             buttontype={'link'}
             buttonLink={'/contact-us'}
+            buttonClassName='!text-[#1F1D1B]'
           />
     </section>
 
@@ -362,10 +343,11 @@ const Home = () => {
           imgBanner={virtualappointmentImg}
           lineimg={lineImg2}
           title=<>book a virtual <br/>appointment</>
-          description="Our virtual appointments offer the  same personalized guidance — without leaving home. "
+          description="Our virtual appointments offer personalized guidance without leaving home."
           buttontext={'BOOK NOW'}
           buttontype={'link'}
           buttonLink={'/contact-us'}
+          buttonClassName='!text-[#1F1D1B]'
         />
       </section>
 
@@ -429,21 +411,25 @@ query getRealRegistries {
         width
         height
       }
-       readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+      readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
         id
         value
       }
-       parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {
+      parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {
         id
         value
       }
-       subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+      subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
         id
         value
       }
-     }
-   }
- }
+      featuredMetafield: metafield(namespace: "custom", key: "featured") {
+        id
+        value
+      }
+    }
+  }
+}
 `;
 
 const SUB_COLLECTION_QUERY = `#graphql
@@ -460,14 +446,22 @@ query getHomeSubCollection($id: ID!) {
       width
       height
     }
-    products(first: 10) {
+    featuredMetafield: metafield(namespace: "custom", key: "featured") {
+      id
+      value
+    }
+    readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+      id
+      value
+    }
+    products(first: 50) {
       edges {
         node {
           id
           title
           handle
           description
-          images(first: 1) {
+          images(first: 10) {
             edges {
               node {
                 id
@@ -480,7 +474,7 @@ query getHomeSubCollection($id: ID!) {
               node {
                 id
                 availableForSale
-                priceV2 {
+                price {
                   amount
                   currencyCode
                 }
@@ -495,7 +489,7 @@ query getHomeSubCollection($id: ID!) {
 
 const BRAND_QUERY = `#graphql
 query getHomeBrands {
-  collections(first: 50) {
+  collections(first: 250) {
     nodes {
       id
       title
@@ -507,6 +501,10 @@ query getHomeBrands {
         altText
         width
         height
+      }
+      metafield(namespace: "custom", key: "brand") {
+        id
+        value
       }
       featuredMetafield: metafield(namespace: "custom", key: "featured") {
         id
@@ -601,3 +599,4 @@ query GetAllBlogsAndArticlesForInspiration {
     }
   }
 }`;
+

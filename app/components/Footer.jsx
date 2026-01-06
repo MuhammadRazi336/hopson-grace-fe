@@ -9,7 +9,6 @@ import Copyright from './Copyright';
 import {useState} from 'react';
 import Popup from './Popup';
 import ModalPortal from './ModalPortal';
-import LiveChat from './LiveChat';
 
 /**
  * @param {FooterProps}
@@ -42,7 +41,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
             </Link>
           </div>
 
-          <p className='prata lg:mt-[3.49vw] max-[1024px]:mt-[44px] text-[1.25vw] max-[1024px]:text-[14px] max-[1024px]:leading-[22px] leading-[1.354vw]'>The Registry is a sister brand to <span className='underline'>Hopson Grace</span>, curators of modern tableware and timeless home furnishings.</p>
+          <p className='prata lg:mt-[3.49vw] max-[1024px]:mt-[44px] text-[1.25vw] max-[1024px]:text-[14px] max-[1024px]:leading-[22px] leading-[1.354vw]'>The Registry is a sister brand to <a href="https://hopsongrace.com/" target='_blank' className='underline text-white'>Hopson Grace</a>, curators of modern tableware and timeless home furnishings.</p>
 
           {/* First Menu in Footer */}
           <div className="mt-[4.427vw]">
@@ -67,7 +66,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                     <li>
                       <Link className="text-white" to="/why-the-registry">
-                      WHY THE REGISTRY?
+                      WHY THE REGISTRY
                       </Link>
                     </li>
                     <li>
@@ -86,7 +85,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="https://hopsongrace.com" target='_blank'>
+                      <Link className="text-white" to="/meet-our-team">
                       MEET OUR SISTER STORE HOPSON GRACE
                       </Link>
                     </li>
@@ -123,12 +122,12 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     </li>
                     <li>
                       <Link className="text-white" to="/inspiration">
-                        INSPIRATION
+                        FIND INSPIRATION
                       </Link>
                     </li>
                     <li>
                       <Link className="text-white" to="/ready-made-registries">
-                        READY MADE REGISTRIES
+                        READY-MADE REGISTRIES
                       </Link>
                     </li>
                     <li>
@@ -179,30 +178,9 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
 
                 <h4
                   className="text-[0.938vw] leading-[0.938vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] mb-[1.406vw] font-[800] uppercase mt-[4.688vw] text-white tracking-[0.08em] flex justify-between lg:justify-start items-start"
-                  onClick={() => toggleNav(3)}
                 >
-                  Contact Us{' '}
-                  <img src={dropdown} alt="" className="lg:hidden" />
+                  <Link className="text-white" to="/contact-us">Contact Us</Link>
                 </h4>
-                <nav
-                  className={`transition-all duration-300 ${
-                    openNavIndex === 3 ? 'block' : 'hidden'
-                  } lg:block`}
-                >
-                  <ul className="text-white text-[0.833vw] max-[1024px]:text-[14px] max-[1024px]:leading-[26px] font-[500] leading-[1.875vw] tracking-[0.08em]">
-                    <li>
-                      <div className="flex flex-col items-start justify-start">
-                        <LiveChat 
-                          title=""
-                          buttonText="LIVE CHAT"
-                          showTitle={false}
-                          showDescription={false}
-                          className="text-white bg-transparent border-none cursor-pointer hover:underline font-[500] text-[0.833vw] max-md:text-[14px] max-md:leading-[26px] leading-[1.875vw] tracking-[0.08em] p-0 m-0"
-                        />
-                      </div>
-                    </li>
-                  </ul>
-                </nav>
               </div>
 
               <div className='w-[25%] max-[1024px]:w-full'>
@@ -214,7 +192,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     <li>
                       <a
                         className="text-white"
-                        href="https://pinterest.com"
+                        href="https://ca.pinterest.com/TheRegistrybyHopsonGrace/"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -224,7 +202,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     <li>
                       <a
                         className="text-white"
-                        href="https://instagram.com"
+                        href="https://www.instagram.com/the__registry/"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -238,7 +216,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     <li>
                       <a
                         className="text-white"
-                        href="https://facebook.com"
+                        href="https://www.facebook.com/profile.php?id=61579373301428"
                         target="_blank"
                         rel="noopener noreferrer"
                       >

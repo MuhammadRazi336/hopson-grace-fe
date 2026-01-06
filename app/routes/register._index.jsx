@@ -52,6 +52,7 @@ const RegisterIndex = () => {
     password: '',
     confirmPassword: '',
     confirmEmail: '',
+    preferTextNotifications: false,
   });
   const [errors, setErrors] = useState({});
 
@@ -187,7 +188,16 @@ const RegisterIndex = () => {
   };
 
   const handleInputChange = (e) => {
-    const {name, value} = e.target;
+    const {name, value, type, checked} = e.target;
+    
+    // Handle checkbox inputs
+    if (type === 'checkbox') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
+      return;
+    }
     
     // For name fields, allow any case but ensure first letter is capitalized
     let processedValue = value;
@@ -232,7 +242,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="First *"
             name="firstName"
-            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:h-[47px]"
+            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
             classNameLabel="max-[580px]:text-left"
             error={errors.firstName}
           />
@@ -241,7 +251,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="Last *"
             name="lastName"
-            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:h-[47px]"
+            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
             classNameLabel="max-[580px]:text-left"
             error={errors.lastName}
           />
@@ -372,6 +382,20 @@ const RegisterIndex = () => {
             }
             showPasswordTooltip={true}
           />
+        </div>
+        <div className="mt-4">
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="preferTextNotifications"
+              checked={formData.preferTextNotifications}
+              onChange={handleInputChange}
+              className="mt-1"
+            />
+            <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white">
+              Click here if you'd prefer to receive your notifications by text. We'll still send the occasional email (but no spam, we promise).
+            </span>
+          </label>
         </div>
       </div>
     </div>

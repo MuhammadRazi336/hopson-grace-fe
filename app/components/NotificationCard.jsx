@@ -3,7 +3,7 @@ import React from 'react';
 const NotificationCard = ({ count = 0, onView, className, loading = false, refreshing = false }) => (
   <div className={`bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px] ${className}`}>
     {/* Notification Bell with Red Dot */}
-    <div className="absolute top-4 right-4">
+    <div className="absolute top-[10px] right-4">
       <span className="relative inline-block">
         {/* Bell Icon (SVG) */}
         <svg width="24" height="29" fill="none" viewBox="0 0 24 24" className="inline-block align-middle">
@@ -44,7 +44,7 @@ const NotificationCard = ({ count = 0, onView, className, loading = false, refre
     <button
       onClick={onView}
       disabled={loading || refreshing}
-      className={`uppercase font-bold text-lg tracking-wide text-black lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-b-2 border-[#1F1D1B] hover:text-gray-700 ${(loading || refreshing) ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`uppercase cursor-pointer font-bold text-lg tracking-wide text-black lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-b-2 border-[#1F1D1B] hover:text-gray-700 ${(loading || refreshing) ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {loading ? 'Loading...' : refreshing ? 'Refreshing...' : 'View'}
     </button>

@@ -8,6 +8,7 @@ import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
 import OurPhilosophyBg from '/assets/Images/OurPhilosophyBg.png';
 import teaImg from '/assets/Images/tea.png';
+import { Link } from '@remix-run/react';
 
 const OurPhilosophy = () => {
   return (
@@ -44,22 +45,22 @@ const OurPhilosophy = () => {
         <div className="container mx-auto pt-[7.083vw] max-[1024px]:py-[50px]">
           
           <p className="text-center text-[26px] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.979vw] leading-[38px] font-normal lg:w-[75.469vw] xl:w-[75.469vw] 2xl:w-[75.469vw] mx-auto max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
-            We believe in fewer, better things. That the gifts you choose should
-            be beautifully made, deeply personal, and built to last. That great
-            design never goes out of style. And that weddings should be a
-            celebration of who you are, not just what you need. We’ve curated our
-            collection with intention—partnering with brands who care about
-            craftsmanship, sustainability, and timeless appeal. The result? A
-            registry that feels effortless, elevated, and entirely yours.
+          We believe in fewer, better things. That the gifts you choose should be beautifully made, deeply personal, and built to last. 
+          <br className='max-[1024px]:hidden' />That great design never goes out of style. And that weddings should be a celebration of who you are, not just what you need. 
+          <br className='max-[1024px]:hidden' />We’ve curated our collection with intention—partnering with brands who care about craftsmanship, sustainability, and timeless 
+          <br className='max-[1024px]:hidden' />appeal. The result? A registry that feels effortless, elevated, and entirely yours.
+
           </p>
           <br />
         </div>
         <div className="w-full container mx-auto pb-[8.281vw]">
           <div className="flex justify-center pt-[30px] max-[1024px]:pt-0">
-            <Button
-              text="BROWSE OUR CURATED COLLECTION   "
-              className="text-white font-normal bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
-            />
+            <Link to="/products">
+              <Button
+                text="BROWSE OUR CURATED COLLECTION   "
+                className="text-white font-normal cursor-pointer bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
+              />
+            </Link>
           </div>
         </div>
 
@@ -69,7 +70,11 @@ const OurPhilosophy = () => {
             imgBanner={teaImg}
             lineimg={lineImg3}
             title="ready?"
-            description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
+            description={<>
+              TIMELESS GIFTS.<br />
+              THOUGHTFULLY CURATED.<br />
+              EXCEPTIONAL SERVICE.
+            </>}
             buttontext={'GET STARTED'}
             buttontype={'Color'}
             buttonLink={'/register'}

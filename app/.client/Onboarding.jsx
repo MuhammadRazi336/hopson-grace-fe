@@ -63,6 +63,7 @@ const OnboardingClient = ({onStepChange}) => {
   const [eventDateError, setEventDateError] = useState('');
   const [step3Error, setStep3Error] = useState('');
   const [step4Errors, setStep4Errors] = useState({});
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const handleGuestNoChange = (e) => {
     setEventData((prev) => ({
       ...prev,
@@ -204,7 +205,7 @@ const OnboardingClient = ({onStepChange}) => {
   const handleRegistry = async () => {
     const payload = {
       name: eventData.eventName || 'My Event', // Default event name if not provided
-      eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD'),
+      ...(eventData.selectedDate && {eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD')}),
       eventTypeId: Number(eventData.selectedOption.id),
       ...(eventData.id && {id: eventData.id}),
     };
@@ -501,9 +502,40 @@ const OnboardingClient = ({onStepChange}) => {
             From tracking gifts and checking messages to sending thank-you notes and setting up your home page, everything you need lives here. You'll land here every time you log in.
           </div>
           <div className="uppercase font-semibold mb-6 text-center">READY?</div>
+          <div className="mb-6">
+            <label className="flex items-start gap-2 cursor-pointer justify-center">
+              <input
+                type="checkbox"
+                checked={agreeToTerms}
+                onChange={(e) => setAgreeToTerms(e.target.checked)}
+                className="mt-1"
+              />
+              <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white">
+                By creating your registry, you agree to our{' '}
+                <a
+                  href="/terms-conditions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:opacity-80 text-white"
+                >
+                  Terms & Conditions
+                </a>
+              </span>
+            </label>
+          </div>
           <button
-            className="bg-white text-black cursor-pointer font-bold px-8 py-5 shadow hover:bg-gray-100 transition"
-            onClick={async () => { await handleOnboard(); navigate('/dashboard'); }}
+            className={`font-bold px-8 py-5 shadow transition ${
+              agreeToTerms
+                ? 'bg-white text-black cursor-pointer hover:bg-gray-100'
+                : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+            }`}
+            onClick={async () => {
+              if (agreeToTerms) {
+                await handleOnboard();
+                navigate('/dashboard');
+              }
+            }}
+            disabled={!agreeToTerms}
           >
             GO TO MY DASHBOARD
           </button>
@@ -622,13 +654,18 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
     setSelectedDate(date);
   };
 
+  const handleSkipLater = () => {
+    setSelectedDate(null);
+    onSkip();
+  };
+
   return (
     <div className="text-center">
       <div className="p-4 w-[300px] mx-auto customdatepicker">
         <DatePicker
           selectedDate={localSelectedDate}
           onDateChange={handleDateChange}
-          placeholder="Select a Date"
+          placeholder="Select a date"
           inputProps={{
             className:
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
@@ -637,12 +674,31 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
           disabledDates={disabledDates}
         />
       </div>
-
+      <div className="mt-4">
+        <button
+          onClick={handleSkipLater}
+          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80 mt-3"
+        >
+          I'll Add this later
+        </button>
+      </div>
     </div>
   );
 };
 
 const Step3 = ({value, onChange, step3Error, onSkip}) => {
+  const handleSkipLater = () => {
+    // Set value to 0 and skip the step
+    const fakeEvent = {
+      target: {
+        name: 'noOfGuest',
+        value: '0',
+      },
+    };
+    onChange(fakeEvent);
+    onSkip();
+  };
+
   return (
     <div>
       <div className="text-center">
@@ -669,13 +725,22 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
       {step3Error && <div className="input-error-message">{step3Error}</div>}
-
+      <div className="mt-4 text-center">
+        <button
+          onClick={handleSkipLater}
+          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
+        >
+          I'll add this later
+        </button>
+      </div>
     </div>
   );
 };
 
 const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
-  // Submit handler to log the form data
+  const handleSkipLater = () => {
+    onSkip();
+  };
 
   return (
     <div className="">
@@ -778,6 +843,14 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
           error={step4Errors?.country}
         />
+      </div>
+      <div className="mt-4 text-center">
+        <button
+          onClick={handleSkipLater}
+          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
+        >
+          I'll add this later
+        </button>
       </div>
 
     </div>

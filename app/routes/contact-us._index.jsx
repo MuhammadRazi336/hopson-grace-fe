@@ -29,7 +29,7 @@ const ContactUs = () => {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className={`w-full h-fit pt-[100px] max-[1024px]:pt-[40px] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
+      <div className={`w-full h-fit pt-[3.75vw] max-[1024px]:pt-[40px] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
         <Heading
           text="questions?"
           classes={
@@ -40,8 +40,8 @@ const ContactUs = () => {
         />
         <p className="text-1xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center pt-[2.76vw] pb-[4.167vw] w-[63vw] max-w-full max-[1024px]:w-full mx-auto">
           {user ? 
-            "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
-            "We’re here for you. From setup to shipping, or if you’re purchasing a gift for a couple, you can reach us anytime for help, guidance, or just a second opinion."
+            "Reach out if you’d like help setting up your registry, to get a second opinion on your selections or if you have questions regarding your account, shipping or fulfillment." :
+            "We’re here for you. From setup to shipping, or if you’re purchasing a gift for a couple, reach us anytime for help, guidance, or just a second opinion. "
           }
         </p>
 
@@ -69,7 +69,7 @@ const ContactUs = () => {
             <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10 lg:py-[3.958vw] xl:py-[3.958vw] 2xl:py-[3.958vw]">
               <div className="flex flex-col items-center justify-center">                
                 <p className="text-sm lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-w-[500px] mt-4 mb-4 text-center text-white">
-                  Our team is on call 7 days a week from 10am-6pm EST.
+                  Our team is on call 7 days a week from 10-6pm EST.
                 </p>
 
                 <h3 className="text-[20px] mt-10 text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
@@ -92,8 +92,8 @@ const ContactUs = () => {
                   alt="lineimg"
                   className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
                 />
-                <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
-                  {user ? <strong>concierge@theregistry.ca</strong> : <strong>hello@theregistry.ca</strong>}
+                <p className="text-sm underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
+                  <span className="text-white font-[500]">{user ? <span>concierge@theregistry.ca</span> : <span>hello@theregistry.ca</span>}</span>
                 </p>
               </div>
             </div>
@@ -124,8 +124,16 @@ const ContactUs = () => {
                   className="mb-2 mt-2 lg:w-[17.708vw] xl:w-[17.708vw] 2xl:w-[17.708vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
                 />
                 <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
-                  Need a hand getting started? Book a virtual appointment with a Registry Concierge. We’ll walk you through the process, answer your questions, and help you build your dream registry.
+                  {user ? "Need a hand getting started? Book a virtual appointment with our Registry Concierge. We’ll walk you through the process, answer your questions, and help you build a registry that reflects your style, your life, and your wishlist." : "Need a hand getting started? Book a virtual appointment with a Registry Concierge. We’ll walk you through the process, answer your questions, and help you build your dream registry."}
                 </p>
+          
+                {user ? (
+                  <Link to={"https://calendly.com/concierge-theregistry/setting-up-your-registry"} target="_blank" rel="noopener noreferrer">
+                    <button className="font-[800] px-2 mt-3 mb-4 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
+                      BOOK AN APPOINTMENT
+                    </button>
+                  </Link>
+                ): (<></>)}
 
                 <h3 className="text-[20px] mt-10 font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
                   ADVICE & REGISTRY FULFILLMENT
@@ -136,11 +144,11 @@ const ContactUs = () => {
                   className="mb-2 mt-2 lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
                 />
                 <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
-                Getting close to the big day—or already married? Book a session with a Registry Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free.
+                  {user ? "Getting close to the big day—or already married? Book a session with our Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free." : "Getting close to the big day—or already married? Book a session with a Registry Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free."}
                 </p>
               </div>
-              <Link to={"https://calendly.com/concierge-theregistry/30min"}>
-                <button className="font-[800] px-2 mt-5 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
+              <Link to={`${user ? "https://calendly.com/concierge-theregistry/30min" : "https://calendly.com/concierge-theregistry/learn-more"}`} target="_blank" rel="noopener noreferrer">
+                <button className="font-[800] px-2 mt-3 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
                   BOOK AN APPOINTMENT
                 </button>
               </Link>
@@ -171,7 +179,7 @@ const ContactUs = () => {
             <div className="text-center mb-[4.688vw]">
               <h2 className="text-[20px] font-[500] mb-[1.302vw] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] tracking-[2.24px] max-[1024px]:mb-[20px]">WANT TO SEE SOME OF OUR PRODUCTS IN PERSON?</h2>
               <p className="text-base w-[62.292vw] max-w-full mx-auto lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
-              If you’re in Toronto, visit our sister store <strong>Hopson Grace</strong> for modern home essentials and timeless gifts, where you’ll be able to see some products from The Registry in person.
+              If you’re in Toronto, visit our sister store <a href="https://www.hopsongrace.com" target="_blank" rel="noopener noreferrer" className="text-[#1F1D1B] underline font-[600]">Hopson Grace</a> for modern home essentials and timeless gifts, where you’ll be able to see some products from The Registry in person.
               </p>
             </div>
             
@@ -183,7 +191,7 @@ const ContactUs = () => {
                   <div className="space-y-4">
                     <div className='mb-[2.865vw]'>
                       <h4 className="text-base font-semibold mb-[9px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-[1.92px]">LOCATION</h4>
-                      <p className="text-base lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">200 DUPONT STREET<br />TORONTO, ON M5R 2E6</p>
+                      <p className="text-base underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]"><a className='hover:text-gray-600' href="https://www.google.com/maps/place/Hopson+Grace/@43.6756579,-79.407044,17z/data=!3m1!4b1!4m6!3m5!1s0x882b3357e8ee4cdf:0x8b95f40a5c1da6f!8m2!3d43.675654!4d-79.4044691!16s%2Fg%2F11c0w87pyg?authuser=0&entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoASAFQAw%3D%3D" target='_blank'>200 DUPONT STREET<br />TORONTO, ON M5R 2E6</a></p>
                     </div>
                     
                     <div className='mb-[2.865vw]'>
@@ -196,11 +204,11 @@ const ContactUs = () => {
                       <h4 className="text-base font-semibold mb-[9px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-[1.92px]">GET IN TOUCH</h4>
                       <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">416-926-1120</p>
                       <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
-                        <a href="mailto:INFO@HOPSONGRACE.COM" className="hover:text-gray-600">
+                        <span className="">
                           INFO@HOPSONGRACE.COM
-                        </a>
+                        </span>
                       </p>
-                      <p className="text-base lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
+                      <p className="text-base underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
                         <a href="https://www.hopsongrace.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">
                           WWW.HOPSONGRACE.COM
                         </a>
@@ -212,7 +220,8 @@ const ContactUs = () => {
               
               <div className="flex items-center w-[50%] justify-center max-[1024px]:w-full">
                 <div className="w-full h-[37.396vw] bg-gray-200 overflow-hidden">
-                  <iframe
+                  <img src="/assets/Images/contactmap.jpg" alt="Hopson Grace Store Location" className="w-full h-full object-cover" />
+                  {/* <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.123456789!2d-79.406307!3d43.653226!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b34d68bf33a9b%3A0x15edd8c4de1c7581!2s200%20Dupont%20St%2C%20Toronto%2C%20ON%20M5R%202E6%2C%20Canada!5e0!3m2!1sen!2sca!4v1234567890123!5m2!1sen!2sca"
                     width="100%"
                     height="100%"
@@ -222,7 +231,7 @@ const ContactUs = () => {
                     referrerPolicy="no-referrer-when-downgrade"
                     title="Hopson Grace Store Location"
                     className="w-full h-full object-cover"
-                  ></iframe>
+                  ></iframe> */}
                 </div>
               </div>
             </div>

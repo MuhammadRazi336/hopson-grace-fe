@@ -4,7 +4,6 @@ import {Footer} from '~/components/Footer';
 import {useState} from 'react';
 import teaImg from '/assets/Images/reading-image.png';
 import NotificationCard from '~/components/NotificationCard';
-import RegistryStatusCard from '~/components/RegistryStatusCard';
 // import giftIcon from '/assets/Images/gift-icon.png';
 
 const REGISTRY_CARDS = [
@@ -71,9 +70,6 @@ export default function DashboardHome() {
         <div className="w-full xl:w-3/12 flex flex-col gap-y-4">
           <div>
             <NotificationCard />
-          </div>
-          <div>
-            <RegistryStatusCard />
           </div>
         </div>
       </div>

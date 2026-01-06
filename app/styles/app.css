@@ -292,6 +292,14 @@ button.reset:hover:not(:has(> *)) {
     height 0.6s cubic-bezier(0.4,0,0.2,1);
 }
 
+.header-sticky-animated {
+  transition:
+    background-color 0.6s cubic-bezier(0.4,0,0.2,1),
+    box-shadow 0.6s cubic-bezier(0.4,0,0.2,1),
+    padding 0.6s cubic-bezier(0.4,0,0.2,1),
+    height 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
 .header-menu-mobile-toggle {
   @media (min-width: 48em) {
     display: none;
@@ -747,6 +755,35 @@ button > p {
   justify-content: center;
 }
 
+/* Hero Carousel Styles */
+.hero-carousel-slider {
+  position: relative;
+}
+
+.hero-carousel-slider .swiper-pagination {
+  bottom: 30px !important;
+  gap: 12px;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+.hero-carousel-slider .hero-carousel-bullet {
+  width: 12px;
+  height: 12px;
+  background: transparent;
+  border: 2px solid #fff;
+  opacity: 1;
+  border-radius: 100px;
+  transition: all 0.3s ease;
+}
+
+.hero-carousel-slider .hero-carousel-bullet-active {
+  background: #fff;
+  border-color: #fff;
+  width: 30px;
+}
+
 .collection-slider .swiper-button-prev::after,
 .collection-slider .swiper-button-next::after,
 .step-slider .swiper-button-prev-steps::after,
@@ -1022,7 +1059,7 @@ td.rdp-day.rdp-outside {
   height: 12px;
   /* width: 100%; */
   display: block;
-  margin-top: 10px;
+  margin-top: 5px;
   width: 35.313vw;
   margin-bottom: 20px;
   margin-left: auto;
@@ -1178,6 +1215,20 @@ body.homepage .guided-video {
   .hero-slider span.swiper-pagination-bullet {
     width: 12px;
     height: 12px;
+  }
+
+  .hero-carousel-slider .swiper-pagination {
+    bottom: 20px !important;
+    gap: 8px;
+  }
+
+  .hero-carousel-slider .hero-carousel-bullet {
+    width: 10px;
+    height: 10px;
+  }
+
+  .hero-carousel-slider .hero-carousel-bullet-active {
+    width: 20px;
   }
 
   .button-cs > p {

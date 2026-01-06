@@ -26,7 +26,10 @@ import {Footer} from '~/components/Footer';
 import {Navigation} from 'swiper/modules';
 import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
-import GiftCardBg from '/assets/Images/giftCardBg.png';
+import GiftCardBg from '/assets/Images/bestsellers-banner.jpg';
+import AlertPortal from '~/components/AlertPortal';
+import WeThinkYoullLove from '~/components/WeThinkYoullLove';
+import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 
 const tabsData = [
   {
@@ -185,10 +188,22 @@ export async function loader({request, context}) {
     console.log('Error fetching bestseller products:', error);
   }
   
+  // Fetch recommended products
+  let recommendedProducts = [];
+  try {
+    const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
+      variables: { first: 8 } 
+    });
+    recommendedProducts = recommendedProductsData?.edges || [];
+  } catch (error) {
+    console.log('Error fetching recommended products:', error);
+  }
+  
   return defer({
     products: products,
     collections: collections.nodes,
     bestsellerProducts,
+    recommendedProducts,
     registry: registry?.data?.[0] || null,
     user: user || null,
   });
@@ -228,7 +243,7 @@ async function loadCollectionData({context}) {
 }
 
 const Bestsellers = () => {
-  const {products, collections, bestsellerProducts, registry, user} = useLoaderData();
+  const {products, collections, bestsellerProducts, recommendedProducts, registry, user} = useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
@@ -323,24 +338,25 @@ const Bestsellers = () => {
   return (
     <>
     <Header />
-      <div className="pt-[100px] relative p-4">
-        <h2 className="mt-0 prata lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          bestsellers
-        </h2>
-        <img
-          src="/assets/Images/profile-view-page-bdr.png"
-          alt="Couple"
-          className="max-w-[630px] mt-5 h-auto mx-auto"
-        />
-      </div>
 
-      <section className='my-16'>
-    <img
-        src={GiftCardBg}
-        alt=""
-        className="w-full h-[520px] lg:h-[520px] object-cover"
-      />
-    </section>
+      <section className='flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative gap-[8.698vw] w-full overflow-hidden'>
+        <div className="relative p-4 w-[30%]">
+          <h2 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata">
+            bestsellers
+          </h2>
+          <img
+            src="/assets/Images/gifts-bottom-line.png"
+            alt="Couple"
+            className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto object-contain"
+          />
+        </div>
+
+        <img
+            src={GiftCardBg}
+            alt=""
+            className="w-[70%] h-full object-cover"
+          />
+      </section>
 
       {/* Products Grid Section */}
       {displayedProducts.length > 0 && (
@@ -398,14 +414,17 @@ const Bestsellers = () => {
         <ExploreCategories collections={collections} />
       </div>
 
-      {/* Alert */}
+      {/* Alert - Rendered outside app-scale via portal */}
       {showAlert && (
-        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-          alertType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`}>
-          {alertMessage}
-        </div>
+        <AlertPortal>
+          <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            alertType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+          }`}>
+            {alertMessage}
+          </div>
+        </AlertPortal>
       )}
+      <WeThinkYoullLove recommendedProducts={recommendedProducts || []} productLinkPrefix="/products/bestsellers" />
       <Footer />
     </>
   );

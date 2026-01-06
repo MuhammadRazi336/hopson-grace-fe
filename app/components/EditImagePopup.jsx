@@ -84,6 +84,7 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
 
   // Load stored images when component mounts
@@ -98,9 +99,8 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
-  const handleFileChange = async (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+  const processImageFile = (file) => {
+    if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.addEventListener('load', () => {
         const imageData = reader.result;
@@ -113,6 +113,34 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
         }
       });
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      processImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processImageFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -142,8 +170,8 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
   return (
     <ModalPortal>
       <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
-        <div className="bg-[#F5F2ED] w-[85.313vw] min-h-[45.625vw] max-h-[90vh] max-w-[90vw] px-[5.26vw] py-[2.917vw] relative">
-          <h2 className="text-2xl font-[500] bastardogrotesk mt-0 mb-[20px] max-[1024px]:mb-[10px] max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">UPLOAD YOUR PROFILE IMAGE</h2>
+        <div className="bg-[#F5F2ED] w-[68.25vw] h-[38vw] max-h-[80vh] max-w-[90vw] px-[6.12vw] py-[2.75vw] relative">
+          <h2 className="text-2xl lg:text-[1vw] xl:text-[1vw] 2xl:text-[1vw] lg:leading-[1.5v] xl:leading-[1.5v] 2xl:leading-[1.5v] font-[500] bastardogrotesk m-0 max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">UPLOAD YOUR PROFILE IMAGE</h2>
           {/* Close Button */}
           <button
             onClick={onClose}
@@ -152,11 +180,16 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
             &times;
           </button>
 
-          <div className="flex gap-[5vw] max-[1024px]:flex-col max-[1024px]:gap-[40px]">
+          <div className="flex gap-[5vw] lg:h-[27.12vw] xl:h-[27.12vw] 2xl:h-[27.12vw] max-[1024px]:flex-col max-[1024px]:gap-[40px]">
             {/* Left: Cropper or Preview */}
-            <div className="w-2/3 lg:w-[40.417vw] xl:w-[40.417vw] 2xl:w-[40.417vw] lg:min-h-[33.75vw] xl:min-h-[33.75vw] 2xl:min-h-[33.75vw] lg:h-[33.75vw] xl:h-[33.75vw] 2xl:h-[33.75vw] max-[1024px]:h-[300px] max-[1024px]:w-full">
+            <div className="w-2/3 lg:w-[32.33vw] xl:w-[32.33vw] 2xl:w-[32.33vw] h-full max-[1024px]:h-[300px] max-[1024px]:w-full">
               {imageSrc ? (
-                <div className="relative w-full h-full bg-gray-100">
+                <div 
+                  className={`relative w-full h-full bg-gray-100 ${isDragging ? 'border-4 border-blue-400 border-dashed bg-blue-50' : ''} transition-all`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
                   <Suspense fallback={<div>Loading cropper...</div>}>
                     <div className="relative w-full h-full mx-auto">
                       <Cropper
@@ -175,11 +208,26 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
                   </Suspense>
                 </div>
               ) : (
-                <img
-                  src="/assets/Images/product-image.png"
-                  alt="Selected"
-                  className="w-full h-full object-cover"
-                />
+                <div 
+                  className={`relative w-full h-full ${isDragging ? 'border-4 border-blue-400 border-dashed bg-blue-50' : ''} transition-all`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  {isDragging ? (
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center">
+                        <p className="text-lg font-semibold text-blue-600">Drop image here</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src="/assets/Images/product-image.png"
+                      alt="Selected"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
               )}
               <p className="text-right bastardogrotesk text-sm lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] mt-2 text-[#000000]">
                 DRAG TO REPOSITION

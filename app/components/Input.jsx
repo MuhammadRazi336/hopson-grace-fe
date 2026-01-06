@@ -30,7 +30,7 @@ export default function Input({
           {...rest}
         />
         {showPasswordTooltip && type === 'password' && (
-          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 group">
+          <div className="absolute right-2 top-1/2 transform -translate-y-1/2 group z-10">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 20 20" 
