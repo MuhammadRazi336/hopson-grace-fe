@@ -77,9 +77,9 @@ const PrivacyPolicy = () => {
             update or correct your information, and to request that we delete
             your data—unless we’re required to retain it for legal reasons. To
             make a privacy-related request, please contact us at{' '}
-            <span className="font-semibold underline">
+            <a className="underline hover:text-gray-600" href="mailto:hello@theregistry.ca" target="_blank" rel="noopener noreferrer">
               hello@theregistry.ca
-            </span>
+            </a>
             .
           </p>
 

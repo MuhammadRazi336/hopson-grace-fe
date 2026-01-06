@@ -45,7 +45,7 @@ export default function NeedSupport() {
               />
               <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
                 Email us anytime at{' '}
-                <a href="mailto:support@theregistry.ca" className="text-white">
+                <a href="mailto:support@theregistry.ca" className="text-white underline">
                   {' '}
                   support@theregistry.ca{' '}
                 </a>{' '}

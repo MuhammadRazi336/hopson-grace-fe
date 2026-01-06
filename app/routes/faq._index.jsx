@@ -369,7 +369,7 @@ const FAQ = () => {
                 ) : (
                   <>
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      No — gifts purchased through The Registry are sent directly to the couple, not to guests. If you’d like to purchase and receive a gift yourself to hand-deliver to the couple, you can visit our sister store, <a href="https://hopsongrace.com/" className="text-blue-500" target="_blank">Hopson Grace</a>, or reach out for support at <a href="mailto:hello@theregistry.ca" className="text-blue-500" target="_blank">hello@theregistry.ca</a>
+                      No — gifts purchased through The Registry are sent directly to the couple, not to guests. If you’d like to purchase and receive a gift yourself to hand-deliver to the couple, you can visit our sister store, <a href="https://hopsongrace.com/" className="underline hover:text-gray-600" target="_blank">Hopson Grace</a>, or reach out for support at <a href="mailto:hello@theregistry.ca" className="underline hover:text-gray-600" target="_blank">hello@theregistry.ca</a>
                     </p>
                   </>
                 )}
@@ -445,7 +445,7 @@ const FAQ = () => {
                 ) : (
                   <>
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      We're available to help with any questions, from navigating the site to choosing the perfect gift. Reach us anytime at <span className="underline" target="_blank">hello@theregistry.ca</span>.
+                      We're available to help with any questions, from navigating the site to choosing the perfect gift. Reach us anytime at <a href="mailto:hello@theregistry.ca" className="underline hover:text-gray-600" target="_blank">hello@theregistry.ca</a>.
                     </p>
                   </>
                 )}
