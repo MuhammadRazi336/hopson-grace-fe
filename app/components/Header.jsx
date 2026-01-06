@@ -1649,56 +1649,56 @@ export function Header() {
               {/* Desktop navigation - hidden on mobile */}
               <div className="hidden lg:flex w-full shadow-md justify-between bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px]">
               <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.833vw] font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
-                      <span className="relative inline-block text-[16px] leading-[36px]">MY DASHBOARD<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                      <span className="relative inline-block leading-[36px]">MY DASHBOARD<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.833vw] font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
-                      <span className="relative inline-block text-[16px] leading-[36px]">MY DETAILS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                      <span className="relative inline-block leading-[36px]">MY DETAILS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/registry' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/registry">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.833vw] font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">MY REGISTRY HOMEPAGE<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/registry' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.938vw] font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">ADD OR EDIT GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/addgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/cashfunds' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/cashfunds">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.938vw] font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/cashfunds' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/gifttracker' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/gifttracker">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.938vw] font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">GIFTS + THANK YOU TRACKER<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/gifttracker' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.938vw] font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">FULFILL + SHIP GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/shipgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
                 <a className={`invisible w-0 text-center px-1 py-1 text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/support' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/support">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.938vw] font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block">SUPPORT<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/support' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>

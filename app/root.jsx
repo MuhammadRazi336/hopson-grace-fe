@@ -402,6 +402,9 @@ export default function App() {
     {/* Sticky Header Portal - outside the scaled tree */}
     <div id="header-root"></div>
 
+    {/* Sticky Bar Portal - outside the scaled tree */}
+    <div id="sticky-bar-root"></div>
+
     {/* Guided Video Component */}
     <GuidedVideo />
     </>

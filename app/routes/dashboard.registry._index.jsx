@@ -336,9 +336,9 @@ const index = () => {
             </svg>
 
             <p className="max-w-[43.958vw] text-[#1F1D1B] mx-auto mt-[2.031vw] text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-[1024px]:w-[100%] max-[1024px]:max-w-full max-[1024px]:text-[16px] max-[1024px]:mb-[20px]">
-              Your guests will land here—so have fun with it! Leave them a
+              Your guests will land here—so have fun with it! <br className='max-[1024px]:hidden' />Leave them a
               message and upload your photos or video, or pick from our
-              illustrations to create something uniquely you.
+              <br className='max-[1024px]:hidden' />illustrations to create something uniquely you.
             </p>
           </div>
         </div>
