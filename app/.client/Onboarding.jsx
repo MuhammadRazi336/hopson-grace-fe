@@ -98,6 +98,24 @@ const OnboardingClient = ({onStepChange}) => {
     }
   }, [eventTypes]);
 
+  // Auto-select default collections when collections are loaded
+  useEffect(() => {
+    if (collections?.nodes && selectedCollections.length === 0) {
+      // Filter parent collections (excluding ready-made)
+      const parentCollections = collections.nodes.filter((collection) => {
+        const isParentCollection = collection?.metafield?.value === 'true';
+        const isReadyMade = collection?.readyMadeMetafield?.value === 'true';
+        return isParentCollection && !isReadyMade;
+      });
+      
+      // Select first 3 collections by default (or all if less than 3)
+      if (parentCollections.length > 0) {
+        const defaultSelections = parentCollections.slice(0, Math.min(3, parentCollections.length));
+        setSelectedCollections(defaultSelections);
+      }
+    }
+  }, [collections, selectedCollections.length]);
+
   useEffect(() => {
     if (user) {
       const token = user.accessToken;
@@ -108,7 +126,7 @@ const OnboardingClient = ({onStepChange}) => {
         } else if (user.stepNumber === 2) {
           setStep(STEPS_CONSTANTS.SHIPPING_INFO);
         } else if (user.stepNumber === 3) {
-          setStep(STEPS_CONSTANTS.PREFER_GIFT_INFO);
+          setStep(STEPS_CONSTANTS.STYLE_INFO);
         } else {
           setStep(STEPS_CONSTANTS.EVENT_DATE_INFO);
         }
@@ -185,6 +203,25 @@ const OnboardingClient = ({onStepChange}) => {
   };
 
   const handleRegistry = async () => {
+    // Ensure event type is selected
+    if (!eventData.selectedOption || !eventData.selectedOption.id) {
+      // Try to use first available event type
+      if (eventTypes.length > 0) {
+        setEventData((prev) => ({
+          ...prev,
+          selectedOption: {label: eventTypes[0].label, id: eventTypes[0].id},
+        }));
+        // Wait for state update and retry
+        setTimeout(async () => {
+          await handleRegistry();
+        }, 100);
+        return;
+      } else {
+        setEventDateError('Event types are loading. Please wait...');
+        return;
+      }
+    }
+
     const payload = {
       name: eventData.eventName || 'My Event', // Default event name if not provided
       ...(eventData.selectedDate && {eventDate: moment(eventData.selectedDate).format('YYYY-MM-DD')}),
@@ -192,7 +229,18 @@ const OnboardingClient = ({onStepChange}) => {
       ...(eventData.id && {id: eventData.id}),
     };
 
+    // Validate eventTypeId is a valid number
+    if (!payload.eventTypeId || isNaN(payload.eventTypeId)) {
+      setEventDateError('Invalid event type. Please refresh the page.');
+      return;
+    }
+
     const token = localStorage.getItem('@Token');
+    if (!token) {
+      setEventDateError('Authentication required. Please log in again.');
+      return;
+    }
+
     let data = null;
     try {
       if (payload.id) {
@@ -307,108 +355,45 @@ const OnboardingClient = ({onStepChange}) => {
     try {
       const data = await Registry_Services.updateOnBoarding(payload, token);
 
-      // First, store the selected sub-collections
+      // Handle collections and sub-collections from backend with default/empty values
+      // Send empty arrays to backend if no selections were made
+      if (user && user.user && user.user.id) {
+        const preferredCategoryTitles = selectedCollections && selectedCollections.length > 0 
+          ? selectedCollections.map((col) => col.title) 
+          : [];
+        const preferredSubCategoryTitles = selectedSubCollections && selectedSubCollections.length > 0
+          ? selectedSubCollections.map((col) => col.title)
+          : [];
+        
+        // Update preferred categories with empty arrays if no selections
+        try {
+          await Registry_Services.updatePreferredCategories(
+            user.user.id,
+            {
+              preferredCategory: preferredCategoryTitles,
+              preferredSubCategory: preferredSubCategoryTitles,
+            },
+            token
+          );
+        } catch (error) {
+          // If backend doesn't require these, continue anyway
+          console.log('Preferred categories update skipped or failed:', error);
+        }
+      }
+
+      // Store empty sub-collections array in localStorage if no selections
       try {
-        const collectionsString = JSON.stringify(selectedSubCollections);
+        const collectionsString = JSON.stringify(selectedSubCollections || []);
         localStorage.setItem('@SelectedSubCollections', collectionsString);
-
-        // Verify storage immediately
-        const storedCollections = localStorage.getItem(
-          '@SelectedSubCollections',
-        );
-
-        if (!storedCollections) {
-          throw new Error('Failed to store collections in localStorage');
-        }
       } catch (storageError) {
-        alert('There was an error saving your selections. Please try again.');
-        return; // Don't proceed if storage failed
+        // Continue even if storage fails
+        console.log('Storage error:', storageError);
       }
 
-      // Then fetch and store products
-      try {
-        const productsQuery = `#graphql
-          query GetProductsByCollection($collectionId: ID!) {
-            collection(id: $collectionId) {
-              id
-              title
-              products(first: 50) {
-                edges {
-                  node {
-                    id
-                    title
-                    handle
-                    description
-                    collections(first: 50) {
-                      edges {
-                        node {
-                          id
-                          title
-                          handle
-                        }
-                      }
-                    }
-                    images(first: 1) {
-                      edges {
-                        node {
-                          id
-                          src
-                        }
-                      }
-                    }
-                    variants(first: 1) {
-                      edges {
-                        node {
-                          id
-                          priceV2 {
-                            amount
-                            currencyCode
-                          }
-                          inventoryQuantity
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `;
-
-        // Process each sub-collection one at a time
-        for (const subCollection of selectedSubCollections) {
-          try {
-            // Fetch products for this collection
-            const result = await context.storefront.query(productsQuery, {
-              variables: {
-                collectionId: subCollection.id,
-              },
-            });
-
-            if (result?.collection?.products?.edges) {
-              // Store products for this collection
-              const productsKey = `@Products_${subCollection.id}`;
-              const productsString = JSON.stringify(
-                result.collection.products.edges,
-              );
-
-              localStorage.setItem(productsKey, productsString);
-
-              // Verify storage
-              const storedProducts = localStorage.getItem(productsKey);
-            }
-          } catch (error) {}
-        }
-
-        // Navigate after all operations are complete
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
-      } catch (error) {
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
-      }
+      // Navigate after all operations are complete
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (e) {
       setTimeout(() => {
         navigate('/');
@@ -419,6 +404,66 @@ const OnboardingClient = ({onStepChange}) => {
   // Update goNext to validate before calling handleRegistry
   async function goNext() {
     if (step === 1) {
+      // Validate that a date is selected
+      if (!eventData.selectedDate) {
+        setEventDateError('Please select an event date');
+        return;
+      }
+      // Ensure event type is selected - use first available if not set
+      if (!eventData.selectedOption || !eventData.selectedOption.id) {
+        if (eventTypes.length > 0) {
+          // Auto-select first event type
+          const updatedEventData = {
+            ...eventData,
+            selectedOption: {label: eventTypes[0].label, id: eventTypes[0].id},
+          };
+          setEventData(updatedEventData);
+          // Use updated data for registry creation
+          const payload = {
+            name: updatedEventData.eventName || 'My Event',
+            ...(updatedEventData.selectedDate && {eventDate: moment(updatedEventData.selectedDate).format('YYYY-MM-DD')}),
+            eventTypeId: Number(eventTypes[0].id),
+            ...(updatedEventData.id && {id: updatedEventData.id}),
+          };
+          const token = localStorage.getItem('@Token');
+          if (!token) {
+            setEventDateError('Authentication required. Please log in again.');
+            return;
+          }
+          try {
+            const data = updatedEventData.id 
+              ? await Registry_Services.updateRegistry(payload, token)
+              : await Registry_Services.createRegistry(payload, token);
+            if (data) {
+              const registryId = data.data.registry?.id || data.data.id || updatedEventData.id;
+              const eventId = data.data.event?.id || updatedEventData.eventId;
+              const event = {
+                ...updatedEventData,
+                id: registryId,
+                eventId: eventId,
+              };
+              localStorage.setItem('@EventData', JSON.stringify(event));
+              setEventData(event);
+              setEventDateError('');
+              setStep(step + 1);
+            }
+          } catch (e) {
+            let backendMsg = e?.response?.data?.message || e?.message;
+            if (Array.isArray(backendMsg)) backendMsg = backendMsg[0];
+            if (backendMsg && backendMsg.toLowerCase().includes('event date must be a future date')) {
+              setEventDateError('Event date must be a future date');
+            } else {
+              setEventDateError(backendMsg || 'An error occurred');
+            }
+          }
+          return;
+        } else {
+          setEventDateError('Event types are loading. Please wait...');
+          return;
+        }
+      }
+      // Clear any previous errors
+      setEventDateError('');
       // Skip step 2 (event name selection) and go directly to step 3 (guest info)
       // Auto-create registry with first event type
       await handleRegistry();
@@ -482,56 +527,30 @@ const OnboardingClient = ({onStepChange}) => {
        setStep4Errors(errors);
        if (Object.keys(errors).length > 0) return;
        await handleShipping();
-    } else if (step === 4) {
-      // Validate that at least one gift preference is selected
-      if (!selectedGiftPreference) {
-        alert('Please select your gift preference to continue.');
+    } else if (step === STEPS_CONSTANTS.STYLE_INFO) {
+      // Step 4 is now STYLE_INFO (sub-collections selection)
+      // Validate that at least one sub-collection is selected
+      if (!selectedSubCollections || selectedSubCollections.length === 0) {
+        alert('Please select at least one style to continue.');
         return;
       }
-      setStep(step + 1);
-         } else if (step === 5) {
-       // Validate that at least one collection is selected
-       if (!selectedCollections || selectedCollections.length === 0) {
-         alert('Please select at least one collection to continue.');
-         return;
-       }
-       
-       // Call API to update preferred categories when finishing Step 5
-       if (user && user.user && user.user.id) {
-         const preferredCategoryTitles = selectedCollections.map((col) => col.title);
-         const token = user.accessToken;
-         Registry_Services.updatePreferredCategories(
-           user.user.id,
-           {
-             preferredCategory: preferredCategoryTitles,
-             preferredSubCategory: selectedSubCollections.map((col) => col.title),
-           },
-           token
-         );
-       }
-       setStep(step + 1);
-         } else if (step === 6) {
-       // Validate that at least one sub-collection is selected
-       if (!selectedSubCollections || selectedSubCollections.length === 0) {
-         alert('Please select at least one sub-collection to continue.');
-         return;
-       }
-       
-       // Call API to update preferred subcategories when finishing Step 6
-       if (user && user.user && user.user.id) {
-         const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
-         const token = user.accessToken;
-         Registry_Services.updatePreferredCategories(
-           user.user.id,
-           {
-             preferredCategory: selectedCollections.map((col) => col.title),
-             preferredSubCategory: preferredSubCategoryTitles,
-           },
-           token
-         );
-       }
-       setStep(step + 1);
-    } else if (step === 7) {
+      
+      // Call API to update preferred categories when finishing Step 4
+      if (user && user.user && user.user.id) {
+        const preferredCategoryTitles = selectedCollections.map((col) => col.title);
+        const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
+        const token = user.accessToken;
+        Registry_Services.updatePreferredCategories(
+          user.user.id,
+          {
+            preferredCategory: preferredCategoryTitles,
+            preferredSubCategory: preferredSubCategoryTitles,
+          },
+          token
+        );
+      }
+      setStep(5);
+    } else if (step === 5) {
       await handleOnboard();
     }
   }
@@ -551,7 +570,7 @@ const OnboardingClient = ({onStepChange}) => {
 
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
-    if (currentStep === 7) {
+    if (currentStep === 5) {
       return (
         <div className="flex flex-col items-center justify-center text-white py-6 rounded-md">
           <div className="uppercase tracking-widest font-semibold mb-4 text-center text-xl md:text-xl">
@@ -619,7 +638,7 @@ const OnboardingClient = ({onStepChange}) => {
           <Step1
             setSelectedDate={setSelectedDate}
             selectedDate={eventData.selectedDate}
-            onSkip={handleSkip}
+            eventDateError={eventDateError}
           />
         );
       case STEPS_CONSTANTS.GUEST_INFO:
@@ -638,15 +657,6 @@ const OnboardingClient = ({onStepChange}) => {
             handleInputChange={handleInputChange}
             step4Errors={step4Errors}
             onSkip={handleSkip}
-          />
-        );
-      case STEPS_CONSTANTS.PREFER_GIFT_INFO:
-        return <Step5 onGiftPreferenceSelect={setSelectedGiftPreference} selectedGiftPreference={selectedGiftPreference} />;
-      case STEPS_CONSTANTS.COLLECTION_INFO:
-        return (
-          <Step6
-            collections={collections}
-            onCollectionsSelect={setSelectedCollections}
           />
         );
       case STEPS_CONSTANTS.STYLE_INFO:
@@ -671,7 +681,7 @@ const OnboardingClient = ({onStepChange}) => {
     <div className="flex justify-center items-center">
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
-      {step !== 7 && <Stepper step={step} totalSteps={8} />}
+      {step !== 5 && <Stepper step={step} totalSteps={6} />}
       <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
         <div className="mb-6">
@@ -679,7 +689,7 @@ const OnboardingClient = ({onStepChange}) => {
           {renderStepContent(step)}
         </div>
         {/* Back and Next buttons, hidden on last step */}
-        {step !== 7 && (
+        {step !== 5 && (
           <div className="flex justify-between mt-4">
             {/* Only show back button if not on step 1 */}
             {step !== STEPS_CONSTANTS.EVENT_DATE_INFO && (
@@ -699,7 +709,7 @@ const OnboardingClient = ({onStepChange}) => {
               text="Next"
               className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
             >
-              {step === 8 ? 'Submit' : 'Next'}{' '}
+              Next{' '}
               <img src={arrow} alt="" className="max-[768px]:w-4" />
             </button>
           </div>
@@ -709,7 +719,7 @@ const OnboardingClient = ({onStepChange}) => {
   );
 };
 
-const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
+const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
   const {useState, useEffect} = React;
   // Create disabled dates array - disable all dates before today
   const today = new Date();
@@ -734,18 +744,13 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
     setSelectedDate(date);
   };
 
-  const handleSkipLater = () => {
-    setSelectedDate(null);
-    onSkip();
-  };
-
   return (
     <div className="text-center">
       <div className="p-4 w-[300px] mx-auto customdatepicker">
         <DatePicker
           selectedDate={localSelectedDate}
           onDateChange={handleDateChange}
-          placeholder="Select a date"
+          placeholder="Select a date *"
           inputProps={{
             className:
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
@@ -754,14 +759,11 @@ const Step1 = ({selectedDate, setSelectedDate, onSkip}) => {
           disabledDates={disabledDates}
         />
       </div>
-      <div className="mt-4">
-        <button
-          onClick={handleSkipLater}
-          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80 mt-3"
-        >
-          I'll Add this later
-        </button>
-      </div>
+      {eventDateError && (
+        <div className="mt-4 text-[#B00020] text-[18px]">
+          {eventDateError}
+        </div>
+      )}
     </div>
   );
 };
@@ -915,14 +917,49 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
         )}
 
         {/* Country */}
-        <Input
-          placeholder="Country *"
-          name="country"
-          value={formData.country}
-          onChange={handleInputChange}
-          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-          error={step4Errors?.country}
-        />
+        <div className="flex flex-col mb-2 relative w-full">
+          <div className="relative">
+            <select
+              name="country"
+              id="country"
+              value={formData.country}
+              onChange={handleInputChange}
+              className={`rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
+                step4Errors?.country ? 'border-[#FD446F] focus:border-[#FD446F] focus:ring-[#FD446F]' : ''
+              }`}
+              aria-invalid={!!step4Errors?.country}
+              aria-describedby={step4Errors?.country ? 'country-error' : undefined}
+            >
+              <option value="">Select Country *</option>
+              <option value="USA">USA</option>
+              <option value="Canada">Canada</option>
+            </select>
+            {/* Custom dropdown arrow */}
+            <div className="absolute right-5 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-black"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+          {step4Errors?.country && (
+            <div id="country-error" role="alert" className="mt-1 text-left">
+              <span className="text-[#FD446F] font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
+                {step4Errors.country}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
       <div className="mt-4 text-center">
         <button
@@ -957,6 +994,12 @@ const Step5 = ({onGiftPreferenceSelect, selectedGiftPreference}) => {
       id: 3,
       label: 'Gifts + Cash',
       image: Both,
+      selectedImage: selected,
+    },
+    {
+      id: 4,
+      label: 'Not Sure',
+      image: placeholder,
       selectedImage: selected,
     },
   ];

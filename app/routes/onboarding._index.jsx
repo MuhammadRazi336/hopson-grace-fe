@@ -41,7 +41,7 @@ const COLLECTIONS_QUERY = `#graphql
   }
 `;
 
-// Define step titles (1-9)
+// Define step titles (1-8)
 const STEP_TITLES = {
   1: "let's get to know each other.",
   2: "and your partner?",
@@ -49,9 +49,8 @@ const STEP_TITLES = {
   4: "the countdown is on. mark your date.",
   5: "how many guest are you inviting?",
   6: "where would you like your gifts shipped after the wedding?",
-  7: "what type of gifts would you like?",
-  8: "what kind of gifts are you looking for?",
-  9: "you're nearly there!"
+  7: "what kind of gifts are you looking for?",
+  8: "you're nearly there!"
 };
 
 export async function loader({ request, context }) {
@@ -115,8 +114,8 @@ const OnboardingIndex = () => {
   
   // Create dynamic step titles
   const getStepTitle = (step) => {
-    if (step === 9) {
-      // Dynamic title for step 9 using user names
+    // Final dashboard page (step 7) - congratulations with couple names
+    if (step === 7) {
       if (firstName && fianceFirstName) {
         const lowerFirstName = firstName.toLowerCase();
         const lowerFianceFirstName = fianceFirstName.toLowerCase();
@@ -128,6 +127,16 @@ const OnboardingIndex = () => {
         return 'congratulations!';
       }
     }
+    // Map headings: step 3 uses step 4's heading, step 4 uses step 5's heading, step 5 uses step 6's heading, step 6 uses "You're almost there"
+    if (step === 3) {
+      return STEP_TITLES[4] || ''; // "the countdown is on. mark your date."
+    } else if (step === 4) {
+      return STEP_TITLES[5] || ''; // "how many guest are you inviting?"
+    } else if (step === 5) {
+      return STEP_TITLES[6] || ''; // "where would you like your gifts shipped after the wedding?"
+    } else if (step === 6) {
+      return "you're almost there!"; // Style selection page
+    }
     return STEP_TITLES[step] || '';
   };
 
@@ -137,9 +146,10 @@ const OnboardingIndex = () => {
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
         stepNo={currentStep}
-        totalSteps={9}
+        totalSteps={6}
+        showPagination={currentStep !== 7 && currentStep <= 6}
         content={hydrated && <Onboarding onStepChange={(val) => setCurrentStep((val || 1) + 2)} />} 
-        className={currentStep === 8 || currentStep === 9 ? 'px-12' : ''}
+        className={currentStep === 7 ? 'px-12' : ''}
       />
       <Footer />
     </div>
