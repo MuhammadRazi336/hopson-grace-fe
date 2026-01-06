@@ -253,7 +253,7 @@ const TermsConditions = () => {
             QUESTIONS?
         </p>
         <p className="text-1xl lg:text-2xl font-normal pt-8 pb-[200px]">
-         We're here to help. Reach out to us at <span className='font-semibold underline'>hello@hopsongrace.com</span> for assistance or clarification.
+         We're here to help. Reach out to us at <a href='mailto:hello@hopsongrace.com' target='_blank' rel='noopener noreferrer' className='font-semibold underline hover:text-gray-600'>hello@hopsongrace.com</a> for assistance or clarification.
         </p>
         </div>
       </div>

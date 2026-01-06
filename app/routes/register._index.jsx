@@ -367,7 +367,6 @@ const RegisterIndex = () => {
             type="password"
             className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
             error={errors.password || backendPasswordErrors.password}
-            showPasswordTooltip={true}
           />
           <Input
             value={formData.confirmPassword}
@@ -380,7 +379,6 @@ const RegisterIndex = () => {
               errors.confirmPassword ||
               backendPasswordErrors.confirmPassword
             }
-            showPasswordTooltip={true}
           />
         </div>
         <div className="mt-4">
