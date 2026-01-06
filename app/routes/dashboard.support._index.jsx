@@ -45,10 +45,10 @@ const Support = () => {
               />
               <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
                 Email us anytime at{' '}
-                <span className="text-white">
+                <a href='mailto:support@theregistry.ca' target='_blank' rel='noopener noreferrer' className='font-semibold underline text-white'>
                   {' '}
                   support@theregistry.ca{' '}
-                </span>{' '}
+                </a>{' '}
                 <br /> We respond within one business day.
               </p>
 

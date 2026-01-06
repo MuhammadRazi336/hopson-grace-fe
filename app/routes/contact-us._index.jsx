@@ -93,7 +93,7 @@ const ContactUs = () => {
                   className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[100px] mx-auto"
                 />
                 <p className="text-sm underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
-                  <span className="text-white font-[500]">{user ? <span>concierge@theregistry.ca</span> : <span>hello@theregistry.ca</span>}</span>
+                  <span className="text-white font-[500]">{user ? <a href='mailto:concierge@theregistry.ca' target='_blank' rel='noopener noreferrer' className='font-semibold underline text-white'>concierge@theregistry.ca</a> : <a href='mailto:hello@theregistry.ca' target='_blank' rel='noopener noreferrer' className='font-semibold underline text-white'>hello@theregistry.ca</a>}</span>
                 </p>
               </div>
             </div>
@@ -115,43 +115,55 @@ const ContactUs = () => {
           <div className="flex flex-wrap xl:flex-nowrap justify-center">
             <div className="bg-[#446184] z-10 xl:-bottom-10 lg:left-[1.563vw] xl:left-[1.563vw] 2xl:left-[1.563vw] left-0 bottom-0 py-[4.74vw] relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10">
               <div className="flex flex-col items-center justify-center w-[35.208vw] mx-auto max-w-full max-[1024px]:w-full">
-                <h3 className="text-[20px] font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
-                  SETTING UP YOUR REGISTRY
-                </h3>
-                <img
-                  src={lineImghead}
-                  alt="lineimg"
-                  className="mb-2 mt-2 lg:w-[17.708vw] xl:w-[17.708vw] 2xl:w-[17.708vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
-                />
+              {user ? (
+                  <>
+                    <h3 className="text-[20px] font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
+                      SETTING UP YOUR REGISTRY
+                    </h3>
+
+                    <img
+                      src={lineImghead}
+                      alt="lineimg"
+                      className="mb-2 mt-2 lg:w-[17.708vw] xl:w-[17.708vw] 2xl:w-[17.708vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
+                    />
+                  </>
+                ): (
+                  <>
+                  </>
+                )}
+                
                 <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
-                  {user ? "Need a hand getting started? Book a virtual appointment with our Registry Concierge. We’ll walk you through the process, answer your questions, and help you build a registry that reflects your style, your life, and your wishlist." : "Need a hand getting started? Book a virtual appointment with a Registry Concierge. We’ll walk you through the process, answer your questions, and help you build your dream registry."}
+                  {user ? "Need a hand getting started? Book a virtual appointment with our Registry Concierge. We’ll walk you through the process, answer your questions, and help you build a registry that reflects your style, your life, and your wishlist." : "Book a virtual appointment with a Registry Concierge to learn more about The Registry before you sign up, or for support at any stage once you’re registered. Whether you’re just getting started, refining your selections, or ready to coordinate fulfillment and delivery, we’re here to guide you through the process with thoughtful, seamless support."}
                 </p>
           
                 {user ? (
-                  <Link to={"https://calendly.com/concierge-theregistry/setting-up-your-registry"} target="_blank" rel="noopener noreferrer">
-                    <button className="font-[800] px-2 mt-3 mb-4 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
-                      BOOK AN APPOINTMENT
-                    </button>
-                  </Link>
-                ): (<></>)}
+                  <>
+                    <Link to={"https://calendly.com/concierge-theregistry/setting-up-your-registry"} target="_blank" rel="noopener noreferrer">
+                      <button className="font-[800] px-2 mt-3 mb-4 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
+                        BOOK AN APPOINTMENT
+                      </button>
+                    </Link>
 
-                <h3 className="text-[20px] mt-10 font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
-                  ADVICE & REGISTRY FULFILLMENT
-                </h3>
-                <img
-                  src={lineImghead}
-                  alt="lineimg"
-                  className="mb-2 mt-2 lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
-                />
-                <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
-                  {user ? "Getting close to the big day—or already married? Book a session with our Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free." : "Getting close to the big day—or already married? Book a session with a Registry Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free."}
-                </p>
+                    <h3 className="text-[20px] mt-10 font-semibold text-white lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full  text-center">
+                      ADVICE & REGISTRY FULFILLMENT
+                    </h3>
+                    <img
+                      src={lineImghead}
+                      alt="lineimg"
+                      className="mb-2 mt-2 lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px] mx-auto"
+                    />
+                    <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
+                      Getting close to the big day—or already married? Book a session with our Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free.
+                    </p>
+
+                    <Link to="https://calendly.com/concierge-theregistry/30min" target="_blank" rel="noopener noreferrer">
+                      <button className="font-[800] px-2 mt-3 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
+                        BOOK AN APPOINTMENT
+                      </button>
+                    </Link>
+                  </>
+                ): (<></>)}
               </div>
-              <Link to={`${user ? "https://calendly.com/concierge-theregistry/30min" : "https://calendly.com/concierge-theregistry/learn-more"}`} target="_blank" rel="noopener noreferrer">
-                <button className="font-[800] px-2 mt-3 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
-                  BOOK AN APPOINTMENT
-                </button>
-              </Link>
             </div>
             <div className="lg:w-[37.552vw] xl:w-[37.552vw] 2xl:w-[37.552vw] relative lg:right-[1.563vw] xl:right-[1.563vw] 2xl:right-[1.563vw] right-0 w-full">
               <img
@@ -203,10 +215,10 @@ const ContactUs = () => {
                     <div className='mb-0'>
                       <h4 className="text-base font-semibold mb-[9px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-[1.92px]">GET IN TOUCH</h4>
                       <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">416-926-1120</p>
-                      <p className="text-base mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
-                        <span className="">
+                      <p className="text-base underline mb-1 lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
+                        <a href="mailto:info@hopsongrace.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">
                           INFO@HOPSONGRACE.COM
-                        </span>
+                        </a>
                       </p>
                       <p className="text-base underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
                         <a href="https://www.hopsongrace.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600">

@@ -25,7 +25,7 @@ const WhyTheRegistry = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px] w-[20.521vw]'}
         />
-        <p className='text-[26px] pt-[34px] max-[767px]:text-[18px] lg:pt-[1.771vw] xl:pt-[1.771vw] 2xl:pt-[1.771vw] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.979vw] xl:leading-[1.979vw] 2xl:leading-[1.979vw] font-normal text-center max-[1024px]:m-0'>Your wedding isn’t ordinary. Your registry shouldn’t be either.</p>
+        
       </div>
 
       <div className='mb-[7.917vw]'>
