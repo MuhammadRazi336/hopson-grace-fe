@@ -382,15 +382,15 @@ const RegisterIndex = () => {
           />
         </div>
         <div className="mt-4">
-          <label className="flex items-start gap-2 cursor-pointer">
+          <label className="flex items-center justify-center gap-2 lg:gap-[0.833vw] xl:gap-[0.833vw] 2xl:gap-[0.833vw] cursor-pointer">
             <input
               type="checkbox"
               name="preferTextNotifications"
               checked={formData.preferTextNotifications}
               onChange={handleInputChange}
-              className="mt-1"
+              className="custom-checkbox mt-1"
             />
-            <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white">
+            <span className="ivyora text-left lg:w-[22.396vw] xl:w-[22.396vw] 2xl:w-[22.396vw] font-normal text-[18px] lg:text-[0.781vw] xl:text-[0.781vw] 2xl:text-[0.781vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-base text-white">
               Click here if you'd prefer to receive your notifications by text. We'll still send the occasional email (but no spam, we promise).
             </span>
           </label>
@@ -420,7 +420,7 @@ const RegisterIndex = () => {
         <StepsAndImage
           title={stepTitles[currentStep]}
           stepNo={currentStep === 2 ? 1 : currentStep === 3 ? 2 : currentStep}
-          totalSteps={6}
+          totalSteps={7}
           showBackButton={currentStep > 1}
           onBackClick={goBack}
           content={
@@ -444,7 +444,7 @@ const RegisterIndex = () => {
           }
         />
         {/* Main content wrapper */}
-        <Stepper step={currentStep === 2 ? 1 : currentStep === 3 ? 2 : currentStep} totalSteps={6} />
+        <Stepper step={currentStep === 2 ? 1 : currentStep === 3 ? 2 : currentStep} totalSteps={7} />
       </div>
       <Footer />
     </>

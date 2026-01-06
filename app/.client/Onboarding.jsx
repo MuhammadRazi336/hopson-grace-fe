@@ -34,6 +34,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
 import placeholder from '/assets/Images/placeholder.jpg';
+import notsure from '/assets/Images/notsure.jpg';
 
 const OnboardingClient = ({onStepChange}) => {
   const {user, collections, context} = useLoaderData();
@@ -98,23 +99,7 @@ const OnboardingClient = ({onStepChange}) => {
     }
   }, [eventTypes]);
 
-  // Auto-select default collections when collections are loaded
-  useEffect(() => {
-    if (collections?.nodes && selectedCollections.length === 0) {
-      // Filter parent collections (excluding ready-made)
-      const parentCollections = collections.nodes.filter((collection) => {
-        const isParentCollection = collection?.metafield?.value === 'true';
-        const isReadyMade = collection?.readyMadeMetafield?.value === 'true';
-        return isParentCollection && !isReadyMade;
-      });
-      
-      // Select first 3 collections by default (or all if less than 3)
-      if (parentCollections.length > 0) {
-        const defaultSelections = parentCollections.slice(0, Math.min(3, parentCollections.length));
-        setSelectedCollections(defaultSelections);
-      }
-    }
-  }, [collections, selectedCollections.length]);
+  // Removed auto-select - users will select collections in the new step
 
   useEffect(() => {
     if (user) {
@@ -527,15 +512,22 @@ const OnboardingClient = ({onStepChange}) => {
        setStep4Errors(errors);
        if (Object.keys(errors).length > 0) return;
        await handleShipping();
+    } else if (step === STEPS_CONSTANTS.GIFT_TYPES_INFO) {
+      // Validate that at least one parent collection is selected
+      if (!selectedCollections || selectedCollections.length === 0) {
+        alert('Please select at least one gift type to continue.');
+        return;
+      }
+      setStep(step + 1);
     } else if (step === STEPS_CONSTANTS.STYLE_INFO) {
-      // Step 4 is now STYLE_INFO (sub-collections selection)
+      // Step 5 is now STYLE_INFO (sub-collections selection)
       // Validate that at least one sub-collection is selected
       if (!selectedSubCollections || selectedSubCollections.length === 0) {
         alert('Please select at least one style to continue.');
         return;
       }
       
-      // Call API to update preferred categories when finishing Step 4
+      // Call API to update preferred categories when finishing Step 5
       if (user && user.user && user.user.id) {
         const preferredCategoryTitles = selectedCollections.map((col) => col.title);
         const preferredSubCategoryTitles = selectedSubCollections.map((col) => col.title);
@@ -549,8 +541,8 @@ const OnboardingClient = ({onStepChange}) => {
           token
         );
       }
-      setStep(5);
-    } else if (step === 5) {
+      setStep(6);
+    } else if (step === 6) {
       await handleOnboard();
     }
   }
@@ -570,7 +562,7 @@ const OnboardingClient = ({onStepChange}) => {
 
   // Function to render steps dynamically
   const renderStepContent = (currentStep) => {
-    if (currentStep === 5) {
+    if (currentStep === 6) {
       return (
         <div className="flex flex-col items-center justify-center text-white py-6 rounded-md">
           <div className="uppercase tracking-widest font-semibold mb-4 text-center text-xl md:text-xl">
@@ -593,14 +585,14 @@ const OnboardingClient = ({onStepChange}) => {
           </div>
           <div className="uppercase font-semibold mb-6 text-center">READY?</div>
           <div className="mb-6">
-            <label className="flex items-start gap-2 cursor-pointer justify-center">
+            <label className="flex items-center justify-center gap-2 lg:gap-[0.833vw] xl:gap-[0.833vw] 2xl:gap-[0.833vw] cursor-pointer">
               <input
                 type="checkbox"
                 checked={agreeToTerms}
                 onChange={(e) => setAgreeToTerms(e.target.checked)}
-                className="mt-1"
+                className="custom-checkbox mt-1"
               />
-              <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white">
+              <span className="ivyora text-left lg:w-[22.396vw] xl:w-[22.396vw] 2xl:w-[22.396vw] font-normal text-[18px] lg:text-[0.781vw] xl:text-[0.781vw] 2xl:text-[0.781vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-base text-white">
                 By creating your registry, you agree to our{' '}
                 <a
                   href="/terms-conditions"
@@ -659,6 +651,13 @@ const OnboardingClient = ({onStepChange}) => {
             onSkip={handleSkip}
           />
         );
+      case STEPS_CONSTANTS.GIFT_TYPES_INFO:
+        return (
+          <Step6
+            collections={collections}
+            onCollectionsSelect={setSelectedCollections}
+          />
+        );
       case STEPS_CONSTANTS.STYLE_INFO:
         return (
           <Step7
@@ -681,7 +680,7 @@ const OnboardingClient = ({onStepChange}) => {
     <div className="flex justify-center items-center">
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
-      {step !== 5 && <Stepper step={step} totalSteps={6} />}
+      {step !== 6 && <Stepper step={step} totalSteps={7} />}
       <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
         <div className="mb-6">
@@ -689,7 +688,7 @@ const OnboardingClient = ({onStepChange}) => {
           {renderStepContent(step)}
         </div>
         {/* Back and Next buttons, hidden on last step */}
-        {step !== 5 && (
+        {step !== 6 && (
           <div className="flex justify-between mt-4">
             {/* Only show back button if not on step 1 */}
             {step !== STEPS_CONSTANTS.EVENT_DATE_INFO && (
@@ -697,7 +696,7 @@ const OnboardingClient = ({onStepChange}) => {
                 onClick={goBack}
                 type="submit"
                 text="Next"
-                className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+                className="absolute cursor-pointer left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
               >
                 <img src={arrow} alt="" className="rotate-180 max-[768px]:w-4" />{' '}
                 Back
@@ -707,7 +706,7 @@ const OnboardingClient = ({onStepChange}) => {
               onClick={goNext}
               type="submit"
               text="Next"
-              className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+              className="absolute cursor-pointer right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
             >
               Next{' '}
               <img src={arrow} alt="" className="max-[768px]:w-4" />
@@ -924,7 +923,7 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
               id="country"
               value={formData.country}
               onChange={handleInputChange}
-              className={`rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
+              className={`rounded-none mt-2 p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
                 step4Errors?.country ? 'border-[#FD446F] focus:border-[#FD446F] focus:ring-[#FD446F]' : ''
               }`}
               aria-invalid={!!step4Errors?.country}
@@ -1089,8 +1088,11 @@ const Step6 = ({collections, onCollectionsSelect}) => {
 
   return (
     <div className="flex flex-col items-center">
+      <h2 className="font-normal mb-4 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto text-center">
+        What types of gifts you're looking for?
+      </h2>
       <p className="font-normal mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
-        CHOOSE AS MANY AS YOU'D LIKE:
+        Choose as many as you like
       </p>
       {/* Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -1183,8 +1185,11 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
 
   // Update Swiper when data changes
   useEffect(() => {
-    if (swiper && subCollectionsData.length > 0) {
-      swiper.update();
+    if (swiper) {
+      const timer = setTimeout(() => {
+        swiper.update();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [subCollectionsData, swiper]);
 
@@ -1208,6 +1213,13 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
     });
   };
 
+  // Calculate total slides (subCollections + "Not Sure" slide)
+  const totalSlides = subCollectionsData.length > 0 
+    ? subCollectionsData.length + 1 
+    : 1;
+  // Loop requires at least double the max slidesPerView (4 * 2 = 8)
+  const shouldLoop = totalSlides > 8;
+
   return (
     <div className="">
       <p className="font-normal mb-10 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-[14px] mx-auto text-center">
@@ -1229,7 +1241,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
           key={subCollectionsData.length}
           spaceBetween={20}
           slidesPerView={4}
-          loop={true}
+          loop={shouldLoop}
           className="subcollection-swiper"
           modules={[Navigation]}
           navigation={{
@@ -1254,59 +1266,165 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
               slidesPerView: 4,
               spaceBetween: 20,
             },
+            1100: {
+              slidesPerView: 4,
+              spaceBetween: 20,
+            },
           }}
         >
           {subCollectionsData.length > 0 ? (
-            subCollectionsData.map((subCollection) => (
-              <SwiperSlide key={subCollection.id}>
+            <>
+              {subCollectionsData.map((subCollection) => (
+                <SwiperSlide key={subCollection.id}>
+                  <button
+                    key={subCollection.id}
+                    onClick={() => handleOptionClick(subCollection)}
+                    className={`$${
+                      selectedOptions.some((item) => item.id === subCollection.id)
+                        ? ''
+                        : ''
+                    }`}
+                  >
+                    {subCollection.image ? (
+                      <div
+                        className={
+                          selectedOptions.some(
+                            (item) => item.id === subCollection.id,
+                          )
+                            ? 'tickafter'
+                            : ''
+                        }
+                      >
+                        <Image
+                          alt={subCollection.image.altText || subCollection.title}
+                          aspectRatio="1/1"
+                          data={{
+                            url: subCollection.image.url,
+                            altText: subCollection.image.altText,
+                            width: 200,
+                            height: 220,
+                          }}
+                          loading="lazy"
+                          sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className={
+                          selectedOptions.some(
+                            (item) => item.id === subCollection.id,
+                          )
+                            ? 'tickafter'
+                            : ''
+                        }
+                      >
+                        <Image
+                          alt={subCollection.title}
+                          aspectRatio="1/1"
+                          data={{
+                            url: placeholder,
+                            altText: subCollection.title,
+                            width: 400,
+                            height: 400,
+                          }}
+                          loading="lazy"
+                          sizes="(min-width: 45em) 400px, 100vw"
+                        />
+                      </div>
+                    )}
+                    <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
+                      {subCollection.title}
+                    </span>
+                  </button>
+                </SwiperSlide>
+              ))}
+              {/* Static "Not Sure" option */}
+              <SwiperSlide key="not-sure-static">
                 <button
-                  key={subCollection.id}
-                  onClick={() => handleOptionClick(subCollection)}
+                  onClick={() => {
+                    const notSureOption = {
+                      id: 'not-sure-static',
+                      title: 'Not Sure',
+                      image: { url: notsure },
+                      handle: 'not-sure',
+                      description: 'Not Sure'
+                    };
+                    handleOptionClick(notSureOption);
+                  }}
                   className={`$${
-                    selectedOptions.some((item) => item.id === subCollection.id)
+                    selectedOptions.some((item) => item.id === 'not-sure-static')
                       ? ''
                       : ''
                   }`}
                 >
-                  {subCollection.image ? (
+                  <div
+                    className={
+                      selectedOptions.some(
+                        (item) => item.id === 'not-sure-static',
+                      )
+                        ? 'tickafter'
+                        : ''
+                    }
+                  >
+                    <Image
+                      alt="Not Sure"
+                      aspectRatio="1/1"
+                      data={{
+                        url: placeholder,
+                        altText: 'Not Sure',
+                        width: 400,
+                        height: 400,
+                      }}
+                      loading="lazy"
+                      sizes="(min-width: 45em) 400px, 100vw"
+                    />
+                  </div>
+                  <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
+                    Not Sure
+                  </span>
+                </button>
+              </SwiperSlide>
+            </>
+          ) : (
+            <>
+              {error ? (
+                <p className="col-span-2 text-center text-gray-500">
+                  Error loading sub-categories
+                </p>
+              ) : (
+                <SwiperSlide key="not-sure-static">
+                  <button
+                    onClick={() => {
+                      const notSureOption = {
+                        id: 'not-sure-static',
+                        title: 'Not Sure',
+                        image: { url: placeholder },
+                        handle: 'not-sure',
+                        description: 'Not Sure'
+                      };
+                      handleOptionClick(notSureOption);
+                    }}
+                    className={`$${
+                      selectedOptions.some((item) => item.id === 'not-sure-static')
+                        ? ''
+                        : ''
+                    }`}
+                  >
                     <div
                       className={
                         selectedOptions.some(
-                          (item) => item.id === subCollection.id,
+                          (item) => item.id === 'not-sure-static',
                         )
                           ? 'tickafter'
                           : ''
                       }
                     >
                       <Image
-                        alt={subCollection.image.altText || subCollection.title}
-                        aspectRatio="1/1"
-                        data={{
-                          url: subCollection.image.url,
-                          altText: subCollection.image.altText,
-                          width: 200,
-                          height: 220,
-                        }}
-                        loading="lazy"
-                        sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      className={
-                        selectedOptions.some(
-                          (item) => item.id === subCollection.id,
-                        )
-                          ? 'tickafter'
-                          : ''
-                      }
-                    >
-                      <Image
-                        alt={subCollection.title}
+                        alt="Not Sure"
                         aspectRatio="1/1"
                         data={{
                           url: placeholder,
-                          altText: subCollection.title,
+                          altText: 'Not Sure',
                           width: 400,
                           height: 400,
                         }}
@@ -1314,19 +1432,13 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                         sizes="(min-width: 45em) 400px, 100vw"
                       />
                     </div>
-                  )}
-                  <span className="mt-4 block tracking-wider text-[15px] font-medium">
-                    {subCollection.title}
-                  </span>
-                </button>
-              </SwiperSlide>
-            ))
-          ) : (
-            <p className="col-span-2 text-center text-gray-500">
-              {error
-                ? 'Error loading sub-categories'
-                : 'No sub-categories available. Please select parent categories in the previous step.'}
-            </p>
+                    <span className="mt-4 block tracking-wider text-[15px] font-medium">
+                      Not Sure
+                    </span>
+                  </button>
+                </SwiperSlide>
+              )}
+            </>
           )}
         </Swiper>
         <div className="swiper-button-next-subcollection absolute top-[60px] -right-16 cursor-pointer text-white uppercase flex">
