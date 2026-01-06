@@ -585,14 +585,14 @@ const OnboardingClient = ({onStepChange}) => {
           </div>
           <div className="uppercase font-semibold mb-6 text-center">READY?</div>
           <div className="mb-6">
-            <label className="flex items-start gap-2 cursor-pointer justify-center">
+            <label className="flex items-center justify-center gap-2 lg:gap-[0.833vw] xl:gap-[0.833vw] 2xl:gap-[0.833vw] cursor-pointer">
               <input
                 type="checkbox"
                 checked={agreeToTerms}
                 onChange={(e) => setAgreeToTerms(e.target.checked)}
-                className="mt-1"
+                className="custom-checkbox mt-1"
               />
-              <span className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white">
+              <span className="ivyora text-left lg:w-[22.396vw] xl:w-[22.396vw] 2xl:w-[22.396vw] font-normal text-[18px] lg:text-[0.781vw] xl:text-[0.781vw] 2xl:text-[0.781vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-base text-white">
                 By creating your registry, you agree to our{' '}
                 <a
                   href="/terms-conditions"
@@ -696,7 +696,7 @@ const OnboardingClient = ({onStepChange}) => {
                 onClick={goBack}
                 type="submit"
                 text="Next"
-                className="absolute left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+                className="absolute cursor-pointer left-10 bottom-10 max-[768px]:bottom-5 max-[768px]:left-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
               >
                 <img src={arrow} alt="" className="rotate-180 max-[768px]:w-4" />{' '}
                 Back
@@ -706,7 +706,7 @@ const OnboardingClient = ({onStepChange}) => {
               onClick={goNext}
               type="submit"
               text="Next"
-              className="absolute right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
+              className="absolute cursor-pointer right-10 bottom-10 max-[768px]:bottom-5 max-[768px]:right-5 flex items-center uppercase font-bold gap-2 z-10 max-[768px]:text-[14px]"
             >
               Next{' '}
               <img src={arrow} alt="" className="max-[768px]:w-4" />
@@ -923,7 +923,7 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
               id="country"
               value={formData.country}
               onChange={handleInputChange}
-              className={`rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
+              className={`rounded-none mt-2 p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
                 step4Errors?.country ? 'border-[#FD446F] focus:border-[#FD446F] focus:ring-[#FD446F]' : ''
               }`}
               aria-invalid={!!step4Errors?.country}
@@ -1185,8 +1185,11 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
 
   // Update Swiper when data changes
   useEffect(() => {
-    if (swiper && subCollectionsData.length > 0) {
-      swiper.update();
+    if (swiper) {
+      const timer = setTimeout(() => {
+        swiper.update();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [subCollectionsData, swiper]);
 
@@ -1210,6 +1213,13 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
     });
   };
 
+  // Calculate total slides (subCollections + "Not Sure" slide)
+  const totalSlides = subCollectionsData.length > 0 
+    ? subCollectionsData.length + 1 
+    : 1;
+  // Loop requires at least double the max slidesPerView (4 * 2 = 8)
+  const shouldLoop = totalSlides > 8;
+
   return (
     <div className="">
       <p className="font-normal mb-10 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-[14px] mx-auto text-center">
@@ -1231,7 +1241,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
           key={subCollectionsData.length}
           spaceBetween={20}
           slidesPerView={4}
-          loop={true}
+          loop={shouldLoop}
           className="subcollection-swiper"
           modules={[Navigation]}
           navigation={{
@@ -1253,6 +1263,10 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
               spaceBetween: 20,
             },
             1024: {
+              slidesPerView: 4,
+              spaceBetween: 20,
+            },
+            1100: {
               slidesPerView: 4,
               spaceBetween: 20,
             },
@@ -1318,7 +1332,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                         />
                       </div>
                     )}
-                    <span className="mt-4 block tracking-wider text-[15px] font-medium">
+                    <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
                       {subCollection.title}
                     </span>
                   </button>
@@ -1365,7 +1379,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                       sizes="(min-width: 45em) 400px, 100vw"
                     />
                   </div>
-                  <span className="mt-4 block tracking-wider text-[15px] font-medium">
+                  <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
                     Not Sure
                   </span>
                 </button>
