@@ -127,7 +127,7 @@ const OnboardingIndex = () => {
         return 'congratulations!';
       }
     }
-    // Map headings: step 3 uses step 4's heading, step 4 uses step 5's heading, step 5 uses step 6's heading, step 6 uses "You're almost there"
+    // Map headings: step 3 uses step 4's heading, step 4 uses step 5's heading, step 5 uses step 6's heading, step 6 uses step 7's heading
     if (step === 3) {
       return STEP_TITLES[4] || ''; // "the countdown is on. mark your date."
     } else if (step === 4) {
@@ -135,7 +135,7 @@ const OnboardingIndex = () => {
     } else if (step === 5) {
       return STEP_TITLES[6] || ''; // "where would you like your gifts shipped after the wedding?"
     } else if (step === 6) {
-      return "you're almost there!"; // Style selection page
+      return STEP_TITLES[7] || ''; // "what kind of gifts are you looking for?" (parent collections)
     }
     return STEP_TITLES[step] || '';
   };
@@ -146,9 +146,16 @@ const OnboardingIndex = () => {
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
         stepNo={currentStep}
-        totalSteps={6}
-        showPagination={currentStep !== 7 && currentStep <= 6}
-        content={hydrated && <Onboarding onStepChange={(val) => setCurrentStep((val || 1) + 2)} />} 
+        totalSteps={7}
+        showPagination={currentStep !== 7}
+        content={hydrated && <Onboarding onStepChange={(val) => {
+          // Map internal steps to display steps: 1→3, 2→4, 3→5, 4→6, 5→7, 6→7 (final dashboard)
+          if (val === 6) {
+            setCurrentStep(7); // Final dashboard is step 7
+          } else {
+            setCurrentStep((val || 1) + 2);
+          }
+        }} />} 
         className={currentStep === 7 ? 'px-12' : ''}
       />
       <Footer />
