@@ -26,12 +26,15 @@ import Homedecor from '/assets/Images/HOMEDECOR.png';
 import BedBath from '/assets/Images/BEDBATH.png';
 import TravelOutdoors from '/assets/Images/BESPOKETRAVEL.png';
 import Music from '/assets/Images/MUSIC.png';
+import CashFundsIcon from '/assets/Images/cashFundCategory.png';
+import TravelFundsIcon from '/assets/Images/travelFundCategory.png';
 
 import React from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation, Pagination} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import ModalPortal from '~/components/ModalPortal';
 import nextitem from '/assets/Images/next.png';
 import placeholder from '/assets/Images/placeholder.jpg';
 import notsure from '/assets/Images/notsure.jpg';
@@ -65,6 +68,7 @@ const OnboardingClient = ({onStepChange}) => {
   const [step3Error, setStep3Error] = useState('');
   const [step4Errors, setStep4Errors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [showProvincePopup, setShowProvincePopup] = useState(false);
   const handleGuestNoChange = (e) => {
     setEventData((prev) => ({
       ...prev,
@@ -84,6 +88,16 @@ const OnboardingClient = ({onStepChange}) => {
       ...addressData,
       [name]: value,
     });
+    // Clear province error when user manually changes the province field
+    if (name === 'province' && step4Errors?.province) {
+      setStep4Errors((prev) => {
+        const newErrors = {...prev};
+        delete newErrors.province;
+        delete newErrors.suggestions;
+        return newErrors;
+      });
+      setShowProvincePopup(false);
+    }
   };
   useEffect(() => {
     getEvents();
@@ -302,6 +316,10 @@ const OnboardingClient = ({onStepChange}) => {
             province: shopifyError,
             suggestions: suggestions
           });
+          // Show popup when province error occurs
+          if (suggestions && suggestions.length > 0) {
+            setShowProvincePopup(true);
+          }
         } else {
           // For other Shopify errors, show a general message with suggestions
           setStep4Errors({
@@ -681,7 +699,7 @@ const OnboardingClient = ({onStepChange}) => {
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
       {step !== 6 && <Stepper step={step} totalSteps={7} />}
-      <div className="container p-6  max-[768px]:p-2 bg-rounded-md w-full">
+      <div className="container p-2  max-[768px]:p-2 bg-rounded-md w-full">
         {/* Stepper for progress */}
         <div className="mb-6">
           {/* Render the step content dynamically */}
@@ -714,6 +732,75 @@ const OnboardingClient = ({onStepChange}) => {
           </div>
         )}
       </div>
+      
+      {/* Province Suggestions Popup */}
+      {showProvincePopup && step4Errors?.suggestions && step4Errors.suggestions.length > 0 && (
+        <ModalPortal>
+          <div
+            className="fixed inset-0 bg-[#00000073] flex items-center justify-center z-50 p-4"
+            onClick={() => setShowProvincePopup(false)}
+          >
+            <div
+              className="relative bg-white rounded-lg shadow-lg max-w-md w-full mx-auto p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowProvincePopup(false)}
+                className="absolute top-4 right-4 z-10 text-gray-600 hover:text-gray-800 text-2xl font-bold"
+                aria-label="Close"
+              >
+                ×
+              </button>
+
+              {/* Popup Content */}
+              <div className="mt-2">
+                <h3 className="text-xl font-semibold mb-4 text-gray-800">
+                  Province/State Suggestions
+                </h3>
+                <p className="text-sm text-red-600 mb-4">
+                  {step4Errors?.province}
+                </p>
+                <div className="mb-4">
+                  <p className="font-semibold mb-3 text-gray-700">Please select a valid province/state:</p>
+                  <ul className="space-y-2 max-h-60 overflow-y-auto">
+                    {step4Errors.suggestions.map((suggestion, index) => (
+                      <li
+                        key={index}
+                        className="p-3 bg-gray-50 hover:bg-gray-100 rounded cursor-pointer border border-gray-200 transition-colors"
+                        onClick={() => {
+                          handleInputChange({
+                            target: {
+                              name: 'province',
+                              value: suggestion
+                            }
+                          });
+                          setShowProvincePopup(false);
+                          // Clear the error after selection
+                          setStep4Errors((prev) => {
+                            const newErrors = {...prev};
+                            delete newErrors.province;
+                            delete newErrors.suggestions;
+                            return newErrors;
+                          });
+                        }}
+                      >
+                        <span className="text-gray-800">{suggestion}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <button
+                  onClick={() => setShowProvincePopup(false)}
+                  className="w-full mt-4 px-4 py-2 bg-[#446184] text-white rounded hover:bg-[#36506d] transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
     </div>
   );
 };
@@ -763,6 +850,9 @@ const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
           {eventDateError}
         </div>
       )}
+      <div className="mt-4 text-center text-sm p-8 ">
+        <p>Note: If date is not Decided Yet, Please Select any Random Date then you may update this date Later</p>
+      </div>
     </div>
   );
 };
@@ -784,7 +874,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
     <div>
       <div className="text-center">
         {/* <Heading text={'How many guests are you inviting?'} /> */}
-        <h2 className="font-normal mb-4 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
+        <h2 className="font-normal  w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
           This will help us calculate the magic number to ensure all guests have
           a good amount of gifts to choose from.
         </h2>
@@ -809,9 +899,9 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
       <div className="mt-4 text-center">
         <button
           onClick={handleSkipLater}
-          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
+          className="font-normal text-[22px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
         >
-          I'll add this later
+          I'LL  ADD  THIS  LATER
         </button>
       </div>
     </div>
@@ -903,17 +993,6 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
           error={step4Errors?.province}
         />
-        {/* Display suggestions for province errors */}
-        {step4Errors?.province && step4Errors?.suggestions && step4Errors.suggestions.length > 0 && (
-          <div className="col-span-2 mt-2 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded">
-            <p className="font-semibold mb-2">Suggestions:</p>
-            <ul className="list-disc list-inside space-y-1">
-              {step4Errors.suggestions.map((suggestion, index) => (
-                <li key={index} className="text-sm">{suggestion}</li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         {/* Country */}
         <div className="flex flex-col mb-2 relative w-full">
@@ -963,9 +1042,9 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
       <div className="mt-4 text-center">
         <button
           onClick={handleSkipLater}
-          className="font-normal text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
+          className="font-normal text-[22px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
         >
-          I'll add this later
+          I'LL  ADD  THIS  LATER
         </button>
       </div>
 
@@ -1053,11 +1132,37 @@ const Step6 = ({collections, onCollectionsSelect}) => {
   // Filter collections to only show parent collections (excluding ready-made collections)
   const parentCollections =
     collections?.nodes?.filter((collection) => {
-      // The metafield is directly accessible as metafield.value from the GraphQL query
-      const isParentCollection = collection?.metafield?.value === 'true';
-      const isReadyMade = collection?.readyMadeMetafield?.value === 'true';
+      // Check both metafield access patterns (with and without alias)
+      const metafieldValue = collection?.parentMetafield?.value || collection?.metafield?.value;
+      const isParentCollection = metafieldValue === 'true' || metafieldValue === true;
+      const readyMadeValue = collection?.readyMadeMetafield?.value;
+      const isReadyMade = readyMadeValue === 'true' || readyMadeValue === true;
+      
+      // Debug logging to help identify issues
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Collection:', collection.title, {
+          parentMetafield: collection?.parentMetafield,
+          metafield: collection?.metafield,
+          metafieldValue,
+          isParentCollection,
+          readyMadeMetafield: collection?.readyMadeMetafield,
+          readyMadeValue,
+          isReadyMade,
+          willShow: isParentCollection && !isReadyMade
+        });
+      }
+      
       return isParentCollection && !isReadyMade;
     }) || [];
+
+  // Debug: Log filtered results
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Total collections received:', collections?.nodes?.length || 0);
+      console.log('Parent collections filtered:', parentCollections.length);
+      console.log('Parent collection titles:', parentCollections.map(c => c.title));
+    }
+  }, [collections, parentCollections]);
 
   // Mapping function to assign icons to collections based on title
   const getCollectionIcon = (collectionTitle) => {
@@ -1070,7 +1175,9 @@ const Step6 = ({collections, onCollectionsSelect}) => {
     if (title.includes('bed') || title.includes('bath') || title.includes('bedroom') || title.includes('bathroom') || title.includes('linen')) return BedBath;
     if (title.includes('travel') || title.includes('outdoor') || title.includes('adventure') || title.includes('luggage')) return TravelOutdoors;
     if (title.includes('music') || title.includes('audio') || title.includes('sound') || title.includes('instrument')) return Music;
-    if (title.includes('gift') || title.includes('present'));
+    if (title.includes('gift') || title.includes('present')) return Gift;
+    if (title.includes('cash') || title.includes('present')) return CashFundsIcon;
+    if (title.includes('travel') || title.includes('present')) return TravelFundsIcon;
     
     // Default fallback icon
   };
@@ -1086,52 +1193,61 @@ const Step6 = ({collections, onCollectionsSelect}) => {
     });
   };
 
+  const handleFundClick = (fund) => {
+    setSelectedOptions((prev) => {
+      const isSelected = prev.some((item) => item.id === fund.id);
+      const newSelection = isSelected
+        ? prev.filter((item) => item.id !== fund.id)
+        : [...prev, fund];
+      onCollectionsSelect(newSelection);
+      return newSelection;
+    });
+  };
+
   return (
     <div className="flex flex-col items-center">
-      <h2 className="font-normal mb-4 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto text-center">
-        What types of gifts you're looking for?
-      </h2>
       <p className="font-normal mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
         Choose as many as you like
       </p>
       {/* Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {parentCollections.length > 0 ? (
-          parentCollections.map((collection) => (
-            <button
-              key={collection.id}
-              onClick={() => handleOptionClick(collection)}
-              className={`p-6 flex items-center justify-center flex-col max-[768px]:p-2 rounded-full text-center text-white font-normal text-[20px] ${
-                selectedOptions.some((item) => item.id === collection.id) ? '' : ''
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+        {/* Render Shopify parent collections */}
+        {parentCollections.length > 0 && parentCollections.map((collection) => (
+          <button
+            key={collection.id}
+            onClick={() => handleOptionClick(collection)}
+            className={`p-3 flex items-center justify-center flex-col max-[768px]:p-2 rounded-full text-center text-white font-normal ${
+              selectedOptions.some((item) => item.id === collection.id) ? '' : ''
+            }`}
+          >
+            <div
+              className={`p-3 max-[768px]:p-2 max-[768px]:w-20 rounded-full w-[5.5vw] h-[5.5vw] max-w-[100px] max-h-[100px] aspect-[1/1] flex items-center justify-center relative ${
+                selectedOptions.some((item) => item.id === collection.id) 
+                  ? 'bg-[#223247]' 
+                  : 'bg-[#F5F2ED]'
               }`}
             >
-              <div
-                className={`p-4 max-[768px]:p-2 max-[768px]:w-28 rounded-full w-[8.021vw] h-[8.021vw] aspect-[1/1] flex items-center justify-center relative ${
-                  selectedOptions.some((item) => item.id === collection.id) 
-                    ? 'bg-[#223247]' 
-                    : 'bg-[#F5F2ED]'
-                }`}
-              >
-                {selectedOptions.some((item) => item.id === collection.id) ? (
-                  <img
-                    src={selected}
-                    className="max-[768px]:w-16"
-                    alt="Selected"
-                  />
-                ) : (
-                  <img
-                    src={getCollectionIcon(collection.title)}
-                    className="max-[768px]:w-16 w-20 h-20 object-contain"
-                    alt={collection.title}
-                  />
-                )}
-              </div>
-              <span className="text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-[14px] font-bold text-center mt-4 uppercase flex justify-center">
-                {collection.title}
-              </span>
-            </button>
-          ))
-        ) : (
+              {selectedOptions.some((item) => item.id === collection.id) ? (
+                <img
+                  src={selected}
+                  className="max-[768px]:w-12 w-12 h-12 object-contain"
+                  alt="Selected"
+                />
+              ) : (
+                <img
+                  src={getCollectionIcon(collection.title)}
+                  className="max-[768px]:w-12 w-18 h-18 object-contain"
+                  alt={collection.title}
+                />
+              )}
+            </div>
+            <span className="text-[16px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[1vw] xl:leading-[1vw] 2xl:leading-[1vw] max-[768px]:text-[12px] font-bold text-center mt-3 uppercase flex justify-center">
+              {collection.title}
+            </span>
+          </button>
+        ))}
+        
+        {parentCollections.length === 0 && (
           <p className="col-span-3 text-center text-gray-500">No collections available.</p>
         )}
       </div>
@@ -1370,7 +1486,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                       alt="Not Sure"
                       aspectRatio="1/1"
                       data={{
-                        url: placeholder,
+                        url: notsure,
                         altText: 'Not Sure',
                         width: 400,
                         height: 400,
@@ -1398,7 +1514,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                       const notSureOption = {
                         id: 'not-sure-static',
                         title: 'Not Sure',
-                        image: { url: placeholder },
+                        image: { url: notsure },
                         handle: 'not-sure',
                         description: 'Not Sure'
                       };
@@ -1423,7 +1539,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                         alt="Not Sure"
                         aspectRatio="1/1"
                         data={{
-                          url: placeholder,
+                          url: notsure,
                           altText: 'Not Sure',
                           width: 400,
                           height: 400,

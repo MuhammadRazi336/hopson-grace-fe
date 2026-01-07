@@ -10,12 +10,13 @@ import step1Image from "/assets/Images/onboardingstep1.jpg"
 import step2Image from "/assets/Images/ceremony-step.jpg"
 import step3Image from "/assets/Images/laurenstep.jpg"
 import step4Image from "/assets/Images/no-of-guests.jpg"
-import step5Image from "/assets/Images/no-of-guests.jpg"
-import step6Image from "/assets/Images/amanyarastep.jpg"
-import step7Image from "/assets/Images/seaandstairs.jpg"
+import step5Image from "/assets/Images/amanyarastep.jpg"
+import step6Image from "/assets/Images/giftkindstep.jpg"
+import step7Image from "/assets/Images/dreamFunds.png"
 import step8Image from "/assets/Images/giftkindstep.jpg"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
+import congratulationsPage from "/assets/Images/scootycouple.jpg"
 
 const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true, onBackClick, showBackButton = false, customImageFooter }) => {
     // Function to get the appropriate image based on step number
@@ -29,7 +30,7 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
             case 5: return step5Image;
             case 6: return step6Image;
             case 7: return step7Image;
-            case 8: return step8Image;
+            case 8: return congratulationsPage;
             case 9: return step9Image;
             case 10: return step10Image;
             default: return step1Image; // fallback

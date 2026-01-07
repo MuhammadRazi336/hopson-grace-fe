@@ -11,7 +11,7 @@ import { Footer } from '~/components/Footer';
 // GraphQL query for collections
 const COLLECTIONS_QUERY = `#graphql
   query Collections {
-    collections(first: 20) {
+    collections(first: 50) {
       nodes {
         id
         title
@@ -23,7 +23,7 @@ const COLLECTIONS_QUERY = `#graphql
           width
           height
         }
-        metafield(namespace: "parent", key: "collection") {
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
           key
           value
           namespace
@@ -95,6 +95,7 @@ const OnboardingIndex = () => {
   const hydrated = useHydrated();
   const { user, stepFromQuery } = useLoaderData();
   const [currentStep, setCurrentStep] = useState(stepFromQuery ? stepFromQuery : 3); // Start at 3 by default
+  const [isSubcollectionPage, setIsSubcollectionPage] = useState(false);
 
   // // Refresh the page once whenever user goes to onboarding page
   // if (typeof window !== 'undefined') {
@@ -114,8 +115,12 @@ const OnboardingIndex = () => {
   
   // Create dynamic step titles
   const getStepTitle = (step) => {
-    // Final dashboard page (step 7) - congratulations with couple names
-    if (step === 7) {
+    // Subcollection page (step 7 when isSubcollectionPage is true) - "you're nearly there!"
+    if (step === 7 && isSubcollectionPage) {
+      return STEP_TITLES[8] || "you're nearly there!";
+    }
+    // Final dashboard page (step 8) - congratulations with couple names
+    if (step === 8) {
       if (firstName && fianceFirstName) {
         const lowerFirstName = firstName.toLowerCase();
         const lowerFianceFirstName = fianceFirstName.toLowerCase();
@@ -147,16 +152,21 @@ const OnboardingIndex = () => {
         title={getStepTitle(currentStep)} 
         stepNo={currentStep}
         totalSteps={7}
-        showPagination={currentStep !== 7}
+        showPagination={currentStep !== 8}
         content={hydrated && <Onboarding onStepChange={(val) => {
-          // Map internal steps to display steps: 1→3, 2→4, 3→5, 4→6, 5→7, 6→7 (final dashboard)
+          // Map internal steps to display steps: 1→3, 2→4, 3→5, 4→6, 5→7 (subcollection), 6→8 (final dashboard)
           if (val === 6) {
-            setCurrentStep(7); // Final dashboard is step 7
+            setCurrentStep(8); // Final dashboard is step 8
+            setIsSubcollectionPage(false);
+          } else if (val === 5) {
+            setCurrentStep(7); // Subcollection page is step 7
+            setIsSubcollectionPage(true);
           } else {
             setCurrentStep((val || 1) + 2);
+            setIsSubcollectionPage(false);
           }
-        }} />} 
-        className={currentStep === 7 ? 'px-12' : ''}
+        }} />}
+        className={currentStep === 8 ? 'px-12' : ''}
       />
       <Footer />
     </div>
