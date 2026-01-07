@@ -406,7 +406,7 @@ export default function App() {
     <div id="sticky-bar-root"></div>
 
     {/* Guided Video Component */}
-    <GuidedVideo />
+    {/* <GuidedVideo /> */}
     </>
     
   );

@@ -59,8 +59,8 @@ const RegisterIndex = () => {
   // Step titles - matching onboarding structure
   const stepTitles = {
     1: "let's get to know each other.",
-    2: "and your partner?",
-    3: "let's secure your account."
+    2: "let's get to know each other.",
+    3: "who should we keep in the loop?"
   };
 
   // Navigation functions
@@ -268,7 +268,7 @@ const RegisterIndex = () => {
         <div className="mb-6">
           <Heading
             text="YOUR NAME?"
-            classes="font-normal text-[22px] m-0"
+            classes="font-normal text-[12px] leading-[18px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0"
           />
           <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1 mt-4">
             <Input
@@ -294,7 +294,7 @@ const RegisterIndex = () => {
         <div className="text-center">
           <Heading
             text="AND YOUR FIANCÉ?"
-            classes="font-normal text-[22px] m-0"
+            classes="font-normal text-[12px] leading-[18px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] m-0"
           />
         </div>
         <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">
