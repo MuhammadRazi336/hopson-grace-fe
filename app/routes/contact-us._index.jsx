@@ -155,14 +155,13 @@ const ContactUs = () => {
                     <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
                       Getting close to the big day—or already married? Book a session with our Concierge for help wrapping things up. From choosing your final gifts to coordinating delivery and fulfillment, we’re here to make the process seamless and stress-free.
                     </p>
-
-                    <Link to="https://calendly.com/concierge-theregistry/30min" target="_blank" rel="noopener noreferrer">
-                      <button className="font-[800] px-2 mt-3 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
-                        BOOK AN APPOINTMENT
-                      </button>
-                    </Link>
                   </>
                 ): (<></>)}
+                  <Link to={`${user ? "https://calendly.com/concierge-theregistry/30min" : "https://calendly.com/concierge-theregistry/learn-more"}`} target="_blank" rel="noopener noreferrer">
+                    <button className="font-[800] px-2 mt-3 py-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[1.44px] cursor-pointer transition-colors duration-200 bg-white text-black w-[361px] lg:w-[18.802vw] xl:w-[18.802vw] 2xl:w-[18.802vw] h-[78px] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] hover:bg-gray-100 max-[1024px]:w-full max-[1024px]:h-[45px] max-[1024px]:max-w-full max-[1024px]:text-[14px] max-[1024px]:leading-[14px] max-[1024px]:px-[20px]">
+                      BOOK AN APPOINTMENT
+                    </button>
+                  </Link>
               </div>
             </div>
             <div className="lg:w-[37.552vw] xl:w-[37.552vw] 2xl:w-[37.552vw] relative lg:right-[1.563vw] xl:right-[1.563vw] 2xl:right-[1.563vw] right-0 w-full">

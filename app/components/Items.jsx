@@ -40,7 +40,7 @@ const Items = ({ featuredRegistryData = null }) => {
       <div className="flex relative items-center grid-cols-2 lg:grid-cols-[77.73vw_52.08vw] lg:grid-rows-2 max-[1024px]:gap-y-[20px] max-[767px]:flex-col max-[767px]:px-[23px]">
         {/* First item spans full width */}
         <div className="lg:row-span-2 max-[1025px]:col-span-2 w-[77.73vw] h-[40.36vw] max-[1024px]:h-[51vw] max-[767px]:w-full">
-          <div className="featureImage relative insetshadow registrytag h-full max-[1024px]:h-[51vw]">
+          <div className="featureImage relative registrytag h-full max-[1024px]:h-[51vw]">
             <img 
               src={subCollection?.image?.url || parentCollection?.image?.url || img1} 
               alt={subCollection?.title || parentCollection?.title || "Registry Collection"} 
@@ -60,7 +60,7 @@ const Items = ({ featuredRegistryData = null }) => {
         </div>
 
         {/* Dynamic products from the first 6 products */}
-        <div className="flex flex-wrap gap-[1.146vw] absolute max-[767px]:relative top-[50%] max-[767px]:top-0 max-[767px]:translate-y-0 translate-y-[-50%] right-0 w-[52.08vw] bg-[#F5F2ED] max-[767px]:bg-[#ffffff] max-[767px]:p-0 max-[767px]:gap-x-[7px] p-[3.12vw] max-[767px]:w-full">
+        <div className="flex flex-wrap gap-[1.146vw] absolute max-[767px]:relative top-[57%] max-[767px]:top-0 max-[767px]:translate-y-0 translate-y-[-50%] right-0 w-[52.08vw] bg-[#F5F2ED] max-[767px]:bg-[#ffffff] max-[767px]:p-0 max-[767px]:gap-x-[7px] p-[3.12vw] max-[767px]:w-full">
           {products.slice(0, 6).map((product, index) => (
             <div 
               key={product.node.id || index} 
@@ -84,7 +84,7 @@ const Items = ({ featuredRegistryData = null }) => {
             </div>
           ))}
 
-          <div className='item w-full flex justify-center items-center pt-1'>
+          <div className='item w-full flex justify-center items-center pt-3'>
             <Link 
               to={`/registry/${subCollection?.handle}`} 
               className='w-full h-full flex items-center justify-center text-[0.938vw] leading-[1.042vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] gap-[10px]'

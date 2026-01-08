@@ -15,7 +15,7 @@ import regLogo from '/assets/Images/reglogo.png';
 import Heading from '~/components/Heading';
 import {extractShopifyId} from '~/utils/helpers.js';
 import heart from '/assets/Images/heart.png';
-import lineImgWhiteHead from '/assets/Images/WhiteLine.png';
+import lineImgWhiteHead from '/assets/Images/line.png';
 import readMoreIcon from '/assets/Images/readMoreIcon.png';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
@@ -388,19 +388,19 @@ const BlogDetails = () => {
     <>
       <Header />
 
-      <div className="w-full lg:h-[960px] sm:h-[600px] flex flex-row items-center justify-center">
+      <div className="w-full lg:h-[34.375vw] xl:h-[34.375vw] 2xl:h-[34.375vw] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#446184] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
-            <p className="text-white text-[20px] font-bold mb-10">WEDDING STORIES</p>
+            <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:tracking-[0.083vw] xl:tracking-[0.083vw] 2xl:tracking-[0.083vw] font-[800] mb-[1.771vw]">WEDDING STORIES</p>
             <Heading
               text={article.title}
               classes={
-                'prata text-[56px] font-normal text-center max-[1024px]:m-0 text-white'
+                'prata text-[46px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] font-normal text-center max-[1024px]:m-0 text-white'
               }
               image={lineImgWhiteHead}
-              imageClasses={'max-[1024px]:max-w-[330px]'}
+              imageClasses={'max-[1024px]:max-w-[330px] lg:w-[16.875vw] xl:w-[16.875vw] 2xl:w-[16.875vw] brightness-0 invert-100'}
             />
-            <p className="ivyora italic text-[32px] text-white leading-relaxed mx-auto mt-10">
+            <p className="ivyora font-[400] italic text-[32px] lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] text-white leading-relaxed lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] mx-auto mt-10">
               {metafields.first_para}
             </p>
           </div>
@@ -418,16 +418,16 @@ const BlogDetails = () => {
         </div>
       </div>
 
-      <div className="w-full flex flex-row">
+      <div className="w-full flex flex-row px-[9.375vw] py-[6.927vw] gap-[6.979vw]">
         {/* Full Content Display */}
-        <div className="w-[72%] px-[80px] py-16">
+        <div className="w-[72%]">
           <BlogArticle article={article} processedContent={article.contentHtml} />
         </div>
 
-        <div className="w-[28%] px-[80px] py-16">
+        <div className="w-[28%]">
           <div className="h-[550px] bg-[#FAF9F6] relative">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
-              <p className="text-[24px] bastardogrotesk font-semibold">IT'S ALL IN THE DETAILS</p>
+              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-[600]">IT'S ALL IN <br/>THE DETAILS</p>
               <img
                 src={BlackLine}
                 alt=""
