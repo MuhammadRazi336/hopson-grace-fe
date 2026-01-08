@@ -93,7 +93,7 @@ const BESTSELLER_PRODUCTS_QUERY = `#graphql
 
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         description
         title
@@ -182,7 +182,7 @@ export async function loader({request, context}) {
   // Fetch bestseller products
   let bestsellerProducts = [];
   try {
-    const {products: bestsellerData} = await context.storefront.query(BESTSELLER_PRODUCTS_QUERY, { variables: { first: 50 } });
+    const {products: bestsellerData} = await context.storefront.query(BESTSELLER_PRODUCTS_QUERY, { variables: { first: 250 } });
     bestsellerProducts = bestsellerData?.edges || [];
   } catch (error) {
     console.log('Error fetching bestseller products:', error);

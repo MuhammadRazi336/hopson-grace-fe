@@ -91,7 +91,7 @@ const NEW_ARRIVALS_PRODUCTS_QUERY = `#graphql
 
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         description
         title
@@ -180,7 +180,7 @@ export async function loader({request, context}) {
   // Fetch new arrivals products
   let newArrivalsProducts = [];
   try {
-    const {products: newArrivalsData} = await context.storefront.query(NEW_ARRIVALS_PRODUCTS_QUERY, { variables: { first: 50 } });
+    const {products: newArrivalsData} = await context.storefront.query(NEW_ARRIVALS_PRODUCTS_QUERY, { variables: { first: 250 } });
     newArrivalsProducts = newArrivalsData?.edges || [];
   } catch (error) {
     console.log('Error fetching new arrivals products:', error);

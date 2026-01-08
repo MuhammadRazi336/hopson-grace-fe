@@ -596,7 +596,7 @@ const BRAND_QUERY = `#graphql
 
 const BRANDS_FOR_MARQUEE_QUERY = `#graphql
 query getBrandsForMarquee {
-  collections(first: 50) {
+  collections(first: 250) {
     nodes {
       id
       title

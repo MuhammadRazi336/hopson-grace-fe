@@ -139,7 +139,7 @@ function loadDeferredData({context}) {
   const collections = storefront
     .query(`#graphql
       query getCollectionsForNav {
-        collections(first: 50) {
+        collections(first: 250) {
           nodes {
             id
             title

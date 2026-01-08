@@ -181,7 +181,7 @@ export default ReadyMade;
 
 const READY_MADE_REGISTRIES_QUERY = `#graphql
 query getReadyMadeRegistries {
-  collections(first: 50) {
+  collections(first: 250) {
     nodes {
       id
       title
@@ -225,7 +225,7 @@ const SUB_COLLECTION_QUERY = `#graphql
        width
        height
      }
-     products(first: 50) {
+     products(first: 250) {
         edges {
           node {
             id

@@ -533,7 +533,7 @@ const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry}) 
 
 const GIFT_CARD_QUERY = `#graphql
 query getGiftCards {
-  collections(first: 50) {
+  collections(first: 250) {
     nodes {
       id
       title
@@ -590,7 +590,7 @@ query getGiftCards {
 
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         description
         title

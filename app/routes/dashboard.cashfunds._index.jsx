@@ -653,7 +653,7 @@ const CashFunds = () => {
 
 const COLLECTION_QUERY = `#graphql
   query {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         description
         title

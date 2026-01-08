@@ -1632,7 +1632,7 @@ const PRODUCT_QUERY = `#graphql
 `;
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         description
         title
@@ -1716,7 +1716,7 @@ const COLLECTION_QUERY = `#graphql
 
 const READY_MADE_REGISTRIES_QUERY = `#graphql
   query getRealRegistries {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         id
         title

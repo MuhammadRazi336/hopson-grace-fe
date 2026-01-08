@@ -716,7 +716,7 @@ const REGISTRY_QUERY = `#graphql
        width
        height
      }
-     products(first: 50) {
+     products(first: 250) {
        edges {
          node {
            id
@@ -755,7 +755,7 @@ const REGISTRY_QUERY = `#graphql
 
 const OTHER_REGISTRIES_QUERY = `#graphql
  query getOtherRegistries {
-   collections(first: 50) {
+   collections(first: 250) {
      nodes {
        id
        title
@@ -783,7 +783,7 @@ const OTHER_REGISTRIES_QUERY = `#graphql
 
 const PRODUCT_QUERY = `#graphql
   query {
-    products(first: 50) {
+    products(first: 250) {
       edges {
         node {
           handle
@@ -819,7 +819,7 @@ const PRODUCT_QUERY = `#graphql
 
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         description
         title

@@ -166,7 +166,7 @@ const BLOGS_QUERY = `#graphql
       nodes {
     title
     handle
-        articles(first: 50) {
+        articles(first: 250) {
           nodes {
     id
     title

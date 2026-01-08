@@ -398,7 +398,7 @@ export default Home;
 
 const REAL_REGISTRIES_QUERY = `#graphql
 query getRealRegistries {
-  collections(first: 50) {
+  collections(first: 250) {
     nodes {
       id
       title
@@ -454,7 +454,7 @@ query getHomeSubCollection($id: ID!) {
       id
       value
     }
-    products(first: 50) {
+    products(first: 250) {
       edges {
         node {
           id

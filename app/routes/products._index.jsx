@@ -18,7 +18,7 @@ import BestsellersSection from '~/components/BestsellersSection';
 
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 50) {
+    collections(first: 250) {
       nodes {
         description
         title

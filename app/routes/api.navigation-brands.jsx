@@ -6,7 +6,7 @@ export async function action({ request, context }) {
     const result = await context.storefront.query(
       `#graphql
         query getNavigationBrands {
-          collections(first: 50) {
+          collections(first: 250) {
             nodes {
               id
               title
