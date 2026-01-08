@@ -11,7 +11,7 @@ import { Footer } from '~/components/Footer';
 // GraphQL query for collections
 const COLLECTIONS_QUERY = `#graphql
   query Collections {
-    collections(first: 20) {
+    collections(first: 50) {
       nodes {
         id
         title
@@ -23,7 +23,7 @@ const COLLECTIONS_QUERY = `#graphql
           width
           height
         }
-        metafield(namespace: "parent", key: "collection") {
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
           key
           value
           namespace
@@ -95,6 +95,7 @@ const OnboardingIndex = () => {
   const hydrated = useHydrated();
   const { user, stepFromQuery } = useLoaderData();
   const [currentStep, setCurrentStep] = useState(stepFromQuery ? stepFromQuery : 3); // Start at 3 by default
+  const [isSubcollectionPage, setIsSubcollectionPage] = useState(false);
 
   // // Refresh the page once whenever user goes to onboarding page
   // if (typeof window !== 'undefined') {
@@ -114,8 +115,12 @@ const OnboardingIndex = () => {
   
   // Create dynamic step titles
   const getStepTitle = (step) => {
-    // Final dashboard page (step 7) - congratulations with couple names
-    if (step === 7) {
+    // Subcollection page (step 7 when isSubcollectionPage is true) - "you're nearly there!"
+    if (step === 7 && isSubcollectionPage) {
+      return STEP_TITLES[8] || "you're nearly there!";
+    }
+    // Final dashboard page (step 8) - congratulations with couple names
+    if (step === 8) {
       if (firstName && fianceFirstName) {
         const lowerFirstName = firstName.toLowerCase();
         const lowerFianceFirstName = fianceFirstName.toLowerCase();
@@ -127,7 +132,7 @@ const OnboardingIndex = () => {
         return 'congratulations!';
       }
     }
-    // Map headings: step 3 uses step 4's heading, step 4 uses step 5's heading, step 5 uses step 6's heading, step 6 uses "You're almost there"
+    // Map headings: step 3 uses step 4's heading, step 4 uses step 5's heading, step 5 uses step 6's heading, step 6 uses step 7's heading
     if (step === 3) {
       return STEP_TITLES[4] || ''; // "the countdown is on. mark your date."
     } else if (step === 4) {
@@ -135,7 +140,7 @@ const OnboardingIndex = () => {
     } else if (step === 5) {
       return STEP_TITLES[6] || ''; // "where would you like your gifts shipped after the wedding?"
     } else if (step === 6) {
-      return "you're almost there!"; // Style selection page
+      return STEP_TITLES[7] || ''; // "what kind of gifts are you looking for?" (parent collections)
     }
     return STEP_TITLES[step] || '';
   };
@@ -146,10 +151,22 @@ const OnboardingIndex = () => {
       <StepsAndImage 
         title={getStepTitle(currentStep)} 
         stepNo={currentStep}
-        totalSteps={6}
-        showPagination={currentStep !== 7 && currentStep <= 6}
-        content={hydrated && <Onboarding onStepChange={(val) => setCurrentStep((val || 1) + 2)} />} 
-        className={currentStep === 7 ? 'px-12' : ''}
+        totalSteps={7}
+        showPagination={currentStep !== 8}
+        content={hydrated && <Onboarding onStepChange={(val) => {
+          // Map internal steps to display steps: 1→3, 2→4, 3→5, 4→6, 5→7 (subcollection), 6→8 (final dashboard)
+          if (val === 6) {
+            setCurrentStep(8); // Final dashboard is step 8
+            setIsSubcollectionPage(false);
+          } else if (val === 5) {
+            setCurrentStep(7); // Subcollection page is step 7
+            setIsSubcollectionPage(true);
+          } else {
+            setCurrentStep((val || 1) + 2);
+            setIsSubcollectionPage(false);
+          }
+        }} />}
+        className={currentStep === 8 ? 'px-12' : ''}
       />
       <Footer />
     </div>
