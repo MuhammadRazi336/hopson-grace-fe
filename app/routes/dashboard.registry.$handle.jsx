@@ -369,19 +369,19 @@ export default function Index() {
 
   return (
     <>
-      <div className="mx-auto pt-[80px]">
-        <div className="flex xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-16">
-          <div className="w-full xl:w-9/12 flex flex-col gap-y-4 items-center pb-8">
-            <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+      <div className="mx-auto pt-[50px] lg:pt-[4.792vw] xl:pt-[4.792vw] 2xl:pt-[4.792vw]">
+        <div className="flex xl:flex-nowrap flex-wrap flex-shrink-0 pb-16">
+          <div className="w-full lg:w-9/12 xl:w-9/12 2xl:w-9/12 pl-[24.93vw] max-[1024px]:px-[20px] flex flex-col items-center gap-y-[1.771vw] pb-8">
+            <h2 className="mt-0 !pl-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
               <span className="prata uppercase">My registry</span> details
             </h2>
             <img
-              src="/assets/Images/profile-view-page-bdr.png"
+              src="/assets/Images/my-details-bottom-img.png"
               alt="Couple"
-              className="max-w-[630px] h-auto mx-auto"
+              className="max-w-[630px] w-[39.219vw] h-auto mx-auto"
             />
 
-            <div className="bg-[#446184] max-w-4xl mx-12 mt-10 text-white w-full min-h-[500px]">
+            <div className="bg-[#446184] w-[60.104vw] max-w-full mt-[1.771vw] text-white min-h-[52.083vw] max-[1024px]:w-full">
               {editForm ? (
                 <EditForm
                   state={formState}
@@ -394,25 +394,25 @@ export default function Index() {
               )}
             </div>
 
-            <div className="flex max-w-4xl w-full justify-end">
+            <div className="flex w-[60.104vw] max-w-full justify-end max-[1024px]:w-full">
               {editForm ? (
                 <button
                   onClick={handleSubmit}
-                  className="uppercase text-[#223247] border border-[#223247] cursor-pointer font-bold text-lg mt-5 px-12 py-2 bg-white"
+                  className="uppercase text-[#223247] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border border-[#223247] cursor-pointer font-bold text-lg w-[11.458vw] h-[4.063vw] bg-white"
                 >
                   Save
                 </button>
               ) : (
                 <button
                   onClick={() => setEditForm(true)}
-                  className="uppercase text-[#223247] border-b border-[#223247] cursor-pointer font-bold text-lg mt-5 block"
+                  className="uppercase text-[#223247] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] w-[max-content] border-b border-[#223247] cursor-pointer font-bold text-md block"
                 >
                   Edit my info
                 </button>
               )}
             </div>
           </div>
-          <div className="w-full xl:w-3/12 flex flex-col gap-y-4">
+          <div className="w-full max-[1024px]:px-[20px] lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4">
             <div>
               <NotificationCard />
             </div>
@@ -678,29 +678,29 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
 
 function ViewForm({state}) {
   return (
-    <div className="grid grid-cols-2">
-      <div className="p-8 flex flex-col gap-6">
+    <div className="grid grid-cols-2 max-[600px]:grid-cols-1 py-[3.167vw] px-[3.948vw] gap-[4vw] max-[1024px]:p-[20px]">
+      <div className="flex flex-col gap-6">
         <div>
-          <div className="text-xs tracking-widest mb-1">YOU</div>
-          <div className="text-lg ">
+          <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">YOU</div>
+          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
             {state.yourFirstName} {state.yourLastName}
           </div>
         </div>
         <div>
-          <div className="text-xs tracking-widest mb-1">YOUR FIANCÉ</div>
-          <div className="text-lg ">
+          <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">YOUR FIANCÉ</div>
+          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
             {state.fianceFirstName} {state.fianceLastName}
           </div>
         </div>
         <div>
-          <div className="text-xs tracking-widest mb-1">YOUR EMAIL</div>
-          <div className="text-lg ">{state.email || '-'}</div>
+          <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">YOUR EMAIL</div>
+          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] break-all">{state.email || '-'}</div>
         </div>
         <div>
-          <div className="text-xs tracking-widest mb-1">
+          <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">
             YOUR SHIPPING ADDRESS
           </div>
-          <div className="text-lg whitespace-pre-line">
+          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
             {`${state.shippingAddress || '-'}\n${
               state.shippingCity || ''
             }, ${state.shippingProvince || ''}\n${
@@ -709,30 +709,30 @@ function ViewForm({state}) {
           </div>
         </div>
       </div>
-      <div className="p-8 flex flex-col gap-6">
+      <div className="flex flex-col gap-6">
         <div>
-          <div className="text-xs tracking-widest mb-1">WEDDING DATE</div>
-          <div className="text-lg ">{state.weddingDate}</div>
+          <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">WEDDING DATE</div>
+          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.weddingDate}</div>
         </div>
         <div>
-          <div className="text-xs tracking-widest mb-1">WEDDING VENUE</div>
-          <div className="text-lg ">{state.venue || '-'}</div>
+          <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">WEDDING VENUE</div>
+          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.venue || '-'}</div>
         </div>
         <div className="flex flex-row gap-x-4">
           <div>
-            <div className="text-xs tracking-widest mb-1">
+            <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">
               WEDDING LOCATION (CITY)
             </div>
-            <div className="text-lg ">{state.location || '-'}</div>
+            <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.location || '-'}</div>
           </div>
           <div>
-            <div className="text-xs tracking-widest mb-1">NO. OF GUESTS</div>
-            <div className="text-lg ">{state.noOfGuests || '0'}</div>
+            <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">NO. OF GUESTS</div>
+            <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.noOfGuests || '0'}</div>
           </div>
         </div>
         <div>
-          <div className="text-xs tracking-widest mb-1">WEDDING HASHTAG</div>
-          <div className="text-lg ">{state.hashtag || '-'}</div>
+          <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">WEDDING HASHTAG</div>
+          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.hashtag || '-'}</div>
         </div>
       </div>
     </div>

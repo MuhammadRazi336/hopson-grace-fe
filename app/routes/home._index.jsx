@@ -11,7 +11,7 @@ import areyoureadyImg from '/assets/Images/areyouready.jpg';
 import bookavirtualImg from '/assets/Images/bookavirtual.jpg';
 import virtualappointmentImg from '/assets/Images/virtual-appointment.jpg';
 import areYouReady from '/assets/Images/youready.jpg';
-import atyourserviceGif from '/assets/Images/atyourservice.gif';
+import atyourserviceGif from '/assets/Images/DINO_DESIGNS_LIFESTYLE_RED.jpg';
 import teaImg from '/assets/Images/tea.png';
 import lineImg from '/assets/Images/line.png';
 import lineImg2 from '/assets/Images/Vector 24.png';
