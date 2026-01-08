@@ -11,7 +11,7 @@ import { Footer } from '~/components/Footer';
 // GraphQL query for collections
 const COLLECTIONS_QUERY = `#graphql
   query Collections {
-    collections(first: 50) {
+    collections(first: 100) {
       nodes {
         id
         title
