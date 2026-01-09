@@ -3,18 +3,59 @@ import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context} = args;
-  const user = await context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
+  
+  try {
+    const user = await context?.session?.get('@User');
+    
+    // Check if user session exists
+    if (!user?.user?.id) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    
+    let registry;
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
 
-  const data = await context.ClientGet(
-    `transactions/${registry.data[0].id}`,
-    context,
-  );
+    if (!registry?.data?.[0]?.id) {
+      throw new Response('Registry not found', {status: 404});
+    }
 
-  return {giftTrackingData: data?.data || []};
+    let data;
+    try {
+      data = await context.ClientGet(
+        `transactions/${registry.data[0].id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
+
+    return {giftTrackingData: data?.data || []};
+  } catch (error) {
+    // If it's a session expiration error, handle it
+    if (error.isSessionExpired || error.status === 401 || error.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    throw error;
+  }
 }
 
 const GiftTracker = () => {

@@ -31,6 +31,15 @@ export function createClient() {
       const contentType = request.headers.get('content-type');
     
       if (!request.ok) {
+        // Handle session expiration (401 Unauthorized or 403 Forbidden)
+        if (request.status === 401 || request.status === 403) {
+          // Throw a specific error that can be caught by loaders
+          const error = new Error('Session expired. Please login again.');
+          error.status = request.status;
+          error.isSessionExpired = true;
+          throw error;
+        }
+        
         const errorData = contentType?.includes('application/json')
           ? await request.json()
           : await request.text();
@@ -43,6 +52,10 @@ export function createClient() {
       const response = await request.json();
       return response;
     } catch (err) {
+      // Re-throw session expiration errors
+      if (err.isSessionExpired) {
+        throw err;
+      }
       throw err;
     }
   }

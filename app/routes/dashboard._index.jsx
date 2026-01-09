@@ -17,13 +17,25 @@ export async function loader(args) {
     
     // Handle new minimal session structure
     if (!user?.user?.id) {
-      throw new Error('User ID not found in session');
+      // Session expired or invalid - redirect to login
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
     }
     
-    const registriesResponse = await context.ClientGet(
-      `registries/by-userId/${user.user.id}`,
-      context,
-    );
+    let registriesResponse;
+    try {
+      registriesResponse = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
 
     if (!registriesResponse?.data) {
       throw new Error('Invalid API response structure');
@@ -65,10 +77,20 @@ export async function loader(args) {
       throw new Error('No selected registry found');
     }
 
-    const detailResponse = await context.ClientGet(
-      `registries/detail/${registry.id}`,
-      context,
-    );
+    let detailResponse;
+    try {
+      detailResponse = await context.ClientGet(
+        `registries/detail/${registry.id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
 
     const finalRegistry = {...registry, ...detailResponse.data};
 
@@ -87,6 +109,11 @@ export async function loader(args) {
     
   } catch (e) {
     console.error('Loader error:', e);
+    // Check if it's a session expiration error
+    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
     return {
       error: true,
       message: e.message,
@@ -109,6 +136,11 @@ export async function action({request, context}) {
 
     return redirect('/dashboard');
   } catch (e) {
+    // Check if it's a session expiration error
+    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
     return {...e};
   }
 }

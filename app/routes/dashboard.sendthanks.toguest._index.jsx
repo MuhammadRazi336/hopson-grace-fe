@@ -7,18 +7,36 @@ import Input from '~/components/Input';
 import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({context, request}) {
-  const user = await context.session.get('@User');
-  console.log(user);
-  
-  // Fetch registry data to get registryId
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
+  try {
+    const user = await context.session.get('@User');
+    
+    // Check if user session exists
+    if (!user?.user?.id) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    
+    console.log(user);
+    
+    // Fetch registry data to get registryId
+    let registry;
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
 
-  if (!registry || !registry.data[0].id) {
-    throw new Response('Registry not found', {status: 404});
-  }
+    if (!registry || !registry.data[0].id) {
+      throw new Response('Registry not found', {status: 404});
+    }
 
   // Get greetingId from URL params if available
   const url = new URL(request.url);
@@ -35,10 +53,19 @@ export async function loader({context, request}) {
       // FIRST: Always fetch greeting directly since user confirmed email is there
       try {
         console.log('Fetching greeting first to get email...');
-        const greetingResponse = await context.ClientGet(
-          `greetings/${greetingId}`,
-          context,
-        );
+        let greetingResponse;
+        try {
+          greetingResponse = await context.ClientGet(
+            `greetings/${greetingId}`,
+            context,
+          );
+        } catch (apiError) {
+          if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+            const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+            return clearSessionAndRedirect(context);
+          }
+          throw apiError;
+        }
         console.log('Greeting response:', JSON.stringify(greetingResponse, null, 2));
         
         if (greetingResponse?.data) {
@@ -113,10 +140,19 @@ export async function loader({context, request}) {
       }
       
       // Then try to get name from transactions list
-      const transactionsResponse = await context.ClientGet(
-        `transactions/${registry.data[0].id}`,
-        context,
-      );
+      let transactionsResponse;
+      try {
+        transactionsResponse = await context.ClientGet(
+          `transactions/${registry.data[0].id}`,
+          context,
+        );
+      } catch (apiError) {
+        if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+          const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+          return clearSessionAndRedirect(context);
+        }
+        throw apiError;
+      }
       
       console.log('Transactions list response:', JSON.stringify(transactionsResponse, null, 2));
       
@@ -164,10 +200,19 @@ export async function loader({context, request}) {
       // If email not found, try transaction detail
       if (!guestEmail && !emailFromUrl) {
         console.log('Email not found in transactions list, trying transaction detail...');
-        const transactionResponse = await context.ClientGet(
-          `transactions/detail/${greetingId}/${registry.data[0].id}`,
-          context,
-        );
+        let transactionResponse;
+        try {
+          transactionResponse = await context.ClientGet(
+            `transactions/detail/${greetingId}/${registry.data[0].id}`,
+            context,
+          );
+        } catch (apiError) {
+          if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+            const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+            return clearSessionAndRedirect(context);
+          }
+          throw apiError;
+        }
         
         console.log('Transaction detail response:', JSON.stringify(transactionResponse, null, 2));
         
@@ -221,10 +266,18 @@ export async function loader({context, request}) {
     }
   }
   
-  console.log('Final guestName in loader:', guestName);
-  console.log('Final guestEmail in loader:', guestEmail);
+    console.log('Final guestName in loader:', guestName);
+    console.log('Final guestEmail in loader:', guestEmail);
 
-  return {user, registry: registry.data[0], guestEmail, guestName};
+    return {user, registry: registry.data[0], guestEmail, guestName};
+  } catch (error) {
+    // If it's a session expiration error, handle it
+    if (error.isSessionExpired || error.status === 401 || error.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    throw error;
+  }
 }
 
 export async function action({request, context}) {
