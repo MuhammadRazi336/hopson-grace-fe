@@ -97,9 +97,27 @@ export function Header() {
                   'Content-Type': 'application/json'
                 }
               })
-              .then(res => res.json())
+              .then(res => {
+                // Check for session expiration
+                if (res.status === 401 || res.status === 403) {
+                  // Clear all localStorage
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  
+                  // Clear specific items to be sure
+                  localStorage.removeItem('@token');
+                  localStorage.removeItem('@Token');
+                  localStorage.removeItem('@User');
+                  localStorage.removeItem('@Registry');
+                  
+                  // Redirect to login
+                  window.location.href = '/login';
+                  return null;
+                }
+                return res.json();
+              })
               .then(data => {
-                if (data.code === 200 && data.data && data.data.user) {
+                if (data && data.code === 200 && data.data && data.data.user) {
                   setUserData(data.data.user);
                 }
               })
@@ -114,13 +132,33 @@ export function Header() {
                   'Content-Type': 'application/json'
                 }
               })
-              .then(res => res.json())
+              .then(res => {
+                // Check for session expiration
+                if (res.status === 401 || res.status === 403) {
+                  // Clear all localStorage
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  
+                  // Clear specific items to be sure
+                  localStorage.removeItem('@token');
+                  localStorage.removeItem('@Token');
+                  localStorage.removeItem('@User');
+                  localStorage.removeItem('@Registry');
+                  
+                  // Redirect to login
+                  window.location.href = '/login';
+                  return null;
+                }
+                return res.json();
+              })
               .then(registryData => {
-                console.log('Registry API response:', registryData);
-                if (registryData.code === 200 && registryData.data && registryData.data.length > 0) {
-                  const registry = registryData.data[0];
-                  setRegistryData(registry);
-                  setStatus(registry.status || 'draft');
+                if (registryData) {
+                  console.log('Registry API response:', registryData);
+                  if (registryData.code === 200 && registryData.data && registryData.data.length > 0) {
+                    const registry = registryData.data[0];
+                    setRegistryData(registry);
+                    setStatus(registry.status || 'draft');
+                  }
                 }
                 setIsLoadingRegistry(false);
               })

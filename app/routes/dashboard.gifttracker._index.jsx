@@ -3,18 +3,59 @@ import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
   const {context} = args;
-  const user = await context?.session?.get('@User');
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
+  
+  try {
+    const user = await context?.session?.get('@User');
+    
+    // Check if user session exists
+    if (!user?.user?.id) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    
+    let registry;
+    try {
+      registry = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
 
-  const data = await context.ClientGet(
-    `transactions/${registry.data[0].id}`,
-    context,
-  );
+    if (!registry?.data?.[0]?.id) {
+      throw new Response('Registry not found', {status: 404});
+    }
 
-  return {giftTrackingData: data?.data || []};
+    let data;
+    try {
+      data = await context.ClientGet(
+        `transactions/${registry.data[0].id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
+
+    return {giftTrackingData: data?.data || []};
+  } catch (error) {
+    // If it's a session expiration error, handle it
+    if (error.isSessionExpired || error.status === 401 || error.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    throw error;
+  }
 }
 
 const GiftTracker = () => {
@@ -45,16 +86,15 @@ const GiftTracker = () => {
               <div className="text-center py-16 px-6">
                 <div className="max-w-md mx-auto">
                   <img
-                    src="/assets/Images/gift.png"
+                    src="/assets/Images/NoProduct.png"
                     alt="No Transactions"
                     className="w-24 h-24 mx-auto mb-6 opacity-50"
                   />
                   <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
-                    No Transactions Found
+                    IT'S QUIET HERE - FOR NOW.
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    No gift purchases have been made yet. When guests start buying gifts, 
-                    they will appear here for you to track and send thank you messages.
+                  Once guests start shopping, your gifts will show up here.
                   </p>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p className="text-sm text-gray-500">
@@ -101,7 +141,7 @@ const GiftTracker = () => {
                       {item.messageSent ? (
                         <span className='text-xl text-center block text-[#446184] font-bold'>&#10004;</span>
                       ) : (
-                        <Link to="/dashboard/sendthanks/toguest">
+                        <Link to={`/dashboard/sendthanks/toguest?greetingId=${item.greetingId}`}>
                         <button className=" text-white font-bold py-3 px-3 bg-[#446184] rounded-none cursor-pointer">
                           SEND THANKS
                         </button>

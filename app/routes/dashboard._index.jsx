@@ -17,13 +17,25 @@ export async function loader(args) {
     
     // Handle new minimal session structure
     if (!user?.user?.id) {
-      throw new Error('User ID not found in session');
+      // Session expired or invalid - redirect to login
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
     }
     
-    const registriesResponse = await context.ClientGet(
-      `registries/by-userId/${user.user.id}`,
-      context,
-    );
+    let registriesResponse;
+    try {
+      registriesResponse = await context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
 
     if (!registriesResponse?.data) {
       throw new Error('Invalid API response structure');
@@ -65,10 +77,20 @@ export async function loader(args) {
       throw new Error('No selected registry found');
     }
 
-    const detailResponse = await context.ClientGet(
-      `registries/detail/${registry.id}`,
-      context,
-    );
+    let detailResponse;
+    try {
+      detailResponse = await context.ClientGet(
+        `registries/detail/${registry.id}`,
+        context,
+      );
+    } catch (apiError) {
+      // Check if it's a session expiration error
+      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+        return clearSessionAndRedirect(context);
+      }
+      throw apiError;
+    }
 
     const finalRegistry = {...registry, ...detailResponse.data};
 
@@ -87,6 +109,11 @@ export async function loader(args) {
     
   } catch (e) {
     console.error('Loader error:', e);
+    // Check if it's a session expiration error
+    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
     return {
       error: true,
       message: e.message,
@@ -109,6 +136,11 @@ export async function action({request, context}) {
 
     return redirect('/dashboard');
   } catch (e) {
+    // Check if it's a session expiration error
+    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
     return {...e};
   }
 }
@@ -352,6 +384,31 @@ const index = () => {
               loading={loading}
               refreshing={refreshing}
             />
+          </div>
+          {/* Show Intro Card - appears below notification card */}
+          <div className='flex justify-end'>
+            <div className="bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px]" onClick={() => {
+              // Trigger intro restart by updating localStorage and navigating
+              localStorage.setItem('showDashboardIntro', 'true');
+              window.location.href = '/dashboard';
+            }}>
+              {/* Message */}
+              <div className="uppercase text-base lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.042vw] xl:leading-[1.042vw] 2xl:leading-[1.042vw] font-medium tracking-wide text-black mb-[23px] lg:mb-[1.198vw] xl:mb-[1.198vw] 2xl:mb-[1.198vw]">
+                DASHBOARD<br />TUTORIAL
+              </div>
+              {/* Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  localStorage.setItem('showDashboardIntro', 'true');
+                  // Navigate to dashboard root to trigger intro
+                  window.location.href = '/dashboard';
+                }}
+                className="uppercase cursor-pointer font-bold text-lg tracking-wide text-black lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-b-2 border-[#1F1D1B] hover:text-gray-700"
+              >
+                View
+              </button>
+            </div>
           </div>
         </div>
       </div>

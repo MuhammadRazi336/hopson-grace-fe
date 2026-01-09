@@ -235,7 +235,7 @@ const ViewGifts = () => {
                   : 'SENT BY MAIL MARK COMPLETE'}
               </button>
             </fetcher.Form>
-            <Link to={`/dashboard/sendthanks/toguest`}>
+            <Link to={`/dashboard/sendthanks/toguest?greetingId=${greetingId}`}>
               <button className=" text-white font-bold py-4 px-6 bg-[#446184] rounded-none cursor-pointer w-full max-w-xs">
                 SEND EMAIL THANK YOU
               </button>
