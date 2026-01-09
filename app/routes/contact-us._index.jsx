@@ -113,7 +113,7 @@ const ContactUs = () => {
 
         <section className="px-[5.677vw] mx-auto mb-10">
           <div className="flex flex-wrap xl:flex-nowrap justify-center">
-            <div className="bg-[#446184] z-10 xl:-bottom-10 lg:left-[1.563vw] xl:left-[1.563vw] 2xl:left-[1.563vw] left-0 bottom-0 py-[4.74vw] relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10">
+            <div className={`${user ? "lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] lg:h-[47.083vw] xl:h-[47.083vw] 2xl:h-[47.083vw]" : "lg:w-[50.521vw] xl:w-[50.521vw] 2xl:w-[50.521vw] lg:h-[27.708vw] xl:h-[27.708vw] 2xl:h-[27.708vw]"} bg-[#446184] z-10 xl:-bottom-10 lg:left-[1.563vw] xl:left-[1.563vw] 2xl:left-[1.563vw] left-0 bottom-0 py-[4.74vw] relative flex items-center justify-center flex-col w-full max-[768px]:p-10`}>
               <div className="flex flex-col items-center justify-center w-[35.208vw] mx-auto max-w-full max-[1024px]:w-full">
               {user ? (
                   <>
@@ -124,7 +124,7 @@ const ContactUs = () => {
                     <img
                       src={lineImghead}
                       alt="lineimg"
-                      className="mb-2 mt-2 lg:w-[17.708vw] xl:w-[17.708vw] 2xl:w-[17.708vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
+                      className="mb-6 mt-2 lg:w-[17.708vw] xl:w-[17.708vw] 2xl:w-[17.708vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[170px]"
                     />
                   </>
                 ): (
@@ -132,7 +132,7 @@ const ContactUs = () => {
                   </>
                 )}
                 
-                <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mt-4 mb-4 text-center text-white">
+                <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mb-4 text-center text-white">
                   {user ? "Need a hand getting started? Book a virtual appointment with our Registry Concierge. We’ll walk you through the process, answer your questions, and help you build a registry that reflects your style, your life, and your wishlist." : "Book a virtual appointment with a Registry Concierge to learn more about The Registry before you sign up, or for support at any stage once you’re registered. Whether you’re just getting started, refining your selections, or ready to coordinate fulfillment and delivery, we’re here to guide you through the process with thoughtful, seamless support."}
                 </p>
           
@@ -164,11 +164,11 @@ const ContactUs = () => {
                   </Link>
               </div>
             </div>
-            <div className="lg:w-[37.552vw] xl:w-[37.552vw] 2xl:w-[37.552vw] relative lg:right-[1.563vw] xl:right-[1.563vw] 2xl:right-[1.563vw] right-0 w-full">
+            <div className={`${user ? "lg:h-[46.719vw] xl:h-[46.719vw] 2xl:h-[46.719vw]" : "lg:h-[28.385vw] xl:h-[28.385vw] 2xl:h-[28.385vw]"} lg:w-[37.552vw] xl:w-[37.552vw] 2xl:w-[37.552vw] relative lg:right-[1.563vw] xl:right-[1.563vw] 2xl:right-[1.563vw] right-0 w-full`}>
               <img
                 src="/assets/Images/appointment.png"
                 alt="Image Banner"
-                className="max-[1024px]:h-full object-cover object-[80%]"
+                className="max-[1024px]:h-full object-cover object-[80%] w-full h-full"
               />
             </div>
           </div>

@@ -44,7 +44,7 @@ const Testimonialslider = ({ blogs = [] }) => {
     }
     
     // Take first two sentences and add ellipsis
-    return sentences.slice(0, 2).join(' ').trim() + '...';
+    return sentences.slice(0, 2).join(' ').trim() + '';
   };
 
   // Flatten all articles from all blogs with proper error handling

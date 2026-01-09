@@ -142,15 +142,15 @@ const Dashboard_index = ({context}) => {
   // Simple SVG positioning for each step
   const getSVGStyle = (stepNumber) => {
     switch(stepNumber) {
-      case 0: return { left: '9.74vw', top: '1.25vw', width: '25vw', height: '11vw' };
-      case 1: return { left: '19vw', top: '1.25vw', width: '18vw', height: '10vw' };
-      case 2: return { left: '36vw', top: '0.25vw', width: '23vw', height: '10vw' };
-      case 3: return { left: '67vw', top: '1.25vw', width: '23vw', height: '9vw' };
-      case 4: return { left: '50vw', top: '1.25vw', width: '23vw', height: '9vw' };
+      case 0: return { left: '26.74vw', top: '0.5vw', width: '22vw', height: '11vw' };
+      case 1: return { left: '33vw', top: '1vw', width: '18vw', height: '10vw' };
+      case 2: return { left: '51vw', top: '1.25vw', width: '4.949vw', height: '3.196vw' };
+      case 3: return { left: '64vw', top: '1.25vw', width: '23vw', height: '9vw' };
+      case 4: return { left: '82vw', top: '2vw', width: '23vw', height: '9vw' };
       case 5: return { left: '92vw', top: '1.25vw', width: '25vw', height: '11vw' };
       case 6: return { left: '81vw', top: '-4.75vw', width: '25vw', height: '11vw' };
       case 7: return { left: '84vw', top: '4.25vw', width: '25vw', height: '11vw' };
-      case 8: return { left: '86vw', top: '20vw', width: '25vw', height: '11vw' };
+      case 8: return { left: '33vw', top: '1vw', width: '18vw', height: '10vw' };
       default: return { left: '50%', top: '1.25vw', width: '200px', height: '100px' };
     }
   };
@@ -284,6 +284,7 @@ const Dashboard_index = ({context}) => {
                   count={2}
                   onView={() => { } } />
               </div>
+              
             </div>
 
             {/* Blue card */}
@@ -346,15 +347,19 @@ const Dashboard_index = ({context}) => {
             {(() => {
               const targetNode = getCurrentStepNode();
               console.log(`Rendering arrow for step ${currentStep}:`, { targetNode, showIntro });
-              return targetNode && (
-                <AnimatedSVG 
-                  show={showSVG} 
-                  containerRef={containerRef}
-                  style={getSVGStyle(currentStep)}
-                  className='max-[1024px]:hidden'
-                  stepNumber={currentStep}
-                />
-              );
+              // Always show SVG for step 8 (last step) even if statusNode is not found
+              if (currentStep === 8 || targetNode) {
+                return (
+                  <AnimatedSVG 
+                    show={showSVG} 
+                    containerRef={containerRef}
+                    style={getSVGStyle(currentStep)}
+                    className='max-[1024px]:hidden'
+                    stepNumber={currentStep}
+                  />
+                );
+              }
+              return null;
             })()}
           </div>
           <Footer />

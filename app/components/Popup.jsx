@@ -2,11 +2,32 @@ import popupimg from "/assets/Images/registrypopup.jpg";
 import reglogo from "/assets/Images/reglogo.png";
 import closebtn from "/assets/Images/closebtn.png";
 import { Link } from "@remix-run/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ModalPortal from "./ModalPortal";
 
 const Popup = ({ onClose }) => {
   const overlayRef = useRef(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const imageRef = useRef(null);
+
+  // Preload image when component mounts
+  useEffect(() => {
+    const img = new Image();
+    img.src = popupimg;
+    
+    // Check if image is already cached/loaded
+    if (img.complete) {
+      setImageLoaded(true);
+    } else {
+      img.onload = () => {
+        setImageLoaded(true);
+      };
+      img.onerror = () => {
+        // If image fails to load, still set loaded to avoid infinite loading
+        setImageLoaded(true);
+      };
+    }
+  }, []);
 
   // Lock body scroll when popup is open
   useEffect(() => {
@@ -28,6 +49,15 @@ const Popup = ({ onClose }) => {
     if (e.target === overlayRef.current) onClose?.();
   };
 
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    // If image fails to load, still set loaded to avoid infinite loading state
+    setImageLoaded(true);
+  };
+
   return (
     <ModalPortal>
       <div
@@ -38,11 +68,21 @@ const Popup = ({ onClose }) => {
         className="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-[#1F1D1B]/90"
         style={{ zIndex: 99999, position: 'fixed' }}
       >
-      <div className="max-[1024px]:flex-col flex items-center justify-center gap-0 max-[1024px]:px-4 lg:scale-90 xl:scale-90 2xl:scale-90">
-      <div className="relative lg:w-[47.396vw] xl:w-[47.396vw] 2xl:w-[47.396vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw] max-[1024px]:w-full max-[1024px]:h-auto lg:left-[5vw] xl:left-[5vw] 2xl:left-[5vw]">
+        {!imageLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+      <div className={`max-[1024px]:flex-col flex items-center justify-center gap-0 max-[1024px]:px-4 lg:scale-90 xl:scale-90 2xl:scale-90 transition-opacity duration-300 ${
+        imageLoaded ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}>
+      <div className="relative lg:w-[47.396vw] xl:w-[47.396vw] 2xl:w-[47.396vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw] max-[1024px]:w-full max-[1024px]:h-auto lg:left-[5vw] xl:left-[5vw] 2xl:left-[5vw] bg-[#2b2b2b]">
         <img
+          ref={imageRef}
           src={popupimg}
           alt=""
+          onLoad={handleImageLoad}
+          onError={handleImageError}
           className="w-full h-full object-cover max-[1024px]:max-w-[95%] object-position-[-21vw_0px] max-[1024px]:object-center"
         />
       </div>
