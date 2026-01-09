@@ -1705,7 +1705,7 @@ export default function CoupleProfile() {
           <div className="text-center py-16 px-6 mt-12">
             <div className="max-w-md mx-auto">
               <img
-                src="/assets/Images/gift.png"
+                src="/assets/Images/NoProduct.png"
                 alt="No Products"
                 className="w-24 h-24 mx-auto mb-6 opacity-50"
               />

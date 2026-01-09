@@ -190,6 +190,13 @@ const Dashboard_index = ({context}) => {
     localStorage.setItem('showDashboardIntro', 'false');
   };
 
+  // Function to restart the intro
+  const handleShowIntro = () => {
+    setShowIntro(true);
+    setCurrentStep(0);
+    // Don't update localStorage so it can be shown again
+  };
+
   // Function to find tab elements by their data-value attribute
   const findTabElements = () => {
     const tabElements = {};
@@ -264,7 +271,7 @@ const Dashboard_index = ({context}) => {
     <div className="w-full min-h-screen">
       <style>{animationStyle}</style>
       <Header />
-      <div className="">
+      <div className="relative">
         {showIntro ? (
           <><div ref={overlayRef} className="flex flex-col items-center justify-center w-full relative min-h-[70vh] max-[1024px]:flex-col max-[1024px]:py-[50px] max-[1024px]:px-[20px]">
             {/* Welcome and couple name */}

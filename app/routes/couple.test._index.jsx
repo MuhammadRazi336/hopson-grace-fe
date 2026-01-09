@@ -274,7 +274,7 @@ export default function CoupleProfileView() {
         </div>
         <div className="lg:w-[35%] w-full  ">
           <img
-            src="/assets/Images/gift.png"
+            src="/assets/Images/NoProduct.png"
             alt="Image Banner"
             className="max-[1024px]:h-full object-cover object-[80%]"
           />

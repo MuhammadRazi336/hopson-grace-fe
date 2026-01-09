@@ -45,16 +45,15 @@ const GiftTracker = () => {
               <div className="text-center py-16 px-6">
                 <div className="max-w-md mx-auto">
                   <img
-                    src="/assets/Images/gift.png"
+                    src="/assets/Images/NoProduct.png"
                     alt="No Transactions"
                     className="w-24 h-24 mx-auto mb-6 opacity-50"
                   />
                   <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
-                    No Transactions Found
+                    IT'S QUIET HERE - FOR NOW.
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    No gift purchases have been made yet. When guests start buying gifts, 
-                    they will appear here for you to track and send thank you messages.
+                  Once guests start shopping, your gifts will show up here.
                   </p>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p className="text-sm text-gray-500">
@@ -101,7 +100,7 @@ const GiftTracker = () => {
                       {item.messageSent ? (
                         <span className='text-xl text-center block text-[#446184] font-bold'>&#10004;</span>
                       ) : (
-                        <Link to="/dashboard/sendthanks/toguest">
+                        <Link to={`/dashboard/sendthanks/toguest?greetingId=${item.greetingId}`}>
                         <button className=" text-white font-bold py-3 px-3 bg-[#446184] rounded-none cursor-pointer">
                           SEND THANKS
                         </button>

@@ -1,4 +1,4 @@
-import {Form, Link, redirect, useActionData, useLoaderData, useSubmit, useNavigate, useFetcher} from '@remix-run/react';
+import {Form, Link, redirect, useActionData, useLoaderData, useSubmit, useNavigate, useFetcher, useSearchParams} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
 import {useState, useEffect, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
@@ -6,7 +6,7 @@ import { Footer } from '~/components/Footer';
 import Input from '~/components/Input';
 import AlertPortal from '~/components/AlertPortal';
 
-export async function loader({context}) {
+export async function loader({context, request}) {
   const user = await context.session.get('@User');
   console.log(user);
   
@@ -20,7 +20,211 @@ export async function loader({context}) {
     throw new Response('Registry not found', {status: 404});
   }
 
-  return {user, registry: registry.data[0]};
+  // Get greetingId from URL params if available
+  const url = new URL(request.url);
+  const greetingId = url.searchParams.get('greetingId');
+  const emailFromUrl = url.searchParams.get('email') || url.searchParams.get('guestEmail');
+  let guestEmail = emailFromUrl || '';
+  let guestName = '';
+
+  // If greetingId is provided, fetch transaction detail to get guest email and name
+  if (greetingId) {
+    try {
+      console.log('Fetching guest data for greetingId:', greetingId);
+      
+      // FIRST: Always fetch greeting directly since user confirmed email is there
+      try {
+        console.log('Fetching greeting first to get email...');
+        const greetingResponse = await context.ClientGet(
+          `greetings/${greetingId}`,
+          context,
+        );
+        console.log('Greeting response:', JSON.stringify(greetingResponse, null, 2));
+        
+        if (greetingResponse?.data) {
+          const greetingData = greetingResponse.data;
+          console.log('Greeting data:', JSON.stringify(greetingData, null, 2));
+          console.log('All greeting keys:', Object.keys(greetingData));
+          
+          // Try all possible email fields in greeting - check every possible field
+          const greetingEmail = greetingData.email || 
+                      greetingData.guestEmail || 
+                      greetingData.to ||
+                      greetingData.customerEmail ||
+                      greetingData.buyerEmail ||
+                      greetingData.buyer?.email ||
+                      greetingData.customer?.email ||
+                      greetingData.user?.email ||
+                      greetingData.guest?.email ||
+                      greetingData.contactEmail ||
+                      greetingData.contact?.email ||
+                      greetingData.recipientEmail ||
+                      greetingData.recipient?.email ||
+                      greetingData.senderEmail ||
+                      greetingData.sender?.email ||
+                      greetingData.emailAddress ||
+                      greetingData.email_address ||
+                      '';
+          
+          if (greetingEmail && !emailFromUrl) {
+            guestEmail = greetingEmail;
+            console.log('✅ Extracted email from greeting:', guestEmail);
+          } else if (greetingEmail) {
+            console.log('Found email in greeting but URL email takes precedence');
+          } else {
+            console.log('⚠️ No email found in standard fields - scanning all values for email pattern:');
+            // Recursively search for any string containing '@' (email pattern)
+            const findEmailInObject = (obj, path = '') => {
+              for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                  const value = obj[key];
+                  const currentPath = path ? `${path}.${key}` : key;
+                  
+                  if (typeof value === 'string' && value.includes('@') && value.includes('.')) {
+                    console.log(`  🔍 Found potential email at ${currentPath}:`, value);
+                    if (!guestEmail && !emailFromUrl) {
+                      guestEmail = value;
+                      console.log(`  ✅ Using email from ${currentPath}:`, guestEmail);
+                    }
+                  } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                    findEmailInObject(value, currentPath);
+                  } else if (Array.isArray(value)) {
+                    value.forEach((item, index) => {
+                      if (typeof item === 'object' && item !== null) {
+                        findEmailInObject(item, `${currentPath}[${index}]`);
+                      }
+                    });
+                  }
+                }
+              }
+            };
+            
+            findEmailInObject(greetingData);
+            
+            if (!guestEmail) {
+              console.log('❌ No email found in greeting data after full scan');
+            }
+          }
+        } else {
+          console.log('⚠️ Greeting response structure:', greetingResponse);
+        }
+      } catch (greetingError) {
+        console.error('Error fetching greeting:', greetingError);
+      }
+      
+      // Then try to get name from transactions list
+      const transactionsResponse = await context.ClientGet(
+        `transactions/${registry.data[0].id}`,
+        context,
+      );
+      
+      console.log('Transactions list response:', JSON.stringify(transactionsResponse, null, 2));
+      
+      if (transactionsResponse?.data && Array.isArray(transactionsResponse.data)) {
+        const transaction = transactionsResponse.data.find(t => 
+          t.greetingId === parseInt(greetingId) || 
+          t.id === parseInt(greetingId) ||
+          String(t.greetingId) === String(greetingId)
+        );
+        
+        if (transaction) {
+          console.log('Found transaction in list:', JSON.stringify(transaction, null, 2));
+          guestName = transaction.name || guestName || '';
+          
+          // Try to get email from transaction if not already found
+          if (!guestEmail && !emailFromUrl) {
+            const foundEmail = transaction.email || 
+                             transaction.guestEmail || 
+                             transaction.customerEmail ||
+                             transaction.buyerEmail ||
+                             transaction.buyer?.email ||
+                             transaction.customer?.email ||
+                             transaction.user?.email ||
+                             transaction.guest?.email ||
+                             transaction.contactEmail ||
+                             transaction.contact?.email ||
+                             transaction.shippingEmail ||
+                             transaction.billingEmail ||
+                             (typeof transaction.name === 'string' && transaction.name.includes('@') ? transaction.name : '') ||
+                             '';
+            
+            // Only use transaction.to if it looks like an email
+            const toAsEmail = transaction.to && typeof transaction.to === 'string' && transaction.to.includes('@') 
+                            ? transaction.to 
+                            : '';
+            
+            guestEmail = foundEmail || toAsEmail || guestEmail || '';
+          }
+          
+          console.log('Extracted name:', guestName, 'email:', guestEmail);
+          console.log('All transaction keys:', Object.keys(transaction));
+        }
+      }
+      
+      // If email not found, try transaction detail
+      if (!guestEmail && !emailFromUrl) {
+        console.log('Email not found in transactions list, trying transaction detail...');
+        const transactionResponse = await context.ClientGet(
+          `transactions/detail/${greetingId}/${registry.data[0].id}`,
+          context,
+        );
+        
+        console.log('Transaction detail response:', JSON.stringify(transactionResponse, null, 2));
+        
+        if (transactionResponse?.data && transactionResponse.data.length > 0) {
+          const transactionData = transactionResponse.data[0];
+          console.log('Transaction detail data:', JSON.stringify(transactionData, null, 2));
+          console.log('All transaction detail keys:', Object.keys(transactionData));
+          
+          guestName = transactionData.name || guestName || '';
+          
+          // Try all possible email fields, including nested ones and check all items in array
+          guestEmail = transactionData.email || 
+                      transactionData.guestEmail || 
+                      transactionData.customerEmail ||
+                      transactionData.buyerEmail ||
+                      transactionData.to ||
+                      transactionData.buyer?.email ||
+                      transactionData.customer?.email ||
+                      transactionData.user?.email ||
+                      transactionData.guest?.email ||
+                      transactionData.contactEmail ||
+                      transactionData.contact?.email ||
+                      guestEmail ||
+                      '';
+          
+          // Also check if email is in any nested objects in the data array
+          if (!guestEmail && transactionResponse.data.length > 0) {
+            for (const item of transactionResponse.data) {
+              const itemEmail = item.email || 
+                               item.guestEmail || 
+                               item.customerEmail ||
+                               item.buyerEmail ||
+                               item.to ||
+                               item.buyer?.email ||
+                               item.customer?.email ||
+                               '';
+              if (itemEmail) {
+                guestEmail = itemEmail;
+                console.log('Found email in data array item:', guestEmail);
+                break;
+              }
+            }
+          }
+          
+          console.log('Extracted from detail - name:', guestName, 'email:', guestEmail);
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error fetching transaction detail:', error);
+    }
+  }
+  
+  console.log('Final guestName in loader:', guestName);
+  console.log('Final guestEmail in loader:', guestEmail);
+
+  return {user, registry: registry.data[0], guestEmail, guestName};
 }
 
 export async function action({request, context}) {
@@ -66,16 +270,30 @@ export async function action({request, context}) {
 }
 
 const ThankYou = () => {
-  const {user, registry} = useLoaderData();
+  const {user, registry, guestEmail: guestEmailFromLoader, guestName: guestNameFromLoader} = useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showPreview, setShowPreview] = useState(false);
   const [message, setMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  const [emailError, setEmailError] = useState('');
   const maxLength = 500;
   const processedResponseRef = useRef(null);
+  
+  // Get guest email and name from loader (from API) or URL params (fallback)
+  const guestEmailFromUrl = searchParams.get('email') || searchParams.get('guestEmail') || '';
+  const guestEmail = guestEmailFromLoader || guestEmailFromUrl || '';
+  const guestName = guestNameFromLoader || '';
+  
+  // Debug logging
+  console.log('Guest Name from Loader:', guestNameFromLoader);
+  console.log('Guest Email from Loader:', guestEmailFromLoader);
+  console.log('Guest Email from URL:', guestEmailFromUrl);
+  console.log('Final Guest Name:', guestName);
+  console.log('Final Guest Email:', guestEmail);
 
   // Handle fetcher data to show alerts and redirect
   useEffect(() => {
@@ -135,12 +353,14 @@ const ThankYou = () => {
         setAlertMessage(displayMessage);
         setShowAlert(true);
         
-        // Reset form after successful send
+        // Reset form after successful send (but keep guest data)
         setFormData({
-          to: '',
+          to: guestName || '',
+          email: guestEmail || '',
           subject: `Thank's from ${user?.user?.firstName} & ${user?.user?.fianceFirstName}`,
           message: 'Thank you for your generosity and for celebrating this milestone moment with us. It means so much!',
         });
+        setEmailError('');
         setShowPreview(false);
         
         // Redirect to dashboard/gifttracker after showing success message (2 seconds)
@@ -180,20 +400,104 @@ const ThankYou = () => {
 
   const [formData, setFormData] = useState({
     to: '',
+    email: '',
     subject: `Thank's from ${user?.user?.firstName} & ${user?.user?.fianceFirstName}`,
     message:
       'Thank you for your generosity and for celebrating this milestone moment with us. It means so much!',
   });
 
+  // Initialize and update 'to' (name) and 'email' fields when guest data is available
+  useEffect(() => {
+    console.log('=== Guest Data Update Effect ===');
+    console.log('guestName:', guestName, '(type:', typeof guestName, ')');
+    console.log('guestEmail:', guestEmail, '(type:', typeof guestEmail, ')');
+    console.log('Current formData.to:', formData.to);
+    console.log('Current formData.email:', formData.email);
+    
+    // Always update if we have guest data (even if it's an empty string, we want to set it)
+    setFormData(prev => {
+      const newTo = guestName || prev.to || '';
+      const newEmail = guestEmail || prev.email || '';
+      
+      // Update if values are different
+      if (prev.to !== newTo || prev.email !== newEmail) {
+        const updated = {
+          ...prev,
+          to: newTo,
+          email: newEmail,
+        };
+        console.log('✅ Updating formData:', updated);
+        return updated;
+      }
+      
+      console.log('⏭️ Skipping update - values unchanged');
+      return prev;
+    });
+  }, [guestName, guestEmail]);
+  
+  // Force initial population on mount if data is already available
+  useEffect(() => {
+    console.log('=== Initial Mount Effect ===');
+    console.log('guestName on mount:', guestName);
+    console.log('guestEmail on mount:', guestEmail);
+    
+    if (guestName || guestEmail) {
+      console.log('Setting initial values on mount');
+      setFormData(prev => ({
+        ...prev,
+        to: guestName || prev.to || '',
+        email: guestEmail || prev.email || '',
+      }));
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleChange = (e) => {
-    setFormData({...formData, [e.target.name]: e.target.value});
+    const {name, value} = e.target;
+    setFormData({...formData, [name]: value});
+    
+    // Validate email when it changes
+    if (name === 'email') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (value && !emailRegex.test(value)) {
+        setEmailError('Please enter a valid email address');
+      } else {
+        setEmailError('');
+      }
+    }
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate email before submitting
+    if (!formData.email || !formData.email.trim()) {
+      setEmailError('Email address is required');
+      setAlertType('error');
+      setAlertMessage('Please enter a valid email address');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 5000);
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setEmailError('Please enter a valid email address');
+      setAlertType('error');
+      setAlertMessage('Please enter a valid email address');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 5000);
+      return;
+    }
+
+    // Use email field for sending, fallback to 'to' if email is not set
+    const emailToSend = formData.email || formData.to;
+
     const payload = {
-      to: formData.to,
+      to: emailToSend,
       subject: formData.subject,
       message: formData.message,
       registryId: Number(registry.id),
@@ -283,6 +587,13 @@ const ThankYou = () => {
       </p>
 
       <div className="container mx-auto bg-[#446184] py-16">
+        {/* Step indicator at the top */}
+        <div className="flex items-center gap-x-4 justify-center mb-8">
+          <h4 className="text-[60px] text-white text-center">{showPreview ? '2' : '1'}</h4>
+          <h4 className="text-[30px] text-white text-center">/</h4>
+          <h4 className="text-[30px] text-white text-center">2</h4>
+        </div>
+
         <fetcher.Form method="post" onSubmit={handleSubmit}>
           <div className="relative max-w-4xl mx-auto">
             <img
@@ -354,32 +665,51 @@ const ThankYou = () => {
                 onClick={() => setShowPreview(false)}
                 className="text-[#223247] border-b border-[#223247] cursor-pointer font-bold text-lg"
               >
-                Edit Message
+                BACK TO EDIT VIEW
               </button>
             </div>
           )}
-
-          <div className="relative">
-            <div className="flex items-center gap-x-12 mt-8 justify-center">
-              <h4 className="text-[60px] text-white text-center">{showPreview ? '2' : '1'}</h4>
-              <h4 className="text-[30px] text-white text-center">/</h4>
-              <h4 className="text-[30px] text-white text-center">2</h4>
-            </div>
-            
-            {showPreview && (
-              <div className="absolute right-12 top-1/2 -translate-y-1/2">
-                <button 
-                  type="submit"
-                  disabled={fetcher.state === 'submitting'}
-                  className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-[800] text-black w-[225px] max-[1601px]:w-[280px] text-center disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {fetcher.state === 'submitting' ? 'Sending...' : 'Send'}
-                </button>
-              </div>
-            )}
-          </div>
         </fetcher.Form>
       </div>
+      
+      {/* Email input field, text, and send button below the blue box - only shown on step 2 */}
+      {showPreview && (
+        <div className="max-w-4xl mx-auto mt-8 px-4">
+          <p className="text-[#223247] text-center text-base leading-relaxed mb-4">
+            Your note will be delivered to the below email. Click to change to add more addresses (for more than one email, separate by a comma).
+          </p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex-1">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address*"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full prata text-center text-2xl border rounded p-2 bg-[#FAF9F6] focus:outline-none focus:ring-2 ${
+                  emailError 
+                    ? 'border-red-500 focus:ring-red-200' 
+                    : 'border-gray-300 focus:ring-gray-200'
+                }`}
+              />
+              {emailError && (
+                <p className="text-red-500 text-sm text-center mt-2">{emailError}</p>
+              )}
+            </div>
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSubmit(e);
+              }}
+              disabled={fetcher.state === 'submitting'}
+              className="py-5 px-8 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white whitespace-nowrap text-center disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+            >
+              {fetcher.state === 'submitting' ? 'Sending...' : 'SEND!'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
       <Footer/>
     </div>
