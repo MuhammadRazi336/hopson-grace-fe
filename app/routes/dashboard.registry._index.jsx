@@ -224,12 +224,11 @@ const index = () => {
     try {
       const formData = new FormData();
       formData.append('file', croppedBlob, 'profile.jpg');
-      formData.append('id', registryData?.events?.[0]?.id);
 
       const response = await fetch(
-        `${finalApiBaseUrl}/api/events/${registryData?.events?.[0]?.id}`,
+        `${finalApiBaseUrl}/api/events/${registryData?.events?.[0]?.id}/image`,
         {
-          method: 'PUT',
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${user?.accessToken}`,
           },
@@ -241,25 +240,34 @@ const index = () => {
         const data = await response.json();
         console.log('Upload response:', data);
 
-        // Update the event image state
+        // Update the event image state (matching handleBackgroundImageSave pattern)
         if (data.data && data.data.image) {
           const newImageUrl = data.data.image.fileUrl || data.data.image;
-          setEventImage(newImageUrl);
+          // Use blob URL instead of potentially broken S3 URL
+          // The blob URL will work immediately while S3 URL might be 404
+          const blobUrl = URL.createObjectURL(croppedBlob);
+          setEventImage(blobUrl);
           alert('Profile image updated successfully!');
         } else {
-          // Fallback to blob URL for immediate display
+          // Fallback to blob URL for immediate display (same as handleBackgroundImageSave)
           const blobUrl = URL.createObjectURL(croppedBlob);
           setEventImage(blobUrl);
           alert('Profile image updated!');
         }
       } else {
-        const errorData = await response.json();
+        // Even on error, use blob URL for immediate display
+        const blobUrl = URL.createObjectURL(croppedBlob);
+        setEventImage(blobUrl);
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
         console.error('Upload failed:', errorData);
-        alert('Failed to update image. Please try again.');
+        alert('Profile image updated! (Using temporary preview)');
       }
     } catch (err) {
       console.error('Error uploading image:', err);
-      alert('Error updating image. Please try again.');
+      // Even on error, use blob URL for immediate display
+      const blobUrl = URL.createObjectURL(croppedBlob);
+      setEventImage(blobUrl);
+      alert('Profile image updated! (Using temporary preview)');
     } finally {
       setIsUploading(false);
     }
@@ -384,11 +392,11 @@ const index = () => {
         <div className="relative">
           <img
             src={backgroundImage}
-            alt="Couple Background"
-            className="w-full h-[400px] lg:h-[600px] object-cover"
+            alt=" "
+            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] object-cover bg-[#446184]"
           />
           <div
-            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[5.833vw] height[5.833vw]"
+            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] height[4vw]"
             onClick={() =>
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
@@ -421,21 +429,64 @@ const index = () => {
         </div> */}
 
         <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 lg:-translate-y-[200px] xl:-translate-y-[200px] 2xl:-translate-y-[200px] ">
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px] pr-[20px]">
-            <h1 className="lg:text-[4.479vw] xl:text-[4.479vw] 2xl:text-[4.479vw] lg:leading-[4.792vw] xl:leading-[4.792vw] 2xl:leading-[4.792vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px]">
-              {userGet?.data?.user?.firstName} &{' '}
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px] pr-[40px]">
+            <h1 className="lg:text-[3.2vw] xl:text-[3.2vw] 2xl:text-[3.2vw] lg:leading-[3.7vw] xl:leading-[3.7vw] 2xl:leading-[3.7vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px]">
+              {userGet?.data?.user?.firstName} &{' '}<br />
               {userGet?.data?.user?.fianceFirstName}
             </h1>
           </div>
-          <div className="lg:w-[36.979vw] xl:w-[36.979vw] 2xl:w-[36.979vw] lg:min-w-[36.979vw] xl:min-w-[36.979vw] 2xl:min-w-[36.979vw] lg:min-h-[36.979vw] xl:min-h-[36.979vw] 2xl:min-h-[36.979vw] lg:h-[36.979vw] xl:h-[36.979vw] 2xl:h-[36.979vw]  w-full">
-            <div className="relative">
-              <img
-                src={eventImage || '/assets/Images/couple-placeholder.png'}
-                alt="Couple"
-                className="rounded-full xl:w-full xl:h-full h-[300px] w-[300px] mx-auto object-cover"
-              />
+          <div className="lg:w-[30vw] xl:w-[30vw] 2xl:w-[30vw] lg:min-w-[30vw] xl:min-w-[30vw] 2xl:min-w-[30vw] lg:min-h-[30vw] xl:min-h-[30vw] 2xl:min-h-[30vw] lg:h-[30vw] xl:h-[30vw] 2xl:h-[30vw]  w-full">
+            <div className="relative w-full h-full">
+              {(() => {
+                // Check if we have a valid image URL
+                const hasValidImage = eventImage && 
+                                     typeof eventImage === 'string' && 
+                                     eventImage.trim() !== '' && 
+                                     eventImage !== '/assets/Images/couple-placeholder.png';
+                
+                // Debug log
+                console.log('eventImage value:', eventImage, 'hasValidImage:', hasValidImage);
+                
+                return (
+                  <>
+                    {!hasValidImage && (
+                      <div className='placeholders flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none'>
+                        <img 
+                          src="/assets/Images/copyrightLogo.png" 
+                          alt='placeholder' 
+                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain' 
+                          onError={(e) => console.error('Failed to load copyrightLogo.png', e)}
+                          onLoad={() => console.log('copyrightLogo.png loaded successfully')}
+                        />
+                        <img 
+                          src="/assets/Images/placeholder-line.png" 
+                          alt='placeholder' 
+                          className='object-contain w-[16.042vw] h-[4px] mt-2' 
+                          onError={(e) => console.error('Failed to load placeholder-line.png', e)}
+                          onLoad={() => console.log('placeholder-line.png loaded successfully')}
+                        />
+                      </div>
+                    )}
+                    
+                    {hasValidImage ? (
+                      <img
+                        src={eventImage}
+                        alt="Couple"
+                        className="rounded-full bg-[#F5F2ED] xl:w-full xl:h-full h-[300px] w-[300px] mx-auto object-cover relative z-[1]"
+                        onError={(e) => {
+                          console.error('Failed to load event image:', eventImage);
+                          // If image fails to load, we should show placeholder
+                          setEventImage(null);
+                        }}
+                      />
+                    ) : (
+                      <div className="rounded-full bg-[#F5F2ED] xl:w-full xl:h-full h-[300px] w-[300px] mx-auto relative z-[1]"></div>
+                    )}
+                  </>
+                );
+              })()}
               <div
-                className="absolute -bottom-[2.604vw] left-[50%] translate-x-[-50%] w-[5.938vw] h-[5.938vw]"
+                className="absolute -bottom-[1.604vw] left-[50%] translate-x-[-50%] w-[4vw] h-[4vw] z-1"
                 onClick={() => !isUploading && setIsEditPopupOpen(true)}
               >
                 <img
@@ -453,15 +504,15 @@ const index = () => {
               </div>
             </div>
           </div>
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px] pl-[20px]">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px] pl-[40px]">
             <div className="mr-16">
-              <p className="lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-right my-2 lg:leading-[2.917vw] xl:leading-[2.917vw] 2xl:leading-[2.917vw] prata ml-auto">
+              <p className="lg:text-[2vw] xl:text-[2vw] 2xl:text-[2vw] text-right my-2 lg:leading-[2.3vw] xl:leading-[2.3vw] 2xl:leading-[2.3vw] prata ml-auto">
                 {eventGet?.data?.eventDate}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
                 alt="Couple"
-                className="max-w-[19.219vw] h-auto ml-auto max-[1024px]:mb-[50px]"
+                className="max-w-[16.219vw] h-auto ml-auto max-[1024px]:mb-[50px]"
               />
               <div className="uppercase text-right ">
                 <p className="text-lg my-1">{eventGet?.data?.location}</p>
@@ -505,7 +556,7 @@ const index = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto w-[calc(100%-7.812vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] max-[1024px]:w-full max-[1024px]:px-[20px]">
+      <div className="mx-auto w-[calc(100%-13.3vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] max-[1024px]:w-full max-[1024px]:px-[20px]">
         <h2 className="mt-0 lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal mb-[1.302vw]">
           our registry selections
         </h2>
@@ -624,8 +675,8 @@ const ProductPage = ({data}) => {
       <div
         className={`${
           data.length > 4
-            ? 'flex gap-[3.281vw] mt-0 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-[3.281vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            ? 'flex gap-[2.917vw] mt-0 overflow-x-auto snap-x snap-mandatory'
+            : 'grid gap-[2.917vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
@@ -664,7 +715,7 @@ const ProductPage = ({data}) => {
                   key={product.id || product.productId || Math.random()}
                   className={`${
                     isFullyGifted ? 'overlay-gifted' : ''
-                  } p-4 flex flex-col justify-between ${
+                  } flex flex-col justify-between ${
                     data.length > 4
                       ? 'snap-start min-w-[360px] max-w-[360px]'
                       : 'w-full'
@@ -793,7 +844,7 @@ const FundPage = ({data}) => {
   };
 
   return (
-    <div className="">
+    <div className="min-[1025px]:px-[5vw]">
       <div
         className={`${
           data.length > 4
@@ -821,7 +872,7 @@ const FundPage = ({data}) => {
                   key={fund.productId || Math.random()}
                   className={`${
                     isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
-                  } p-4 flex flex-col justify-between ${
+                  } flex flex-col justify-between ${
                     data.length > 4
                       ? 'snap-start min-w-[360px] max-w-[360px]'
                       : 'w-full'

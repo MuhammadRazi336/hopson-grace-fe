@@ -1383,7 +1383,7 @@ export default function AddGifts() {
             : 'bestsellers'
         }
         buttonText="browse bestsellers"
-        sectionClassName="pt-[9.01vw] my-12 lg:my-[240px] container pb-[12.552vw]"
+        sectionClassName="pt-[9.01vw] my-12 lg:my-[240px] pb-[12.552vw]"
         headingClasses="prata text-[2.292vw] leading-[1.875vw] font-normal text-center max-[1024px]:m-0"
         imageClasses={
           selectedSwiperCollectionId

@@ -69,6 +69,7 @@ const OnboardingClient = ({onStepChange}) => {
   const [step4Errors, setStep4Errors] = useState({});
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [showProvincePopup, setShowProvincePopup] = useState(false);
+  const [gifLoaded, setGifLoaded] = useState(false);
   const handleGuestNoChange = (e) => {
     setEventData((prev) => ({
       ...prev,
@@ -101,6 +102,28 @@ const OnboardingClient = ({onStepChange}) => {
   };
   useEffect(() => {
     getEvents();
+  }, []);
+
+  // Preload the onboarding GIF
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    
+    const img = document.createElement('img');
+    img.src = onboardingGif;
+    
+    // Check if image is already cached/loaded
+    if (img.complete) {
+      setGifLoaded(true);
+    } else {
+      img.onload = () => {
+        setGifLoaded(true);
+      };
+      img.onerror = () => {
+        // If GIF fails to load, still set loaded to avoid infinite loading state
+        setGifLoaded(true);
+      };
+    }
   }, []);
 
   // Auto-select first event type when event types are loaded
@@ -582,26 +605,39 @@ const OnboardingClient = ({onStepChange}) => {
   const renderStepContent = (currentStep) => {
     if (currentStep === 6) {
       return (
-        <div className="flex flex-col items-center justify-center text-white py-6 rounded-md">
-          <div className="uppercase tracking-widest font-semibold mb-4 text-center text-xl md:text-xl">
+        <div className="flex flex-col items-center justify-center text-white rounded-md">
+          <div className="uppercase tracking-widest font-semibold mb-0 text-center text-xl lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
             YOUR ACCOUNT IS CREATED.
           </div>
-          <div className="my-4 flex flex-col items-center justify-center relative">
+          <div className="flex flex-col items-center justify-center relative">
             {/* FPO Placeholder Image */}
-            <div>
-              <img src={onboardingGif} alt="" className="w-[163px] h-[163px]" />
+            <div className="relative w-[8.49vw] h-[8.49vw] flex items-center justify-center">
+              {!gifLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-transparent">
+                  <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+              <img 
+                src={onboardingGif} 
+                alt="" 
+                onLoad={() => setGifLoaded(true)}
+                onError={() => setGifLoaded(true)}
+                className={`w-[8.49vw] h-[8.49vw] transition-opacity duration-300 ${
+                  gifLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
             </div>
             {/* <div className="flex items-center justify-center w-16 h-12 bg-white mx-auto mb-4 absolute top-8 left-14">
               <span className="text-black font-normal text-lg">FPO GIF</span>
             </div> */}
           </div>
-          <div className="font-semibold text-center mb-6 mt-4 text-base md:text-xl">
+          <div className="font-semibold text-center mt-2 text-base lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
             Now it's time to set up your dashboard — your registry HQ.
           </div>
-          <div className="text-center mb-6 text-lg md:text-xl max-w-xl">
+          <div className="text-center mb-[20px] lg:mb-[1.563vw] xl:mb-[1.563vw] 2xl:mb-[1.563vw] text-lg lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] w-[38.385vw] max-w-full">
             From tracking gifts and checking messages to sending thank-you notes and setting up your home page, everything you need lives here. You'll land here every time you log in.
           </div>
-          <div className="uppercase font-semibold mb-6 text-center">READY?</div>
+          <div className="uppercase font-semibold mb-2 text-center lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">READY?</div>
           <div className="mb-6">
             <label className="flex items-center justify-center gap-2 lg:gap-[0.833vw] xl:gap-[0.833vw] 2xl:gap-[0.833vw] cursor-pointer">
               <input
@@ -850,8 +886,8 @@ const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
           {eventDateError}
         </div>
       )}
-      <div className="mt-4 text-center text-sm p-8 ">
-        <p>Note: If date is not Decided Yet, Please Select any Random Date then you may update this date Later</p>
+      <div className="mt-4 text-center text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] p-8 ">
+        <p>Note: Don’t have a date yet? Choose a placeholder date for now — you can update it anytime. Works for weddings, engagement parties or bridal showers.</p>
       </div>
     </div>
   );

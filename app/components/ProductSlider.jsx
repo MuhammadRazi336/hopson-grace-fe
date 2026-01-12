@@ -27,8 +27,8 @@ const ProductSlider = ({products = []}) => {
 
   return (
     <div className="relative items-start mt-10 lg:mt-[3.958vw] xl:mt-[3.958vw] 2xl:mt-[3.958vw] lg:mb-0 mb-10 max-[1024px]:my-[30px]">
-      <div className="max-[1024px]:max-w-[92%] max-[767px]:max-w-[87.5%] w-[101.56vw] mx-auto relative">
-        <div className="swiper-button-prev-prod absolute top-0 max-[1024px]:left-[-38px] max-[767px]:left-[-6.2vw] left-[-11.7vw] w-[9.05vw] h-[23.43vw] cursor-pointer text-white uppercase flex items-center bg-[#446184] justify-center max-[1024px]:w-[28px] max-[767px]:w-[4vw] max-[767px]:h-[39.801vw]">
+      <div className=" relative">
+        <div className="swiper-button-prev-prod absolute top-0 left-0 w-[9.05vw] h-[23.43vw] cursor-pointer text-white uppercase flex items-center bg-[#446184] justify-center max-[1024px]:w-[28px] max-[767px]:w-[4vw] max-[767px]:h-[39.801vw]">
           <img src={nextitem} alt="" className="rotate-90 invert-100 w-[11px] h-[11px] lg:w-[1.042vw] lg:h-[1.042vw] max-[767px]:w-[8px] max-[767px]:h-[8px]" />
           <span className="-rotate-90 lg:text-[1.146vw] lg:leading-[1.667vw] text-white block tracking-wider max-[1024px]:hidden">
             more
@@ -43,7 +43,7 @@ const ProductSlider = ({products = []}) => {
             nextEl: '.swiper-button-next-prod',
             prevEl: '.swiper-button-prev-prod',
           }}
-          className=""
+          className="w-[101.56vw] max-[1024px]:max-w-[92%] max-[767px]:max-w-[87.5%] mx-auto"
           style={{}}
           loop={true}
           breakpoints={{
@@ -92,7 +92,7 @@ const ProductSlider = ({products = []}) => {
             );
           })}
         </Swiper>
-        <div className="swiper-button-next-prod absolute w-[9.05vw] h-[23.43vw] top-0 max-[1024px]:right-[-38px] max-[767px]:right-[-6.2vw] right-[-11.7vw] cursor-pointer text-white uppercase flex items-center bg-[#446184] justify-center max-[1024px]:w-[28px] max-[767px]:w-[4vw] max-[767px]:h-[39.801vw]">
+        <div className="swiper-button-next-prod absolute w-[9.05vw] h-[23.43vw] top-0 right-0 cursor-pointer text-white uppercase flex items-center bg-[#446184] justify-center max-[1024px]:w-[28px] max-[767px]:w-[4vw] max-[767px]:h-[39.801vw]">
           <span className="-rotate-270 lg:text-[1.146vw] lg:leading-[1.667vw] text-white block tracking-wider max-[1024px]:hidden">
             more
           </span>
