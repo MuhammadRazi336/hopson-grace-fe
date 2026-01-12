@@ -564,11 +564,11 @@ function SidebarFilter({
   };
 
   return (
-    <div className="w-[400px] h-fit">
-      <div className=" bg-[#FAF9F6] p-6">
-        <div className="mb-6">
+    <div className="w-[400px] h-fit lg:w-[22.28vw] xl:w-[22.28vw] 2xl:w-[22.28vw]">
+      <div className=" bg-[#FAF9F6] px-[1.979vw] pt-[2.865vw] pb-[3.802vw]">
+        <div className="mb-[3.438vw]">
           <h2
-            className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+            className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
             onClick={() => toggleSection('categories')}
           >
             Product Categories
@@ -591,11 +591,11 @@ function SidebarFilter({
           {openSections.categories && (
             <ul className="space-y-2 text-sm">
               {parentCollection.map((col) => (
-                <li key={col.id}>
-                  <label className="uppercase">
+                <li key={col.id} className='mb-[1.69vw]'>
+                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
                       checked={checkedCollectionIds.includes(col.id)}
                       onChange={() => handleSidebarCheckbox(col.id)}
                     />
@@ -607,9 +607,9 @@ function SidebarFilter({
           )}
         </div>
 
-        <div className="mb-6">
+        <div className="mb-[3.438vw]">
           <h2
-            className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+            className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
             onClick={() => toggleSection('brands')}
           >
             Our Brands
@@ -636,7 +636,7 @@ function SidebarFilter({
 
         <div>
           <h2
-            className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+            className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
             onClick={() => toggleSection('styles')}
           >
             Shop by Style
@@ -659,11 +659,11 @@ function SidebarFilter({
           {openSections.styles && (
             <ul className="space-y-2 text-sm">
               {subCollection.map((col) => (
-                <li key={col.id}>
-                  <label className="uppercase">
+                <li key={col.id} className='mb-[1.69vw]'>
+                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
                       checked={checkedCollectionIds.includes(col.id)}
                       onChange={() => handleSidebarCheckbox(col.id)}
                     />
@@ -905,8 +905,10 @@ export default function AddGifts() {
           alt="Couple"
           className="w-[9.375vw] h-[6px] mt-2 mx-auto"
         />
-        <p className="max-w-xl mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal leading-relaxed">
-          Browse by category, filter by price, or get inspired with our curated edits. Add, update, or switch things up whenever you like.
+        <p className="w-[46.771vw] max-w-full mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal leading-relaxed">
+          Browse by category, filter by price, or get inspired with our curated edits.
+          <br className="max-[1024px]:hidden" />
+          Add, update, or switch things up whenever you like.
         </p>
       </div>
       )}
@@ -1147,15 +1149,15 @@ export default function AddGifts() {
         </div>
       </section>
 
-      <section className="container mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-10">
+      <section className="px-[9.896vw]">
+        <div className="flex flex-col gap-[2.99vw] md:flex-row pt-10">
           <SidebarFilter
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
             selectedSwiperCollectionId={selectedSwiperCollectionId}
           />
-          <div className="flex flex-col">
+          <div className="flex flex-col lg:w-[75.52vw] xl:w-[75.52vw] 2xl:w-[75.52vw]">
             {/* Sort Filter */}
             {filteredProducts.length > 0 && (
               <div className="flex justify-between items-center p-4">
@@ -1253,7 +1255,7 @@ export default function AddGifts() {
             )}
 
             <div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 mt-10"
+              className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[2.60vw] gap-y-[7.5vw] mt-10 "
               ref={productGridRef}
             >
               {(() => {
