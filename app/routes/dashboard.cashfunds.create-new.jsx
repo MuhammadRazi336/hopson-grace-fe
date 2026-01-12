@@ -75,8 +75,7 @@ function CreateNewCashFund() {
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [cashFundName, setCashFundName] = useState('');
-  const [allowAnyAmount, setAllowAnyAmount] = useState(true);
-  const [allowFixedAmount, setAllowFixedAmount] = useState(false);
+  const [allowFixedAmount] = useState(true);
   const [totalGoal, setTotalGoal] = useState('');
   const [hideFromGuests, setHideFromGuests] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(true);
@@ -146,7 +145,7 @@ function CreateNewCashFund() {
       return;
     }
     // Check if required fields are filled
-    const isMissingRequiredFields = !cashFundName || !registry?.data[0]?.id || (allowFixedAmount && !totalGoal);
+    const isMissingRequiredFields = !cashFundName || !registry?.data[0]?.id || !totalGoal;
     
     if (isMissingRequiredFields) {
       e.preventDefault();
@@ -248,9 +247,9 @@ function CreateNewCashFund() {
         </div>
       </div>
 
-    <div className="py-[8.385vw] px-[7.083vw]">
-        <div className="pt-[5.938vw] pb-[4.115vw] px-[5.833vw] bg-[#446184]">
-          <h2 className="mt-0 text-white ivyora lg:text-[2.083vw] text-[24px] prata text-center lg:leading-[1.875vw] font-normal mb-[1.667vw]">
+    <div className="pt-[7.356vw] pb-[15.16vw] px-[9.18vw]">
+        <div className="pt-[9.63vw] pb-[5.143vw] px-[7.356vw] bg-[#446184]">
+          {/* <h2 className="mt-0 text-white ivyora lg:text-[2.083vw] text-[24px] prata text-center lg:leading-[1.875vw] font-normal mb-[1.667vw]">
             <span className="prata uppercase">NEW CASH</span> or{' '}
             <span className="prata uppercase">TRAVEL</span> fund
           </h2>
@@ -260,20 +259,20 @@ function CreateNewCashFund() {
             className="max-w-[630px] lg:w-[39.219vw] lg:h-[0.417vw] mt-0 h-auto mx-auto max-[767px]:max-w-[300px]"
           />
 
-          <p className="w-[46.927vw] max-w-full mb-[5.26vw] text-[26px] lg:text-[1.354vw] lg:leading-[1.875vw] mx-auto text-center text-white mt-5 font-normal leading-relaxed max-[767px]:text-[18px] max-[767px]:w-[90%]">
+          <p className="w-[46.927vw] max-w-full mb-[5.26vw] text-[26px] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] mx-auto text-center text-white mt-5 font-normal leading-relaxed max-[767px]:text-[18px] max-[767px]:w-[90%]">
             Create your own custom cash fund for anything you dream of - from honeymoon adventures to home improvements. 
             Design it exactly how you want it and share it with your loved ones.
-          </p>
+          </p> */}
 
           <div className="w-full mx-auto">
             <fetcher.Form method="post" encType="multipart/form-data" onSubmit={handleFormSubmit}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3.49vw]">
                 {/* Photo Section */}
-                <div className="space-y-4">
-                  <h2 className="text-white text-[18px] mb-[1.042vw] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold tracking-wide">
-                    PHOTO
+                <div className="space-y-4 lg:w-[41.08vw] xl:w-[41.08vw] 2xl:w-[41.08vw]">
+                  <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-wide">
+                  UPLOAD YOUR OWN PHOTO OR KEEP THIS
                   </h2>
-                  <div className="bg-[#F5F2ED] aspect-square relative flex items-center justify-center w-[35.313vw] h-[35.313vw]">
+                  <div className="bg-[#F5F2ED] aspect-square relative flex items-center justify-center w-full h-[41.08vw]">
                     <div className="text-center">
                       {photoPreview ? (
                         <img
@@ -312,9 +311,9 @@ function CreateNewCashFund() {
                 </div>
 
                 {/* Details Section */}
-                <div className="space-y-6 ">
-                  <h2 className="text-white text-[18px] mb-[1.042vw] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold tracking-wide">
-                    DETAILS
+                <div className="space-y-6 lg:w-[44.14vw] xl:w-[44.14vw] 2xl:w-[44.14vw]">
+                  <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-wide">
+                    GIFT NAME
                   </h2>
 
                   <div className="rounded-lg">
@@ -329,87 +328,40 @@ function CreateNewCashFund() {
                       />
                     </div>
 
-                    {/* Payment Type Toggle */}
-                    <div className="flex mt-[1.7vw] gap-4 lg:gap-[1.042vw] mb-[6.354vw] items-center justify-center max-[767px]:mt-[20px] max-[767px]:mb-[40px]">
-                      <span className="text-white text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold tracking-wide text-center">
-                        ANY <br /> AMOUNT
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAllowAnyAmount(true);
-                          setAllowFixedAmount(false);
-                          setTotalGoal(''); // Clear total goal when any amount is selected
-                        }}
-                        className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors max-[767px]:h-[40px] max-[767px]:w-[40px] max-[767px]:p-1 ${
-                          allowAnyAmount
-                            ? 'bg-[#223247] text-white'
-                            : 'bg-gray-200 text-white  hover:bg-gray-300'
-                        }`}
-                      >
-                        {allowAnyAmount ? (
-                          <img
-                            src="/assets/Images/check-icon.png"
-                            alt="check"
-                            className="w-[1.875vw] h-[1.875vw] mx-auto max-[767px]:w-[20px] max-[767px]:h-[20px]"
-                          />
-                        ) : (
-                          <span className="w-[1.875vw] h-[1.875vw]">&nbsp;</span>
-                        )}
-                      </button>
+                    {/* Fixed Amount Label */}
+                    {/* <div className="flex mt-[1.7vw] gap-4 lg:gap-[1.042vw] mb-[6.354vw] items-center justify-center max-[767px]:mt-[20px] max-[767px]:mb-[40px]">
                       <span className="text-white text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold tracking-wide text-center">
                         FIXED <br /> AMOUNT
                       </span>
+                    </div> */}
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAllowAnyAmount(false);
-                          setAllowFixedAmount(true);
-                        }}
-                        className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-wide transition-colors max-[767px]:h-[40px] max-[767px]:w-[40px] max-[767px]:p-1 ${
-                          allowFixedAmount
-                            ? 'bg-[#223247] text-white'
-                            : 'bg-gray-200 text-white hover:bg-gray-300'
-                        }`}
-                      >
-                        {allowFixedAmount ? (
-                          <img
-                            src="/assets/Images/check-icon.png"
-                            alt="check"
-                            className="w-[1.875vw] h-[1.875vw] mx-auto max-[767px]:w-[20px] max-[767px]:h-[20px]"
-                          />
-                        ) : (
-                          <span className="w-[1.875vw] h-[1.875vw]">&nbsp;</span>
-                        )}
-                      </button>
-                    </div>
+                    <h2 className="text-white mt-[3.594vw] text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-wide">
+                      GIFT VALUE
+                    </h2>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between max-[600px]:flex-col max-[600px]:gap-[10px]">
                       {/* Total Goal Input */}
-                      <div className="w-7/12">
+                      <div className="w-7/12 max-[600px]:w-full">
                         <Input
                           id="totalGoal"
                           name="amount"
                           value={totalGoal}
-                          className={`bg-white w-full !m-0 p-4 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0 ${allowAnyAmount ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className="bg-white w-full !m-0 p-4 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0"
                           placeholder="Total Goal*"
                           onChange={(e) => setTotalGoal(e.target.value)}
-                          disabled={allowAnyAmount}
                         />
                       </div>
 
                       {/* Hide from Guests Toggle */}
                       <div className=" flex items-center justify-center gap-5 lg:gap-[1.042vw] w-5/12 pl-2">
-                        <span className="text-white text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold text-center">
+                        <span className="text-white text-[16px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold text-center">
                           HIDE <br /> FROM <br /> GUESTS
                         </span>
 
                         <button
                           type="button"
                           onClick={() => setHideFromGuests(!hideFromGuests)}
-                          className={`flex items-center gap-2 h-[4.167vw] w-[4.167vw] px-4 py-4 rounded-full text-xs font-medium tracking-colors max-[767px]:h-[40px] max-[767px]:w-[40px] max-[767px]:p-1 ${
+                          className={`flex items-center gap-2 h-[4.167vw] min-h-[40px] w-[4.167vw] min-w-[40px] px-4 py-4 rounded-full text-xs font-medium tracking-colors max-[767px]:h-[40px] max-[767px]:w-[40px] max-[767px]:p-1 ${
                             hideFromGuests
                               ? 'bg-[#223247] text-white'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
@@ -430,7 +382,7 @@ function CreateNewCashFund() {
 
                     {/* Terms & Conditions */}
                     <div className="space-y-3 mt-[4.531vw]">
-                      <h4 className="text-white mt-0 mb-[1.094vw] font-bold text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] tracking-wide">
+                      <h4 className="text-white mt-0 mb-[1.094vw] font-bold text-[16px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-wide">
                         TERMS & CONDITIONS
                       </h4>
                       <p className="text-white text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] ivyora tracking-wide italic font-[400]">
@@ -469,6 +421,9 @@ function CreateNewCashFund() {
 
               {/* Note Section */}
               <div className="mt-[3.542vw] space-y-4">
+                <h2 className="text-white mt-[3.594vw] text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-wide">
+                  DESCRIPTION
+                </h2>
                 <textarea
                   placeholder="Write a short note to friends and family — explaining what this fund is for and why it's important to you (optional)."
                   name="note"
@@ -488,8 +443,7 @@ function CreateNewCashFund() {
                 </p>
               </div>
 
-              <input type="hidden" name="isAnyAmount" value={allowAnyAmount ? 'true' : 'false'} />
-              <input type="hidden" name="isFixedAmount" value={allowFixedAmount ? 'true' : 'false'} />
+              <input type="hidden" name="isFixedAmount" value="true" />
               <input type="hidden" name="isAmountHide" value={hideFromGuests ? 'true' : 'false'} />
               <input type="hidden" name="registryId" value={registry?.data[0]?.id || ''} />
 

@@ -26,14 +26,14 @@ const ProductCard = ({
   };
 
   return (
-    <div className="pt-0 relative z-0">
+    <div className="pt-0 relative z-0 lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
       <div className="relative group mb-[4.844vw]">
         {/* Product Image and Info */}
-        <div className="p-4 z-10 relative">
+        <div className="z-10 relative">
           <img
             src={image}
             alt={productName}
-            className="w-full h-[18.75vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
+            className="w-full h-[23.43vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
           />
           <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
             {productName}
