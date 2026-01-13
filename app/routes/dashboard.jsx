@@ -142,7 +142,7 @@ const Dashboard_index = ({context}) => {
   // Simple SVG positioning for each step
   const getSVGStyle = (stepNumber) => {
     switch(stepNumber) {
-      case 0: return { left: '26.74vw', top: '0.5vw', width: '22vw', height: '11vw' };
+      case 0: return { left: '15.74vw', top: '0.5vw', width: '22vw', height: '11vw' };
       case 1: return { left: '33vw', top: '1vw', width: '18vw', height: '10vw' };
       case 2: return { left: '51vw', top: '1.25vw', width: '4.949vw', height: '3.196vw' };
       case 3: return { left: '64vw', top: '1.25vw', width: '23vw', height: '9vw' };

@@ -1714,10 +1714,10 @@ export function Header() {
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dashboard/cashfunds' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/cashfunds">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group ${location.pathname === '/dream-fund' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dream-fund">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-[0.938vw] font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
                     <div className="z-20 text-inherit">
-                      <span className="relative inline-block">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/cashfunds' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                      <span className="relative inline-block">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dream-fund' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>

@@ -59,7 +59,7 @@ const OnboardingClient = ({onStepChange}) => {
   const [eventData, setEventData] = useState({
     noOfGuest: '',
     selectedOption: {},
-    selectedDate: new Date(),
+    selectedDate: null,
     eventName: '',
     id: null,
     eventId: null,
@@ -1242,7 +1242,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
 
   return (
     <div className="flex flex-col items-center">
-      <p className="font-normal mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
+      <p className="font-normal uppercase mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
         Choose as many as you like
       </p>
       {/* Grid */}

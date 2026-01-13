@@ -724,8 +724,16 @@ button > p {
   line-height: 0.938vw;
 }
 
-.bastardogrotesk > * {
+.bastardogrotesk > *,
+.bastardogrotesk {
   font-family: 'bastardogrotesk' !important;
+}
+
+.datePickerInput,
+.datePickerInput::placeholder{
+  font-family: 'bastardogrotesk' !important;
+  font-weight: 400 !important;
+  color: #1F1D1B !important;
 }
 
 .collection-slider .swiper-wrapper {

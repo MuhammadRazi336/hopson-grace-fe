@@ -19,6 +19,7 @@ const DatePicker = ({
   className = '',
   buttonLabels = {clear: 'Clear', apply: 'Apply'},
   disabledDates = [],
+  placeholder = 'Select a date',
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -44,9 +45,9 @@ const DatePicker = ({
             value={selectedDate ? moment(selectedDate).format(dateFormat) : ''}
             readOnly
             {...inputProps}
-            className={`cursor-pointer ${inputProps.className || ''}`}
+            className={`cursor-pointer lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-[#1F1D1B] datePickerInput ${inputProps.className || ''}`}
             onClick={() => setShowCalendar(true)}
-            placeholder="Select a date"
+            placeholder={placeholder}
             icon={<i className="fas fa-calendar-alt" />}
           />
         </PopoverHandler>
