@@ -38,6 +38,7 @@ import ModalPortal from '~/components/ModalPortal';
 import nextitem from '/assets/Images/next.png';
 import placeholder from '/assets/Images/placeholder.jpg';
 import notsure from '/assets/Images/notsure.jpg';
+import {STATES_BY_COUNTRY} from '~/constants/StatesByCountry';
 
 const OnboardingClient = ({onStepChange}) => {
   const {user, collections, context} = useLoaderData();
@@ -59,7 +60,7 @@ const OnboardingClient = ({onStepChange}) => {
   const [eventData, setEventData] = useState({
     noOfGuest: '',
     selectedOption: {},
-    selectedDate: new Date(),
+    selectedDate: null,
     eventName: '',
     id: null,
     eventId: null,
@@ -85,19 +86,39 @@ const OnboardingClient = ({onStepChange}) => {
   // General change handler for all fields
   const handleInputChange = (e) => {
     const {name, value} = e.target;
-    setAddressData({
-      ...addressData,
-      [name]: value,
-    });
-    // Clear province error when user manually changes the province field
-    if (name === 'province' && step4Errors?.province) {
-      setStep4Errors((prev) => {
-        const newErrors = {...prev};
-        delete newErrors.province;
-        delete newErrors.suggestions;
-        return newErrors;
+    
+    // If country changes, clear province
+    if (name === 'country') {
+      setAddressData({
+        ...addressData,
+        [name]: value,
+        province: '', // Clear province when country changes
       });
-      setShowProvincePopup(false);
+      // Clear province errors when country changes
+      if (step4Errors?.province) {
+        setStep4Errors((prev) => {
+          const newErrors = {...prev};
+          delete newErrors.province;
+          delete newErrors.suggestions;
+          return newErrors;
+        });
+        setShowProvincePopup(false);
+      }
+    } else {
+      setAddressData({
+        ...addressData,
+        [name]: value,
+      });
+      // Clear province error when user manually changes the province field
+      if (name === 'province' && step4Errors?.province) {
+        setStep4Errors((prev) => {
+          const newErrors = {...prev};
+          delete newErrors.province;
+          delete newErrors.suggestions;
+          return newErrors;
+        });
+        setShowProvincePopup(false);
+      }
     }
   };
   useEffect(() => {
@@ -540,8 +561,6 @@ const OnboardingClient = ({onStepChange}) => {
         // Province/State validation
         if (!addressData.province || addressData.province.trim() === '') {
           errors.province = 'Province/State is required';
-        } else if (addressData.province.trim().length < 2) {
-          errors.province = 'Province/State must be at least 2 characters long';
         }
         
         // Country validation
@@ -854,12 +873,16 @@ const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
   // For step 1, we don't want to show the prefilled date initially
   const [localSelectedDate, setLocalSelectedDate] = useState(null);
 
-  // Update local date when selectedDate changes (but only if it's a new selection, not the initial prefilled value)
+  // Update local date when selectedDate changes (but only if it's a new selection from user or saved data)
   useEffect(() => {
-    if (selectedDate && !localSelectedDate) {
+    // Only update if selectedDate is actually set (not null) and different from current local state
+    if (selectedDate !== null && selectedDate !== localSelectedDate) {
       setLocalSelectedDate(selectedDate);
+    } else if (selectedDate === null) {
+      // If selectedDate is explicitly set to null, clear local state
+      setLocalSelectedDate(null);
     }
-  }, [selectedDate, localSelectedDate]);
+  }, [selectedDate]);
 
   const handleDateChange = (date) => {
     setLocalSelectedDate(date);
@@ -874,6 +897,7 @@ const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
           onDateChange={handleDateChange}
           placeholder="Select a date *"
           inputProps={{
+            placeholder: "Select a date *",
             className:
               'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
           }}
@@ -990,7 +1014,7 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           error={step4Errors?.phoneNumber}
         />
 
-        {/* Address */}
+        {/* Address - First field */}
         <Input
           placeholder="Address *"
           name="address"
@@ -1000,37 +1024,7 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           error={step4Errors?.address}
         />
 
-        {/* Postal Code */}
-        <Input
-          placeholder="Postal Code *"
-          name="postalCode"
-          value={formData.postalCode}
-          onChange={handleInputChange}
-          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-          error={step4Errors?.postalCode}
-        />
-
-        {/* City */}
-        <Input
-          placeholder="City *"
-          name="city"
-          value={formData.city}
-          onChange={handleInputChange}
-          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-          error={step4Errors?.city}
-        />
-
-        {/* Province */}
-        <Input
-          placeholder="Province/State *"
-          name="province"
-          value={formData.province}
-          onChange={handleInputChange}
-          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-          error={step4Errors?.province}
-        />
-
-        {/* Country */}
+        {/* Country - Second field */}
         <div className="flex flex-col mb-2 relative w-full">
           <div className="relative">
             <select
@@ -1074,6 +1068,77 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
             </div>
           )}
         </div>
+
+        {/* State/Province - Third field (Select dropdown) */}
+        <div className="flex flex-col mb-2 relative w-full">
+          <div className="relative">
+            <select
+              name="province"
+              id="province"
+              value={formData.province}
+              onChange={handleInputChange}
+              disabled={!formData.country}
+              className={`rounded-none mt-2 p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
+                !formData.country ? 'bg-gray-100 cursor-not-allowed opacity-50' : ''
+              } ${
+                step4Errors?.province ? 'border-[#FD446F] focus:border-[#FD446F] focus:ring-[#FD446F]' : ''
+              }`}
+              aria-invalid={!!step4Errors?.province}
+              aria-describedby={step4Errors?.province ? 'province-error' : undefined}
+            >
+              <option value="">Select State/Province *</option>
+              {formData.country && STATES_BY_COUNTRY[formData.country]?.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+            {/* Custom dropdown arrow */}
+            <div className="absolute right-5 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-black"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+          {step4Errors?.province && (
+            <div id="province-error" role="alert" className="mt-1 text-left">
+              <span className="text-[#FD446F] font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
+                {step4Errors.province}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* City - Fourth field */}
+        <Input
+          placeholder="City *"
+          name="city"
+          value={formData.city}
+          onChange={handleInputChange}
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.city}
+        />
+
+        {/* Postal Code - Fifth field */}
+        <Input
+          placeholder="Postal Code *"
+          name="postalCode"
+          value={formData.postalCode}
+          onChange={handleInputChange}
+          className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+          error={step4Errors?.postalCode}
+        />
       </div>
       <div className="mt-4 text-center">
         <button
@@ -1324,7 +1389,25 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
           if (!response.ok) {
             throw new Error(data.error || 'Failed to fetch collections');
           }
-          setSubCollectionsData(data.collections || []);
+          
+          // Filter subcategories to only show MODERN, CLASSIC, ELECTIC, and NOT SURE
+          const allowedNames = ['MODERN', 'CLASSIC', 'ELECTIC', 'NOT SURE'];
+          const filteredCollections = (data.collections || []).filter((collection) => {
+            const title = collection.title?.toUpperCase().trim();
+            return allowedNames.includes(title);
+          });
+          
+          // Remove duplicates based on title (case-insensitive)
+          const uniqueCollections = filteredCollections.reduce((acc, current) => {
+            const titleUpper = current.title?.toUpperCase().trim();
+            const exists = acc.find(item => item.title?.toUpperCase().trim() === titleUpper);
+            if (!exists) {
+              acc.push(current);
+            }
+            return acc;
+          }, []);
+          
+          setSubCollectionsData(uniqueCollections);
         } catch (error) {
           setError(error.message);
         }

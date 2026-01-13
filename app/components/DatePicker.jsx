@@ -19,6 +19,7 @@ const DatePicker = ({
   className = '',
   buttonLabels = {clear: 'Clear', apply: 'Apply'},
   disabledDates = [],
+  placeholder = 'Select a date',
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -40,15 +41,33 @@ const DatePicker = ({
         {/* Label */}
         <label  className={`block text-sm font-medium mb-1 ${labelHidden ? 'hidden' : ''}`}>{label}</label>
         <PopoverHandler>
-          <Inp
-            value={selectedDate ? moment(selectedDate).format(dateFormat) : ''}
-            readOnly
-            {...inputProps}
-            className={`cursor-pointer ${inputProps.className || ''}`}
-            onClick={() => setShowCalendar(true)}
-            placeholder="Select a date"
-            icon={<i className="fas fa-calendar-alt" />}
-          />
+          <div className="relative">
+            <Inp
+              value={selectedDate ? moment(selectedDate).format(dateFormat) : ''}
+              readOnly
+              {...inputProps}
+              className={`cursor-pointer text-center pr-12 ${inputProps.className || ''}`}
+              onClick={() => setShowCalendar(true)}
+              placeholder={inputProps.placeholder || placeholder}
+            />
+            {/* Dropdown icon positioned on the right */}
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-black"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
         </PopoverHandler>
 
         {/* Calendar Popover Content */}

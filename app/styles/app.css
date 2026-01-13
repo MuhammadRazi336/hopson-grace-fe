@@ -988,14 +988,18 @@ button > p {
 .customDatePicker {
   height: 68px;
   display: flex;
+  text-align: center;
+}
+
+.customDatePicker input::placeholder {
+  text-align: center;
+}
+
+.customDatePicker input {
+  text-align: center;
 }
 
 /* datepicker */
-
-.customDatePicker {
-  height: 68px;
-  display: flex;
-}
 
 .rdp-outside {
   opacity: 0.2;
