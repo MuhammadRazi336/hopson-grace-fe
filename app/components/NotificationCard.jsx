@@ -16,9 +16,8 @@ const NotificationCard = ({ count = 0, onView, className, loading = false, refre
       </span>
     </div>
     {/* Number */}
-    <div className="text-[48px] leading-[50px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-serif font-medium text-black mb-1 lg:mb-[0.573vw] xl:mb-[0.573vw] 2xl:mb-[0.573vw] relative">
+    <div className="text-[48px] leading-[50px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-serif font-medium text-black mb-1 lg:mb-[1vw] xl:mb-[1vw] 2xl:mb-[1vw] relative">
       {loading ? '...' : refreshing ? '⟳' : count}
-      <div className="w-[65px] h-1 lg:w-[3.385vw] xl:w-[3.385vw] 2xl:w-[3.385vw] lg:h-[0.156vw] xl:h-[0.156vw] 2xl:h-[0.156vw] bg-black mx-auto mt-0 lg:mb-[0.833vw] xl:mb-[0.833vw] 2xl:mb-[0.833vw] rounded"></div>
     </div>
     {/* Message */}
     <div className="uppercase text-base lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.042vw] xl:leading-[1.042vw] 2xl:leading-[1.042vw] font-medium tracking-wide text-black mb-[23px] lg:mb-[1.198vw] xl:mb-[1.198vw] 2xl:mb-[1.198vw]">

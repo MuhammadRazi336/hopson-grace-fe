@@ -41,33 +41,15 @@ const DatePicker = ({
         {/* Label */}
         <label  className={`block text-sm font-medium mb-1 ${labelHidden ? 'hidden' : ''}`}>{label}</label>
         <PopoverHandler>
-          <div className="relative">
-            <Inp
-              value={selectedDate ? moment(selectedDate).format(dateFormat) : ''}
-              readOnly
-              {...inputProps}
-              className={`cursor-pointer text-center pr-12 ${inputProps.className || ''}`}
-              onClick={() => setShowCalendar(true)}
-              placeholder={inputProps.placeholder || placeholder}
-            />
-            {/* Dropdown icon positioned on the right */}
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <svg
-                className="w-5 h-5 text-black"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
+          <Inp
+            value={selectedDate ? moment(selectedDate).format(dateFormat) : ''}
+            readOnly
+            {...inputProps}
+            className={`cursor-pointer lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-[#1F1D1B] datePickerInput ${inputProps.className || ''}`}
+            onClick={() => setShowCalendar(true)}
+            placeholder={placeholder}
+            icon={<i className="fas fa-calendar-alt" />}
+          />
         </PopoverHandler>
 
         {/* Calendar Popover Content */}
