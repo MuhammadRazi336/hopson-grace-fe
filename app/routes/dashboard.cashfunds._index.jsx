@@ -368,7 +368,6 @@ const CashFunds = () => {
                 image={card.image}
                 title={card.title}
                 amount={typeof card.price === 'number' ? card.price.toFixed(2) : parseFloat(card.price || 0).toFixed(2)}
-                buttonLabel={'Personalize Fund'}
                 onButtonClick={() => handleButtonClick(card.title)}
                 registryId={registryId}
                 price={typeof card.price === 'number' ? card.price.toFixed(2) : parseFloat(card.price || 0).toFixed(2)}
@@ -803,11 +802,6 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
 
         <div className="flex items-center justify-between mt-[2.813vw]">
           <div className="flex flex-col w-full items-center text-xs">
-            <Link to={`/dashboard/cashfunds/create-new`} className='w-full'>
-              <button className="bg-white cursor-pointer w-full lg:h-[4.01vw] lg:mb-[0.729vw] lg:text-[0.833vw] lg:leading-[0.938vw] block text-black uppercase border border-black text-xs font-bold py-2 px-4">
-                personalize fund
-              </button>
-            </Link>
             <button 
               onClick={handleAddToRegistry}
               disabled={fetcher.state === 'submitting'}
@@ -927,10 +921,6 @@ function ProductGrid({products}) {
             <div className="flex items-center justify-between mt-4">
               {/* Quantity Controls */}
               <div className="flex flex-col w-full items-center text-xs">
-                {/* Add to Registry Button */}
-                <button className="bg-white w-full block mb-2 text-black uppercase border border-black text-xs font-bold py-4 px-8">
-                  personalize fund
-                </button>
                 {/* Add to Registry Button */}
                 <button className="bg-[#446184] w-full block text-white text-xs font-bold py-4 px-8">
                   ADD TO REGISTRY

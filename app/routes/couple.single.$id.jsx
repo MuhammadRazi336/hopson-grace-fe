@@ -1707,7 +1707,7 @@ export default function CoupleProfile() {
               <img
                 src="/assets/Images/NoProduct.png"
                 alt="No Products"
-                className="w-24 h-24 mx-auto mb-6 opacity-50"
+                className="w-36 h-36 mx-auto mb-6 opacity-50"
               />
               <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
                 No Products Found

@@ -9,10 +9,19 @@ const ProductCard = ({
   description,
   onAddToRegistry,
   productHandle,
+  isLoggedIn = false, // Show quantity counter only when logged in
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
   const [isReadMore, setIsReadMore] = useState(false);
+
+  const incrementQuantity = () => {
+    setQuantity((prev) => prev + 1);
+  };
+
+  const decrementQuantity = () => {
+    setQuantity((prev) => Math.max(1, prev - 1));
+  };
 
   const handleAddToRegistry = () => {
     if (onAddToRegistry && quantity > 0) {
@@ -65,6 +74,42 @@ const ProductCard = ({
           <div className="flex items-center justify-between mt-[2.813vw]">
             {/* Quantity Controls */}
             <div className="flex flex-col w-full items-center text-xs">
+              {/* Quantity Selector - Only show when logged in */}
+              {isLoggedIn && (
+                <div className="flex items-center w-full gap-4 lg:gap-[1.927vw] xl:gap-[1.927vw] 2xl:gap-[1.927vw] mb-4 justify-center">
+                  <p className="text-[18px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] font-bold uppercase text-left mb-1">QTY</p>
+                  {/* Quantity Selector */}
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={incrementQuantity}
+                      className="flex items-center justify-center bg-white transition-colors"
+                    >
+                      <img
+                        src="/assets/Images/arrowDown.png"
+                        className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw] rotate-180"
+                        alt=""
+                      />
+                    </button>
+
+                    <input
+                      value={quantity}
+                      className="w-16 lg:text-[1.458vw] lg:leading-[1.25vw] lg:h-[1.563vw] relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-sm"
+                      readOnly
+                    />
+
+                    <button
+                      onClick={decrementQuantity}
+                      className="flex items-center justify-center bg-white transition-colors"
+                    >
+                      <img
+                        src="/assets/Images/arrowDown.png"
+                        className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw]"
+                        alt=""
+                      />
+                    </button>
+                  </div>
+                </div>
+              )}
               {/* Add to Registry Button */}
               <button
                 className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"

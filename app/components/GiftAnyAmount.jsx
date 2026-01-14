@@ -128,7 +128,7 @@ function GiftAnyAmount() {
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
       } else {
-        setAlertMessage('Failed to update message');
+        setAlertMessage('Failed to update message', response);
         setAlertType('error');
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 3000);
