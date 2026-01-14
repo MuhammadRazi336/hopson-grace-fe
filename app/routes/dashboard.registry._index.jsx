@@ -206,10 +206,11 @@ const index = () => {
       if (response.ok) {
         alert('Message updated!');
       } else {
-        alert('Failed to update message');
+        console.log('response', response);
+        alert( response.statusText);
       }
     } catch (err) {
-      alert('Error updating message');
+      alert('Error updating message', err.status);
     }
   };
 

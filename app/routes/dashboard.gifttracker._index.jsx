@@ -88,7 +88,7 @@ const GiftTracker = () => {
                   <img
                     src="/assets/Images/NoProduct.png"
                     alt="No Transactions"
-                    className="w-24 h-24 mx-auto mb-6 opacity-50"
+                    className="w-36 h-36 mx-auto mb-6 opacity-50"
                   />
                   <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
                     IT'S QUIET HERE - FOR NOW.
@@ -96,12 +96,6 @@ const GiftTracker = () => {
                   <p className="text-gray-600 mb-6">
                   Once guests start shopping, your gifts will show up here.
                   </p>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-500">
-                      <strong>Tip:</strong> Share your registry with friends and family to start 
-                      receiving gifts and tracking purchases.
-                    </p>
-                  </div>
                 </div>
               </div>
             ) : (

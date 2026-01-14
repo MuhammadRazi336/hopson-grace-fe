@@ -35,14 +35,25 @@ import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import BestsellersSection from '~/components/BestsellersSection';
 
 export async function loader({request, context}) {
-  const {products} = await loadCriticalData({context});
-  const {collections} = await loadCollectionData({context});
-  const user = await requireAuth(context);
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
-  const userData = await context?.ClientGet(`users/${user?.user?.id}`, context);
+  try {
+    // Run all independent async operations in parallel to avoid I/O context issues
+    const [productsData, collectionsData, user] = await Promise.all([
+      loadCriticalData({context}),
+      loadCollectionData({context}),
+      requireAuth(context),
+    ]);
+
+    const {products} = productsData;
+    const {collections} = collectionsData;
+
+    // Fetch registry and userData in parallel
+    const [registry, userData] = await Promise.all([
+      context.ClientGet(
+        `registries/by-userId/${user.user.id}`,
+        context,
+      ),
+      context?.ClientGet(`users/${user?.user?.id}`, context),
+    ]);
 
   // Fetch ready-made registries using the same pattern as home index
   let featuredRegistryData = null;
@@ -162,25 +173,32 @@ export async function loader({request, context}) {
           }
         }
 
-        // Fetch each sub-collection
-        for (const subCollectionId of subCollectionIds) {
+        // Fetch all sub-collections in parallel to avoid I/O context issues
+        if (subCollectionIds.length > 0) {
           try {
-            const subCollectionData = await context.storefront.query(
-              SUB_COLLECTION_QUERY,
-              {
-                variables: {id: subCollectionId},
-              },
-            );
+            const subCollectionPromises = subCollectionIds.map(async (subCollectionId) => {
+              try {
+                const subCollectionData = await context.storefront.query(
+                  SUB_COLLECTION_QUERY,
+                  {
+                    variables: {id: subCollectionId},
+                  },
+                );
+                return subCollectionData?.collection || null;
+              } catch (error) {
+                console.error(
+                  'Error fetching sub-collection:',
+                  subCollectionId,
+                  error,
+                );
+                return null;
+              }
+            });
 
-            if (subCollectionData?.collection) {
-              subCollections.push(subCollectionData.collection);
-            }
+            const subCollectionResults = await Promise.all(subCollectionPromises);
+            subCollections.push(...subCollectionResults.filter(Boolean));
           } catch (error) {
-            console.error(
-              'Error fetching sub-collection:',
-              subCollectionId,
-              error,
-            );
+            console.error('Error fetching sub-collections in parallel:', error);
           }
         }
       }
@@ -188,13 +206,11 @@ export async function loader({request, context}) {
       return subCollections;
     };
 
-    // Fetch sub-collections for each type
-    const realSubCollections = await fetchSubCollections(
-      realRegistriesCollection,
-    );
-    const themedSubCollections = await fetchSubCollections(
-      themedRegistriesCollection,
-    );
+    // Fetch sub-collections for each type in parallel
+    const [realSubCollections, themedSubCollections] = await Promise.all([
+      fetchSubCollections(realRegistriesCollection),
+      fetchSubCollections(themedRegistriesCollection),
+    ]);
 
     console.log('Fetched sub-collections:', {
       real: realSubCollections.length,
@@ -284,100 +300,101 @@ export async function loader({request, context}) {
     }
   }
 
-  // Extract products only from parent collections (parentMetafield.value === 'true' and readyMadeMetafield.value !== 'true')
-  let allProducts = [];
-  const productMap = new Map(); // Use Map to track unique products by ID
-  
-  try {
-    // First, find all parent collections
-    const parentCollections = collections.filter(
-      (col) =>
-        col.parentMetafield?.value === 'true' &&
-        col.readyMadeMetafield?.value !== 'true',
-    );
+    // Extract products only from parent collections (parentMetafield.value === 'true' and readyMadeMetafield.value !== 'true')
+    let allProducts = [];
+    const productMap = new Map(); // Use Map to track unique products by ID
+    
+    try {
+      // First, find all parent collections
+      const parentCollections = collections.filter(
+        (col) =>
+          col.parentMetafield?.value === 'true' &&
+          col.readyMadeMetafield?.value !== 'true',
+      );
 
-    // For each parent collection, get products from its sub-collections
-    parentCollections.forEach((parentCollection) => {
-      // Get sub-collection GIDs from the parent's subCollectionMetafield (Collection type) or subMetafield (JSON string)
-      let subCollectionGids = [];
-      let subCollections = [];
-      
-      // First, try to get from the new Collection type metafield (references)
-      if (parentCollection.subCollectionMetafield?.references?.edges) {
-        subCollections = parentCollection.subCollectionMetafield.references.edges.map(
-          (edge) => edge.node,
-        );
-        subCollectionGids = subCollections.map((sub) => sub.id);
-      } else if (parentCollection.subMetafield?.value) {
-        // Fallback to old JSON string format
-        try {
-          subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
-          // Find sub-collections by GID
-          subCollections = collections.filter(
-            (col) =>
-              col.parentMetafield?.value === 'false' &&
-              col.readyMadeMetafield?.value !== 'true' &&
-              subCollectionGids.includes(col.id),
-          );
-        } catch (error) {
-          // Handle any errors in parsing subMetafield
-        }
-      }
-
-      // Extract products from sub-collections
-      subCollections.forEach((subCollectionRef) => {
-        // Find the full collection data from the main collections array
-        const subCollection = collections.find(
-          (col) => col.id === subCollectionRef.id,
-        ) || subCollectionRef; // Fallback to reference if not found
+      // Process all parent collections synchronously (no async operations here)
+      for (const parentCollection of parentCollections) {
+        // Get sub-collection GIDs from the parent's subCollectionMetafield (Collection type) or subMetafield (JSON string)
+        let subCollectionGids = [];
+        let subCollections = [];
         
-        if (subCollection.products?.edges) {
-          subCollection.products.edges.forEach((edge) => {
-            const product = edge.node;
-            
-            // Only add product if it hasn't been added before (deduplication)
-            if (!productMap.has(product.id)) {
-              const productData = {
-                id: product.id,
-                title: product.title,
-                handle: product.handle,
-                description: product.description,
-                image: product.images?.edges?.[0]?.node?.url || null,
-                price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
-                currency:
-                  product.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
-                  'USD',
-                availableForSale:
-                  product.variants?.edges?.[0]?.node?.availableForSale || false,
-                createdAt: product.createdAt,
-                collectionId: subCollection.id, // Use sub-collection ID
-                parentCollectionId: parentCollection.id, // Also track parent collection ID
-                parentCollectionTitle: parentCollection.title, // Track parent collection title
-              };
+        // First, try to get from the new Collection type metafield (references)
+        if (parentCollection.subCollectionMetafield?.references?.edges) {
+          subCollections = parentCollection.subCollectionMetafield.references.edges.map(
+            (edge) => edge.node,
+          );
+          subCollectionGids = subCollections.map((sub) => sub.id);
+        } else if (parentCollection.subMetafield?.value) {
+          // Fallback to old JSON string format
+          try {
+            subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
+            // Find sub-collections by GID
+            subCollections = collections.filter(
+              (col) =>
+                col.parentMetafield?.value === 'false' &&
+                col.readyMadeMetafield?.value !== 'true' &&
+                subCollectionGids.includes(col.id),
+            );
+          } catch (error) {
+            // Handle any errors in parsing subMetafield
+            console.error('Error parsing subMetafield:', error);
+          }
+        }
+
+        // Extract products from sub-collections (synchronous operation)
+        for (const subCollectionRef of subCollections) {
+          // Find the full collection data from the main collections array
+          const subCollection = collections.find(
+            (col) => col.id === subCollectionRef.id,
+          ) || subCollectionRef; // Fallback to reference if not found
+          
+          if (subCollection.products?.edges) {
+            for (const edge of subCollection.products.edges) {
+              const product = edge.node;
               
-              productMap.set(product.id, productData);
-              allProducts.push(productData);
-            } else {
-              // If product already exists, update the collection info to include this sub-collection
-              const existingProduct = productMap.get(product.id);
-              if (existingProduct) {
-                // Add this sub-collection info to the existing product
-                if (!existingProduct.collectionIds) {
-                  existingProduct.collectionIds = [existingProduct.collectionId];
-                }
-                if (!existingProduct.collectionIds.includes(subCollection.id)) {
-                  existingProduct.collectionIds.push(subCollection.id);
+              // Only add product if it hasn't been added before (deduplication)
+              if (!productMap.has(product.id)) {
+                const productData = {
+                  id: product.id,
+                  title: product.title,
+                  handle: product.handle,
+                  description: product.description,
+                  image: product.images?.edges?.[0]?.node?.url || null,
+                  price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+                  currency:
+                    product.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+                    'USD',
+                  availableForSale:
+                    product.variants?.edges?.[0]?.node?.availableForSale || false,
+                  createdAt: product.createdAt,
+                  collectionId: subCollection.id, // Use sub-collection ID
+                  parentCollectionId: parentCollection.id, // Also track parent collection ID
+                  parentCollectionTitle: parentCollection.title, // Track parent collection title
+                };
+                
+                productMap.set(product.id, productData);
+                allProducts.push(productData);
+              } else {
+                // If product already exists, update the collection info to include this sub-collection
+                const existingProduct = productMap.get(product.id);
+                if (existingProduct) {
+                  // Add this sub-collection info to the existing product
+                  if (!existingProduct.collectionIds) {
+                    existingProduct.collectionIds = [existingProduct.collectionId];
+                  }
+                  if (!existingProduct.collectionIds.includes(subCollection.id)) {
+                    existingProduct.collectionIds.push(subCollection.id);
+                  }
                 }
               }
             }
-          });
+          }
         }
-      });
-    });
-  } catch (error) {
-    // Handle any errors in extracting products from collections
-    console.error('Error extracting products from collections:', error);
-  }
+      }
+    } catch (error) {
+      // Handle any errors in extracting products from collections
+      console.error('Error extracting products from collections:', error);
+    }
 
   // Log deduplication results
   console.log('Product deduplication results:', {
@@ -389,36 +406,42 @@ export async function loader({request, context}) {
     ).length
   });
 
-  // Fetch bestseller products
-  let bestsellerProducts = [];
-  try {
-    const {products: bestsellerData} = await context.storefront.query(BESTSELLER_PRODUCTS_QUERY);
-    bestsellerProducts = bestsellerData?.edges?.map(edge => ({
-      node: {
-        id: edge.node.id,
-        title: edge.node.title,
-        handle: edge.node.handle,
-        description: edge.node.description,
-        images: edge.node.images,
-        priceRange: edge.node.priceRange,
-        variants: edge.node.variants,
-      }
-    })) || [];
-  } catch (error) {
-    console.error('Error fetching bestseller products:', error);
-    bestsellerProducts = [];
-  }
+    // Fetch bestseller and recommended products in parallel
+    let bestsellerProducts = [];
+    let recommendedProducts = [];
+    
+    try {
+      const [bestsellerResult, recommendedResult] = await Promise.all([
+        context.storefront.query(BESTSELLER_PRODUCTS_QUERY).catch(error => {
+          console.error('Error fetching bestseller products:', error);
+          return {products: {edges: []}};
+        }),
+        context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
+          variables: { first: 8 } 
+        }).catch(error => {
+          console.error('Error loading recommended products:', error);
+          return {products: {edges: []}};
+        }),
+      ]);
 
-  // Fetch recommended products
-  let recommendedProducts = [];
-  try {
-    const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
-      variables: { first: 8 } 
-    });
-    recommendedProducts = recommendedProductsData?.edges || [];
-  } catch (error) {
-    console.error('Error loading recommended products:', error);
-  }
+      bestsellerProducts = bestsellerResult?.products?.edges?.map(edge => ({
+        node: {
+          id: edge.node.id,
+          title: edge.node.title,
+          handle: edge.node.handle,
+          description: edge.node.description,
+          images: edge.node.images,
+          priceRange: edge.node.priceRange,
+          variants: edge.node.variants,
+        }
+      })) || [];
+
+      recommendedProducts = recommendedResult?.products?.edges || [];
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      bestsellerProducts = [];
+      recommendedProducts = [];
+    }
 
   console.log('Loader returning data:', {
     productsLength: allProducts?.length || 0,
@@ -434,46 +457,61 @@ export async function loader({request, context}) {
     },
   });
 
-  console.log('About to return featuredRegistryData:', featuredRegistryData);
-  console.log(
-    'About to return featuredRegistryData type:',
-    typeof featuredRegistryData,
-  );
-  console.log(
-    'About to return featuredRegistryData === null:',
-    featuredRegistryData === null,
-  );
-  console.log(
-    'About to return readyMadeRegistries in json:',
-    featuredRegistryData,
-  );
-  console.log(
-    'About to return featuredRegistryData.subCollections:',
-    featuredRegistryData?.subCollections,
-  );
-  console.log(
-    'About to return featuredRegistryData.parentCollection:',
-    featuredRegistryData?.parentCollection,
-  );
+    console.log('About to return featuredRegistryData:', featuredRegistryData);
+    console.log(
+      'About to return featuredRegistryData type:',
+      typeof featuredRegistryData,
+    );
+    console.log(
+      'About to return featuredRegistryData === null:',
+      featuredRegistryData === null,
+    );
+    console.log(
+      'About to return readyMadeRegistries in json:',
+      featuredRegistryData,
+    );
+    console.log(
+      'About to return featuredRegistryData.subCollections:',
+      featuredRegistryData?.subCollections,
+    );
+    console.log(
+      'About to return featuredRegistryData.parentCollection:',
+      featuredRegistryData?.parentCollection,
+    );
 
-  const returnData = {
-    products: allProducts,
-    collections,
-    user,
-    registry,
-    userData,
-    readyMadeRegistries: featuredRegistryData,
-    bestsellerProducts,
-    recommendedProducts,
-  };
+    const returnData = {
+      products: allProducts,
+      collections,
+      user,
+      registry,
+      userData,
+      readyMadeRegistries: featuredRegistryData,
+      bestsellerProducts,
+      recommendedProducts,
+    };
 
-  console.log('Final return data:', returnData);
-  console.log(
-    'Final return data readyMadeRegistries:',
-    returnData.readyMadeRegistries,
-  );
+    console.log('Final return data:', returnData);
+    console.log(
+      'Final return data readyMadeRegistries:',
+      returnData.readyMadeRegistries,
+    );
 
-  return json(returnData);
+    return json(returnData);
+  } catch (error) {
+    console.error('Error in dashboard.addgifts loader:', error);
+    // Return minimal data to prevent page crash
+    return json({
+      products: [],
+      collections: [],
+      user: null,
+      registry: null,
+      userData: null,
+      readyMadeRegistries: null,
+      bestsellerProducts: [],
+      recommendedProducts: [],
+      error: error.message,
+    });
+  }
 }
 
 export async function action({request, context}) {
@@ -816,7 +854,7 @@ export default function AddGifts() {
     });
   }, [filteredProducts, priceSort, dateSort]);
 
-  const handleAddtoRegistry = (product) => {
+  const handleAddtoRegistry = (product, quantity = 1, isGroupGift = false) => {
     try {
       // Check if registry exists and has an id
       if (!registry || !registry.data[0].id) {
@@ -836,7 +874,8 @@ export default function AddGifts() {
         amount: Number(product.price),
         registryId: Number(registry.data[0].id),
         productTypeId: 1,
-        quantity: 1,
+        quantity: quantity || 1,
+        isGroupPayment: isGroupGift || false,
       };
 
       fetcher.submit(
@@ -1281,7 +1320,8 @@ export default function AddGifts() {
                         price={product.price}
                         description={product.description}
                         productHandle={product.handle}
-                        onAddToRegistry={() => handleAddtoRegistry(product)}
+                        onAddToRegistry={(quantity, isGroupGift) => handleAddtoRegistry(product, quantity, isGroupGift)}
+                        isLoggedIn={user && user.user && user.user.id}
                       />
                     );
                   });

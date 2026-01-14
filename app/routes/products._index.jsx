@@ -386,7 +386,13 @@ const Products = () => {
               </Link>
               {parentCollections.map((col) => (
                 <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer">
-                  <img src={col.image.url} alt={col.title} className="w-full lg:h-[25.417vw]" />
+                  {col.image?.url ? (
+                    <img src={col.image.url} alt={col.title} className="w-full lg:h-[25.417vw]" />
+                  ) : (
+                    <div className="w-full lg:h-[25.417vw] bg-gray-200 flex items-center justify-center">
+                      <span className="text-gray-400">No Image</span>
+                    </div>
+                  )}
                   <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                     {col.title}
                   </h3>

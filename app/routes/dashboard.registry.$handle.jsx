@@ -280,42 +280,13 @@ export default function Index() {
       }
     }
 
-    if (!formState.venue || formState.venue.trim() === '') {
-      errors.venue = 'Wedding venue is required';
-    }
-
-    if (!formState.location || formState.location.trim() === '') {
-      errors.location = 'Wedding location (city) is required';
-    }
+    // Wedding venue and location are now optional - no validation needed
 
     if (!formState.noOfGuests || formState.noOfGuests <= 0) {
       errors.noOfGuests = 'Number of guests must be greater than 0';
     }
 
-    // Shipping Address Validation
-    if (!formState.shippingAddress || formState.shippingAddress.trim() === '') {
-      errors.shippingAddress = 'Shipping address is required';
-    }
-
-    if (!formState.shippingPhone || formState.shippingPhone.trim() === '') {
-      errors.shippingPhone = 'Phone number is required';
-    }
-
-    if (!formState.shippingPostalCode || formState.shippingPostalCode.trim() === '') {
-      errors.shippingPostalCode = 'Postal code is required';
-    }
-
-    if (!formState.shippingCity || formState.shippingCity.trim() === '') {
-      errors.shippingCity = 'City is required';
-    }
-
-    if (!formState.shippingProvince || formState.shippingProvince.trim() === '') {
-      errors.shippingProvince = 'Province/State is required';
-    }
-
-    if (!formState.shippingCountry || formState.shippingCountry.trim() === '') {
-      errors.shippingCountry = 'Country is required';
-    }
+    // Shipping Address fields are now optional - no validation needed
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -526,7 +497,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
       </div>
       <div>
         <label className="block font-medium mb-1 text-base" htmlFor="venue">
-          WEDDING VENUE*
+          WEDDING VENUE
         </label>
         <input
           type="text"
@@ -534,16 +505,13 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="venue"
           value={state.venue}
           onChange={onStateChange}
-          className={`outline-none text-black w-full border ${validationErrors.venue ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
-        {validationErrors.venue && (
-          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.venue}</p>
-        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block font-medium mb-1 text-base" htmlFor="location">
-            WEDDING LOCATION*
+            WEDDING LOCATION
           </label>
           <input
             type="text"
@@ -551,11 +519,8 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
             name="location"
             value={state.location}
             onChange={onStateChange}
-            className={`outline-none text-black w-full border ${validationErrors.location ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+            className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
           />
-          {validationErrors.location && (
-            <p className="text-[#FD446F] text-sm mt-1">{validationErrors.location}</p>
-          )}
         </div>
         <div>
           <label className="block font-medium mb-1 text-base" htmlFor="noOfGuests">
@@ -600,12 +565,9 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="shippingAddress"
           value={state.shippingAddress}
           onChange={onStateChange}
-          placeholder="Address*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingAddress ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          placeholder="Address"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
-        {validationErrors.shippingAddress && (
-          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingAddress}</p>
-        )}
       </div>
       <div>
         <input
@@ -613,12 +575,9 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="shippingPhone"
           value={state.shippingPhone}
           onChange={onStateChange}
-          placeholder="Phone Number*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingPhone ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          placeholder="Phone Number"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
-        {validationErrors.shippingPhone && (
-          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingPhone}</p>
-        )}
       </div>
       <div>
         <input
@@ -626,12 +585,9 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="shippingPostalCode"
           value={state.shippingPostalCode}
           onChange={onStateChange}
-          placeholder="Postal Code*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingPostalCode ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          placeholder="Postal Code"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
-        {validationErrors.shippingPostalCode && (
-          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingPostalCode}</p>
-        )}
       </div>
       <div>
         <input
@@ -639,12 +595,9 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="shippingCity"
           value={state.shippingCity}
           onChange={onStateChange}
-          placeholder="City*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingCity ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          placeholder="City"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
-        {validationErrors.shippingCity && (
-          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingCity}</p>
-        )}
       </div>
       <div>
         <input
@@ -652,12 +605,9 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="shippingProvince"
           value={state.shippingProvince}
           onChange={onStateChange}
-          placeholder="Province/State*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingProvince ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          placeholder="Province/State"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
-        {validationErrors.shippingProvince && (
-          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingProvince}</p>
-        )}
       </div>
       <div>
         <input
@@ -665,12 +615,9 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           name="shippingCountry"
           value={state.shippingCountry}
           onChange={onStateChange}
-          placeholder="Country*"
-          className={`outline-none text-black w-full border ${validationErrors.shippingCountry ? 'border-[#FD446F]' : 'border-gray-300'} bg-white rounded-none px-4 py-4`}
+          placeholder="Country"
+          className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
-        {validationErrors.shippingCountry && (
-          <p className="text-[#FD446F] text-sm mt-1">{validationErrors.shippingCountry}</p>
-        )}
       </div>
     </form>
   );

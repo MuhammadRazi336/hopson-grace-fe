@@ -80,7 +80,7 @@ async function loadCriticalData({context}) {
 
   try {
     // Verify storefront API access
-    if (!storefront?.getStorefrontApiUrl()) {
+    if (!storefront || (typeof storefront.getStorefrontApiUrl === 'function' && !storefront.getStorefrontApiUrl())) {
       console.error('Storefront API URL not configured');
       return {header: null};
     }
@@ -112,7 +112,7 @@ function loadDeferredData({context}) {
   const {storefront, customerAccount, cart} = context;
 
   // Verify API access before making the query
-  if (!storefront?.getStorefrontApiUrl()) {
+  if (!storefront || (typeof storefront.getStorefrontApiUrl === 'function' && !storefront.getStorefrontApiUrl())) {
     console.error('Storefront API URL not configured');
     return {
       cart: null,

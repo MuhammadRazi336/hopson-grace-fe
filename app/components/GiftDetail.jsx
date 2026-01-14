@@ -8,6 +8,7 @@ const GiftDetail = ({
   productImages,
   onRegistryPress,
   productBrand = 'HOPSON GRACE', // Default brand, can be passed as prop
+  isLoggedIn = false, // Show quantity counter only when logged in
 }) => {
   // Defensive: ensure productImages is an array and has at least one image
   const safeProductImages =
@@ -88,65 +89,78 @@ const GiftDetail = ({
             <Money data={productPrice} />
           </div>
 
-          {/* Quantity Selector */}
+          {/* Quantity Selector - Only show when logged in */}
+          {isLoggedIn && (
+            <div className="flex items-center w-full gap-6 lg:gap-[1.927vw] xl:gap-[1.927vw] 2xl:gap-[1.927vw]">
+              <p className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] font-bold uppercase text-left mb-1">QTY</p>
+              {/* Quantity Selector */}
+              <div className="flex flex-col items-center">
+                <button
+                  onClick={incrementQuantity}
+                  className=" flex items-center justify-center bg-white transition-colors"
+                >
+                  <img
+                    src="/assets/Images/arrowDown.png"
+                    className="w-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] h-[20px] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] rotate-180"
+                    alt=""
+                  />
+                </button>
 
-          <div className="flex items-center w-full gap-6 lg:gap-[1.927vw] xl:gap-[1.927vw] 2xl:gap-[1.927vw]">
-            <p className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] font-bold uppercase text-left mb-1">QTY</p>
-            {/* Quantity Selector */}
-            <div className="flex flex-col items-center">
-              <button
-                onClick={incrementQuantity}
-                className=" flex items-center justify-center bg-white transition-colors"
-              >
-                <img
-                  src="/assets/Images/arrowDown.png"
-                  className="w-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] h-[20px] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] rotate-180"
-                  alt=""
+                <input
+                  value={quantity}
+                  className="w-16 h-16 text-center border-none outline-none text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.25vw]"
+                  readOnly
                 />
+
+                <button
+                  onClick={decrementQuantity}
+                  className="flex items-center justify-center bg-white transition-colors"
+                >
+                  <img
+                    src="/assets/Images/arrowDown.png"
+                    className="w-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] h-[20px] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw]"
+                    alt=""
+                  />
+                </button>
+              </div>
+
+              {/* Add to Registry Button */}
+              <button
+                onClick={handleRegistryPress}
+                className="bg-[#446184] text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6"
+              >
+                ADD TO REGISTRY
               </button>
 
-              <input
-                value={quantity}
-                className="w-16 h-16 text-center border-none outline-none text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.25vw]"
-                readOnly
-              />
-
-              <button
-                onClick={decrementQuantity}
-                className="flex items-center justify-center bg-white transition-colors"
-              >
-                <img
-                  src="/assets/Images/arrowDown.png"
-                  className="w-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] h-[20px] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw]"
-                  alt=""
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="groupGift"
+                  checked={isGroupGift}
+                  onChange={() => setIsGroupGift(!isGroupGift)}
+                  className="w-[45px] h-[45px] border-2 border-black appearance-none rounded-full checked:bg-[#446184] checked:after:content-['✓'] checked:after:text-white checked:after:text-sm checked:after:flex checked:after:items-center checked:after:justify-center checked:after:w-full checked:after:h-full"
                 />
+                <label
+                  htmlFor="groupGift"
+                  className="text-[12px] lg:text-[0.625vw] xl:text-[0.625vw] 2xl:text-[0.625vw] font-medium text-black cursor-pointer text-center"
+                >
+                  TAG AS <br /> GROUP GIFT
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* Add to Registry Button - Show when not logged in (without quantity counter) */}
+          {!isLoggedIn && (
+            <div className="flex items-center w-full gap-6 lg:gap-[1.927vw] xl:gap-[1.927vw] 2xl:gap-[1.927vw]">
+              <button
+                onClick={handleRegistryPress}
+                className="bg-[#446184] text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6"
+              >
+                ADD TO REGISTRY
               </button>
             </div>
-
-            {/* Add to Registry Button */}
-            <button
-              onClick={handleRegistryPress}
-              className="bg-[#446184] text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6"
-            >
-              ADD TO REGISTRY
-            </button>
-
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="groupGift"
-                checked={isGroupGift}
-                onChange={() => setIsGroupGift(!isGroupGift)}
-                className="w-[45px] h-[45px] border-2 border-black appearance-none rounded-full checked:bg-[#446184] checked:after:content-['✓'] checked:after:text-white checked:after:text-sm checked:after:flex checked:after:items-center checked:after:justify-center checked:after:w-full checked:after:h-full"
-              />
-              <label
-                htmlFor="groupGift"
-                className="text-[12px] lg:text-[0.625vw] xl:text-[0.625vw] 2xl:text-[0.625vw] font-medium text-black cursor-pointer text-center"
-              >
-                TAG AS <br /> GROUP GIFT
-              </label>
-            </div>
-          </div>
+          )}
 
           {/* Product Description */}
           <div className="prose prose-gray max-w-none">
