@@ -48,6 +48,7 @@ export async function createAppLoadContext(request, env, executionContext) {
     env: {
       ...hydrogenContext.env,
       API_BASE_URL: env.API_BASE_URL || process.env.API_BASE_URL,
+      PUBLIC_STRIPE_PUBLISHABLE_KEY: env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
     },
     // declare additional Remix loader context
   };
