@@ -1,0 +1,1077 @@
+﻿import {useState, useEffect} from 'react';
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+import {Form, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
+import {json} from '@shopify/remix-oxygen';
+import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
+import {CoupleProfileViewHeader} from './couple.test._index';
+import ImageAndText from '~/components/ImageAndText';
+import teaImg from '/assets/Images/reading-image.png';
+import lineImg3 from '/assets/Images/line.png';
+import {Footer} from '~/components/Footer';
+import ButtonComponent from '~/components/Button';
+import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
+import ModalPortal from '~/components/ModalPortal';
+
+export async function loader({context, request}) {
+  try {
+    const message = context.session.get('message') || '';
+    const couplesName = context.session.get('couplesName') || '';
+
+    // Get email and registryId from URL params or try to get from session
+    const url = new URL(request.url);
+    const email = url.searchParams.get('email') || '';
+    const registryId = url.searchParams.get('registryId') || '';
+
+    const registryApi = await context.ClientGet(
+      `registries/${registryId}`,
+      context,
+    )
+    console.log('registryApi', registryApi);
+
+    let productData = [];
+
+    const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+
+    // If we have email and registryId, fetch cart and product data
+    if (email && registryId) {
+      try {
+        // Ensure apiBaseUrl is set and encode email for URL
+        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+        const encodedEmail = encodeURIComponent(email);
+        const response = await fetch(
+          `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
+        );
+        const data = await response.json();
+
+        if (data.code === 200 && data.data && data.data.length > 0) {
+          const cartData = data.data[0];
+          const cartItems = cartData.cartItemProducts || [];
+
+          // Extract product IDs for Shopify query (exclude cash funds)
+          const productIds = cartItems
+            .filter((item) => item.registryProduct.productTypeId !== 2)
+            .map(
+              (item) =>
+                `gid://shopify/Product/${item.registryProduct.productId}`,
+            );
+
+          // Fetch product data from Shopify
+          if (productIds.length > 0) {
+            const products = await fetchProducts(
+              context.storefront,
+              productIds,
+            );
+            productData = products?.nodes || [];
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching cart or product data:', error);
+      }
+    }
+
+    return json({
+      message,
+      couplesName,
+      productData,
+      registryApi,
+      apiBaseUrl:
+        'https://dev-hopsongrace.codup.io',
+      stripePublishableKey: context.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    });
+  } catch {
+    return json({
+      message: '',
+      couplesName: '',
+      productData: [],
+      registryApi: {},
+      apiBaseUrl: 'https://dev-hopsongrace.codup.io',
+      stripePublishableKey: context.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    });
+  }
+}
+
+// Action for step 1: Create payment intent
+export async function action({request, context}) {
+  try {
+    const formData = await request.formData();
+    const email = formData.get('email')?.trim();
+    if (!email) {
+      return json({error: 'Email is required'}, {status: 400});
+    }
+    const message = context.session.get('message') || '';
+    const registryId = formData.get('registryId')?.trim();
+
+    if (!registryId || isNaN(registryId) || registryId <= 0) {
+      return json(
+        {
+          error:
+            'Invalid registry ID. Please try adding the items to your cart again.',
+        },
+        {status: 400},
+      );
+    }
+
+    // Get apiBaseUrl from context
+    const apiBaseUrl =
+      'https://dev-hopsongrace.codup.io';
+
+    // Fetch cart items from API to get the latest data
+    let apiCartItems = [];
+    try {
+      // Ensure apiBaseUrl is set and encode email for URL
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const encodedEmail = encodeURIComponent(email);
+      const response = await fetch(
+        `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
+      );
+      const data = await response.json();
+      if (data.code === 200 && data.data && data.data.length > 0) {
+        const cartData = data.data[0];
+        apiCartItems = (cartData.cartItemProducts || []).map((cartItem) => {
+          const registryProduct = cartItem.registryProduct;
+          return {
+            id: cartItem.id,
+            productId: registryProduct.productId,
+            price: Math.round(Number(cartItem.price) * 100) / 100,
+            quantity: Number(cartItem.quantity) || 1,
+            title: cartItem.title || `Product ${registryProduct.productId}`,
+            image: cartItem.image || '/placeholder.svg',
+            isCashFund: registryProduct.productTypeId === 2,
+            amount: Math.round(Number(registryProduct.amount) * 100) / 100,
+            registryProductId: registryProduct.id,
+          };
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching cart items:', error);
+    }
+
+    if (apiCartItems.length === 0) {
+      return json(
+        {error: 'No items found in cart. Please add items to your cart first.'},
+        {status: 400},
+      );
+    }
+
+    const lineItems = apiCartItems.map((item) => {
+      const amount = Math.round(Number(item.price) * 100) / 100;
+      let productId = Number(item.productId);
+      return {
+        productId,
+        amount: amount,
+        quantity: Math.max(1, Number(item.quantity) || 1),
+        isCashFund: item.isCashFund || false,
+      };
+    });
+
+    // Debug logging for payment amounts
+    console.log('Payment API - Line Items:', lineItems);
+    console.log(
+      'Payment API - Amounts being sent:',
+      lineItems.map((item) => ({
+        productId: item.productId,
+        amount: item.amount,
+        amountType: typeof item.amount,
+      })),
+    );
+
+    // Calculate tax for payment intent
+    let taxPercentage = 0;
+    let totalAmountWithTax = 0;
+    
+    try {
+      // Calculate total amount from line items
+      const totalAmount = lineItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
+      
+      // Get shipping address from form data or use defaults
+      const address = formData.get('address')?.trim() || '';
+      const city = formData.get('city')?.trim() || '';
+      const province = formData.get('province')?.trim() || '';
+      const country = formData.get('country')?.trim() || 'Canada';
+      const zip = formData.get('zip')?.trim() || formData.get('postalCode')?.trim() || '';
+      
+      // Only calculate tax if we have address information
+      if (address && city && province && country) {
+        // Get tax rate from API
+        const taxResponse = await fetch(`${apiBaseUrl}/api/transactions/calculate-tax-rate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            lineItems: lineItems.map(item => ({
+              productId: item.productId,
+              amount: item.amount,
+              quantity: item.quantity
+            })),
+            shippingAddress: {
+              address1: address,
+              city: city,
+              province: province, 
+              country: country,
+              zip: zip
+            }
+          })
+        });
+        
+        if (taxResponse.ok) {
+          const taxData = await taxResponse.json();
+          if (taxData.code === 200 && taxData.data) {
+            taxPercentage = taxData.data.taxPercentage || 0;
+            const taxAmount = (totalAmount * taxPercentage) / 100;
+            totalAmountWithTax = totalAmount + taxAmount;
+          } else {
+            // If tax calculation fails, use original total
+            totalAmountWithTax = totalAmount;
+          }
+        } else {
+          console.error('Tax API returned non-OK status:', taxResponse.status);
+          totalAmountWithTax = totalAmount;
+        }
+      } else {
+        // If no address info, use original total without tax
+        totalAmountWithTax = totalAmount;
+      }
+    } catch (error) {
+      console.error('Error calculating tax for payment intent:', error);
+      // If tax calculation fails, use original total
+      const totalAmount = lineItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
+      totalAmountWithTax = totalAmount;
+    }
+
+    // Step 1: Create payment intent
+    const createPaymentIntentPayload = {
+      registryId: Number(registryId),
+      email: email,
+      firstName: formData.get('firstName')?.trim(),
+      lastName: formData.get('lastName')?.trim(),
+      taxPercentage: Math.round(taxPercentage * 100) / 100, // Round to 2 decimal places
+      totalAmountWithTax: Math.round(totalAmountWithTax * 100) / 100, // Total including tax
+    };
+
+    console.log(
+      'Creating payment intent with payload:',
+      createPaymentIntentPayload,
+    );
+    console.log('API Base URL:', apiBaseUrl);
+    console.log(
+      'Full API URL would be:',
+      `${apiBaseUrl}/api/transactions/create-payment-intent`,
+    );
+
+    let createPaymentIntentResponse;
+    try {
+      createPaymentIntentResponse = await context.ClientPost(
+        createPaymentIntentPayload,
+        'transactions/create-payment-intent',
+        context,
+      );
+      console.log(
+        'Create payment intent response:',
+        createPaymentIntentResponse,
+      );
+    } catch (apiError) {
+      console.error('API Error:', apiError);
+      console.error('API Error Response:', apiError.response?.data);
+      console.error('API Error Status:', apiError.response?.status);
+      return json(
+        {
+          error: `API Error: ${
+            apiError.message || 'Failed to create payment intent'
+          }`,
+        },
+        {status: 500},
+      );
+    }
+
+    if (createPaymentIntentResponse?.data?.clientSecret) {
+      // Store the payment intent data in session for step 2
+      context.session.set(
+        'paymentIntentId',
+        createPaymentIntentResponse.data.paymentIntentId,
+      );
+      context.session.set('lineItems', JSON.stringify(lineItems));
+      context.session.set('message', message?.trim());
+      context.session.set('firstName', formData.get('firstName')?.trim());
+      context.session.set('lastName', formData.get('lastName')?.trim());
+      context.session.set('email', email);
+      context.session.set('registryId', registryId);
+
+      return json(
+        {
+          clientSecret: createPaymentIntentResponse.data.clientSecret,
+          paymentIntentId: createPaymentIntentResponse.data.paymentIntentId,
+          amount: createPaymentIntentResponse.data.amount,
+          customerId: createPaymentIntentResponse.data.customerId,
+        },
+        {
+          status: 200,
+          headers: {
+            'Set-Cookie': await context.session.commit(),
+          },
+        },
+      );
+    } else {
+      return json(
+        {error: 'No clientSecret in create payment intent response'},
+        {status: 400},
+      );
+    }
+  } catch (error) {
+    console.error('Checkout action error:', error);
+    console.error('Error stack:', error.stack);
+    return json(
+      {
+        error: error.message || 'An error occurred during checkout',
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
+      {status: 500},
+    );
+  }
+}
+
+// Step 1: Details Form using useFetcher
+const DetailsForm = ({onNext}) => {
+  const {message, couplesName, productData, apiBaseUrl, registryApi} = useLoaderData();
+  // console.log('DetailsForm: productData:', productData);
+  // console.log('DetailsForm: apiBaseUrl from loader:', apiBaseUrl);
+  console.log('DetailsForm: registryApi from loader:', registryApi);
+  const fetcher = useFetcher();
+  const [cartItems, setCartItems] = useState([]);
+  const [cartTotal, setCartTotal] = useState(0);
+  const [cartLoading, setCartLoading] = useState(true);
+  const [taxData, setTaxData] = useState(null);
+  const [taxLoading, setTaxLoading] = useState(false);
+  const [fields, setFields] = useState({
+    firstName: '',
+    lastName: '',
+    address: '',
+    city: '',
+    province: '',
+    email: '',
+    subscribe: false,
+  });
+
+  // Utility function to round currency values to 2 decimal places
+  const roundCurrency = (value) => {
+    return Math.round(Number(value) * 100) / 100;
+  };
+
+  // Function to calculate tax
+  const calculateTax = async (items, shippingAddress) => {
+    if (!items || items.length === 0 || !shippingAddress) {
+      return;
+    }
+
+    setTaxLoading(true);
+    try {
+      const lineItems = items.map(item => ({
+        productId: Number(item.productId),
+        amount: Number(item.price),
+        quantity: Number(item.quantity)
+      }));
+
+      const requestBody = {
+        lineItems,
+        shippingAddress: {
+          address1: shippingAddress.address,
+          city: shippingAddress.city,
+          province: shippingAddress.province,
+          country: shippingAddress.country,
+          zip: shippingAddress.postalCode
+        }
+      };
+
+      console.log('Tax calculation request:', requestBody);
+
+      const response = await fetch(`${apiBaseUrl}/api/transactions/calculate-tax-rate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      const data = await response.json();
+      console.log('Tax calculation response:', data);
+
+      if (data.code === 200 && data.data) {
+        // Calculate tax on the total checkout amount (including cash funds)
+        const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const taxRate = data.data.taxPercentage || 0;
+        const calculatedTax = (totalAmount * taxRate) / 100;
+        const totalWithTax = totalAmount + calculatedTax;
+        
+        setTaxData({
+          ...data.data,
+          totalTax: calculatedTax,
+          total: totalWithTax,
+          taxRate: taxRate.toFixed(2)
+        });
+      } else {
+        console.error('Tax calculation failed:', data.message);
+        setTaxData(null);
+      }
+    } catch (error) {
+      console.error('Error calculating tax:', error);
+      setTaxData(null);
+    } finally {
+      setTaxLoading(false);
+    }
+  };
+
+  // Fetch cart items from API on client side
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      const email =
+        typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
+      const registryId =
+        typeof window !== 'undefined' ? localStorage.getItem('registryId') : '';
+      console.log('DetailsForm: userEmail from localStorage:', email);
+      console.log('DetailsForm: registryId from localStorage:', registryId);
+      console.log('DetailsForm: localStorage guestEmail exists:', !!email);
+      console.log('DetailsForm: localStorage registryId exists:', !!registryId);
+      console.log('Cart Items:', cartItems);
+
+      if (!email || !registryId) {
+        setCartItems([]);
+        setCartTotal(0);
+        setCartLoading(false);
+        console.log('DetailsForm: Missing email or registryId');
+        return;
+      }
+
+      try {
+        // Fetch cart with registryId from localStorage
+        // Ensure apiBaseUrl is set and encode email for URL
+        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+        const encodedEmail = encodeURIComponent(email);
+        const response = await fetch(
+          `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
+        );
+        const apiData = await response.json();
+        console.log('DetailsForm: API response:', apiData);
+        console.log('DetailsForm: API response code:', apiData.code);
+        console.log(
+          'DetailsForm: API response data length:',
+          apiData.data?.length,
+        );
+
+        if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
+          const cartData = apiData.data[0];
+          console.log('DetailsForm: Cart API Response:', cartData);
+          console.log('DetailsForm: Cart Items:', cartData.cartItemProducts);
+          console.log(
+            'DetailsForm: Cart Items length:',
+            cartData.cartItemProducts?.length,
+          );
+
+          // Transform the API data to match SideCart expectations
+          const transformedItems = (cartData.cartItemProducts || []).map(
+            (cartItem) => {
+              const registryProduct = cartItem.registryProduct;
+              console.log(
+                'DetailsForm: Cart Item (full):',
+                JSON.stringify(cartItem, null, 2),
+              );
+              console.log(
+                'DetailsForm: Registry Product (full):',
+                JSON.stringify(registryProduct, null, 2),
+              );
+
+              // Try to find the product in our loaded Shopify data to get title and image
+              const productFromData = productData.find(
+                (p) =>
+                  p.id === `gid://shopify/Product/${registryProduct.productId}`,
+              );
+
+              return {
+                id: cartItem.id,
+                price: roundCurrency(cartItem.price), // Round to 2 decimal places
+                quantity: Number(cartItem.quantity) || 1,
+                title:
+                  cartItem.title ||
+                  productFromData?.title ||
+                  `Product ${registryProduct.productId}`,
+                image:
+                  cartItem.image ||
+                  productFromData?.images?.edges?.[0]?.node?.url ||
+                  '/placeholder.svg',
+                isCashFund: registryProduct.productTypeId === 2,
+                productId: registryProduct.productId,
+                amount: roundCurrency(registryProduct.amount), // Round to 2 decimal places
+                registryProductId: registryProduct.id, // Keep registry product ID for reference
+              };
+            },
+          );
+          setCartItems(transformedItems);
+          const total = roundCurrency(
+            transformedItems.reduce(
+              (sum, item) => sum + item.price * item.quantity,
+              0,
+            ),
+          );
+          setCartTotal(total);
+
+          // Calculate tax if we have shipping address from registryApi
+          if (registryApi?.data?.user?.shippingAddress) {
+            await calculateTax(transformedItems, registryApi.data.user.shippingAddress);
+          }
+        } else {
+          setCartItems([]);
+          setCartTotal(0);
+        }
+      } catch (error) {
+        setCartItems([]);
+        setCartTotal(0);
+      }
+      setCartLoading(false);
+    };
+
+    fetchCartItems();
+  }, []);
+
+  // Set email from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const localEmail = localStorage.getItem('guestEmail');
+      if (localEmail) {
+        setFields((prev) => ({...prev, email: localEmail}));
+      }
+    }
+  }, []);
+
+  // Handle fetcher state
+  useEffect(() => {
+    if (fetcher.data?.clientSecret && fetcher.state === 'idle') {
+      // Clear localStorage when checkout is successful
+      if (fetcher.data.clearLocalStorage && typeof window !== 'undefined') {
+        localStorage.removeItem('guestEmail');
+        localStorage.removeItem('registryId');
+        console.log(
+          'DetailsForm: Cleared guestEmail and registryId from localStorage after successful checkout',
+        );
+      }
+      onNext({
+        clientSecret: fetcher.data.clientSecret,
+        paymentIntentId: fetcher.data.paymentIntentId,
+        amount: fetcher.data.amount,
+        customerId: fetcher.data.customerId,
+      });
+    }
+  }, [fetcher.data, fetcher.state, onNext]);
+
+  const handleChange = (e) => {
+    const {name, value, type, checked} = e.target;
+    setFields((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  // Log cartItems.length and cartLoading in render
+  console.log('DetailsForm: cartItems.length in render:', cartItems.length);
+  console.log('DetailsForm: cartLoading in render:', cartLoading);
+  console.log('DetailsForm: cartItems in render:', cartItems);
+  console.log('DetailsForm: cartTotal in render:', cartTotal);
+
+  return (
+    <div className="pt-[80px]">
+      <CoupleProfileViewHeader />
+      <div className="p-4">
+        <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
+        <img
+          src="/assets/Images/cart-head-bdr.png"
+          alt="Hamburger"
+          className="w-[150px] mx-auto -mt-4"
+        />
+      </div>
+      <div className="max-w-4xl mx-auto mt-[80px]">
+        <div className="flex items-center justify-around">
+          <div className="w-4/12">
+            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+              Add your messsage
+            </p>
+          </div>
+          <div className="w-4/12">
+            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+              Billing & Payment
+            </p>
+          </div>
+          <div className="w-4/12">
+            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center">
+              Order Confirmation
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="container mx-auto py-[100px]">
+        <div className="bg-[#446184] py-16 px-16">
+          <h2 className="md:text-[36px] font-normal text-center text-white ivyora">
+            enclose your <span className="font-italic">PERSONAL MESSAGE</span>{' '}
+            here
+          </h2>
+          <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
+            Your message and gift notification will be sent to the couple
+            immediately upon completion of your order.
+          </p>
+          <div className="flex mt-[100px]">
+            <div className="w-1/2">
+              <h4 className="text-xl text-white text-center">Billing</h4>
+            </div>
+            <div className="w-1/2">
+              <h4 className="text-xl text-white text-center">Order Summary</h4>
+            </div>
+          </div>
+          <fetcher.Form
+            method="post"
+            action="/cart/checkout"
+            className="flex flex-col items-start gap-x-4 mt-[20px]"
+          >
+            <input
+              type="hidden"
+              name="registryId"
+              value={
+                typeof window !== 'undefined'
+                  ? localStorage.getItem('registryId') || ''
+                  : ''
+              }
+            />
+            <div className="flex items-start gap-x-4 w-full">
+              <div className="w-1/2">
+                <div className="flex flex-col gap-y-4">
+                  <div className="grid grid-cols-2 gap-x-4">
+                    <input
+                      placeholder="First Name *"
+                      name="firstName"
+                      value={fields.firstName}
+                      onChange={handleChange}
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      required
+                    />
+                    <input
+                      placeholder="Last Name *"
+                      name="lastName"
+                      value={fields.lastName}
+                      onChange={handleChange}
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      required
+                    />
+                  </div>
+                  <input
+                    placeholder="Address *"
+                    name="address"
+                    value={fields.address}
+                    onChange={handleChange}
+                    className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                    required
+                  />
+                  <div className="grid grid-cols-2 gap-x-4">
+                    <input
+                      placeholder="City *"
+                      name="city"
+                      value={fields.city}
+                      onChange={handleChange}
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      required
+                    />
+                    <input
+                      placeholder="Province/State *"
+                      name="province"
+                      value={fields.province}
+                      onChange={handleChange}
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4">
+                    <input
+                      placeholder="Country *"
+                      name="country"
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      required
+                    />
+                    <input
+                      placeholder="Email *"
+                      name="email"
+                      value={fields.email}
+                      readOnly
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-gray-100 text-black w-full cursor-not-allowed"
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center mt-4">
+                    <input
+                      id="subscribe"
+                      name="subscribe"
+                      type="checkbox"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      checked={fields.subscribe}
+                      onChange={handleChange}
+                    />
+                    <label
+                      htmlFor="subscribe"
+                      className="ml-2 text-sm text-white"
+                    >
+                      Subscribe to Email and receive a HG Coupon Code!
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="w-1/2 bg-white p-6">
+                <div className="max-h-[440px] overflow-y-auto bg-[#FAF9F6] px-4 py-2">
+                  {cartLoading ? (
+                    <div className="text-center py-8">
+                      <p>Loading cart items...</p>
+                    </div>
+                  ) : cartItems.length > 0 ? (
+                    cartItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center py-3 border-b border-[#ececec] last:border-b-0"
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-[99px] h-[99px] object-cover mr-8"
+                        />
+                        <div className="flex-1">
+                          <div className="font-bold uppercase text-md leading-tight tracking-wide">
+                            {item.title}
+                          </div>
+                          {item.isCashFund && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              Cash Fund Contribution
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right min-w-[120px]">
+                          <div className="text-xl text-black">
+                            ${Number(item.price).toFixed(2)}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p>No items in cart</p>
+                    </div>
+                  )}
+                </div>
+                <div className="flex justify-end mt-8">
+                  <div className="w-full max-w-xs">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold tracking-wide text-sm uppercase">
+                        Subtotal
+                      </span>
+                      <span className="text-lg">${cartTotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-bold tracking-wide text-sm uppercase">
+                        Shipping
+                      </span>
+                      <span className="text-lg">FREE</span>
+                    </div>
+                    {taxData && (
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-bold tracking-wide text-sm uppercase">
+                          Tax ({taxData.taxRate}%)
+                        </span>
+                        <span className="text-lg">
+                          ${taxData.totalTax ? taxData.totalTax.toFixed(2) : '0.00'}
+                        </span>
+                      </div>
+                    )}
+                    {taxLoading && (
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-bold tracking-wide text-sm uppercase">
+                          Tax
+                        </span>
+                        <span className="text-lg">Calculating...</span>
+                      </div>
+                    )}
+                    <img
+                      src="/assets/Images/cart-sum-bdr.png"
+                      alt="Border"
+                      className="w-auto mx-auto mt-4"
+                    />
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="font-bold text-2xl uppercase tracking-wide">
+                        Total
+                      </span>
+                      <span className="font-bold text-2xl">
+                        ${taxData ? taxData.total.toFixed(2) : cartTotal.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end w-full mt-8">
+              <div className="w-1/2 flex justify-end">
+                <div className="w-full max-w-xs">
+                  <button
+                    type="submit"
+                    className="w-full py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-[800] text-black text-center"
+                    disabled={
+                      fetcher.state === 'submitting' ||
+                      cartLoading ||
+                      cartItems.length === 0
+                    }
+                  >
+                    {fetcher.state === 'submitting' ? 'Processing...' : 'Next'}
+                  </button>
+                </div>
+              </div>
+            </div>
+            {fetcher.data?.error && (
+              <div className="text-[#FD446F] mt-4">{fetcher.data.error}</div>
+            )}
+          </fetcher.Form>
+        </div>
+      </div>
+      <div className="mb-16"></div>
+      <section className="my-12 lg:my-[240px]">
+        <ImageAndText
+          direction={'right'}
+          imgBanner={teaImg}
+          lineimg={lineImg3}
+          title="questions? "
+          description="We've got answers."
+          buttontext={'PHONE, EMAIL OR LIVE CHAT'}
+          buttontype={'Color'}
+        />
+      </section>
+      <Footer />
+    </div>
+  );
+};
+
+// Main Checkout component
+const Checkout = () => {
+  const {stripePublishableKey} = useLoaderData();
+  const [step, setStep] = useState(1);
+  const [clientSecret, setClientSecret] = useState(null);
+  const [paymentIntentId, setPaymentIntentId] = useState(null);
+  
+  // Initialize Stripe promise with the key from environment
+  const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
+  
+  const handleNext = (data) => {
+    setClientSecret(data.clientSecret);
+    setPaymentIntentId(data.paymentIntentId);
+    setStep(2);
+  };
+  
+  if (!stripePromise) {
+    return (
+      <div className="pt-[80px] text-center">
+        <p className="text-red-500">Stripe is not configured. Please set PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.</p>
+      </div>
+    );
+  }
+  
+  return (
+    <Elements stripe={stripePromise}>
+      <div>
+        {step === 1 && <DetailsForm onNext={handleNext} />}
+        {step === 2 && (
+          <CardPaymentForm
+            clientSecret={clientSecret}
+            paymentIntentId={paymentIntentId}
+            onPrev={() => setStep(1)}
+          />
+        )}
+      </div>
+    </Elements>
+  );
+};
+
+export default Checkout;
+
+const CardPaymentForm = ({clientSecret, paymentIntentId, onPrev, onPay}) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const fetcher = useFetcher();
+
+  // Handle fetcher state for guest checkout
+  useEffect(() => {
+    if (fetcher.data?.success && fetcher.state === 'idle') {
+      // Clear localStorage when checkout is successful
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('guestEmail');
+        localStorage.removeItem('registryId');
+        console.log(
+          'CardPaymentForm: Cleared guestEmail and registryId from localStorage after successful checkout',
+        );
+      }
+      // Navigate to thank you page
+      navigate('/thankyou');
+    } else if (fetcher.data?.error && fetcher.state === 'idle') {
+      setError(fetcher.data.error);
+      setLoading(false);
+      setShowPopup(true);
+    }
+  }, [fetcher.data, fetcher.state, navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    if (!stripe || !elements) {
+      setError('Stripe is not loaded');
+      setLoading(false);
+      setShowPopup(true);
+      return;
+    }
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      setError('Card element not found');
+      setLoading(false);
+      setShowPopup(true);
+      return;
+    }
+    const {error: confirmError, paymentIntent} =
+      await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        },
+      });
+    if (confirmError) {
+      setError(confirmError.message);
+      setLoading(false);
+      setShowPopup(true);
+    } else {
+      // Payment successful, now call guest-checkout API
+      if (paymentIntentId) {
+        const formData = new FormData();
+        formData.append('paymentIntentId', paymentIntentId);
+
+        fetcher.submit(formData, {
+          method: 'POST',
+          action: '/cart/checkout/guest-checkout',
+        });
+      } else {
+        setError('Payment intent ID not found');
+        setLoading(false);
+        setShowPopup(true);
+      }
+    }
+  };
+  return (
+    <div className="pt-[80px]">
+      <CoupleProfileViewHeader />
+      <div className="p-4">
+        <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
+        <img
+          src="/assets/Images/cart-head-bdr.png"
+          alt="Hamburger"
+          className="w-[150px] mx-auto -mt-4"
+        />
+      </div>
+      <div className="max-w-4xl mx-auto mt-[80px]">
+        <div className="flex items-center justify-around">
+          <div className="w-4/12">
+            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+              Add your messsage
+            </p>
+          </div>
+          <div className="w-4/12">
+            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+              Billing & Payment
+            </p>
+          </div>
+          <div className="w-4/12">
+            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center">
+              Order Confirmation
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="container mx-auto py-[100px]">
+        <div className="bg-[#446184] py-16 px-16">
+          <Form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
+            <div>
+              <label
+                htmlFor="card-element"
+                className="block text-sm text-center text-white font-medium mb-1"
+              >
+                PAYMENT
+              </label>
+              <div className="">
+                <CardElement
+                  className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                  id="card-element"
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {color: '#aab7c4'},
+                      },
+                      invalid: {color: '#9e2146'},
+                    },
+                  }}
+                />
+              </div>
+            </div>
+            {error && <div className="text-[#FD446F]">{error}</div>}
+            {success && (
+              <div className="text-white bg-green-500 px-2 py-4">
+                Payment successful!
+              </div>
+            )}
+            <div className="flex justify-end">
+              <ButtonComponent
+                className={
+                  'w-[200px] py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-bold text-black text-center'
+                }
+                type="submit"
+                text={loading ? 'Processing...' : 'Pay'}
+                disabled={loading || !stripe}
+              />
+            </div>
+          </Form>
+        </div>
+      </div>
+      {showPopup && (
+        <ModalPortal>
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#000000b0] bg-opacity-50">
+          <div
+            className={`rounded-lg shadow-lg px-8 py-16 max-w-xl w-full text-center ${
+              success ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
+            }`}
+          >
+            <h2 className="text-2xl font-bold mb-4">
+              {!success ? 'Sorry for the Inconvenience' : 'Payment Successful!'}
+            </h2>
+            <p className="mb-6">
+              {!success
+                ? error || 'There was an error processing your payment.'
+                : 'Thank you for your payment.'}
+            </p>
+            <button
+              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
+              onClick={() => setShowPopup(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+        </ModalPortal>
+      )}
+    </div>
+  );
+};
