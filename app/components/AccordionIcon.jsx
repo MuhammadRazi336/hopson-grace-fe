@@ -8,7 +8,7 @@ const AccordionIcon = ({ isOpen, className = '' }) => {
       viewBox="0 0 56 56" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
-      className={`w-6 h-6 lg:w-[2.917vw] xl:w-[2.917vw] 2xl:w-[2.917vw] lg:h-[2.917vw] xl:h-[2.917vw] 2xl:h-[2.917vw] transition-transform duration-300 flex-shrink-0 ${
+      className={`w-[10%] h-[10%] lg:w-[2.917vw] xl:w-[2.917vw] 2xl:w-[2.917vw] lg:h-[2.917vw] xl:h-[2.917vw] 2xl:h-[2.917vw] transition-transform duration-300 flex-shrink-0 basis-[24px] lg:basis-auto ${
         isOpen ? '' : 'rotate-180'
       } ${className}`}
     >

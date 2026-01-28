@@ -96,7 +96,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(1)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                 {activeTab === 'couples' ? 'Why choose The Registry?' : "How do I find a couple’s registry?"}
               </h2>
               <AccordionIcon isOpen={openFAQ === 1} />
@@ -136,7 +136,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(2)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'How does it work?'
               ) : (
@@ -188,7 +188,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(3)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'Can we register in person?'
               ) : (
@@ -226,7 +226,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(4)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'Can We register for cash?'
               ) : (
@@ -270,7 +270,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(5)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'What is Group Gifting?'
               ) : (
@@ -310,7 +310,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(6)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'How do your gift cards work?'
               ) : (
@@ -351,7 +351,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(7)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'How many gifts should I add to my registry?'
               ) : (
@@ -389,7 +389,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(8)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'Can we edit our registry after publishing it?'
               ) : (
@@ -427,7 +427,7 @@ const FAQ = () => {
               onClick={() => toggleFAQ(9)}
               className="w-full flex items-center justify-between cursor-pointer text-left"
             >
-              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+              <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
               {activeTab === 'couples' ? (
                 'Who can see our registry?'
               ) : (
@@ -467,7 +467,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(10)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     How do we track who gave what?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 10} />
@@ -493,7 +493,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(11)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     Can we exchange our gifts?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 11} />
@@ -519,7 +519,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(12)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     What happens if a product becomes unavailable?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 12} />
@@ -545,7 +545,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(13)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     What's your return policy?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 13} />
@@ -571,7 +571,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(14)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     Where do you ship, and how much does it cost?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 14} />
@@ -597,7 +597,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(15)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     Is there a financial guarantee for cash funds?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 15} />
@@ -623,7 +623,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(16)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     How do I access my funds after the wedding?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 16} />
@@ -649,7 +649,7 @@ const FAQ = () => {
                   onClick={() => toggleFAQ(17)}
                   className="w-full flex items-center justify-between cursor-pointer text-left"
                 >
-                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
+                  <h2 className="text-xl lg:text-[1.25vw] xl:text-[1.5vw] 2xl:text-[1.5vw] uppercase lg:leading-[1.875vw] tracking-[1.2px] mb-0 font-[600] pr-4 max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[90%]">
                     What currency will my guests be charged in?
                   </h2>
                   <AccordionIcon isOpen={openFAQ === 17} />

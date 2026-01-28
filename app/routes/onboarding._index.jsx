@@ -93,7 +93,8 @@ export async function loader({ request, context }) {
 
 const OnboardingIndex = () => {
   const hydrated = useHydrated();
-  const { user, stepFromQuery } = useLoaderData();
+  const { user, stepFromQuery, collections } = useLoaderData();
+  console.log('Collections in OnboardingIndex:', collections);
   const [currentStep, setCurrentStep] = useState(stepFromQuery ? stepFromQuery : 3); // Start at 3 by default
   const [isSubcollectionPage, setIsSubcollectionPage] = useState(false);
 
