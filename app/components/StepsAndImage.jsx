@@ -17,6 +17,8 @@ import step8Image from "/assets/Images/giftkindstep.jpg"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
 import congratulationsPage from "/assets/Images/scootycouple.jpg"
+import { useState } from "react"
+import Popup from "./Popup"
 
 const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLoginLink = true, showPagination = true, onBackClick, showBackButton = false, customImageFooter }) => {
     // Function to get the appropriate image based on step number
@@ -37,6 +39,16 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
         }
     };
 
+    const [showPopup, setShowPopup] = useState(false);
+    
+    const handleOpenPopup = () => {
+        setShowPopup(true);
+    };
+
+    const handleClosePopup = () => {
+        setShowPopup(false);
+    };
+
     return ( 
         <div className={`flex py-32 max-[1024px]:py-10 justify-center max-[1024px]:w-full max-[1024px]:flex-col max-[1024px]:items-center max-[1024px]:px-4`}>
             <div className="relative left-[37.5px] max-w-[50%] lg:w-[36.458vw] max-[1024px]:max-w-[100%] max-[1024px]:w-full max-[1024px]:left-[initial] lg:w-[36.458vw] xl:w-[36.458vw] 2xl:w-[36.458vw] lg:h-[40.625vw] xl:h-[40.625vw] 2xl:h-[40.625vw]">
@@ -47,7 +59,7 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                         <h5 className="absolute -bottom-16 max-[1024px]:hidden lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw]">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>
                     )}
                     {customImageFooter && (
-                        <div className="absolute -bottom-[100px] max-[1024px]:hidden lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
+                        <div className="absolute -bottom-[100px] max-[1024px]:-bottom-[350px] max-[1024px]:right-auto max-[1024px]:left-auto max-[1024px]:w-full max-[1024px]:text-center lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
                             {customImageFooter}
                         </div>
                     )}
@@ -79,6 +91,7 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                     </div>
                 )}
             </div>
+               
         </div>
      );
 }

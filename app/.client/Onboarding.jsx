@@ -630,7 +630,7 @@ const OnboardingClient = ({onStepChange}) => {
           </div>
           <div className="flex flex-col items-center justify-center relative">
             {/* FPO Placeholder Image */}
-            <div className="relative w-[8.49vw] h-[8.49vw] flex items-center justify-center">
+            <div className="relative w-[8.49vw] h-[8.49vw] max-[1024px]:w-full max-[1024px]:h-full flex items-center justify-center">
               {!gifLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-transparent">
                   <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -641,7 +641,7 @@ const OnboardingClient = ({onStepChange}) => {
                 alt="" 
                 onLoad={() => setGifLoaded(true)}
                 onError={() => setGifLoaded(true)}
-                className={`w-[8.49vw] h-[8.49vw] transition-opacity duration-300 ${
+                className={`w-[8.49vw] h-[8.49vw] max-[1024px]:w-[130px] max-[1024px]:h-auto transition-opacity duration-300 ${
                   gifLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -653,7 +653,7 @@ const OnboardingClient = ({onStepChange}) => {
           <div className="font-semibold text-center mt-2 text-base lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]">
             Now it's time to set up your dashboard — your registry HQ.
           </div>
-          <div className="text-center mb-[20px] lg:mb-[1.563vw] xl:mb-[1.563vw] 2xl:mb-[1.563vw] text-lg lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] w-[38.385vw] max-w-full">
+          <div className="text-center mb-[20px] lg:mb-[1.563vw] xl:mb-[1.563vw] 2xl:mb-[1.563vw] text-lg lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] w-[38.385vw] max-w-full max-[767px]:w-full max-[767px]:text-[14px] max-[767px]:leading-[22px] max-[767px]:mt-[10px]">
             From tracking gifts and checking messages to sending thank-you notes and setting up your home page, everything you need lives here. You'll land here every time you log in.
           </div>
           <div className="uppercase font-semibold mb-2 text-center lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">READY?</div>
@@ -952,7 +952,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
         type="number"
         min="1"
         placeholder="Enter No Of Guest"
-        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black mx-auto mt-4 text-center text-3xl font-bold placeholder:text-lg placeholder:font-normal"
+        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black mx-auto mt-4 text-center text-3xl font-bold placeholder:text-lg placeholder:font-normal max-w-full"
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
       {step3Error && <div className="input-error-message">{step3Error}</div>}
@@ -1322,7 +1322,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
             }`}
           >
             <div
-              className={`p-3 max-[768px]:p-2 max-[768px]:w-20 rounded-full w-[5.5vw] h-[5.5vw] max-w-[100px] max-h-[100px] aspect-[1/1] flex items-center justify-center relative ${
+              className={`p-3 max-[768px]:p-2 max-[768px]:w-20 rounded-full w-[5.5vw] max-w-[100px] max-h-[100px] aspect-[1/1] flex items-center justify-center relative ${
                 selectedOptions.some((item) => item.id === collection.id) 
                   ? 'bg-[#223247]' 
                   : 'bg-[#F5F2ED]'
@@ -1466,7 +1466,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
       </p>
       {error && <p className="text-red-500 mb-4">Error: {error}</p>}
       <div className="relative">
-        <div className="swiper-button-prev-subcollection absolute top-[60px] -left-16  cursor-pointer text-white uppercase flex ">
+        <div className="swiper-button-prev-subcollection absolute top-[60px] max-[1024px]:top-[45%] -left-16 max-[1024px]:-left-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex ">
           <img src={nextitem} alt="" className="rotate-90 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" />
           <span className="-rotate-90 text-white block text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] tracking-wider max-[1024px]:hidden">
             more
@@ -1676,7 +1676,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
             </>
           )}
         </Swiper>
-        <div className="swiper-button-next-subcollection absolute top-[60px] -right-16 cursor-pointer text-white uppercase flex">
+        <div className="swiper-button-next-subcollection absolute top-[60px] max-[1024px]:top-[45%] -right-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex">
           <span className="rotate-90 text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] block tracking-wider max-[1024px]:hidden">
             more
           </span>

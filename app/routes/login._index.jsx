@@ -233,8 +233,8 @@ const LoginIndex = () => {
                     </button>
                   </div>
                 </div>
-                <div className="text-left">
-                  <Link to="/forgotpassword" className="text-white hover:underline text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]">
+                <div className="text-left max-[1024px]:mb-[5px] max-[1024px]:underline">
+                  <Link to="/forgotpassword" className="text-white hover:underline text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
                     Forgot Password?
                   </Link>
                 </div>
