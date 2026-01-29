@@ -7,22 +7,15 @@ const ShipGifts = () => {
     <div className="pt-[80px]">
       <div className=" p-4">
         <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-          <span className="prata uppercase">READY TO FULFILL </span> & SHIP?
+          <span className="prata">ready to </span><span className='italic'>FULFILL & SHIP?</span>
         </h2>
         <img
           src="/assets/Images/profile-view-page-bdr.png"
           alt="Couple"
           className="max-w-[630px] mt-10 h-auto mx-auto"
         />
-        <p className="max-w-xl mx-auto text-center  my-5 font-normal leading-relaxed">
-          Follow the steps below to make your final selections and order your
-          gifts. We recommend fulfilling your registry post-wedding, giving you
-          the freedom to adjust quantities or make changes before your final
-          order. Don’t forget about your Newlywed Discount - enjoy 15% off
-          anything left on your list. Enjoy two complimentary shipments of your
-          registry gifts after the wedding. Prefer to receive something sooner?
-          You can ship gifts anytime; standard rates apply once your two free
-          deliveries are used.
+        <p className="max-w-[1060px] mx-auto text-center my-12 mb-6  font-normal leading-relaxed">
+          Fulfilling your registry gives you the freedom to finalize everything in one place. Before placing your final order, you can review your list, adjust quantities, or even add new gifts you’d like to purchase using your store credit. You can also choose how you’d like to use your remaining funds — withdraw cash, convert funds into store credit, or activate your Porte Travel fund. Your store credit updates in real time so you can always see your balance. Once your credit is applied, enjoy your one-time 15% Newlywed Discount on anything you purchase beyond your remaining balance.
         </p>
       </div>
 

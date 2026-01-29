@@ -734,6 +734,7 @@ button > p {
   font-family: 'bastardogrotesk' !important;
   font-weight: 400 !important;
   color: #1F1D1B !important;
+  opacity: 1 !important;
 }
 
 .collection-slider .swiper-wrapper {
@@ -1020,6 +1021,10 @@ td.rdp-day {
   font-size: 17px;
 }
 
+.rdp-today:not(.rdp-outside){
+  color: #446184 !important;
+}
+
 .datepick {
   background: #f5f2ed;
   margin-top: 30px;
@@ -1216,6 +1221,10 @@ html, body { height: 100%; margin: 0; }
     margin-right: auto !important;
     display: block;
   }
+  
+  .tickafter::after {
+      background-size: 30%;
+  }
 }
 
 @media screen and (max-width: 767px) {
@@ -1282,6 +1291,7 @@ html, body { height: 100%; margin: 0; }
   .insetshadow::before {
     display: none;
   }
+
 
   /* .testimonialSlider .swiper-slide {
     width: 90vw !important;
@@ -1468,4 +1478,16 @@ html, body { height: 100%; margin: 0; }
   height: auto;
   display: flex;
   flex-shrink: 0;
+}
+
+@media screen and (max-width: 767px) {
+  .custom-checkbox:checked {
+      width: 20px;
+      height: 20px;
+  }
+
+  .custom-checkbox:checked::after {
+      width: 4px;
+      height: 9px;
+  }
 }
