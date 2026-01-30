@@ -663,7 +663,7 @@ const OnboardingClient = ({onStepChange}) => {
                 type="checkbox"
                 checked={agreeToTerms}
                 onChange={(e) => setAgreeToTerms(e.target.checked)}
-                className="custom-checkbox mt-1"
+                className="custom-checkbox mt-1 m-0"
               />
               <span className="ivyora text-left lg:w-[22.396vw] xl:w-[22.396vw] 2xl:w-[22.396vw] font-normal text-[18px] lg:text-[0.781vw] xl:text-[0.781vw] 2xl:text-[0.781vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-base text-white">
                 By creating your registry, you agree to our{' '}
@@ -899,7 +899,7 @@ const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
           inputProps={{
             placeholder: "Select a date *",
             className:
-              'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker',
+              'rounded-none p-8 border-[#B9B4AE] border-2 bg-white text-black customDatePicker placeholder:opacity-100',
           }}
           buttonLabels={{clear: 'Reset', apply: 'Confirm'}}
           disabledDates={disabledDates}

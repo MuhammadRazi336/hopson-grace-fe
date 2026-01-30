@@ -971,7 +971,7 @@ export function Header() {
 
                     {/* Red Dot for unread notifications */}
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
                         <span className="text-xs text-white font-bold">
                           {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
@@ -1006,7 +1006,7 @@ export function Header() {
                             <div
                               key={notification.id}
                               className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                notification.status === 'unread' ? 'bg-blue-50' : ''
+                                notification.status === 'unread' ? 'bg-[#c522481e]' : ''
                               }`}
                               onClick={() => {
                                 if (notification.status === 'unread') {
@@ -1481,7 +1481,7 @@ export function Header() {
 
                       {/* Red Dot for unread notifications */}
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
+                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
                           <span className="text-xs text-white font-bold">
                             {unreadCount > 9 ? '9+' : unreadCount}
                           </span>
@@ -1516,7 +1516,7 @@ export function Header() {
                               <div
                                 key={notification.id}
                                 className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                  notification.status === 'unread' ? 'bg-blue-50' : ''
+                                  notification.status === 'unread' ? 'bg-[#c522481e]' : ''
                                 }`}
                                 onClick={() => {
                                   if (notification.status === 'unread') {
