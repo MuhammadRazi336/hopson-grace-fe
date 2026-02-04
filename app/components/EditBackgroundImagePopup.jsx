@@ -35,12 +35,17 @@ function getCroppedImg(imageSrc, crop, zoom, aspect, croppedAreaPixels) {
   });
 }
 
-// Predefined background images
+// // Predefined background images
+// const backgroundImages = [
+//   '/assets/Images/Cake.png', // Pink plates with floral pattern
+//   '/assets/Images/Steps.png', // Pink tulip
+//   '/assets/Images/tea.png', // White cake on olive background
+//   '/assets/Images/couple-profile-bg.png', // Current dining table setting
+// ];
 const backgroundImages = [
-  '/assets/Images/Cake.png', // Pink plates with floral pattern
-  '/assets/Images/Steps.png', // Pink tulip
-  '/assets/Images/tea.png', // White cake on olive background
-  '/assets/Images/couple-profile-bg.png', // Current dining table setting
+  '/assets/Images/back3.png',
+  '/assets/Images/product-image-new.png',
+  '/assets/Images/heart.png',
 ];
 
 // Helper functions for localStorage
@@ -82,7 +87,7 @@ const removeBackgroundImageFromStorage = (imageId) => {
 };
 
 export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
-  const [imageSrc, setImageSrc] = useState('/assets/Images/couple-profile-bg.png');
+  const [imageSrc, setImageSrc] = useState('/assets/Images/back3.png');
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -164,7 +169,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
     
     // If the removed image was currently selected, reset to default
     if (imageSrc && uploadedImages.find(img => img.id === imageId)?.data === imageSrc) {
-      setImageSrc('/assets/Images/couple-profile-bg.png');
+      setImageSrc('/assets/Images/back3.png');
     }
   };
 
