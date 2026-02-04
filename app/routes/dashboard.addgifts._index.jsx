@@ -1294,7 +1294,7 @@ export default function AddGifts() {
             )}
 
             <div
-              className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[2.60vw] gap-y-[7.5vw] mt-10 "
+              className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[2.60vw] gap-y-[2.2vw] mt-10 "
               ref={productGridRef}
             >
               {(() => {

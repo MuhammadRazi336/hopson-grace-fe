@@ -2,8 +2,8 @@ import React, { useState, useCallback, useRef, lazy, Suspense, useEffect } from 
 import ModalPortal from './ModalPortal';
 
 const images = [
-  '/assets/Images/registry-logo.png',
-  '/assets/Images/couple-picture.png',
+  '/assets/Images/profilePicDefault.png',
+  '/assets/Images/product-image-new.png',
 ];
 
 const Cropper = typeof window !== 'undefined'
@@ -170,7 +170,7 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
   return (
     <ModalPortal>
       <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
-        <div className="bg-[#F5F2ED] w-[68.25vw] h-[38vw] max-h-[80vh] max-w-[90vw] px-[6.12vw] py-[2.75vw] relative">
+        <div className="bg-[#fff] w-[68.25vw] h-[38vw] max-h-[80vh] max-w-[90vw] px-[6.12vw] py-[2.75vw] relative">
           <h2 className="text-2xl lg:text-[1vw] xl:text-[1vw] 2xl:text-[1vw] lg:leading-[1.5v] xl:leading-[1.5v] 2xl:leading-[1.5v] font-[500] bastardogrotesk m-0 max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">UPLOAD YOUR PROFILE IMAGE</h2>
           {/* Close Button */}
           <button
@@ -222,7 +222,7 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
                     </div>
                   ) : (
                     <img
-                      src="/assets/Images/product-image.png"
+                      src="/assets/Images/product-image-new.png"
                       alt="Selected"
                       className="w-full h-full object-cover"
                     />
@@ -279,11 +279,11 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
               
               {/* Add Your Own Button */}
               <div 
-                className="cursor-pointer border-2 border-dashed border-[#999898] relative w-[5.885vw] h-[5.885vw] max-[1024px]:w-[60px] max-[1024px]:h-[60px] flex flex-col items-center justify-center hover:border-blue-400"
+                className="cursor-pointer border-2 border-dashed border-[#999898] relative w-[5.885vw] h-[5.885vw] max-[1024px]:w-[60px] max-[1024px]:h-[60px] flex flex-col items-center justify-center bg-[#F1F1F1] hover:border-blue-400"
                 onClick={() => fileInputRef.current && fileInputRef.current.click()}
               >
                 <div className="text-3xl text-gray-400 mb-1">
-                  <svg width="1.563vw" height="1.563vw" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20.5" cy="20.5" r="20.5" fill="#D9D9D9"></circle><path fill-rule="evenodd" clip-rule="evenodd" d="M21.1474 11.7148C22.0161 11.7148 22.7202 12.419 22.7202 13.2876L22.7202 19.5786L29.0112 19.5786C29.8798 19.5786 30.584 20.2827 30.584 21.1514C30.584 22.02 29.8798 22.7241 29.0112 22.7241H22.7202L22.7202 29.0151C22.7202 29.8837 22.0161 30.5879 21.1474 30.5879C20.2788 30.5879 19.5747 29.8837 19.5747 29.0151L19.5747 22.7241H13.2837C12.4151 22.7241 11.7109 22.02 11.7109 21.1514C11.7109 20.2827 12.4151 19.5786 13.2837 19.5786H19.5747L19.5747 13.2876C19.5747 12.419 20.2788 11.7148 21.1474 11.7148Z" fill="white"></path></svg>
+                  <svg width="2.085vw" height="2.085vw" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20.5" cy="20.5" r="20.5" fill="#D9D9D9"></circle><path fill-rule="evenodd" clip-rule="evenodd" d="M21.1474 11.7148C22.0161 11.7148 22.7202 12.419 22.7202 13.2876L22.7202 19.5786L29.0112 19.5786C29.8798 19.5786 30.584 20.2827 30.584 21.1514C30.584 22.02 29.8798 22.7241 29.0112 22.7241H22.7202L22.7202 29.0151C22.7202 29.8837 22.0161 30.5879 21.1474 30.5879C20.2788 30.5879 19.5747 29.8837 19.5747 29.0151L19.5747 22.7241H13.2837C12.4151 22.7241 11.7109 22.02 11.7109 21.1514C11.7109 20.2827 12.4151 19.5786 13.2837 19.5786H19.5747L19.5747 13.2876C19.5747 12.419 20.2788 11.7148 21.1474 11.7148Z" fill="white"></path></svg>
                 </div>
                 <p className="text-xs bastardogrotesk text-[#000000] text-center absolute lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] bottom-[-40px] max-[1024px]:bottom-[0px] max-[1024px]:relative max-[1024px]:text-[8px] max-[1024px]:leading-[10px]">ADD YOUR OWN</p>
               </div>
