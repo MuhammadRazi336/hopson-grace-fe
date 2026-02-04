@@ -37,7 +37,7 @@ const PrivacyPolicy = () => {
             number, mailing address, wedding date, and gift preferences. We also
             collect information related to your purchases and gift tracking
             activity. If you use our cash fund features, we may collect payment
-            details through trusted platforms like Stripe or Shopify Payments.
+            details through trusted platforms like PayPal or Shopify Payments.
             In addition, we gather website activity data through cookies and
             analytics tools to help us understand how our visitors use the site.
           </p>
@@ -58,7 +58,7 @@ const PrivacyPolicy = () => {
           <p className="text-1xl lg:text-2xl font-normal pt-3">
             We do not sell your data. We only share it with trusted third-party
             partners who help us operate The Registry smoothly. These include
-            payment processors like Stripe, website hosting platforms like
+            payment processors like PayPal, website hosting platforms like
             Shopify, delivery and customer support providers, and marketing
             tools such as Klaviyo, Google, and Meta.
           </p>

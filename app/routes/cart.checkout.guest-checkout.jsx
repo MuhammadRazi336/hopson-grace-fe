@@ -4,11 +4,11 @@ import {json} from '@shopify/remix-oxygen';
 export async function action({request, context}) {
   try {
     const formData = await request.formData();
-    const paymentIntentId = formData.get('paymentIntentId')?.trim();
+    const paypalOrderId = formData.get('paypalOrderId')?.trim();
     
-    if (!paymentIntentId) {
+    if (!paypalOrderId) {
       return json(
-        { error: 'Payment intent ID is required' },
+        { error: 'PayPal order ID is required' },
         { status: 400 }
       );
     }
@@ -46,7 +46,7 @@ export async function action({request, context}) {
       );
     }
     
-    // Step 2: Guest checkout
+    // Step 2: Guest checkout (PayPal)
     const guestCheckoutPayload = {
       registryId: Number(registryId),
       email: email.trim(),
@@ -54,7 +54,7 @@ export async function action({request, context}) {
       lastName: lastName.trim(),
       lineItems: lineItems,
       message: message.trim(),
-      paymentIntentId: paymentIntentId.trim()
+      paypalOrderId: paypalOrderId.trim()
     };
     
     // Additional validation
@@ -66,8 +66,8 @@ export async function action({request, context}) {
       throw new Error('Invalid email format');
     }
     
-    if (!guestCheckoutPayload.paymentIntentId || guestCheckoutPayload.paymentIntentId.length < 10) {
-      throw new Error('Invalid payment intent ID');
+    if (!guestCheckoutPayload.paypalOrderId || guestCheckoutPayload.paypalOrderId.length < 10) {
+      throw new Error('Invalid PayPal order ID');
     }
     
     console.log('Guest checkout payload:', guestCheckoutPayload);
@@ -78,7 +78,7 @@ export async function action({request, context}) {
       lastName: typeof guestCheckoutPayload.lastName,
       lineItemsLength: guestCheckoutPayload.lineItems?.length,
       message: typeof guestCheckoutPayload.message,
-      paymentIntentId: typeof guestCheckoutPayload.paymentIntentId
+      paypalOrderId: typeof guestCheckoutPayload.paypalOrderId
     });
     
     // Log line items structure for debugging
@@ -150,7 +150,7 @@ export async function action({request, context}) {
     
     if (guestCheckoutResponse?.data?.checkoutNumber) {
       // Clear session data after successful checkout
-      context.session.set('paymentIntentId', '');
+      context.session.set('paypalOrderId', '');
       context.session.set('lineItems', '');
       context.session.set('message', '');
       context.session.set('firstName', '');
@@ -163,7 +163,7 @@ export async function action({request, context}) {
         {
           success: true,
           checkoutNumber: guestCheckoutResponse.data.checkoutNumber,
-          paymentIntentId: guestCheckoutResponse.data.paymentIntentId,
+          paypalOrderId: guestCheckoutResponse.data.paypalOrderId,
           greetingDetails: guestCheckoutResponse.data.greetingDetails
         },
         {

@@ -6,10 +6,10 @@ export function createClient() {
       throw new Error(`Provide a body for the ${method} request`);
     }
 
-    // http://localhost:3040/api/
-    // https://dev-hopsongrace.codup.io/api/
-  
-    const endPoint = `https://dev-hopsongrace.codup.io/api/${route}`;
+    // Use API_BASE_URL when set; else same-origin (so in-repo /api/* routes are used)
+    const apiBase =
+      context?.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+    const endPoint = `${apiBase.replace(/\/$/, '')}/api/${route}`;
     const options = {
       method,
       headers: {

@@ -47,7 +47,10 @@ export async function createAppLoadContext(request, env, executionContext) {
     // Expose environment variables to the client without dropping Hydrogen's required vars
     env: {
       ...hydrogenContext.env,
-      API_BASE_URL: env.API_BASE_URL || process.env.API_BASE_URL,
+      API_BASE_URL:
+        env.API_BASE_URL ||
+        process.env.API_BASE_URL ||
+        (typeof request.url === 'string' ? new URL(request.url).origin : undefined),
       PUBLIC_STRIPE_PUBLISHABLE_KEY: env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
     },
     // declare additional Remix loader context

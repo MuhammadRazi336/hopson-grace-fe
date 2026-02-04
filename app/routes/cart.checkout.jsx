@@ -1,15 +1,12 @@
-﻿import {useState, useEffect} from 'react';
-import {Elements} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
+import {useState, useEffect} from 'react';
+import {PayPalScriptProvider, PayPalButtons} from '@paypal/react-paypal-js';
 import {Form, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
-import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
 import {CoupleProfileViewHeader} from './couple.test._index';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {Footer} from '~/components/Footer';
-import ButtonComponent from '~/components/Button';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import ModalPortal from '~/components/ModalPortal';
 
@@ -77,7 +74,7 @@ export async function loader({context, request}) {
       registryApi,
       apiBaseUrl:
         'https://dev-hopsongrace.codup.io',
-      stripePublishableKey: context.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
     });
   } catch {
     return json({
@@ -86,12 +83,12 @@ export async function loader({context, request}) {
       productData: [],
       registryApi: {},
       apiBaseUrl: 'https://dev-hopsongrace.codup.io',
-      stripePublishableKey: context.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
     });
   }
 }
 
-// Action for step 1: Create payment intent
+// Action for step 1: Create PayPal order
 export async function action({request, context}) {
   try {
     const formData = await request.formData();
@@ -240,56 +237,55 @@ export async function action({request, context}) {
       totalAmountWithTax = totalAmount;
     }
 
-    // Step 1: Create payment intent
-    const createPaymentIntentPayload = {
+    // Step 1: Create PayPal order
+    const createPayPalOrderPayload = {
       registryId: Number(registryId),
       email: email,
       firstName: formData.get('firstName')?.trim(),
       lastName: formData.get('lastName')?.trim(),
-      taxPercentage: Math.round(taxPercentage * 100) / 100, // Round to 2 decimal places
-      totalAmountWithTax: Math.round(totalAmountWithTax * 100) / 100, // Total including tax
+      taxPercentage: Math.round(taxPercentage * 100) / 100,
+      totalAmountWithTax: Math.round(totalAmountWithTax * 100) / 100,
     };
 
     console.log(
-      'Creating payment intent with payload:',
-      createPaymentIntentPayload,
-    );
-    console.log('API Base URL:', apiBaseUrl);
-    console.log(
-      'Full API URL would be:',
-      `${apiBaseUrl}/api/transactions/create-payment-intent`,
+      'Creating PayPal order with payload:',
+      createPayPalOrderPayload,
     );
 
-    let createPaymentIntentResponse;
+    let createPayPalOrderResponse;
     try {
-      createPaymentIntentResponse = await context.ClientPost(
-        createPaymentIntentPayload,
-        'transactions/create-payment-intent',
+      createPayPalOrderResponse = await context.ClientPost(
+        createPayPalOrderPayload,
+        'transactions/create-paypal-order',
         context,
       );
       console.log(
-        'Create payment intent response:',
-        createPaymentIntentResponse,
+        'Create PayPal order response:',
+        createPayPalOrderResponse,
       );
     } catch (apiError) {
       console.error('API Error:', apiError);
       console.error('API Error Response:', apiError.response?.data);
       console.error('API Error Status:', apiError.response?.status);
+      const message = apiError.message || 'Failed to create PayPal order';
+      const isMissingEndpoint =
+        message.includes('Cannot POST') ||
+        message.includes('404') ||
+        message.includes('Not Found');
       return json(
         {
-          error: `API Error: ${
-            apiError.message || 'Failed to create payment intent'
-          }`,
+          error: isMissingEndpoint
+            ? 'PayPal checkout is not available yet. The backend must implement POST /api/transactions/create-paypal-order. See guides/PAYPAL_BACKEND_API.md.'
+            : `API Error: ${message}`,
         },
         {status: 500},
       );
     }
 
-    if (createPaymentIntentResponse?.data?.clientSecret) {
-      // Store the payment intent data in session for step 2
+    if (createPayPalOrderResponse?.data?.paypalOrderId) {
       context.session.set(
-        'paymentIntentId',
-        createPaymentIntentResponse.data.paymentIntentId,
+        'paypalOrderId',
+        createPayPalOrderResponse.data.paypalOrderId,
       );
       context.session.set('lineItems', JSON.stringify(lineItems));
       context.session.set('message', message?.trim());
@@ -300,10 +296,9 @@ export async function action({request, context}) {
 
       return json(
         {
-          clientSecret: createPaymentIntentResponse.data.clientSecret,
-          paymentIntentId: createPaymentIntentResponse.data.paymentIntentId,
-          amount: createPaymentIntentResponse.data.amount,
-          customerId: createPaymentIntentResponse.data.customerId,
+          paypalOrderId: createPayPalOrderResponse.data.paypalOrderId,
+          amount: createPayPalOrderResponse.data.amount,
+          currency: createPayPalOrderResponse.data.currency || 'CAD',
         },
         {
           status: 200,
@@ -314,7 +309,7 @@ export async function action({request, context}) {
       );
     } else {
       return json(
-        {error: 'No clientSecret in create payment intent response'},
+        {error: 'No paypalOrderId in create PayPal order response'},
         {status: 400},
       );
     }
@@ -544,8 +539,7 @@ const DetailsForm = ({onNext}) => {
 
   // Handle fetcher state
   useEffect(() => {
-    if (fetcher.data?.clientSecret && fetcher.state === 'idle') {
-      // Clear localStorage when checkout is successful
+    if (fetcher.data?.paypalOrderId && fetcher.state === 'idle') {
       if (fetcher.data.clearLocalStorage && typeof window !== 'undefined') {
         localStorage.removeItem('guestEmail');
         localStorage.removeItem('registryId');
@@ -554,10 +548,9 @@ const DetailsForm = ({onNext}) => {
         );
       }
       onNext({
-        clientSecret: fetcher.data.clientSecret,
-        paymentIntentId: fetcher.data.paymentIntentId,
+        paypalOrderId: fetcher.data.paypalOrderId,
         amount: fetcher.data.amount,
-        customerId: fetcher.data.customerId,
+        currency: fetcher.data.currency || 'CAD',
       });
     }
   }, [fetcher.data, fetcher.state, onNext]);
@@ -853,120 +846,80 @@ const DetailsForm = ({onNext}) => {
 
 // Main Checkout component
 const Checkout = () => {
-  const {stripePublishableKey} = useLoaderData();
+  const {paypalClientId} = useLoaderData();
   const [step, setStep] = useState(1);
-  const [clientSecret, setClientSecret] = useState(null);
-  const [paymentIntentId, setPaymentIntentId] = useState(null);
-  
-  // Initialize Stripe promise with the key from environment
-  const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
-  
+  const [paypalOrderId, setPaypalOrderId] = useState(null);
+  const [orderAmount, setOrderAmount] = useState(null);
+  const [orderCurrency, setOrderCurrency] = useState('CAD');
+
   const handleNext = (data) => {
-    setClientSecret(data.clientSecret);
-    setPaymentIntentId(data.paymentIntentId);
+    setPaypalOrderId(data.paypalOrderId);
+    setOrderAmount(data.amount);
+    setOrderCurrency(data.currency || 'CAD');
     setStep(2);
   };
-  
-  if (!stripePromise) {
+
+  if (!paypalClientId) {
     return (
       <div className="pt-[80px] text-center">
-        <p className="text-red-500">Stripe is not configured. Please set PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.</p>
+        <p className="text-red-500">PayPal is not configured.</p>
       </div>
     );
   }
-  
+
   return (
-    <Elements stripe={stripePromise}>
-      <div>
-        {step === 1 && <DetailsForm onNext={handleNext} />}
-        {step === 2 && (
-          <CardPaymentForm
-            clientSecret={clientSecret}
-            paymentIntentId={paymentIntentId}
-            onPrev={() => setStep(1)}
-          />
-        )}
-      </div>
-    </Elements>
+    <div>
+      {step === 1 && <DetailsForm onNext={handleNext} />}
+      {step === 2 && (
+        <PayPalPaymentForm
+          paypalOrderId={paypalOrderId}
+          paypalClientId={paypalClientId}
+          onPrev={() => setStep(1)}
+        />
+      )}
+    </div>
   );
 };
 
 export default Checkout;
 
-const CardPaymentForm = ({clientSecret, paymentIntentId, onPrev, onPay}) => {
-  const stripe = useStripe();
-  const elements = useElements();
+const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const fetcher = useFetcher();
 
-  // Handle fetcher state for guest checkout
   useEffect(() => {
     if (fetcher.data?.success && fetcher.state === 'idle') {
-      // Clear localStorage when checkout is successful
       if (typeof window !== 'undefined') {
         localStorage.removeItem('guestEmail');
         localStorage.removeItem('registryId');
         console.log(
-          'CardPaymentForm: Cleared guestEmail and registryId from localStorage after successful checkout',
+          'PayPalPaymentForm: Cleared guestEmail and registryId from localStorage after successful checkout',
         );
       }
-      // Navigate to thank you page
       navigate('/thankyou');
     } else if (fetcher.data?.error && fetcher.state === 'idle') {
       setError(fetcher.data.error);
-      setLoading(false);
       setShowPopup(true);
     }
   }, [fetcher.data, fetcher.state, navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    if (!stripe || !elements) {
-      setError('Stripe is not loaded');
-      setLoading(false);
+  const handleApprove = (data) => {
+    if (!data?.orderID) {
+      setError('PayPal order ID not received');
       setShowPopup(true);
       return;
     }
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      setError('Card element not found');
-      setLoading(false);
-      setShowPopup(true);
-      return;
-    }
-    const {error: confirmError, paymentIntent} =
-      await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-        },
-      });
-    if (confirmError) {
-      setError(confirmError.message);
-      setLoading(false);
-      setShowPopup(true);
-    } else {
-      // Payment successful, now call guest-checkout API
-      if (paymentIntentId) {
-        const formData = new FormData();
-        formData.append('paymentIntentId', paymentIntentId);
-
-        fetcher.submit(formData, {
-          method: 'POST',
-          action: '/cart/checkout/guest-checkout',
-        });
-      } else {
-        setError('Payment intent ID not found');
-        setLoading(false);
-        setShowPopup(true);
-      }
-    }
+    const formData = new FormData();
+    formData.append('paypalOrderId', data.orderID);
+    fetcher.submit(formData, {
+      method: 'POST',
+      action: '/cart/checkout/guest-checkout',
+    });
   };
+
   return (
     <div className="pt-[80px]">
       <CoupleProfileViewHeader />
@@ -1002,74 +955,63 @@ const CardPaymentForm = ({clientSecret, paymentIntentId, onPrev, onPay}) => {
       </div>
       <div className="container mx-auto py-[100px]">
         <div className="bg-[#446184] py-16 px-16">
-          <Form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="card-element"
-                className="block text-sm text-center text-white font-medium mb-1"
+          <div className="grid grid-cols-1 gap-6">
+            <label className="block text-sm text-center text-white font-medium mb-1">
+              PAYMENT
+            </label>
+            <div className="flex justify-center">
+              <PayPalScriptProvider
+                options={{
+                  clientId: paypalClientId,
+                  currency: 'CAD',
+                  intent: 'capture',
+                }}
               >
-                PAYMENT
-              </label>
-              <div className="">
-                <CardElement
-                  className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                  id="card-element"
-                  options={{
-                    style: {
-                      base: {
-                        fontSize: '16px',
-                        color: '#424770',
-                        '::placeholder': {color: '#aab7c4'},
-                      },
-                      invalid: {color: '#9e2146'},
-                    },
+                <PayPalButtons
+                  createOrder={() => Promise.resolve(paypalOrderId)}
+                  onApprove={(data) => handleApprove(data)}
+                  onError={(err) => {
+                    setError(err?.message || 'PayPal error');
+                    setShowPopup(true);
                   }}
+                  style={{layout: 'vertical', color: 'gold', shape: 'rect'}}
+                  disabled={fetcher.state === 'submitting' || !paypalOrderId}
                 />
-              </div>
+              </PayPalScriptProvider>
             </div>
-            {error && <div className="text-[#FD446F]">{error}</div>}
+            {error && <div className="text-[#FD446F] text-center mt-4">{error}</div>}
             {success && (
-              <div className="text-white bg-green-500 px-2 py-4">
+              <div className="text-white bg-green-500 px-2 py-4 text-center mt-4">
                 Payment successful!
               </div>
             )}
-            <div className="flex justify-end">
-              <ButtonComponent
-                className={
-                  'w-[200px] py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-bold text-black text-center'
-                }
-                type="submit"
-                text={loading ? 'Processing...' : 'Pay'}
-                disabled={loading || !stripe}
-              />
-            </div>
-          </Form>
+          </div>
         </div>
       </div>
       {showPopup && (
         <ModalPortal>
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#000000b0] bg-opacity-50">
-          <div
-            className={`rounded-lg shadow-lg px-8 py-16 max-w-xl w-full text-center ${
-              success ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
-            }`}
-          >
-            <h2 className="text-2xl font-bold mb-4">
-              {!success ? 'Sorry for the Inconvenience' : 'Payment Successful!'}
-            </h2>
-            <p className="mb-6">
-              {!success
-                ? error || 'There was an error processing your payment.'
-                : 'Thank you for your payment.'}
-            </p>
-            <button
-              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
-              onClick={() => setShowPopup(false)}
+            <div
+              className={`rounded-lg shadow-lg px-8 py-16 max-w-xl w-full text-center ${
+                success ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
+              }`}
             >
-              Close
-            </button>
+              <h2 className="text-2xl font-bold mb-4">
+                {!success ? 'Sorry for the Inconvenience' : 'Payment Successful!'}
+              </h2>
+              <p className="mb-6">
+                {!success
+                  ? error || 'There was an error processing your payment.'
+                  : 'Thank you for your payment.'}
+              </p>
+              <button
+                className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
+                onClick={() => setShowPopup(false)}
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </div>
         </ModalPortal>
       )}
     </div>

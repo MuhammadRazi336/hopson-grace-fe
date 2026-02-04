@@ -605,7 +605,7 @@ const FAQ = () => {
                 {openFAQ === 15 && (
                   <div className="mt-[1.25vw] transition-all duration-300">
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      The Registry uses secure, third-party fund management to safeguard your cash fund at every step. All contributions are processed through Stripe, one of the world’s most trusted payment providers, and held in deposit with a Canadian chartered bank until the couple is ready to withdraw them. Couples can rest assured knowing that every contribution made through The Registry is safe, traceable, and honoured in full.
+                      The Registry uses secure, third-party fund management to safeguard your cash fund at every step. All contributions are processed through PayPal, one of the world’s most trusted payment providers, and held in deposit with a Canadian chartered bank until the couple is ready to withdraw them. Couples can rest assured knowing that every contribution made through The Registry is safe, traceable, and honoured in full.
                     </p>
                   </div>
                 )}
