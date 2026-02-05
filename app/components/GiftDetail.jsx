@@ -164,7 +164,7 @@ const GiftDetail = ({
 
           {/* Product Description */}
           <div className="prose prose-gray max-w-none">
-            <div className="text-[22px] leading-relaxed lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] pt-[2.917vw]">
+            <div className="text-[22px] leading-8 pt-[2.917vw] product-detail-list ">
               {productDescription ? (
                 <p>{productDescription}</p>
               ) : (
@@ -185,6 +185,13 @@ const GiftDetail = ({
                     collection of the 100 most iconic designs, alongside the
                     Porsche 911 and the Rolex watch.
                   </p>
+                  <ul>
+                    <li>Made in France by Opinel, a family-owned company since 1890</li>
+                    <li>Culturally iconic: used by Picasso; featured in the V&A Museum’s top 100 designs</li>
+                    <li>Stainless steel serrated blade slices effortlessly through all types of bread</li>
+                    <li>Sustainably sourced beechwood handle for comfort and classic style</li>
+                    <li>Blade length: 21 cm (8.25")</li>
+                  </ul>
                 </>
               )}
             </div>

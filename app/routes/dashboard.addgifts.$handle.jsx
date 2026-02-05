@@ -325,8 +325,8 @@ const GiftDetailHandle = () => {
           </div> */}
         </div>
 
-        <section className="mt-[9.74vw] bg-[#446184] text-white pl-[5.469vw]">
-          <div className="mx-auto flex flex-col lg:flex-row gap-10 py-[4.792vw]">
+        <section className="mt-[9.74vw] bg-[#446184] text-white ">
+          <div className="mx-auto flex flex-col lg:flex-row gap-10 py-[5.2vw] px-[9.5vw]">
             {/* Left Text Section */}
             <div className="lg:w-4/12 w-full flex items-center flex-col gap-2">
               <p className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-wider uppercase pb-1">
@@ -353,10 +353,10 @@ const GiftDetailHandle = () => {
                 </button>
               </Link>
             </div>
-            <section className="lg:w-8/12 w-full  container ">
-              <div className="relative items-start max-[1024px]:my-10 mr-[5.208vw]">
+            <section className="lg:w-[56%] w-full  container ">
+              <div className="relative items-start max-[1024px]:my-10">
                 <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-                  <div className="swiper-button-prev-prod absolute top-[40%] transform-y-[-50%] h-[40px] left-[-4vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
+                  <div className="swiper-button-prev-prod absolute top-[40%] -translate-y-1/2 h-[40px] left-[-7vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
                     <img src={nextitem} className="invert rotate-90 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw]" alt="" />
                     <span className="-rotate-90 text-white block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                       more
@@ -370,7 +370,7 @@ const GiftDetailHandle = () => {
                       nextEl: '.swiper-button-next-prod',
                       prevEl: '.swiper-button-prev-prod',
                     }}
-                    className="px-[178px]"
+                    className=""
                     style={{}}
                     loop={true}
                     breakpoints={{
@@ -471,7 +471,7 @@ const GiftDetailHandle = () => {
                       </>
                     )}
                   </Swiper>
-                  <div className="swiper-button-next-prod absolute top-[40%] transform-y-[-50%] h-[40px] right-[-4vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
+                  <div className="swiper-button-next-prod absolute top-[40%] -translate-y-1/2 h-[40px] right-[-7vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
                     <span className="rotate-90 text-white block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                       more
                     </span>

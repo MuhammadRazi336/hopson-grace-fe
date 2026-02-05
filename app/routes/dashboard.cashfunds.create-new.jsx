@@ -269,7 +269,7 @@ function CreateNewCashFund() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3.49vw]">
                 {/* Photo Section */}
                 <div className="space-y-4 lg:w-[41.08vw] xl:w-[41.08vw] 2xl:w-[41.08vw]">
-                  <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-wide">
+                  <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-[2px]">
                   UPLOAD YOUR OWN PHOTO OR KEEP THIS
                   </h2>
                   <div className="bg-[#F5F2ED] aspect-square relative flex items-center justify-center w-full h-[41.08vw]">
@@ -312,7 +312,7 @@ function CreateNewCashFund() {
 
                 {/* Details Section */}
                 <div className="space-y-6 lg:w-[44.14vw] xl:w-[44.14vw] 2xl:w-[44.14vw]">
-                  <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-wide">
+                  <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-[2px]">
                     GIFT NAME
                   </h2>
 
@@ -322,8 +322,8 @@ function CreateNewCashFund() {
                         id="cashFundName"
                         name="name"
                         value={cashFundName}
-                        className="bg-white lg:text-[0.938vw] font-bold uppercase w-full p-4 !m-0 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0"
-                        placeholder="e.g., HONEYMOON FUND, HOME RENOVATION"
+                        className="bg-white lg:text-[0.938vw] font-bold uppercase w-full p-4 !m-0 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0 placeholder:bg[#948E8A] placeholder:text-transform[initial] placeholder:font-normal"
+                        placeholder="e.g., Honeymoon fund, renovation"
                         onChange={(e) => setCashFundName(e.target.value)}
                       />
                     </div>
@@ -335,7 +335,7 @@ function CreateNewCashFund() {
                       </span>
                     </div> */}
 
-                    <h2 className="text-white mt-[3.594vw] text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-wide">
+                    <h2 className="text-white mt-[3.594vw] text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-[2px]">
                       GIFT VALUE
                     </h2>
 
@@ -354,7 +354,7 @@ function CreateNewCashFund() {
 
                       {/* Hide from Guests Toggle */}
                       <div className=" flex items-center justify-center gap-5 lg:gap-[1.042vw] w-5/12 pl-2">
-                        <span className="text-white text-[16px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold text-center">
+                        <span className="text-white text-[16px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold text-center tracking-[2px]">
                           HIDE <br /> FROM <br /> GUESTS
                         </span>
 
@@ -382,15 +382,15 @@ function CreateNewCashFund() {
 
                     {/* Terms & Conditions */}
                     <div className="space-y-3 mt-[4.531vw]">
-                      <h4 className="text-white mt-0 mb-[1.094vw] font-bold text-[16px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-wide">
+                      <h4 className="text-white mt-0 mb-[1.094vw] font-bold text-[16px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] tracking-[2px]">
                         TERMS & CONDITIONS
                       </h4>
-                      <p className="text-white text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] ivyora tracking-wide italic font-[400]">
+                      <p className="text-white text-[18px] lg:text-[0.938vw] lg:leading-[28px] ivyora italic font-[400] tracking-[2px]">
                         By creating this cash fund, you agree to our terms and conditions. 
                         This fund will be added to your registry and shared with your guests.
                       </p>
                       <div className="flex items-center space-x-2 mt-[15px]">
-                        <span className="text-white text-[14px] lg:text-[0.729vw] lg:leading-[0.938vw] mr-[0.8vw] font-bold text-center">
+                        <span className="text-white text-[14px] lg:text-[0.729vw] lg:leading-[0.938vw] mr-[0.8vw] font-bold text-center tracking-[2px]">
                           AGREE
                         </span>
 
