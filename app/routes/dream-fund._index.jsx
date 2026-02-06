@@ -508,7 +508,9 @@ const DreamFund = () => {
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
+                        <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
               Back to Top
             </button>
           </div>
