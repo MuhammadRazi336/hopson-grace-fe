@@ -56,7 +56,7 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                     <img src={getStepImage(stepNo)} alt={`Step ${stepNo}`} className="w-full h-full object-cover max-[1024px]:w-[calc(100%-30px)] max-[1024px]:max-h-[72vw]" />
                     <img src={registrylogoSteps} alt="" className="absolute bottom-4 -left-[72px] lg:-left-[2.083vw] xl:-left-[2.083vw] 2xl:-left-[2.083vw] max-[1024px]:left-[initial] max-[1024px]:-right-[7px] max-[1024px]:w-[71px] max-[1024px]:bottom-0 max-[1024px]:top-0 max-[1024px]:my-auto lg:w-[4.49vw] xl:w-[4.49vw] 2xl:w-[4.49vw] w-[71px]" />
                     {showLoginLink && (
-                        <h5 className="absolute -bottom-16 max-[1024px]:hidden lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw]">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>
+                        <h5 className="absolute -bottom-16 max-[1024px]:hidden max-[1024px]:right-auto max-[1024px]:left-auto max-[1024px]:w-full max-[1024px]:text-center max-[580px]:-bottom-[400px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw]">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>
                     )}
                     {customImageFooter && (
                         <div className="absolute -bottom-[100px] max-[1024px]:-bottom-[350px] max-[1024px]:right-auto max-[1024px]:left-auto max-[1024px]:w-full max-[1024px]:text-center lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
@@ -91,7 +91,10 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                     </div>
                 )}
             </div>
-               
+                <div className="min-[1024px]:hidden">
+                {showLoginLink && (
+                    <h5 className="">Already Registered? <Link to="/login" className="font-bold border-b-black border-b-2 uppercase ">Login</Link></h5>                )}
+                </div>
         </div>
      );
 }
