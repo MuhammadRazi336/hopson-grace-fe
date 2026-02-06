@@ -419,7 +419,7 @@ const GiftDetailHandle = () => {
                               <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                                 {vendorProduct.title}
                               </h3>
-                              <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">
+                              <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px] text-white">
                                 {formatShopifyPrice(price)}
                               </p>
                             </Link>
