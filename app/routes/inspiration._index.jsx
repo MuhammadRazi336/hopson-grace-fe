@@ -19,11 +19,11 @@ import 'swiper/css/pagination';
 
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticlesForInspiration {
-  blogs(first: 1, reverse: true) {
+  blogs(first: 10, reverse: true) {
     nodes {
       title
       handle
-      articles(first: 20) {
+      articles(first: 50) {
         nodes {
           id
           title
@@ -59,8 +59,7 @@ export async function loader({context}) {
 
 const Inspiration = () => {
   const {blogs} = useLoaderData();
-  console.log('blogsww', blogs);
-  
+
   const [clickedSection, setClickedSection] = React.useState(null);
   const [articlesToShow, setArticlesToShow] = React.useState(12);
   const articlesGridRef = React.useRef(null);
@@ -103,28 +102,39 @@ const Inspiration = () => {
     setActiveStickyCategory(clickedSection);
   }, [clickedSection]);
 
-  // Flatten all articles from all blogs
-  const allArticles = blogs.flatMap(blog => 
-    blog.articles.nodes.map(article => ({
+  // Blog post metafield custom.category choice list values (must match Shopify definition exactly)
+  const CATEGORY_VALUES = {
+    REAL_WEDDINGS: 'Real Weddings',
+    THE_PLANNING_EDIT: 'The Planning Edit',
+    AT_HOME: 'At Home',
+    TRAVEL_CULTURE: 'Travel & Culture',
+  };
+
+  // Flatten all articles from all blogs; safely handle missing articles
+  const allArticles = (blogs || []).flatMap(blog => {
+    const nodes = blog?.articles?.nodes ?? [];
+    return nodes.map(article => ({
       ...article,
       blogHandle: blog.handle,
-      category: (article?.categoryMetafield?.value || '').toLowerCase().trim(),
-    }))
-  );
+      category: (article?.categoryMetafield?.value ?? '').trim(),
+    }));
+  });
 
-  // Map clicked section keys to category values in metafield
+  // Map UI section keys to metafield choice list values (custom.category)
   const sectionToCategory = {
-    wedding: 'wedding',
-    planning: 'planning',
-    design: 'design',
-    taste: 'taste',
+    wedding: CATEGORY_VALUES.REAL_WEDDINGS,
+    planning: CATEGORY_VALUES.THE_PLANNING_EDIT,
+    design: CATEGORY_VALUES.AT_HOME,
+    taste: CATEGORY_VALUES.TRAVEL_CULTURE,
   };
 
   const activeCategory = clickedSection ? sectionToCategory[clickedSection] : null;
 
-  // Filter articles by selected category, or show all if no category selected
-  const filteredArticles = activeCategory 
-    ? allArticles.filter((a) => a.category === activeCategory)
+  // Filter by selected category (case-insensitive match); when none selected, show all
+  const filteredArticles = activeCategory
+    ? allArticles.filter(
+        (a) => a.category && a.category.toLowerCase() === activeCategory.toLowerCase()
+      )
     : allArticles;
 
   return (
@@ -529,12 +539,19 @@ const Inspiration = () => {
         ) : (
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg">
-              {clickedSection === 'planning' ? 'Planning tips coming soon...' :
-               clickedSection === 'design' ? 'Design notes coming soon...' :
-               clickedSection === 'taste' ? 'Taste & travel content coming soon...' :
-               'Content coming soon...'}
+              {!clickedSection && allArticles.length === 0
+                ? 'No articles yet. Add blog posts in your Shopify admin to see them here.'
+                : clickedSection === 'planning'
+                  ? 'Planning tips coming soon...'
+                  : clickedSection === 'design'
+                    ? 'Design notes coming soon...'
+                    : clickedSection === 'taste'
+                      ? 'Taste & travel content coming soon...'
+                      : clickedSection === 'wedding'
+                        ? 'Real weddings content coming soon...'
+                        : 'Content coming soon...'}
             </p>
-        </div>
+          </div>
         )}
     </div>
 

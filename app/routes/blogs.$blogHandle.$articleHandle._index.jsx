@@ -75,6 +75,9 @@ const ARTICLE_QUERY = `#graphql
           width
           height
         }
+        designerSaysMetafield: metafield(namespace: "designer", key: "says") {
+          value
+        }
         userIdMetafield: metafield(namespace: "custom", key: "userId") {
           value
         }
@@ -96,7 +99,19 @@ const ARTICLE_QUERY = `#graphql
         coupleMetafield: metafield(namespace: "custom", key: "couple_name") {
           value
         }
-          paraMetafield: metafield(namespace: "custom", key: "first_para") {
+        categoryMetafield: metafield(namespace: "custom", key: "category") {
+          value
+        }
+        paraMetafield: metafield(namespace: "custom", key: "first_para") {
+          value
+        }
+        richTextMetafield: metafield(namespace: "rich", key: "text") {
+          value
+        }
+        createRegistryMetafield: metafield(namespace: "create", key: "registry") {
+          value
+        }
+        eventDetailsMetafield: metafield(namespace: "event", key: "details") {
           value
         }
         seo {
@@ -107,6 +122,299 @@ const ARTICLE_QUERY = `#graphql
     }
   }
 `;
+
+/** Strip HTML tags from a string (fallback when value is HTML) */
+function stripHtml(html) {
+  if (!html || typeof html !== 'string') return '';
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
+/** Get plain text from a Shopify rich text node (recursive); skip link nodes when collecting paragraph text */
+function getTextFromRichNode(node) {
+  if (!node) return '';
+  if (node.type === 'text' && node.value) return node.value;
+  if (node.type === 'link') return ''; // links handled separately
+  if (Array.isArray(node.children)) return node.children.map(getTextFromRichNode).join('');
+  return '';
+}
+
+/** Find first node of type in tree (recursive) */
+function findFirst(node, type, level) {
+  if (!node) return null;
+  if (node.type === type && (level == null || node.level === level)) return node;
+  if (Array.isArray(node.children)) {
+    for (const child of node.children) {
+      const found = findFirst(child, type, level);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+/** Collect all nodes of type in tree (recursive) */
+function findAll(node, type, level, out = []) {
+  if (!node) return out;
+  if (node.type === type && (level == null || node.level === level)) out.push(node);
+  if (Array.isArray(node.children)) {
+    for (const child of node.children) findAll(child, type, level, out);
+  }
+  return out;
+}
+
+/** Parse Shopify rich_text_field: JSON with root.children (headings = title rows, paragraph = content, link = link) */
+function parseRichTextBlock(value) {
+  const empty = {title: '', content: '', linkTitle: '', linkUrl: ''};
+  if (!value || typeof value !== 'string') return empty;
+  const trimmed = value.trim();
+  if (!trimmed) return empty;
+
+  // Try Shopify rich text JSON (type "root", children array)
+  try {
+    const data = JSON.parse(trimmed);
+    if (!data || data.type !== 'root' || !Array.isArray(data.children)) {
+      throw new Error('Not root');
+    }
+    const root = data;
+    const headingNodes = findAll(root, 'heading', 4);
+    const title = headingNodes
+      .map((n) => getTextFromRichNode(n).trim())
+      .filter(Boolean)
+      .join('\n');
+
+    const titleLines = title.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    let content = '';
+    const paragraphs = findAll(root, 'paragraph');
+    for (const para of paragraphs) {
+      const text = getTextFromRichNode(para).trim();
+      if (text && text !== title && !titleLines.includes(text)) {
+        content = text;
+        break;
+      }
+    }
+
+    const linkNode = findFirst(root, 'link');
+    const linkUrl = linkNode?.url?.trim() ?? '';
+    const linkTitle = (linkNode?.title?.trim() || getTextFromRichNode(linkNode).trim()) || '';
+
+    return {title, content, linkTitle, linkUrl};
+  } catch (_) {
+    const h4Matches = [...trimmed.matchAll(/<h4[^>]*>([\s\S]*?)<\/h4>/gi)];
+    const title = h4Matches.map((m) => stripHtml(m[1])).filter(Boolean).join('\n');
+    const pMatch = trimmed.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    const aMatch = trimmed.match(/<a[^>]*href=["']([^"']*)["'][^>]*>([\s\S]*?)<\/a>/i);
+    return {
+      title,
+      content: pMatch ? stripHtml(pMatch[1]) : '',
+      linkUrl: aMatch ? (aMatch[1] || '').trim() : '',
+      linkTitle: aMatch ? stripHtml(aMatch[2]) : '',
+    };
+  }
+}
+
+/** Get text and whether node contains any bold text (label) from a Shopify rich text node */
+function getParagraphTextAndBold(node) {
+  if (!node) return {text: '', isBold: false};
+  if (node.type === 'text') return {text: node.value || '', isBold: !!node.bold};
+  if ((node.type === 'paragraph' || node.type === 'heading') && Array.isArray(node.children)) {
+    let text = '';
+    let isBold = false;
+    for (const c of node.children) {
+      const r = getParagraphTextAndBold(c);
+      text += r.text;
+      if (r.isBold) isBold = true; // label if ANY part is bold (or is a subheading)
+    }
+    if (node.type === 'heading' && node.level !== 4) isBold = true; // non-H4 headings = labels
+    return {text: text.trim(), isBold};
+  }
+  if (Array.isArray(node.children)) {
+    let text = '';
+    let isBold = false;
+    for (const c of node.children) {
+      const r = getParagraphTextAndBold(c);
+      text += r.text;
+      if (r.isBold) isBold = true;
+    }
+    return {text: text.trim(), isBold};
+  }
+  return {text: '', isBold: false};
+}
+
+/** Extract label/value pairs from a single paragraph whose children alternate bold (label) and normal (value) text */
+function getLabelValuePairsFromParagraph(node) {
+  const pairs = [];
+  if (!node?.children || !Array.isArray(node.children)) return pairs;
+  let pendingLabel = '';
+  for (const child of node.children) {
+    if (child.type === 'text') {
+      const text = (child.value || '').trim();
+      if (!text) continue;
+      if (child.bold) {
+        if (pendingLabel) pairs.push({label: pendingLabel, value: ''});
+        pendingLabel = text;
+      } else {
+        if (pendingLabel) {
+          pairs.push({label: pendingLabel, value: text});
+          pendingLabel = '';
+        }
+      }
+    } else if (Array.isArray(child.children)) {
+      for (const c of child.children) {
+        if (c.type === 'text') {
+          const text = (c.value || '').trim();
+          if (!text) continue;
+          if (c.bold) {
+            if (pendingLabel) pairs.push({label: pendingLabel, value: ''});
+            pendingLabel = text;
+          } else {
+            if (pendingLabel) {
+              pairs.push({label: pendingLabel, value: text});
+              pendingLabel = '';
+            }
+          }
+        }
+      }
+    }
+  }
+  if (pendingLabel) pairs.push({label: pendingLabel, value: ''});
+  if (pairs.length > 0) return pairs;
+  const fullText = getTextFromRichNode(node).trim();
+  if (!fullText) return [];
+  const blocks = fullText.split(/\n\s*\n/);
+  for (const block of blocks) {
+    const firstLineEnd = block.indexOf('\n');
+    const firstLine = firstLineEnd >= 0 ? block.slice(0, firstLineEnd).trim() : block.trim();
+    const rest = firstLineEnd >= 0 ? block.slice(firstLineEnd + 1).trim() : '';
+    if (firstLine) pairs.push({label: firstLine.replace(/:$/, ''), value: rest});
+  }
+  return pairs;
+}
+
+/** Get top-level blocks from root in document order (paragraphs and headings only) */
+function getBlocksInOrder(root) {
+  if (!root?.children || !Array.isArray(root.children)) return [];
+  return root.children.filter(
+    (node) => node && (node.type === 'paragraph' || node.type === 'heading')
+  );
+}
+
+/**
+ * Parse event.details rich text: h4 = heading, then pairs of (bold/strong = label, p = value).
+ * Returns { heading: string, items: Array<{ label: string, value: string }> }.
+ */
+function parseEventDetailsRichText(value) {
+  const empty = {heading: '', items: []};
+  if (!value || typeof value !== 'string') return empty;
+  const trimmed = value.trim();
+  if (!trimmed) return empty;
+  try {
+    const data = JSON.parse(trimmed);
+    if (!data || data.type !== 'root' || !Array.isArray(data.children)) return empty;
+    const root = data;
+    const headingNodes = findAll(root, 'heading', 4);
+    const heading = headingNodes
+      .map((n) => getTextFromRichNode(n).trim())
+      .filter(Boolean)
+      .join('\n');
+
+    const items = [];
+    const blocks = getBlocksInOrder(root);
+    const headingLines = heading.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+    let pendingLabel = '';
+    for (const block of blocks) {
+      if (block.type === 'heading' && block.level === 4) continue; // already used as main heading
+      if (block.type === 'paragraph' && block.children?.length) {
+        const pairs = getLabelValuePairsFromParagraph(block);
+        if (pairs.length > 0) {
+          items.push(...pairs);
+          continue;
+        }
+      }
+      const {text, isBold} = getParagraphTextAndBold(block);
+      if (!text) continue;
+      if (text === heading || headingLines.includes(text)) continue; // skip duplicate of main heading(s)
+      if (isBold) {
+        if (pendingLabel) items.push({label: pendingLabel, value: ''});
+        pendingLabel = text;
+      } else {
+        if (pendingLabel) {
+          items.push({label: pendingLabel, value: text});
+          pendingLabel = '';
+        }
+      }
+    }
+    if (pendingLabel) items.push({label: pendingLabel, value: ''});
+
+    return {heading, items};
+  } catch (_) {
+    const h4Matches = [...trimmed.matchAll(/<h4[^>]*>([\s\S]*?)<\/h4>/gi)];
+    const heading = h4Matches.map((m) => stripHtml(m[1])).filter(Boolean).join('\n');
+    const items = [];
+    const boldRegex = /<(?:b|strong)[^>]*>([\s\S]*?)<\/(?:b|strong)>/gi;
+    const pRegex = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+    let m;
+    const labels = [];
+    while ((m = boldRegex.exec(trimmed)) !== null) labels.push(stripHtml(m[1]));
+    const values = [];
+    while ((m = pRegex.exec(trimmed)) !== null) values.push(stripHtml(m[1]));
+    for (let i = 0; i < labels.length; i++) items.push({label: labels[i], value: values[i] || ''});
+    return {heading: heading ? stripHtml(heading) : '', items};
+  }
+}
+
+/** Collect runs of text with isBold in order from a paragraph node */
+function getRunsFromParagraph(node) {
+  const runs = [];
+  if (!node?.children || !Array.isArray(node.children)) return runs;
+  function walk(n) {
+    if (n.type === 'text') {
+      const t = (n.value || '').trim();
+      if (t) runs.push({text: t, isBold: !!n.bold});
+      return;
+    }
+    if (Array.isArray(n.children)) for (const c of n.children) walk(c);
+  }
+  for (const child of node.children) walk(child);
+  return runs;
+}
+
+/**
+ * Parse designer.says rich text: bold = label, normal = text (quote).
+ * Works whether quote comes before or after the bold name.
+ * Returns { label: string, text: string }.
+ */
+function parseDesignerSays(value) {
+  const empty = {label: '', text: ''};
+  if (!value || typeof value !== 'string') return empty;
+  const trimmed = value.trim();
+  if (!trimmed) return empty;
+  try {
+    const data = JSON.parse(trimmed);
+    if (!data || data.type !== 'root' || !Array.isArray(data.children)) return empty;
+    const root = data;
+    const blocks = getBlocksInOrder(root);
+    const allRuns = [];
+    for (const block of blocks) {
+      if (block.type === 'paragraph' && block.children?.length) {
+        allRuns.push(...getRunsFromParagraph(block));
+      }
+    }
+    if (allRuns.length === 0) return empty;
+    const labelRun = allRuns.find((r) => r.isBold);
+    const textParts = allRuns.filter((r) => !r.isBold).map((r) => r.text);
+    const text = textParts.join(' ').trim();
+    return {
+      label: labelRun?.text ?? '',
+      text,
+    };
+  } catch (_) {
+    const boldMatch = trimmed.match(/<(?:b|strong)[^>]*>([\s\S]*?)<\/(?:b|strong)>/i);
+    const label = boldMatch ? stripHtml(boldMatch[1]) : '';
+    const withoutBold = trimmed.replace(/<(?:b|strong)[^>]*>[\s\S]*?<\/(?:b|strong)>/i, '').trim();
+    const pMatch = withoutBold.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    const text = pMatch ? stripHtml(pMatch[1]) : stripHtml(withoutBold);
+    return {label, text: text || ''};
+  }
+}
 
 export async function loader({context, params}) {
   const {blogHandle, articleHandle} = params;
@@ -128,7 +436,7 @@ export async function loader({context, params}) {
   let registry = null;
   let registryProduct = null;
 
-  // Extract metafields into a more usable format
+  // Extract metafields into a more usable format (custom.category = choice list: Real Weddings, The Planning Edit, At Home, Travel & Culture)
   const metafields = {
     userId: blog.articleByHandle.userIdMetafield?.value,
     photographer: blog.articleByHandle.photographerMetafield?.value,
@@ -136,8 +444,21 @@ export async function loader({context, params}) {
     flowers: blog.articleByHandle.flowersMetafield?.value,
     venue: blog.articleByHandle.venueMetafield?.value,
     couple_name: blog.articleByHandle.coupleMetafield?.value,
+    category: blog.articleByHandle.categoryMetafield?.value?.trim() ?? '',
     first_para: blog.articleByHandle.paraMetafield?.value,
   };
+
+  // Parse rich text metafield (namespace "rich", key "text"): h4 → title, p → content, a → link
+  const richTextBlock = parseRichTextBlock(blog.articleByHandle.richTextMetafield?.value ?? '');
+
+  // Parse create.registry rich text for CTA block (heading, body, link)
+  const createRegistryBlock = parseRichTextBlock(blog.articleByHandle.createRegistryMetafield?.value ?? '');
+
+  // Parse event.details rich text: h4 = heading, bold = label, p = value (for Real Weddings "It's all in the details")
+  const eventDetailsBlock = parseEventDetailsRichText(blog.articleByHandle.eventDetailsMetafield?.value ?? '');
+
+  // Parse designer.says rich text: bold = label, normal = text (quote)
+  const designerSaysBlock = parseDesignerSays(blog.articleByHandle.designerSaysMetafield?.value ?? '');
 
   // Parse products from metafield (assuming it's stored as JSON string)
   let productIds = [];
@@ -280,6 +601,10 @@ export async function loader({context, params}) {
   return json({
     article: blog.articleByHandle,
     metafields,
+    richTextBlock,
+    createRegistryBlock,
+    eventDetailsBlock,
+    designerSaysBlock,
     products,
     registry: registry?.data || [],
     registryProduct: registryProduct?.data || [],
@@ -305,7 +630,7 @@ export async function action({request, context}) {
 }
 
 const BlogDetails = () => {
-  const {article, metafields, products, registry, registryProduct, user, blogs, currentArticleHandle} =
+  const {article, metafields, richTextBlock, createRegistryBlock, eventDetailsBlock, designerSaysBlock, products, registry, registryProduct, user, blogs, currentArticleHandle} =
     useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -391,7 +716,7 @@ const BlogDetails = () => {
       <div className="w-full lg:h-[34.375vw] xl:h-[34.375vw] 2xl:h-[34.375vw] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#446184] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
-            <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:tracking-[0.083vw] xl:tracking-[0.083vw] 2xl:tracking-[0.083vw] font-[800] mb-[1.771vw]">WEDDING STORIES</p>
+            <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:tracking-[0.083vw] xl:tracking-[0.083vw] 2xl:tracking-[0.083vw] font-[800] mb-[1.771vw] uppercase">{metafields.category || 'WEDDING STORIES'}</p>
             <Heading
               text={article.title}
               classes={
@@ -425,41 +750,111 @@ const BlogDetails = () => {
         </div>
 
         <div className="w-[28%]">
-          <div className="h-[550px] bg-[#FAF9F6] relative">
+
+          {/* Event details block: driven solely by event.details metafield (namespace "event", key "details") */}
+          {eventDetailsBlock?.heading && (
+          <div className="h-[550px] bg-[#FAF9F6] relative min-h-[400px]">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
-              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-[600]">IT'S ALL IN <br/>THE DETAILS</p>
+              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-[600] uppercase">   
+                {eventDetailsBlock?.heading && (
+                  (() => {
+                    const heading = eventDetailsBlock.heading.trim();
+                    const lines = heading.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+                    if (lines.length >= 2) {
+                      return (
+                        <>
+                          {lines.map((line, i) => (
+                            <React.Fragment key={i}>
+                              {i > 0 && <br />}
+                              {line}
+                            </React.Fragment>
+                          ))}
+                        </>
+                      );
+                    }
+                    return <>{heading}</>;
+                  })()
+                ) 
+                }
+              </p>
               <img
                 src={BlackLine}
                 alt=""
                 className="w-[100px] h-[4px] mx-auto mb-10"
               />
-              {metafields.photographer && (
-                <>
-              <p className="text-[20px] bastardogrotesk font-semibold">PHOTOGRAPHER:</p>
-                  <p className="text-[20px] font-normal mb-7">{metafields.photographer}</p>
-                </>
-              )}
-              {metafields.wedding_planner && (
-                <>
-              <p className="text-[20px] bastardogrotesk font-semibold">WEDDING PLANNER:</p>
-                  <p className="text-[20px] font-normal mb-7">{metafields.wedding_planner}</p>
-                </>
-              )}
-
-              {metafields.flowers && (
-                <>
-              <p className="text-[20px] bastardogrotesk font-semibold">FLOWERS:</p>
-                  <p className="text-[20px] font-normal mb-7">{metafields.flowers}</p>
-                </>
-              )}
-              {metafields.venue && (
-                <>
-              <p className="text-[20px] bastardogrotesk font-semibold">VENUE:</p>
-                  <p className="text-[20px] font-normal">{metafields.venue}</p>
-                </>
-              )}
+              {(eventDetailsBlock.items || []).map((item, idx) => (
+                <div key={idx} className="mb-7 last:mb-0">
+                  <p className="text-[20px] bastardogrotesk font-semibold uppercase">
+                    {item.label}
+                    {item.label.endsWith(':') ? '' : ':'}
+                  </p>
+                  {item.value ? (
+                    <p className="text-[20px] font-normal">{item.value}</p>
+                  ) : null}
+                </div>
+              ))}
             </div>
           </div>
+          )}
+
+
+          {richTextBlock.title && richTextBlock.content && metafields.category === 'The Planning Edit' && (
+          <div className="h-[370px] w-full bg-[#FAF9F6] relative mx-auto">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
+              <p className="text-[20px] font-bold uppercase">
+                {(() => {
+                  const heading = richTextBlock.title.trim();
+                  const lines = heading.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+                  if (lines.length >= 2) {
+                    return (
+                      <>
+                        {lines.map((line, i) => (
+                          <React.Fragment key={i}>
+                            {i > 0 && <br />}
+                            {line}
+                          </React.Fragment>
+                        ))}
+                      </>
+                    );
+                  }
+                  return <>{heading}</>;
+                })()}
+              </p>
+              <img
+                src={BlackLine}
+                alt=""
+                className="w-[100px] h-[4px] mx-auto mb-10"
+              />
+              <p className="text-[18px] font-normal mb-7">
+                {richTextBlock.content}
+              </p>
+              <Link to={richTextBlock.linkUrl || `/couple/single/${metafields.userId || ''}`}>
+                <button className="w-[286px] h-[68px] text-[14px] font-bold bg-[#446184] hover:opacity-90 uppercase text-white text-center">
+                  {richTextBlock.linkTitle}
+                </button>
+              </Link>
+            </div>
+          </div>
+          )}
+
+          {(designerSaysBlock?.text || designerSaysBlock?.label) && (
+          <div className="w-full bg-[#FAF9F6] relative mx-auto py-12 lg:py-16 px-6 lg:px-10 mt-10">
+            <div className="relative text-center max-w-[90%] mx-auto">
+              <span className="absolute -top-2 left-0 lg:left-4 text-black font-serif text-[80px] lg:text-[6vw] leading-none select-none" aria-hidden="true">&ldquo;</span>
+              <p className="text-black font-bold text-[18px] lg:text-[1.1vw] leading-[1.8] uppercase tracking-wide pt-8 lg:pt-12 px-4">
+                {designerSaysBlock?.text}
+              </p>
+              <img
+                src={BlackLine}
+                alt=""
+                className="w-[100px] h-[4px] mx-auto mb-10"
+              />
+              <p className="text-black text-[16px] lg:text-[0.9vw] font-normal">
+                {designerSaysBlock?.label}
+              </p>
+            </div>
+          </div>
+          )}
 
           <div className="text-center mt-16">
             <p className="text-[24px] font-semibold mx-auto mb-2 uppercase">
@@ -483,11 +878,32 @@ const BlogDetails = () => {
                ))}
              </div>
           </div>
+               
 
+          {richTextBlock.title && richTextBlock.content && metafields.category !== 'The Planning Edit' && (
           <div className="h-[370px] w-full bg-[#FAF9F6] relative mx-auto">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
               <p className="text-[20px] font-bold uppercase">
-                LOVING {metafields.couple_name || 'THEIR'} GIFTS
+                {richTextBlock?.title && (
+                  (() => {
+                    const heading = richTextBlock.title.trim();
+                    const lines = heading.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+                    if (lines.length >= 2) {
+                      return (
+                        <>
+                          {lines.map((line, i) => (
+                            <React.Fragment key={i}>
+                              {i > 0 && <br />}
+                              {line}
+                            </React.Fragment>
+                          ))}
+                        </>
+                      );
+                    }
+                    return <>{heading}</>;
+                  })()
+                ) 
+                }
               </p>
               <img
                 src={BlackLine}
@@ -495,37 +911,42 @@ const BlogDetails = () => {
                 className="w-[100px] h-[4px] mx-auto mb-10"
               />
               <p className="text-[18px] font-normal mb-7">
-                Explore their registry for more inspo and ideas.
+                {richTextBlock.content}
               </p>
-              <Link to={`/couple/single/${metafields.userId || ''}`}>
+              <Link to={richTextBlock.linkUrl || `/couple/single/${metafields.userId || ''}`}>
                 <button className="w-[286px] h-[68px] text-[14px] font-bold bg-[#446184] hover:opacity-90 uppercase text-white text-center">
-                  VIEW THE REGISTRY
+                  {richTextBlock.linkTitle}
                 </button>
               </Link>
             </div>
           </div>
+          )}
 
-          <div className="h-[620px] w-full bg-[#446184] relative mt-10 mx-auto">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
-              <img
-                src={regLogo}
-                alt=""
-                className="w-[104px] h-[92px] mx-auto mb-10"
-              />
-              <h2 className="text-white text-[22px] font-semibold">
-                WOULD YOU LIKE YOUR SPECIAL DAY TO BE FEATURED?
-              </h2>
-              <p className="text-white text-[18px] my-10">
-                Whether it’s a single photo for Instagram or a longer story for
-                our blog, we love seeing how couples celebrated their wedding. 
-              </p>
-              <Link to={'/submit-wedding'}>
-                <button className="h-[68px] w-[286px] text-[14px] font-bold max-[1601px]:text-[14px] text-black bg-[#F5F2ED] border border-black hover:opacity-90 uppercase max-[1601px]:w-[200px] text-center">
-                  SUBMIT HERE
-                </button>
-              </Link>
+          {/* CTA block driven by create.registry rich text when present */}
+          {createRegistryBlock?.title && (
+            <div className="h-[620px] w-full bg-[#446184] relative mt-10 mx-auto">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
+                <img
+                  src={regLogo}
+                  alt=""
+                  className="w-[104px] h-[92px] mx-auto mb-10"
+                />
+                <h2 className="text-white text-[22px] font-semibold">
+                  {createRegistryBlock.title}
+                </h2>
+                <p className="text-white text-[18px] my-10">
+                  {createRegistryBlock.content}
+                </p>
+                {createRegistryBlock.linkUrl && (
+                  <Link to={createRegistryBlock.linkUrl}>
+                    <button className="h-[68px] w-[286px] text-[14px] font-bold max-[1601px]:text-[14px] text-black bg-[#F5F2ED] border border-black hover:opacity-90 uppercase max-[1601px]:w-[200px] text-center">
+                      {createRegistryBlock.linkTitle || 'Learn more'}
+                    </button>
+                  </Link>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

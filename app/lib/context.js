@@ -38,18 +38,22 @@ export async function createAppLoadContext(request, env, executionContext) {
   });
   const {ClientDelete, ClientGet, ClientPost, ClientPut} = createClient();
 
+  const requestOrigin =
+    typeof request.url === 'string' ? new URL(request.url).origin : undefined;
+
   return {
     ...hydrogenContext,
     ClientDelete,
     ClientGet,
     ClientPost,
     ClientPut,
-    // Expose environment variables to the client without dropping Hydrogen's required vars
     env: {
       ...hydrogenContext.env,
-      API_BASE_URL: env.API_BASE_URL || process.env.API_BASE_URL,
+      API_BASE_URL:
+        env.API_BASE_URL ||
+        process.env.API_BASE_URL ||
+        'https://dev-hopsongrace.codup.io',
       PUBLIC_STRIPE_PUBLISHABLE_KEY: env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
     },
-    // declare additional Remix loader context
   };
 }

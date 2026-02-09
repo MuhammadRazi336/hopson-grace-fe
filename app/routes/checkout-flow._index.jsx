@@ -26,7 +26,7 @@ export default function CheckoutFlow() {
       <div className="xl:mx-20 py-[100px] mx-6">
         <div className="container mx-auto bg-[#446184]  py-16">
           <h2 className="md:text-[36px] font-normal text-center text-white ivyora">
-            enclose your <span className="font-italic">PERSONAL MESSAGE</span>{' '}
+            encloses your <span className="font-italic">PERSONAL MESSAGE</span>{' '}
             here
           </h2>
 
