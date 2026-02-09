@@ -971,7 +971,7 @@ export function Header() {
 
                     {/* Red Dot for unread notifications */}
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
+                      <span className="absolute -top-[1.1px] -right-[1.4px] w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
                         <span className="text-xs text-white font-bold">
                           {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
@@ -1075,17 +1075,13 @@ export function Header() {
                       aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
                     onClick={handleToggle}
                       disabled={isUpdatingStatus}
-                      className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] max-[1024px]:w-[30px] max-[1024px]:h-[16px] focus:outline-none overflow-hidden ${
-                      isDraft
-                        ? 'bg-white border-black'
-                        : 'bg-white border-black'
-                    }`}
+                      className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                   >
                     <span
-                      className={`rounded-full shadow-md transform h-full transition-transform duration-200 ${
-                        isDraft
-                          ? 'translate-x-0 bg-gray-300 w-[2.031vw] w-[16px]'
-                          : 'translate-x-[1.094vw] bg-[#C52248]  w-full'
+                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full bg-white shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                        isDraft 
+                          ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
+                          : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
                       }`}
                     />
                   </button>
@@ -1103,17 +1099,13 @@ export function Header() {
                       aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
                     onClick={handleToggle}
                       disabled={isUpdatingStatus}
-                      className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none overflow-hidden ${
-                      isDraft
-                        ? 'bg-white border-black'
-                        : 'bg-white border-black'
-                    }`}
+                      className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                   >
                     <span
-                      className={`rounded-full shadow-md transform w-[2.031vw] h-full transition-transform duration-200 ${
-                        isDraft
-                          ? 'translate-x-0 bg-gray-300'
-                          : 'translate-x-[1.094vw] bg-[#C52248]'
+                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                        isDraft 
+                          ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
+                          : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
                       }`}
                     />
                   </button>
@@ -1481,7 +1473,7 @@ export function Header() {
 
                       {/* Red Dot for unread notifications */}
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
+                        <span className="absolute -top-[1.1px] -right-[1.4px] w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
                           <span className="text-xs text-white font-bold">
                             {unreadCount > 9 ? '9+' : unreadCount}
                           </span>
@@ -1585,17 +1577,13 @@ export function Header() {
                         aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
                       onClick={handleToggle}
                         disabled={isUpdatingStatus}
-                        className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] max-[1024px]:w-[30px] max-[1024px]:h-[16px] focus:outline-none overflow-hidden ${
-                        isDraft
-                          ? 'bg-white border-black'
-                          : 'bg-white border-black'
-                      }`}
+                        className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                     >
                       <span
-                        className={`rounded-full shadow-md transform h-full transition-transform duration-200 ${
-                          isDraft
-                            ? 'translate-x-0 bg-gray-300 w-[2.031vw] w-[16px]'
-                            : 'translate-x-[1.094vw] bg-[#C52248]  w-full'
+                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                          isDraft 
+                            ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
+                            : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
                         }`}
                       />
                     </button>
@@ -1613,17 +1601,13 @@ export function Header() {
                         aria-label={`Toggle registry status to ${isDraft ? 'published' : 'draft'}`}
                       onClick={handleToggle}
                         disabled={isUpdatingStatus}
-                        className={`mx-auto flex items-center rounded-full border-2 transition-colors duration-200 w-[3.125vw] h-[1.354vw] focus:outline-none overflow-hidden ${
-                        isDraft
-                          ? 'bg-white border-black'
-                          : 'bg-white border-black'
-                      }`}
+                        className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                     >
                       <span
-                        className={`rounded-full shadow-md transform w-[2.031vw] h-full transition-transform duration-200 ${
-                          isDraft
-                            ? 'translate-x-0 bg-gray-300'
-                            : 'translate-x-[1.094vw] bg-[#C52248]'
+                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                          isDraft 
+                            ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
+                            : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
                         }`}
                       />
                     </button>

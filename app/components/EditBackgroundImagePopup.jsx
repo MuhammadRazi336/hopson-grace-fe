@@ -88,12 +88,16 @@ const removeBackgroundImageFromStorage = (imageId) => {
 
 export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
   const [imageSrc, setImageSrc] = useState('/assets/Images/back3.png');
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [crop, setCrop] = useState({ x: 50, y: 50 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef();
+  const previewRef = useRef(null);
+  const [cropperSize, setCropperSize] = useState({ width: 600, height: 230 });
+  const [minZoom, setMinZoom] = useState(1);
+  const [cropBoundaries, setCropBoundaries] = useState({ top: 0, bottom: 0 });
 
   // Load stored images when component mounts
   useEffect(() => {
@@ -106,6 +110,44 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
+
+  // measure preview area so cropSize matches visible container
+  useEffect(() => {
+    function updateSize() {
+      if (previewRef.current) {
+        const rect = previewRef.current.getBoundingClientRect();
+        const width = Math.max(10, Math.round(rect.width));
+        const height = Math.max(10, Math.round(rect.height));
+        setCropperSize({ width, height });
+
+        // Calculate crop area boundaries for 16:9 aspect ratio
+        const cropHeight = width * (9 / 16); // fit crop to full width, then compute height
+        const topMargin = (height - cropHeight) / 2;
+        const topPercent = (topMargin / height) * 100;
+        const bottomPercent = topPercent;
+        setCropBoundaries({ top: topPercent, bottom: bottomPercent });
+      }
+    }
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, [isOpen, imageSrc]);
+
+  // Ensure the image initially covers the crop area — compute minZoom from media size
+  const onMediaLoaded = useCallback((mediaSize) => {
+    try {
+      const widthRatio = cropperSize.width / mediaSize.width;
+      const heightRatio = cropperSize.height / mediaSize.height;
+      const requiredMinZoom = Math.max(widthRatio, heightRatio, 1);
+      setMinZoom(requiredMinZoom);
+      setZoom((z) => (z < requiredMinZoom ? requiredMinZoom : z));
+      // center the crop
+      setCrop({ x: 50, y: 50 });
+    } catch (err) {
+      console.error('Error computing min zoom:', err);
+    }
+  }, [cropperSize]);
 
   const processImageFile = (file) => {
     if (file && file.type.startsWith('image/')) {
@@ -193,7 +235,8 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
           <div className="flex gap-[5vw] lg:h-[27.12vw] xl:h-[27.12vw] 2xl:h-[27.12vw] max-[1024px]:flex-col max-[1024px]:gap-[40px]">
             {/* Left: Large Preview Area */}
             <div className="w-2/3 lg:w-[32.33vw] xl:w-[32.33vw] 2xl:w-[32.33vw] h-full max-[1024px]:h-[300px] max-[1024px]:w-full">
-              <div 
+              <div
+                ref={previewRef}
                 className={`relative w-full h-full bg-gray-100 ${isDragging ? 'border-4 border-blue-400 border-dashed bg-blue-50' : ''} transition-all`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -206,13 +249,28 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
                       image={imageSrc}
                       crop={crop}
                       zoom={zoom}
-                      aspect={16/9}
+                      aspect={16 / 9}
                       onCropChange={setCrop}
                       onZoomChange={setZoom}
                       onCropComplete={onCropComplete}
+                      onMediaLoaded={onMediaLoaded}
                       showGrid={false}
-                      cropSize={{ width: 600, height: 230 }}
+                      cropSize={cropperSize}
+                      minZoom={minZoom}
+                      maxZoom={3}
+                      restrictPosition={true}
                     />
+                    {/* Dark overlay over top area (outside crop zone) */}
+                    <div className="pointer-events-none absolute left-0 right-0 w-full z-10" style={{ top: 0, height: `${cropBoundaries.top}%`, backgroundColor: 'rgba(0, 0, 0, 0.5)' }} />
+                    
+                    {/* Persistent horizontal guide lines (top & bottom) to match actual crop area boundaries */}
+                    <div className="pointer-events-none absolute inset-0 z-20">
+                      <div className="absolute left-0 right-0 w-full h-[1px] bg-white opacity-60" style={{ top: `${cropBoundaries.top}%` }} />
+                      <div className="absolute left-0 right-0 w-full h-[1px] bg-white opacity-60" style={{ bottom: `${cropBoundaries.bottom}%` }} />
+                    </div>
+
+                    {/* Dark overlay over bottom area (outside crop zone) */}
+                    <div className="pointer-events-none absolute left-0 right-0 w-full z-10" style={{ bottom: 0, height: `${cropBoundaries.bottom}%`, backgroundColor: 'rgba(0, 0, 0, 0.5)' }} />
                   </Suspense>
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-500">
@@ -230,7 +288,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
                 )}
               </div>
               <p className="text-right bastardogrotesk text-sm lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] mt-2 text-[#000000]">
-                DRAG TO REPOSITION
+                DRAG TO REPOSITION / SCROLL TO ZOOM IN OR OUT
               </p>
             </div>
 

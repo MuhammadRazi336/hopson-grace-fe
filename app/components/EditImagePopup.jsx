@@ -230,7 +230,7 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
                 </div>
               )}
               <p className="text-right bastardogrotesk text-sm lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] mt-2 text-[#000000]">
-                DRAG TO REPOSITION
+                DRAG TO REPOSITION / SCROLL TO ZOOM IN OR OUT
               </p>
               <input
                 type="file"
