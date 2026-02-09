@@ -6,11 +6,8 @@ export function createClient() {
       throw new Error(`Provide a body for the ${method} request`);
     }
 
-    // PayPal (transactions/*) uses same-origin in-repo routes; other API calls use external API_BASE_URL
     const apiBase =
-      route.startsWith('transactions/')
-        ? (context?.env?.TRANSACTIONS_API_BASE_URL || 'https://dev-hopsongrace.codup.io')
-        : (context?.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io');
+      context?.env?.API_BASE_URL || process.env.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
     const endPoint = `${String(apiBase).replace(/\/$/, '')}/api/${route}`;
     const options = {
       method,

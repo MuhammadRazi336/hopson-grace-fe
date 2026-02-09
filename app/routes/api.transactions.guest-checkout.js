@@ -1,9 +1,9 @@
 import {json} from '@shopify/remix-oxygen';
 import {getPayPalAccessToken, capturePayPalOrder} from '~/lib/paypal';
 
-// Where to forward for order persistence (must accept paypalOrderId). Keep as external URL when using in-repo API.
-const EXTERNAL_ORDER_API_BASE =
-  process.env.EXTERNAL_ORDER_API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+// API base for order persistence (same as API_BASE_URL)
+const getApiBase = (context) =>
+  (context?.env?.API_BASE_URL || process.env.API_BASE_URL || 'https://dev-hopsongrace.codup.io').replace(/\/$/, '');
 
 /**
  * POST /api/transactions/guest-checkout
@@ -58,7 +58,7 @@ export async function action({request, context}) {
 
     // Forward to external API for order persistence (same payload; external API must accept paypalOrderId)
     try {
-      const res = await fetch(`${EXTERNAL_ORDER_API_BASE.replace(/\/$/, '')}/api/transactions/guest-checkout`, {
+      const res = await fetch(`${getApiBase(context)}/api/transactions/guest-checkout`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({

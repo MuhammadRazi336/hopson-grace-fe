@@ -53,11 +53,6 @@ export async function createAppLoadContext(request, env, executionContext) {
         env.API_BASE_URL ||
         process.env.API_BASE_URL ||
         'https://dev-hopsongrace.codup.io',
-      TRANSACTIONS_API_BASE_URL:
-        env.TRANSACTIONS_API_BASE_URL ||
-        process.env.TRANSACTIONS_API_BASE_URL ||
-        requestOrigin ||
-        'https://dev-hopsongrace.codup.io',
       PUBLIC_STRIPE_PUBLISHABLE_KEY: env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
     },
   };

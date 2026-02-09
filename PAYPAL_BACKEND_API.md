@@ -7,14 +7,14 @@ PayPal REST calls run **only in Hydrogen server actions/loaders**. The client se
 The checkout flow uses **Remix/Hydrogen route actions** (server-only):
 
 - **POST /cart/checkout** (action) – `app/routes/cart.checkout.jsx` — creates the PayPal order on the server, returns only `paypalOrderId` to the client.
-- **POST /cart/checkout/guest-checkout** (action) – `app/routes/cart.checkout.guest-checkout.jsx` — captures the PayPal order on the server, then forwards to `EXTERNAL_ORDER_API_BASE_URL` for order persistence.
+- **POST /cart/checkout/guest-checkout** (action) – `app/routes/cart.checkout.guest-checkout.jsx` — captures the PayPal order on the server, then forwards to `API_BASE_URL` for order persistence.
 
 Optional resource routes (for external or programmatic use):
 
 - **POST /api/transactions/create-paypal-order** – `app/routes/api.transactions.create-paypal-order.js`
 - **POST /api/transactions/guest-checkout** – `app/routes/api.transactions.guest-checkout.js`
 
-**Environment (server-only for secrets):** `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` (never expose to browser), `PUBLIC_PAYPAL_CLIENT_ID` (for PayPal JS button), `PAYPAL_ENV` = `sandbox` or `live`, `EXTERNAL_ORDER_API_BASE_URL` (default `https://dev-hopsongrace.codup.io`).
+**Environment (server-only for secrets):** `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` (never expose to browser), `PUBLIC_PAYPAL_CLIENT_ID` (for PayPal JS button), `PAYPAL_ENV` = `sandbox` or `live`, `API_BASE_URL` (backend API base for cart, transactions, and guest-checkout; default `https://dev-hopsongrace.codup.io`).
 
 
 ---

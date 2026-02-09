@@ -1,10 +1,7 @@
 import {json} from '@shopify/remix-oxygen';
 import {getPayPalAccessToken, capturePayPalOrder} from '~/lib/paypal';
 
-const EXTERNAL_ORDER_API_BASE =
-  process.env.EXTERNAL_ORDER_API_BASE_URL || 'https://dev-hopsongrace.codup.io';
-
-// Action for step 2: Guest checkout — capture PayPal on server, then forward to external order API (no credentials to browser)
+// Action for step 2: Guest checkout — capture PayPal on server, then forward to API for order persistence
 export async function action({request, context}) {
   try {
     const formData = await request.formData();
@@ -80,7 +77,7 @@ export async function action({request, context}) {
     // Forward to external API for order persistence (must accept paypalOrderId)
     let guestCheckoutResponse;
     try {
-      const baseUrl = EXTERNAL_ORDER_API_BASE.replace(/\/$/, '');
+      const baseUrl = (context?.env?.API_BASE_URL || process.env.API_BASE_URL || 'https://dev-hopsongrace.codup.io').replace(/\/$/, '');
       const response = await fetch(`${baseUrl}/api/transactions/guest-checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

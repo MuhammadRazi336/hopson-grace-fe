@@ -342,8 +342,14 @@ const DetailsForm = ({onNext}) => {
     subscribe: false,
   });
 
-  const countryKey = fields.country || 'Canada';
-  const countryData = billingAddressOptions[countryKey];
+  // Normalize country key so dropdown data is always found (handles case / alternate names)
+  const countryRaw = (fields.country || 'Canada').trim();
+  const countryKey = billingAddressOptions[countryRaw]
+    ? countryRaw
+    : Object.keys(billingAddressOptions).find(
+        (k) => k.toLowerCase() === countryRaw.toLowerCase(),
+      ) || 'Canada';
+  const countryData = billingAddressOptions[countryKey] || null;
   const statesOrProvinces = countryData
     ? (countryData.states || countryData.provinces || [])
     : [];
@@ -351,6 +357,8 @@ const DetailsForm = ({onNext}) => {
     countryData?.citiesByState || countryData?.citiesByProvince || {};
   const cityOptions = fields.province ? (citiesByRegion[fields.province] || []) : [];
   const hasCityList = cityOptions.length > 0;
+  const cityValue =
+    hasCityList && cityOptions.includes(fields.city) ? fields.city : '';
 
   // Utility function to round currency values to 2 decimal places
   const roundCurrency = (value) => {
@@ -573,6 +581,15 @@ const DetailsForm = ({onNext}) => {
     });
   };
 
+  // Keep city in sync when province/country change makes current city invalid (fixes dropdown sometimes not working)
+  useEffect(() => {
+    if (!hasCityList || !fields.city) return;
+    const options = fields.province ? (citiesByRegion[fields.province] || []) : [];
+    if (options.length > 0 && !options.includes(fields.city)) {
+      setFields((prev) => ({...prev, city: ''}));
+    }
+  }, [hasCityList, fields.city, fields.province, countryKey]);
+
   // Log cartItems.length and cartLoading in render
   console.log('DetailsForm: cartItems.length in render:', cartItems.length);
   console.log('DetailsForm: cartLoading in render:', cartLoading);
@@ -709,7 +726,7 @@ const DetailsForm = ({onNext}) => {
                     {hasCityList ? (
                       <select
                         name="city"
-                        value={fields.city}
+                        value={cityValue}
                         onChange={handleChange}
                         className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                         required
