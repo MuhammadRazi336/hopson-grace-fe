@@ -36,9 +36,9 @@ export async function action({request, context}) {
     }
 
     const clientId =
-      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID;
+      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH';
     const clientSecret =
-      context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
+      context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET || 'EB65ot5LSOOHnP8pDYqsXf9xdrXKAa8d0oVRoVf5R0TEvhmS-mJwcjjkNMRG7gz6qLKSFLf5tMrlzjbb';
 
     if (!clientId || !clientSecret) {
       return json(

@@ -30,7 +30,7 @@ export async function loader({context, request}) {
 
     let productData = [];
 
-    const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+    const apiBaseUrl = context.env?.API_BASE_URL || process.env.API_BASE_URL;
 
     // If we have email and registryId, fetch cart and product data
     if (email && registryId) {
@@ -77,7 +77,7 @@ export async function loader({context, request}) {
       registryApi,
       apiBaseUrl:
         'https://dev-hopsongrace.codup.io',
-      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
     });
   } catch {
     return json({
@@ -86,7 +86,7 @@ export async function loader({context, request}) {
       productData: [],
       registryApi: {},
       apiBaseUrl: 'https://dev-hopsongrace.codup.io',
-      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
     });
   }
 }
@@ -242,7 +242,7 @@ export async function action({request, context}) {
 
     // Step 1: Create PayPal order (server-side only; credentials never sent to browser)
     const clientId =
-      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID;
+      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH';
     const clientSecret =
       context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
 
