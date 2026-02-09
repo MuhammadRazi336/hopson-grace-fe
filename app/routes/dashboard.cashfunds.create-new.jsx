@@ -322,7 +322,7 @@ function CreateNewCashFund() {
                         id="cashFundName"
                         name="name"
                         value={cashFundName}
-                        className="bg-white lg:text-[0.938vw] font-bold uppercase w-full p-4 !m-0 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0 placeholder:bg[#948E8A] placeholder:text-transform[initial] placeholder:font-normal"
+                        className="bg-white lg:text-[0.938vw] font-bold uppercase w-full p-4 !m-0 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0 placeholder:bg[#948E8A] placeholder:normal-case placeholder:font-normal "
                         placeholder="e.g., Honeymoon fund, renovation"
                         onChange={(e) => setCashFundName(e.target.value)}
                       />
