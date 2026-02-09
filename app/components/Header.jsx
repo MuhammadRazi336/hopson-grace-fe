@@ -18,6 +18,7 @@ import Popup from './Popup';
 import ModalPortal from './ModalPortal';
 import {useLocation} from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { ToastContainer } from 'react-toastify';
 
 export function Header() {
   const [user, setUser] = useState(null);
@@ -1859,6 +1860,7 @@ export function Header() {
       >
         <HeaderMobileMenu onClose={toggleMenu} onPopup={handleOpenPopup} />
       </div>
+      
     </>
   );
 }
