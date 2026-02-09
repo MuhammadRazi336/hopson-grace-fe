@@ -5,6 +5,8 @@ import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
 import {useState} from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import { Footer } from '~/components/Footer';
@@ -204,20 +206,20 @@ const index = () => {
         },
       );
       if (response.ok) {
-        alert('Message updated!');
+        toast.success('Message updated!');
       } else {
         console.log('response', response);
-        alert( response.statusText);
+        toast.error(response.statusText || 'Error updating message');
       }
     } catch (err) {
-      alert('Error updating message', err.status);
+      toast.error('Error updating message');
     }
   };
 
   // Handle cropped image save from popup
   const handleCroppedImageSave = async (croppedBlob) => {
     if (!croppedBlob) {
-      alert('No image to upload');
+      toast.warn('No image to upload');
       return;
     }
 
@@ -248,12 +250,12 @@ const index = () => {
           // The blob URL will work immediately while S3 URL might be 404
           const blobUrl = URL.createObjectURL(croppedBlob);
           setEventImage(blobUrl);
-          alert('Profile image updated successfully!');
+          toast.success('Profile image updated successfully!');
         } else {
           // Fallback to blob URL for immediate display (same as handleBackgroundImageSave)
           const blobUrl = URL.createObjectURL(croppedBlob);
           setEventImage(blobUrl);
-          alert('Profile image updated!');
+          toast.success('Profile image updated!');
         }
       } else {
         // Even on error, use blob URL for immediate display
@@ -261,14 +263,14 @@ const index = () => {
         setEventImage(blobUrl);
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
         console.error('Upload failed:', errorData);
-        alert('Profile image updated! (Using temporary preview)');
+        toast.success('Profile image updated! (Using temporary preview)');
       }
     } catch (err) {
       console.error('Error uploading image:', err);
       // Even on error, use blob URL for immediate display
       const blobUrl = URL.createObjectURL(croppedBlob);
       setEventImage(blobUrl);
-      alert('Profile image updated! (Using temporary preview)');
+      toast.success('Profile image updated! (Using temporary preview)');
     } finally {
       setIsUploading(false);
     }
@@ -277,7 +279,7 @@ const index = () => {
   // Handle background image save from popup
   const handleBackgroundImageSave = async (croppedBlob) => {
     if (!croppedBlob) {
-      alert('No background image to upload');
+      toast.warn('No background image to upload');
       return;
     }
 
@@ -308,12 +310,12 @@ const index = () => {
           // The blob URL will work immediately while S3 URL might be 404
           const blobUrl = URL.createObjectURL(croppedBlob);
           setBackgroundImage(blobUrl);
-          alert('Background image updated successfully!');
+          toast.success('Background image updated successfully!');
         } else {
           // Fallback to blob URL for immediate display (same as handleCroppedImageSave)
           const blobUrl = URL.createObjectURL(croppedBlob);
           setBackgroundImage(blobUrl);
-          alert('Background image updated!');
+          toast.success('Background image updated!');
         }
       } else {
         // Even on error, use blob URL for immediate display
@@ -321,11 +323,11 @@ const index = () => {
         setBackgroundImage(blobUrl);
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
         console.error('Background upload failed:', errorData);
-        alert('Background image updated! (Using temporary preview)');
+        toast.success('Background image updated! (Using temporary preview)');
       }
     } catch (err) {
       console.error('Error uploading background image:', err);
-      alert('Error updating background image. Please try again.');
+      toast.error('Error updating background image. Please try again.');
     } finally {
       setIsBackgroundUploading(false);
     }
@@ -640,6 +642,7 @@ const index = () => {
       </div>
 
       <Footer />
+      
     </>
   );
 };
