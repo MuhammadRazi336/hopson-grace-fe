@@ -1491,3 +1491,8 @@ html, body { height: 100%; margin: 0; }
       height: 9px;
   }
 }
+
+/* PayPal buttons container: min-width 400px (zoid injects dynamic id) */
+[id^='zoid-paypal-buttons'] {
+  min-width: 400px !important;
+}

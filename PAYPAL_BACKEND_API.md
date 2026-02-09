@@ -1,23 +1,21 @@
 # PayPal checkout – backend API contract
 
-The frontend expects the API at `https://dev-hopsongrace.codup.io` (or `API_BASE_URL`) to expose the following for PayPal checkout.
+PayPal REST calls run **only in Hydrogen server actions/loaders**. The client secret and API credentials are never sent to the browser. The frontend uses the PayPal JS SDK button and submits forms to your backend (route actions).
 
-## In-repo implementation (Remix API routes)
+## In-repo implementation (Hydrogen route actions)
 
-This repo includes Remix resource routes that implement the PayPal flow:
+The checkout flow uses **Remix/Hydrogen route actions** (server-only):
+
+- **POST /cart/checkout** (action) – `app/routes/cart.checkout.jsx` — creates the PayPal order on the server, returns only `paypalOrderId` to the client.
+- **POST /cart/checkout/guest-checkout** (action) – `app/routes/cart.checkout.guest-checkout.jsx` — captures the PayPal order on the server, then forwards to `EXTERNAL_ORDER_API_BASE_URL` for order persistence.
+
+Optional resource routes (for external or programmatic use):
 
 - **POST /api/transactions/create-paypal-order** – `app/routes/api.transactions.create-paypal-order.js`
-- **POST /api/transactions/guest-checkout** – `app/routes/api.transactions.guest-checkout.js` (captures PayPal, then forwards to external API for order persistence)
+- **POST /api/transactions/guest-checkout** – `app/routes/api.transactions.guest-checkout.js`
 
-**To use the in-repo API:**
+**Environment (server-only for secrets):** `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` (never expose to browser), `PUBLIC_PAYPAL_CLIENT_ID` (for PayPal JS button), `PAYPAL_ENV` = `sandbox` or `live`, `EXTERNAL_ORDER_API_BASE_URL` (default `https://dev-hopsongrace.codup.io`).
 
-1. Set in `.env` (or deployment env):
-   - `API_BASE_URL` = your app origin (e.g. `http://localhost:3000` in dev, or your production URL). This makes the frontend call the same app for `/api/...`.
-   - `PAYPAL_CLIENT_ID` = PayPal client ID (server-side; can match `PUBLIC_PAYPAL_CLIENT_ID`).
-   - `PAYPAL_CLIENT_SECRET` = PayPal client secret (server-side only).
-   - `PAYPAL_ENV` = `sandbox` (default) or `live`.
-
-2. **Guest checkout:** The in-repo route captures the PayPal order, then forwards the payload to **`EXTERNAL_ORDER_API_BASE_URL`** (default `https://dev-hopsongrace.codup.io`). Set `EXTERNAL_ORDER_API_BASE_URL` only if your order service lives elsewhere. That external API must accept `paypalOrderId` and perform order completion (no capture needed; we already captured). If the external API is not updated yet, you’ll get a 502 after payment capture until it accepts `paypalOrderId`.
 
 ---
 
@@ -105,6 +103,6 @@ Same as before, but use **`paypalOrderId`** instead of `paymentIntentId`:
 
 ## Notes
 
-- PayPal **client ID** is used only in the frontend (`.env`: `PUBLIC_PAYPAL_CLIENT_ID`).
-- PayPal **client secret** must be used only on the backend; add it to the backend environment and use it with the PayPal server SDK to create and capture orders.
+- **Client ID (public):** `PUBLIC_PAYPAL_CLIENT_ID` is the only PayPal value sent to the browser (for the PayPal JS button). It is set in the checkout **loader** and used by `PayPalScriptProvider`.
+- **Client secret:** `PAYPAL_CLIENT_SECRET` is used only inside server actions/loaders and API resource routes; it is never included in loader data or any response to the client.
 - For sandbox testing use PayPal sandbox credentials; for production use live credentials.

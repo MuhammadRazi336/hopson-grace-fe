@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import {PayPalScriptProvider, PayPalButtons} from '@paypal/react-paypal-js';
 import {Form, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
+import {getPayPalAccessToken, createPayPalOrder} from '~/lib/paypal';
 import {CoupleProfileViewHeader} from './couple.test._index';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
@@ -9,6 +10,7 @@ import lineImg3 from '/assets/Images/line.png';
 import {Footer} from '~/components/Footer';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import ModalPortal from '~/components/ModalPortal';
+import billingAddressOptions from '~/data/billing-address-options.json';
 
 export async function loader({context, request}) {
   try {
@@ -67,6 +69,7 @@ export async function loader({context, request}) {
       }
     }
 
+    // Only public client ID is exposed to the browser; PAYPAL_CLIENT_SECRET stays server-only
     return json({
       message,
       couplesName,
@@ -237,56 +240,46 @@ export async function action({request, context}) {
       totalAmountWithTax = totalAmount;
     }
 
-    // Step 1: Create PayPal order
-    const createPayPalOrderPayload = {
-      registryId: Number(registryId),
-      email: email,
-      firstName: formData.get('firstName')?.trim(),
-      lastName: formData.get('lastName')?.trim(),
-      taxPercentage: Math.round(taxPercentage * 100) / 100,
-      totalAmountWithTax: Math.round(totalAmountWithTax * 100) / 100,
-    };
+    // Step 1: Create PayPal order (server-side only; credentials never sent to browser)
+    const clientId =
+      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID;
+    const clientSecret =
+      context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
 
-    console.log(
-      'Creating PayPal order with payload:',
-      createPayPalOrderPayload,
-    );
-
-    let createPayPalOrderResponse;
-    try {
-      createPayPalOrderResponse = await context.ClientPost(
-        createPayPalOrderPayload,
-        'transactions/create-paypal-order',
-        context,
-      );
-      console.log(
-        'Create PayPal order response:',
-        createPayPalOrderResponse,
-      );
-    } catch (apiError) {
-      console.error('API Error:', apiError);
-      console.error('API Error Response:', apiError.response?.data);
-      console.error('API Error Status:', apiError.response?.status);
-      const message = apiError.message || 'Failed to create PayPal order';
-      const isMissingEndpoint =
-        message.includes('Cannot POST') ||
-        message.includes('404') ||
-        message.includes('Not Found');
+    if (!clientId || !clientSecret) {
       return json(
         {
-          error: isMissingEndpoint
-            ? 'PayPal checkout is not available yet. The backend must implement POST /api/transactions/create-paypal-order. See guides/PAYPAL_BACKEND_API.md.'
-            : `API Error: ${message}`,
+          error:
+            'PayPal is not configured. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET on the server.',
         },
         {status: 500},
       );
     }
 
-    if (createPayPalOrderResponse?.data?.paypalOrderId) {
-      context.session.set(
-        'paypalOrderId',
-        createPayPalOrderResponse.data.paypalOrderId,
+    const amount = Math.round(totalAmountWithTax * 100) / 100;
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return json({error: 'Invalid total amount'}, {status: 400});
+    }
+
+    let order;
+    try {
+      const accessToken = await getPayPalAccessToken({clientId, clientSecret});
+      order = await createPayPalOrder(accessToken, {
+        amount,
+        currencyCode: 'CAD',
+      });
+    } catch (paypalErr) {
+      console.error('Create PayPal order error:', paypalErr);
+      return json(
+        {
+          error: paypalErr.message || 'Failed to create PayPal order',
+        },
+        {status: 500},
       );
+    }
+
+    if (order?.id) {
+      context.session.set('paypalOrderId', order.id);
       context.session.set('lineItems', JSON.stringify(lineItems));
       context.session.set('message', message?.trim());
       context.session.set('firstName', formData.get('firstName')?.trim());
@@ -296,9 +289,9 @@ export async function action({request, context}) {
 
       return json(
         {
-          paypalOrderId: createPayPalOrderResponse.data.paypalOrderId,
-          amount: createPayPalOrderResponse.data.amount,
-          currency: createPayPalOrderResponse.data.currency || 'CAD',
+          paypalOrderId: order.id,
+          amount,
+          currency: 'CAD',
         },
         {
           status: 200,
@@ -307,12 +300,12 @@ export async function action({request, context}) {
           },
         },
       );
-    } else {
-      return json(
-        {error: 'No paypalOrderId in create PayPal order response'},
-        {status: 400},
-      );
     }
+
+    return json(
+      {error: 'No PayPal order ID returned'},
+      {status: 500},
+    );
   } catch (error) {
     console.error('Checkout action error:', error);
     console.error('Error stack:', error.stack);
@@ -344,9 +337,20 @@ const DetailsForm = ({onNext}) => {
     address: '',
     city: '',
     province: '',
+    country: 'Canada',
     email: '',
     subscribe: false,
   });
+
+  const countryKey = fields.country || 'Canada';
+  const countryData = billingAddressOptions[countryKey];
+  const statesOrProvinces = countryData
+    ? (countryData.states || countryData.provinces || [])
+    : [];
+  const citiesByRegion =
+    countryData?.citiesByState || countryData?.citiesByProvince || {};
+  const cityOptions = fields.province ? (citiesByRegion[fields.province] || []) : [];
+  const hasCityList = cityOptions.length > 0;
 
   // Utility function to round currency values to 2 decimal places
   const roundCurrency = (value) => {
@@ -557,10 +561,16 @@ const DetailsForm = ({onNext}) => {
 
   const handleChange = (e) => {
     const {name, value, type, checked} = e.target;
-    setFields((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    setFields((prev) => {
+      const next = {...prev, [name]: type === 'checkbox' ? checked : value};
+      if (name === 'country') {
+        next.province = '';
+        next.city = '';
+      } else if (name === 'province') {
+        next.city = '';
+      }
+      return next;
+    });
   };
 
   // Log cartItems.length and cartLoading in render
@@ -664,30 +674,63 @@ const DetailsForm = ({onNext}) => {
                     required
                   />
                   <div className="grid grid-cols-2 gap-x-4">
-                    <input
-                      placeholder="City *"
-                      name="city"
-                      value={fields.city}
+                    <select
+                      name="country"
+                      value={fields.country}
                       onChange={handleChange}
                       className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                       required
-                    />
-                    <input
-                      placeholder="Province/State *"
+                    >
+                      <option value="">Country *</option>
+                      {Object.entries(billingAddressOptions).map(([key, data]) => (
+                        <option key={key} value={key}>
+                          {data.label || key}
+                        </option>
+                      ))}
+                    </select>
+                    <select
                       name="province"
                       value={fields.province}
                       onChange={handleChange}
                       className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                       required
-                    />
+                    >
+                      <option value="">
+                        {countryKey === 'USA' ? 'State *' : 'Province *'}
+                      </option>
+                      {statesOrProvinces.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="grid grid-cols-2 gap-x-4">
-                    <input
-                      placeholder="Country *"
-                      name="country"
-                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                      required
-                    />
+                    {hasCityList ? (
+                      <select
+                        name="city"
+                        value={fields.city}
+                        onChange={handleChange}
+                        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                        required
+                      >
+                        <option value="">City *</option>
+                        {cityOptions.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        placeholder="City *"
+                        name="city"
+                        value={fields.city}
+                        onChange={handleChange}
+                        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                        required
+                      />
+                    )}
                     <input
                       placeholder="Email *"
                       name="email"
@@ -697,6 +740,7 @@ const DetailsForm = ({onNext}) => {
                       required
                     />
                   </div>
+
                   <div className="flex items-center mt-4">
                     <input
                       id="subscribe"
@@ -959,7 +1003,7 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
             <label className="block text-sm text-center text-white font-medium mb-1">
               PAYMENT
             </label>
-            <div className="flex justify-center">
+            <div className="flex justify-center min-w-[400px] [&_[id^='zoid-paypal-buttons']]:!min-w-[400px]">
               <PayPalScriptProvider
                 options={{
                   clientId: paypalClientId,
