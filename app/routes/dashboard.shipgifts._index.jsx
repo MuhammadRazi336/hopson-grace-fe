@@ -24,7 +24,7 @@ const ShipGifts = () => {
         <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-stretch">
           <div className="lg:w-[40%] w-full">
             <img
-              src="/assets/Images/ship-my-gifts.png"
+              src="/assets/Images/fullshipgifts.png"
               alt="Image Banner"
               className="max-[1024px]:h-full object-cover object-[80%]"
             />

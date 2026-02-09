@@ -36,6 +36,8 @@ import BestsellersSection from '~/components/BestsellersSection';
 
 export async function loader({request, context}) {
   try {
+
+    
     // Run all independent async operations in parallel to avoid I/O context issues
     const [productsData, collectionsData, user] = await Promise.all([
       loadCriticalData({context}),
@@ -45,6 +47,8 @@ export async function loader({request, context}) {
 
     const {products} = productsData;
     const {collections} = collectionsData;
+
+    
 
     // Fetch registry and userData in parallel
     const [registry, userData] = await Promise.all([
@@ -563,6 +567,7 @@ function SidebarFilter({
   checkedCollectionIds,
   setCheckedCollectionIds,
   selectedSwiperCollectionId,
+  registry,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
@@ -713,6 +718,20 @@ function SidebarFilter({
           )}
         </div>
       </div>
+      <Link to={`/couple/single/${registry?.data?.[0]?.userId}`}>
+          <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
+            <div className="w-full mx-auto flex justify-center items-center gap-6 h-full">
+              <img
+                src="/assets/Images/share-icon.png"
+                alt="preview"
+                className="w-[36px] filter brightness-100"
+              />
+              <h2 className="text-white text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
+                PREVIEW PAGE
+              </h2>
+            </div>
+          </div>
+          </Link>
       {/* Show PreviewRegistry only after a parent collection is selected */}
       {selectedSwiperCollectionId && (
         <div className="mt-6">
@@ -1195,6 +1214,7 @@ export default function AddGifts() {
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
             selectedSwiperCollectionId={selectedSwiperCollectionId}
+            registry={registry}
           />
           <div className="flex flex-col lg:w-[75.52vw] xl:w-[75.52vw] 2xl:w-[75.52vw]">
             {/* Sort Filter */}
@@ -1294,7 +1314,7 @@ export default function AddGifts() {
             )}
 
             <div
-              className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[2.60vw] gap-y-[7.5vw] mt-10 "
+              className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-[2.60vw] gap-y-[2.2vw] mt-10 "
               ref={productGridRef}
             >
               {(() => {
@@ -1631,7 +1651,7 @@ export default function AddGifts() {
           display: none;
         }
       `}</style>
-      <WeThinkYoullLove recommendedProducts={recommendedProducts} />
+      {/* <WeThinkYoullLove recommendedProducts={recommendedProducts} /> */}
       <Footer />
     </>
   );

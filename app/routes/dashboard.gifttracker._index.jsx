@@ -77,7 +77,7 @@ const GiftTracker = () => {
           <img
             src="/assets/Images/profile-view-page-bdr.png"
             alt="Couple"
-            className="max-w-[630px] h-auto mx-auto"
+            className="max-w-full h-auto mx-auto"
           />
 
           <div className="w-full space-y-3 bg-[#F5F2ED] p-5 mt-8">
@@ -88,12 +88,12 @@ const GiftTracker = () => {
                   <img
                     src="/assets/Images/NoProduct.png"
                     alt="No Transactions"
-                    className="w-36 h-36 mx-auto mb-6 opacity-50"
+                    className="w-3xs h-3xs mx-auto mb-6 opacity-50"
                   />
-                  <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
+                  <h3 className="text-[22px] font-semibold text-[#1F1D1B] mb-4 font-['bastardogrotesk']">
                     IT'S QUIET HERE - FOR NOW.
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-[#1F1D1B] mb-6">
                   Once guests start shopping, your gifts will show up here.
                   </p>
                 </div>

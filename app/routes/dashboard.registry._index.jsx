@@ -743,7 +743,7 @@ const ProductPage = ({data}) => {
                     </div>
 
                     <h2
-                      className={`text-lg font-semibold ${
+                      className={`text-[22px] uppercase m-0 font-semibold ${
                         isFullyGifted
                           ? 'cursor-not-allowed opacity-50'
                           : 'cursor-pointer'
@@ -752,8 +752,8 @@ const ProductPage = ({data}) => {
                       {product.title || 'No Name'}
                     </h2>
 
-                    <div className="flex justify-between items-center">
-                      <p className="font-semibold text-md">
+                    <div className="flex justify-between items-center mb-8">
+                      <p className="text-2xl font-normal ">
                         {formatPrice(price?.amount || product.amount || 0)}
                       </p>
                     </div>
@@ -786,7 +786,7 @@ const ProductPage = ({data}) => {
                     )}
                   </div>
 
-                  <div className="mt-4 flex flex-col justify-end">
+                  {/* <div className="mt-4 flex flex-col justify-end">
                     {product.isGroupGift && (
                       <div className="text-center">
                         <p className="text-sm text-gray-600 mb-2">Group Gift</p>
@@ -797,7 +797,7 @@ const ProductPage = ({data}) => {
                         </Link>
                       </div>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               );
             })
@@ -943,7 +943,7 @@ const FundPage = ({data}) => {
                     )}
                   </div>
 
-                  <div className="mt-4 flex flex-col justify-end">
+                  {/* <div className="mt-4 flex flex-col justify-end">
                     <div className="text-center">
                       <Link to="/dashboard/shipgifts">
                         <button className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white">
@@ -951,7 +951,7 @@ const FundPage = ({data}) => {
                         </button>
                       </Link>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               );
             })

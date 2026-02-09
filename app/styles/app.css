@@ -1480,6 +1480,24 @@ html, body { height: 100%; margin: 0; }
   flex-shrink: 0;
 }
 
+.product-detail-list ul {
+    list-style: initial;
+    padding: 40px 0px 0 60px;
+}
+
+.product-detail-list ul li {
+    margin-bottom: 20px;
+}
+
+.product-detail-list p {
+    margin-bottom: 20px;
+}
+
+
+.product-detail-list > * {
+    line-height: 32px;
+}
+
 @media screen and (max-width: 767px) {
   .custom-checkbox:checked {
       width: 20px;
