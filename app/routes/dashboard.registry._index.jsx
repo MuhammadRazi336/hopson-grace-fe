@@ -898,7 +898,7 @@ const FundPage = ({data}) => {
                     </div>
 
                     <h2
-                      className={`text-lg font-semibold ${
+                      className={`text-[22px] uppercase m-0 font-semibold ${
                         isFullyGifted && !isAnyAmount
                           ? 'cursor-not-allowed opacity-50'
                           : 'cursor-pointer'
@@ -909,7 +909,7 @@ const FundPage = ({data}) => {
 
                     <div className="flex justify-between items-center">
                       {!isAnyAmount && (
-                        <p className="font-semibold text-md">${totalAmount.toFixed(2)}</p>
+                        <p className="text-2xl font-normal ">${totalAmount.toFixed(2)}</p>
                       )}
                     </div>
 

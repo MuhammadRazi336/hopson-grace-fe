@@ -43,10 +43,14 @@ const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token
         type="button"
         aria-pressed={!isDraft}
         onClick={handleToggle}
-        className={`mx-auto mb-[15px] w-[60px] h-[26px] lg:w-[3.125vw] xl:w-[3.125vw] 2xl:w-[3.125vw] lg:h-[1.354vw] xl:h-[1.354vw] 2xl:h-[1.354vw] flex items-center rounded-full border-2 transition-colors duration-200 focus:outline-none ${isDraft ? 'bg-white border-black' : 'bg-white border-black'}`}
+        className={`relative mx-auto mb-[15px] inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
       >
         <span
-          className={`w-[26px] h-[22px] rounded-full shadow-md transform transition-transform duration-200 ${isDraft ? 'translate-x-0 bg-gray-300 w-[full]' : 'translate-x-3 bg-[#C52248] lg:w-[2.4vw] xl:w-[2.4vw] 2xl:w-[2.4vw] max-[1024px]:translate-x-8'}`}
+          className={`absolute left-[1px] top-[1.2px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+            isDraft 
+              ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
+              : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
+          }`}
         />
       </button>
       <div className="uppercase text-lg font-bold text-black tracking-wide lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[1024px]:text-[16px] max-[1024px]:leading-[16px]">
