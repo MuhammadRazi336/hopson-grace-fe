@@ -1,3 +1,4 @@
+import { ToastContainer } from 'react-toastify';
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
@@ -14,8 +15,8 @@ export function PageLayout({
 }) {
   return (
     <Aside.Provider>
+      <ToastContainer position="top-right" />
       <main>{children}</main>
-      
       {/* Live chat - Fixed position on bottom right throughout the site */}
       <div className="fixed bottom-0 right-0 z-[1000]">
         <LiveChat 
