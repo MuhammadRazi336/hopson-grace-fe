@@ -65,8 +65,8 @@ export default function FindCoupleForm() {
                   alt="couple"
                   className="max-w-[315px] lg:max-w-[16.406vw] mb-4"
                 />
-                <p className="text-center tracking-[0.8px] lg:text-[1.042vw] lg:leading-[1.354vw] text-white uppercase max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-                Enter either person's first or last name
+                <p className="text-center tracking-[0.8px] lg:text-[22px] lg:leading-[1.354vw] text-white uppercase max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
+                Enter either person's <br/>first or last name
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
@@ -131,16 +131,16 @@ export default function FindCoupleForm() {
           </div>
 
           <div className="mt-20 lg:mt-[9.01vw]"></div>
-          <Faqs />
+          <Faqs content="couple"/>
           <div className="mb-16"></div>
           <section className=" my-12 lg:my-[240px]">
             <ImageAndText
               direction={'right'}
               imgBanner={teaImg}
               lineimg={lineImg3}
-              title="need any advice?"
-              description="Our registry experts are awaiting your call to advise on anything you need."
-              buttontext={'LIVE CHAT'}
+              title="questions?"
+              description="We’ve got answers."
+              buttontext={'CONTACT US'}
               buttontype={'Color'}
             />
           </section>
@@ -188,7 +188,7 @@ export function FindCoupleFormBanner() {
             className="max-w-[315px] mb-4"
           />
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-            Enter either person's first and last name
+            Enter either person's <br/>first or last name
           </p>
 
           <form method="GET" className="w-full" onSubmit={handleSearch}>
@@ -286,7 +286,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
             className="max-w-[315px] mb-4"
           />
           <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
-          Enter either person's first and last name
+          Enter either person's <br/>first or last name
           </p>
           <form method="GET" className="w-full" onSubmit={handleSearch}>
             <div className="flex gap-8 mb-4">

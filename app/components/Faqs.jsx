@@ -4,7 +4,7 @@ import ButtonComponent from './Button';
 import {Link} from '@remix-run/react';
 import readMoreIcon from '/assets/Images/next.png';
 
-const Faqs = () => {
+const Faqs = ({content}) => {
 
   // Helper function to truncate text by sentences and add clickable "Read More"
   const truncateText = (text, maxSentences = 3) => {
@@ -32,33 +32,64 @@ const Faqs = () => {
       </>
     );
   };
-
-  const faqs = [
+  
+  // FAQ data
+  const coupleFaqs = [
     {
       number: 1,
-      heading: 'Why choose The Registry?',
+      heading: 'HOW DO I PURCHASE A GIFT?',
       paragraph:
-        "Your wedding should reflect your taste — and your future. That’s why The Registry offers more than just beautiful gifts. From top-tier brands to bespoke travel and personalized cash funds, we make it easy (and inspiring) to create a registry that’s anything but ordinary. <br />Enjoy a seamless experience with a customizable dashboard, gift tracking, and built-in thank-you note management. Explore our designer-curated Ready-Made Registries or build your own from scratch. After the wedding, enjoy 15% off any items you loved but didn’t receive — and when you’re ready, we’ll ship your gifts free of charge anywhere in continental North America.",
+        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
     },
     {
       number: 2,
       heading: 'How does it work?',
       paragraph:
-        "Start by creating your registry at your own pace. Once you’re onboarded, you’ll have access to a private dashboard where you can set up your registry page and begin adding gifts. You’re always welcome to book a one-on-one virtual appointment — whether you want help choosing dinnerware or simply narrowing things down. You’ll be selecting from a curated mix of products, digital gift cards, cash funds, and bespoke travel experiences, with thoughtfully prepared ready-made registries to guide you along the way. Our considered edit means no overwhelm — just intentional choices. When you’re ready, share your registry with a simple link on your wedding website. As gifts are purchased, your dashboard updates automatically with gift values and thank-you reminders. After your wedding, enjoy 15% off any remaining items on your registry. Nothing ships without your approval.",
+        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
     },
     {
       number: 3,
       heading: 'Can we register in person?',
       paragraph:
-        "While we don’t offer in-person appointments, you can easily build your registry online or book a virtual session with a Registry Concierge. Think of them as a design guide — someone who helps you make confident decisions, from choosing dinnerware that works together to building a registry that reflects your style, space, and how you actually live.",
+        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
     },
     {
       number: 4,
-      heading: 'Can We register for cash?',
+      heading: 'Can we register for cash?',
       paragraph:
-        "Yes! Create a personalized fund for anything from your honeymoon to a kitchen renovation or down payment. There’s no cost to you — guests pay a 2.5% processing fee, which covers payment processing and transaction fees. You can withdraw your funds at any time, or wait until after your wedding to receive the full amount. All that’s required is a Canadian or U.S. bank account and a valid physical address, as required for payment verification.",
+        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
     },
   ];
+
+  const generalFaqs = [
+    {
+      number: 1,
+      heading: 'Why choose The Registry?',
+      paragraph:
+        'Your wedding should reflect your taste and your future. That’s why The Registry offers more than just beautiful gifts. From top-tier brands to bespoke travel and personalized cash funds, we make it easy to create a registry that’s anything but ordinary. Enjoy a seamless experience with a customizable dashboard, gift tracking, and built-in thank-you note management.',
+    },
+    {
+      number: 2,
+      heading: 'How does it work?',
+      paragraph:
+        'Start by creating your registry at your own pace. Once onboarded, you’ll have access to a private dashboard where you can set up your registry page and begin adding gifts. Share your registry with a simple link on your wedding website and track gifts in real time.',
+    },
+    {
+      number: 3,
+      heading: 'Can we register in person?',
+      paragraph:
+        'While we don’t offer in-person appointments, you can easily build your registry online or book a virtual session with a Registry Concierge.',
+    },
+    {
+      number: 4,
+      heading: 'Can we register for cash?',
+      paragraph:
+        'Yes! Create a personalized fund for anything from your honeymoon to a kitchen renovation. Guests pay a small processing fee and you can withdraw funds anytime.',
+    },
+  ];
+
+  const faqs = content === 'couple' ? coupleFaqs : generalFaqs;
+  const faqsBtn = content === 'couple' ? "SEE ALL GUEST FAQS" : "READ ALL";
 
   return (
     <div
@@ -98,7 +129,7 @@ const Faqs = () => {
           <Link to="/faq">
             <ButtonComponent
               className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 cursor-pointer lg:mt-[4.688vw] w-80 lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:w-[224px] max-[1024px]:h-[44px] max-[1024px]:mt-8"
-              text={'READ ALL'}
+              text={faqsBtn}
             />
           </Link>
         </div>
