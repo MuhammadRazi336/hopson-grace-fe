@@ -1821,6 +1821,8 @@ export default function CoupleProfile() {
           onAddRecommendedProduct={handleAddRecommendedProduct}
           cashFunds={recommendedCashFunds}
           onAddCashFund={(cashFund) => handleAddToCart(cashFund.id)}
+          registryId={registryId}
+          guestEmail={guestEmail}
         />
       )}
 

@@ -17,6 +17,8 @@ export default function SideCart({
   onAddRecommendedProduct, // Add this prop for handling recommended product clicks
   cashFunds = [], // Add this prop for cash funds
   onAddCashFund, // Add this prop for adding cash funds
+  registryId = '', // Current couple's registry (for checkout URL)
+  guestEmail = '', // Guest email (for checkout URL)
 }) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -429,10 +431,15 @@ export default function SideCart({
 
                 <button
                   onClick={() => {
-                    console.log(
-                      'SideCart: Button clicked, navigating to /cart/message',
-                    );
-                    navigate('/cart/message');
+                    const email = guestEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
+                    const regId = registryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') || '';
+                    const params = new URLSearchParams();
+                    if (regId) params.set('registryId', String(regId));
+                    if (email) params.set('email', email);
+                    const query = params.toString();
+                    const path = query ? `/cart/message?${query}` : '/cart/message';
+                    console.log('SideCart: Navigating to', path);
+                    navigate(path);
                   }}
                   className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white max-[1601px]:w-[200px] text-center"
                 >
