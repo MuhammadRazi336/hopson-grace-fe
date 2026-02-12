@@ -44,7 +44,7 @@ const NavBarLinks = (mobileClasses) => {
     <div className={`navbar container-menu ${mobileClasses}`}>
       {/* Navigation Menu */}
       <nav className="flex-1">
-        <ul className="flex justify-between pt-0 pb-[1.615vw] gap-[3.854vw]">
+        <ul className="flex justify-between pt-0 pb-[1.615vw] gap-[1.654vw]">
           <li className="">
             <NavLink
               to="/our-brands"

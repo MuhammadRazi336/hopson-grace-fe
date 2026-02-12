@@ -98,7 +98,7 @@ const AboutUs = () => {
           <button
             onClick={handleOpenPopup}
             
-            className="text-white font-[500] cursor-pointer tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[17.292vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
+            className="text-white uppercase font-[500] cursor-pointer tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[17.292vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]"
           >
             Let's Go
           </button>

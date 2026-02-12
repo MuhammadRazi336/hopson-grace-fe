@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from '@remix-run/react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import faqBg from '/assets/Images/faqcouple.jpg';
@@ -21,6 +22,7 @@ const FAQ = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [activeTab, setActiveTab] = useState('couples'); // 'couples' or 'guests'
   const [openFAQ, setOpenFAQ] = useState(1); // Start with first FAQ open (null to start with none open)
+  const location = useLocation();
   
   const handleOpenPopup = () => {
     setShowPopup(true);
@@ -32,6 +34,13 @@ const FAQ = () => {
   const toggleFAQ = (index) => {
     setOpenFAQ((prev) => (prev === index ? null : index));
   };
+
+
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
   
   return (
     <section>
