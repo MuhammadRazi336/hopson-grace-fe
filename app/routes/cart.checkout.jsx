@@ -14,13 +14,16 @@ import billingAddressOptions from '~/data/billing-address-options.json';
 
 export async function loader({context, request}) {
   try {
-    const message = context.session.get('message') || '';
-    const couplesName = context.session.get('couplesName') || '';
-
     // Get email and registryId from URL params or try to get from session
     const url = new URL(request.url);
     const email = url.searchParams.get('email') || '';
     const registryId = url.searchParams.get('registryId') || '';
+
+    // Use per-registry session keys to match how message was saved
+    const messageKey = registryId ? `message_${registryId}` : 'message';
+    const couplesNameKey = registryId ? `couplesName_${registryId}` : 'couplesName';
+    const message = context.session.get(messageKey) || '';
+    const couplesName = context.session.get(couplesNameKey) || '';
 
     const registryApi = await context.ClientGet(
       `registries/${registryId}`,
@@ -29,6 +32,7 @@ export async function loader({context, request}) {
     console.log('registryApi', registryApi);
 
     let productData = [];
+    let cashFundData = [];
 
     const apiBaseUrl = context.env?.API_BASE_URL || process.env.API_BASE_URL;
 
@@ -63,6 +67,23 @@ export async function loader({context, request}) {
             );
             productData = products?.nodes || [];
           }
+
+          // Fetch cash fund data from registry API
+          try {
+            const cashRes = await context.ClientGet(
+              `registryProducts/${registryId}?type=cash`,
+              context,
+            );
+            if (cashRes?.data && Array.isArray(cashRes.data)) {
+              cashFundData = cashRes.data.map((item) => ({
+                ...item,
+                isCashFund: true,
+                productId: item.productId,
+              }));
+            }
+          } catch (cashError) {
+            console.error('Error fetching cash fund data:', cashError);
+          }
         }
       } catch (error) {
         console.error('Error fetching cart or product data:', error);
@@ -74,6 +95,7 @@ export async function loader({context, request}) {
       message,
       couplesName,
       productData,
+      cashFundData,
       registryApi,
       registryId,
       email,
@@ -86,6 +108,7 @@ export async function loader({context, request}) {
       message: '',
       couplesName: '',
       productData: [],
+      cashFundData: [],
       registryApi: {},
       registryId: '',
       email: '',
@@ -328,10 +351,11 @@ export async function action({request, context}) {
 
 // Step 1: Details Form using useFetcher
 const DetailsForm = ({onNext}) => {
-  const {message, couplesName, productData, apiBaseUrl, registryApi, registryId: loaderRegistryId, email: loaderEmail} = useLoaderData();
+  const {message, couplesName, productData, cashFundData, apiBaseUrl, registryApi, registryId: loaderRegistryId, email: loaderEmail} = useLoaderData();
   // console.log('DetailsForm: productData:', productData);
   // console.log('DetailsForm: apiBaseUrl from loader:', apiBaseUrl);
   console.log('DetailsForm: registryApi from loader:', registryApi);
+  console.log('DetailsForm: cashFundData from loader:', cashFundData);
   const fetcher = useFetcher();
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -489,11 +513,16 @@ const DetailsForm = ({onNext}) => {
                 JSON.stringify(registryProduct, null, 2),
               );
 
-              // Try to find the product in our loaded Shopify data to get title and image
-              const productFromData = productData.find(
-                (p) =>
-                  p.id === `gid://shopify/Product/${registryProduct.productId}`,
-              );
+              const isCashFund = registryProduct.productTypeId === 2;
+
+              // For regular products, find in Shopify data
+              // For cash funds, find in cashFundData
+              const productFromData = isCashFund
+                ? cashFundData.find((p) => p.productId === registryProduct.productId)
+                : productData.find(
+                    (p) =>
+                      p.id === `gid://shopify/Product/${registryProduct.productId}`,
+                  );
 
               return {
                 id: cartItem.id,
@@ -502,12 +531,16 @@ const DetailsForm = ({onNext}) => {
                 title:
                   cartItem.title ||
                   productFromData?.title ||
+                  productFromData?.name ||
+                  productFromData?.cashFund?.name ||
                   `Product ${registryProduct.productId}`,
                 image:
                   cartItem.image ||
                   productFromData?.images?.edges?.[0]?.node?.url ||
-                  '/placeholder.svg',
-                isCashFund: registryProduct.productTypeId === 2,
+                  productFromData?.image?.fileUrl ||
+                  productFromData?.cashFund?.image?.fileUrl ||
+                  '/assets/Images/placeholder.png',
+                isCashFund: isCashFund,
                 productId: registryProduct.productId,
                 amount: roundCurrency(registryProduct.amount), // Round to 2 decimal places
                 registryProductId: registryProduct.id, // Keep registry product ID for reference
