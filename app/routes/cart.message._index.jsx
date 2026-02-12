@@ -5,20 +5,29 @@ import { CoupleProfileViewHeader } from './couple.test._index';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
-import { Form, useActionData, useLoaderData, useSubmit } from '@remix-run/react';
+import { Form, useActionData, useLoaderData, useSubmit, useSearchParams } from '@remix-run/react';
 import { json } from '@shopify/remix-oxygen';
 
-export async function loader({ context }) {
+export async function loader({ context, request }) {
   try {
-    // Get existing message and couples name from session
-    const message = context.session.get('message') || '';
-    const couplesName = context.session.get('couplesName') || '';
+    const url = new URL(request.url);
+    const registryId = url.searchParams.get('registryId') || '';
+    const email = url.searchParams.get('email') || '';
+
+    // Get message/couplesName from session (per-registry when we have registryId)
+    const messageKey = registryId ? `message_${registryId}` : 'message';
+    const couplesNameKey = registryId ? `couplesName_${registryId}` : 'couplesName';
+    const message = context.session.get(messageKey) || '';
+    const couplesName = context.session.get(couplesNameKey) || '';
+
     return json({
       message,
-      couplesName
+      couplesName,
+      registryId,
+      email,
     });
   } catch (error) {
-    return json({ message: '', couplesName: '' });
+    return json({ message: '', couplesName: '', registryId: '', email: '' });
   }
 }
 
@@ -43,10 +52,13 @@ export async function action({request, context}) {
 
     const trimmedMessage = message.trim();
     const trimmedCouplesName = couplesName ? couplesName.trim() : '';
+    const registryIdForSession = formData.get('registryId');
 
-    // Save data to session
-    context.session.set('message', trimmedMessage);
-    context.session.set('couplesName', trimmedCouplesName);
+    // Save data to session (per-registry when registryId provided)
+    const messageKey = registryIdForSession ? `message_${registryIdForSession}` : 'message';
+    const couplesNameKey = registryIdForSession ? `couplesName_${registryIdForSession}` : 'couplesName';
+    context.session.set(messageKey, trimmedMessage);
+    context.session.set(couplesNameKey, trimmedCouplesName);
 
 
 
@@ -64,10 +76,10 @@ export async function action({request, context}) {
 
     // If action is checkout, redirect to checkout with email and registryId
     const email = formData.get('email');
-    const registryId = formData.get('registryId');
+    const registryIdForRedirect = formData.get('registryId');
     
-    const checkoutUrl = email && registryId 
-      ? `/cart/checkout?email=${email}&registryId=${registryId}`
+    const checkoutUrl = email && registryIdForRedirect 
+      ? `/cart/checkout?email=${email}&registryId=${registryIdForRedirect}`
       : '/cart/checkout';
       
     return redirect(checkoutUrl, {
@@ -90,12 +102,17 @@ export async function action({request, context}) {
 const Message = () => {
   const loaderData = useLoaderData();
   const actionData = useActionData();
+  const [searchParams] = useSearchParams();
   const submit = useSubmit();
   const [message, setMessage] = useState(loaderData?.message || '');
   const [couplesName, setCouplesName] = useState(loaderData?.couplesName || '');
   const [showPreview, setShowPreview] = useState(false);
   const maxLength = 500;
   const [error, setError] = useState('');
+
+  // Prefer URL params for this checkout flow (so each registry has its own)
+  const registryIdFromUrl = searchParams.get('registryId') || loaderData?.registryId || '';
+  const emailFromUrl = searchParams.get('email') || loaderData?.email || '';
 
   // Reset form with loader data
   useEffect(() => {
@@ -148,16 +165,15 @@ const Message = () => {
       setError('Please enter a message');
       return;
     }
+
+    // Use URL params first so this checkout stays for the correct registry
+    const email = emailFromUrl || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
+    const registryId = registryIdFromUrl || (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') || '';
     
     const formData = new FormData();
     formData.set('_action', 'checkout');
     formData.set('message', message);
     formData.set('couplesName', couplesName);
-    
-    // Get email and registryId from localStorage
-    const email = typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
-    const registryId = typeof window !== 'undefined' ? localStorage.getItem('registryId') : '';
-    
     formData.set('email', email);
     formData.set('registryId', registryId);
     
@@ -223,12 +239,12 @@ const Message = () => {
             <input 
               type="hidden" 
               name="email" 
-              value={typeof window !== 'undefined' ? localStorage.getItem('guestEmail') || '' : ''} 
+              value={emailFromUrl || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') || '' : '')} 
             />
             <input 
               type="hidden" 
               name="registryId" 
-              value={typeof window !== 'undefined' ? localStorage.getItem('registryId') || '' : ''} 
+              value={registryIdFromUrl || (typeof window !== 'undefined' ? localStorage.getItem('registryId') || '' : '')} 
             />
             <div className="relative max-w-4xl mx-auto">
               <img

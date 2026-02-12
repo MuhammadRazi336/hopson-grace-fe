@@ -324,12 +324,16 @@ const index = () => {
       id: 'gift-balance',
       title: 'GIFT BALANCE',
       description: 'Gifts convert to cash, giving you the flexibility to finalize your registry after the wedding.',
+      // value: Math.abs(
+      //   (registry?.giftBalance ?? 0) - (registry?.registryFundBalance ?? 0)
+      // ),
       value: registry?.giftBalance || 0,
+      
       label: 'GIFT BALANCE',
       showIcon: true,
       icon: '/assets/Images/CASHTRAVEL.png',
-      buttonText: 'VIEW FUNDS',
-      link: '/dashboard/cashfunds',
+      buttonText: 'VIEW GIFTS',
+      link: '/dashboard/gifttracker',
     }
   ];
 
