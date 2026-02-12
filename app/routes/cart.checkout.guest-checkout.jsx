@@ -64,13 +64,17 @@ export async function action({request, context}) {
       );
     }
 
+    // Use the same per-registry message key used on the message step
+    const messageKey = registryId ? `message_${registryId}` : 'message';
+    const messageForRegistry = context.session.get(messageKey) || message || '';
+
     const guestCheckoutPayload = {
       registryId: Number(registryId),
       email: email.trim(),
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       lineItems,
-      message: message.trim(),
+      message: messageForRegistry.trim(),
       paypalOrderId: paypalOrderId.trim()
     };
 

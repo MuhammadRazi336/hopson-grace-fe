@@ -75,6 +75,8 @@ export async function loader({context, request}) {
       couplesName,
       productData,
       registryApi,
+      registryId,
+      email,
       apiBaseUrl:
         'https://dev-hopsongrace.codup.io',
       paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
@@ -85,6 +87,8 @@ export async function loader({context, request}) {
       couplesName: '',
       productData: [],
       registryApi: {},
+      registryId: '',
+      email: '',
       apiBaseUrl: 'https://dev-hopsongrace.codup.io',
       paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
     });
@@ -99,8 +103,11 @@ export async function action({request, context}) {
     if (!email) {
       return json({error: 'Email is required'}, {status: 400});
     }
-    const message = context.session.get('message') || '';
     const registryId = formData.get('registryId')?.trim();
+
+    // Read the per-registry message key that cart.message._index.jsx stores
+    const messageKey = registryId ? `message_${registryId}` : 'message';
+    const message = context.session.get(messageKey) || '';
 
     if (!registryId || isNaN(registryId) || registryId <= 0) {
       return json(
@@ -321,7 +328,7 @@ export async function action({request, context}) {
 
 // Step 1: Details Form using useFetcher
 const DetailsForm = ({onNext}) => {
-  const {message, couplesName, productData, apiBaseUrl, registryApi} = useLoaderData();
+  const {message, couplesName, productData, apiBaseUrl, registryApi, registryId: loaderRegistryId, email: loaderEmail} = useLoaderData();
   // console.log('DetailsForm: productData:', productData);
   // console.log('DetailsForm: apiBaseUrl from loader:', apiBaseUrl);
   console.log('DetailsForm: registryApi from loader:', registryApi);
@@ -428,18 +435,13 @@ const DetailsForm = ({onNext}) => {
     }
   };
 
-  // Fetch cart items from API on client side
+  // Fetch cart items from API on client side (prefer URL/loader params so this checkout stays for the correct registry)
   useEffect(() => {
     const fetchCartItems = async () => {
-      const email =
-        typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
-      const registryId =
-        typeof window !== 'undefined' ? localStorage.getItem('registryId') : '';
-      console.log('DetailsForm: userEmail from localStorage:', email);
-      console.log('DetailsForm: registryId from localStorage:', registryId);
-      console.log('DetailsForm: localStorage guestEmail exists:', !!email);
-      console.log('DetailsForm: localStorage registryId exists:', !!registryId);
-      console.log('Cart Items:', cartItems);
+      const email = loaderEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
+      const registryId = loaderRegistryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') || '';
+      console.log('DetailsForm: userEmail (loader then localStorage):', email);
+      console.log('DetailsForm: registryId (loader then localStorage):', registryId);
 
       if (!email || !registryId) {
         setCartItems([]);
@@ -537,17 +539,15 @@ const DetailsForm = ({onNext}) => {
     };
 
     fetchCartItems();
-  }, []);
+  }, [loaderRegistryId, loaderEmail]);
 
-  // Set email from localStorage
+  // Set email from URL/loader first (this checkout's registry), then localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const localEmail = localStorage.getItem('guestEmail');
-      if (localEmail) {
-        setFields((prev) => ({...prev, email: localEmail}));
-      }
+    const email = loaderEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
+    if (email) {
+      setFields((prev) => ({...prev, email}));
     }
-  }, []);
+  }, [loaderEmail]);
 
   // Handle fetcher state
   useEffect(() => {
@@ -655,11 +655,7 @@ const DetailsForm = ({onNext}) => {
             <input
               type="hidden"
               name="registryId"
-              value={
-                typeof window !== 'undefined'
-                  ? localStorage.getItem('registryId') || ''
-                  : ''
-              }
+              value={loaderRegistryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') || '' : '')}
             />
             <div className="flex items-start gap-x-4 w-full">
               <div className="w-1/2">
