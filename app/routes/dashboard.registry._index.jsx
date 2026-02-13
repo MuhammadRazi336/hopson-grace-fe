@@ -518,11 +518,17 @@ const index = () => {
                 className="max-w-[16.219vw] h-auto ml-auto max-[1024px]:mb-[50px]"
               />
               <div className="uppercase text-right ">
+                {eventGet?.data?.location && (
                 <p className="text-lg my-1">{eventGet?.data?.location}</p>
-                <p className="text-lg my-1">
-                  {eventGet?.data?.province}, {eventGet?.data?.city}
-                </p>
-                <p className="text-lg my-1">{eventGet?.data?.weddingTime}</p>
+                )}
+                {eventGet?.data?.province && (
+                  <p className="text-lg my-1">
+                    {eventGet?.data?.province}{eventGet?.data?.city && ', '} {eventGet?.data?.city}
+                  </p>
+                )}
+                {eventGet?.data?.weddingTime && (
+                  <p className="text-lg my-1">{eventGet?.data?.weddingTime}</p>
+                )}
               </div>
             </div>
           </div>
