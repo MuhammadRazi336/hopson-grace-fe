@@ -14,7 +14,7 @@ function ExploreCategories({ collections = [] }) {
   );
 
   return (
-    <section className="bg-[#FAF9F6] py-[5.208vw] px-[4.583vw] lg:w-[90.938%] xl:w-[90.938%] 2xl:w-[90.938%] mx-auto">
+    <section className="bg-[#FAF9F6] py-[5.208vw] px-[6.62vw] lg:w-[90.938%] xl:w-[90.938%] 2xl:w-[90.938%] mx-auto">
       <Heading
         text="explore more categories"
         classes={
@@ -25,14 +25,14 @@ function ExploreCategories({ collections = [] }) {
       />
 
       {/* slides here */}
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-row-[5.208vw] gap-col-[3.438vw] mt-[5.313vw]">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-row-[3.408vw] gap-col-[3.438vw] mt-[5.313vw]">
         {parentCollections.map((col) => (
           <Link key={col.id} to={`/products/${col.handle}`} className="hover:no-underline group">
             <div className="cursor-pointer">
               <img 
                 src={col.image?.url || '/assets/Images/placeholder.png'} 
                 alt={col.title} 
-                className="w-[450px] h-[450px] object-cover cursor-pointer hover:opacity-80 transition-opacity" 
+                className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity aspect-square" 
               />
               <h3 className="mt-2.5 text-center lg:mt-[1.771vw] uppercase lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] text-sm font-bold tracking-wider cursor-pointer hover:text-gray-600 transition-colors">
                 {col.title}

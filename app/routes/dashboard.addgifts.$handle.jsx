@@ -326,7 +326,7 @@ const GiftDetailHandle = () => {
         </div>
 
         <section className="mt-[9.74vw] bg-[#446184] text-white ">
-          <div className="mx-auto flex flex-col lg:flex-row gap-10 py-[5.2vw] px-[9.5vw]">
+          <div className="mx-auto flex flex-col lg:flex-row gap-24 py-[5.7vw] px-[7.5vw]">
             {/* Left Text Section */}
             <div className="lg:w-4/12 w-full flex items-center flex-col gap-2">
               <p className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-wider uppercase pb-1">
@@ -337,7 +337,7 @@ const GiftDetailHandle = () => {
                 alt=""
                 className="w-auto lg:w-[18.594vw] xl:w-[18.594vw] 2xl:w-[18.594vw]"
               />
-              <h5 className="text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] prata my-[1.042vw]">
+              <h5 className="text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[42px] xl:leading-[42px] 2xl:leading-[42px] prata my-[1.042vw] text-center">
                 {product?.vendor || 'Hopson Grace'}
               </h5>
               <p className="text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mb-2">Toronto</p>
@@ -353,7 +353,7 @@ const GiftDetailHandle = () => {
                 </button>
               </Link>
             </div>
-            <section className="lg:w-[56%] w-full  container ">
+            <section className="lg:w-[71.6%] w-full  container ">
               <div className="relative items-start max-[1024px]:my-10">
                 <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
                   <div className="swiper-button-prev-prod absolute top-[40%] -translate-y-1/2 h-[40px] left-[-7vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
@@ -414,9 +414,9 @@ const GiftDetailHandle = () => {
                               <img
                                 src={firstImage?.url || '/assets/Images/placeholder.png'}
                                 alt={vendorProduct.title}
-                                className="w-[345px] h-[345px] hover:opacity-80 transition-opacity"
+                                className="w-full h-full hover:opacity-80 transition-opacity aspect-square"
                               />
-                              <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
+                              <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm leading-6 font-medium tracking-wider hover:text-white transition-colors">
                                 {vendorProduct.title}
                               </h3>
                               <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px] text-white">
@@ -487,7 +487,7 @@ const GiftDetailHandle = () => {
           <ExploreCategories collections={collections} />
         </div>
 
-        <section className="pt-[9.375vw] pb-[9.375vw] my-12 lg:my-[240px] container">
+        {/* <section className="pt-[9.375vw] pb-[9.375vw] my-12 lg:my-[240px] container">
           <Heading
             text="you might also like"
             classes={
@@ -497,14 +497,14 @@ const GiftDetailHandle = () => {
             imageClasses={'max-[1024px]:max-w-[330px] lg:w-[19.896vw] xl:w-[19.896vw] 2xl:w-[19.896vw]'}
           />
           <ProductSlider products={recommendedProducts || []} />
-          {/* <div className="text-center">
+           <div className="text-center">
             <ButtonComponent
               text="browse bestsellers"
               className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[30px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-11"
             />
-          </div> */}
-        </section>
-      <WeThinkYoullLove recommendedProducts={recommendedProducts} />
+          </div>
+        </section> */}
+      <WeThinkYoullLove recommendedProducts={recommendedProducts} className="mt-[9.375vw]" />
       <Footer />
     </>
 

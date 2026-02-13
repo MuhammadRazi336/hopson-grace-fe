@@ -288,7 +288,7 @@ const Products = () => {
 
       <div className="w-full h-fit pt-[6.771vw]">
         <Heading
-          text={searchQuery ? `search results for "${searchQuery}"` : "products"}
+          text={searchQuery ? `search results for "${searchQuery}"` : "browse by category"}
           classes={
             'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
@@ -358,11 +358,11 @@ const Products = () => {
       {/* Regular Products Page Content - Only show when no search query */}
       {!searchQuery && (
         <>
-          <div className="lg:px-[9.583vw] w-full lg:mx-auto px-16 pb-[12.448vw]">
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-x-[1.25vw] lg:gap-y-[3.958vw] gap-y-16 gap-x-[24px] mt-[4.167vw]">
+          <div className="lg:px-[9.583vw] w-[94%] lg:mx-auto px-16 pb-[12.448vw]">
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-x-[35px] lg:gap-y-[3.958vw] gap-y-16 gap-x-[24px] mt-[4.167vw]">
               <Link to="/products/new-arrivals">
                 <div className="flex flex-col items-center justify-center cursor-pointer">
-                  <img src={newArrivals} alt="" className="w-full lg:h-[25.417vw]" />
+                  <img src={newArrivals} alt="" className="w-full aspect-square object-cover" />
                   <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                     NEW ARRIVALS
                   </h3>
@@ -370,7 +370,7 @@ const Products = () => {
               </Link>
               <Link to="/products/bestsellers">
                 <div className="flex flex-col items-center justify-center cursor-pointer">
-                  <img src={bestSellers} alt="" className="w-full lg:h-[25.417vw]" />
+                  <img src={bestSellers} alt="" className="w-full aspect-square object-cover" />
                   <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                     BESTSELLERS
                   </h3>
@@ -378,7 +378,7 @@ const Products = () => {
               </Link>
               <Link to="/dashboard/giftcards">
               <div className="flex flex-col items-center justify-center">
-                <img src={giftCards} alt="" className="w-full lg:h-[25.417vw] bg-[#446184]" />
+                <img src={giftCards} alt="" className="w-full aspect-square object-cover bg-[#446184]" />
                 <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                   GIFT CARDS
                 </h3>
@@ -387,9 +387,9 @@ const Products = () => {
               {parentCollections.map((col) => (
                 <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer">
                   {col.image?.url ? (
-                    <img src={col.image.url} alt={col.title} className="w-full lg:h-[25.417vw]" />
+                    <img src={col.image.url} alt={col.title} className="w-full aspect-square object-cover" />
                   ) : (
-                    <div className="w-full lg:h-[25.417vw] bg-gray-200 flex items-center justify-center">
+                    <div className="w-full aspect-square object-cover bg-gray-200 flex items-center justify-center">
                       <span className="text-gray-400">No Image</span>
                     </div>
                   )}

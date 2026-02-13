@@ -629,25 +629,25 @@ function ViewForm({state}) {
       <div className="flex flex-col gap-6">
         <div>
           <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">YOU</div>
-          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
+          <div className="text-lg leading-lg mb-[3.542vw] lowercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
             {state.yourFirstName} {state.yourLastName}
           </div>
         </div>
         <div>
           <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">YOUR FIANCÉ</div>
-          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
+          <div className="text-lg leading-lg mb-[3.542vw] lowercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
             {state.fianceFirstName} {state.fianceLastName}
           </div>
         </div>
         <div>
           <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">YOUR EMAIL</div>
-          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] break-all">{state.email || '-'}</div>
+          <div className="text-lg leading-lg mb-[3.542vw] lowercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] break-all">{state.email || '-'}</div>
         </div>
         <div>
           <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">
             YOUR SHIPPING ADDRESS
           </div>
-          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
+          <div className="text-lg leading-lg mb-[3.542vw] lowercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">
             {`${state.shippingAddress || '-'}\n${
               state.shippingCity || ''
             }, ${state.shippingProvince || ''}\n${
