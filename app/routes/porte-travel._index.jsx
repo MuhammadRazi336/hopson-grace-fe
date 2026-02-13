@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
@@ -20,6 +20,7 @@ import {formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import BackToTop from '~/components/BackToTop';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
@@ -142,7 +143,7 @@ const ProductCard = React.memo(
 
     const firstImage = product.image || '/assets/Images/placeholder.png';
     const price = formatPrice(product.price);
-
+    console.log('Rendering ProductCard:', {product});
     // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
       // Only run if we have meaningful fetcher data and haven't shown feedback yet
@@ -240,21 +241,27 @@ const ProductCard = React.memo(
     return (
       <div key={product.id} className="relative group mb-[4.844vw] w-[18.75vw] max-[1024px]:w-auto">
         {/* Product Image and Info */}
+          
         <div className="p-0 z-10 relative">
+          <Link to={`/dashboard/addgifts/${product.handle}`}>
           <img
             src={firstImage}
             alt={product.title}
             className="w-full h-[18.75vw] max-[767px]:h-[20vw] max-[550px]:h-[30vw] object-cover"
           />
+          </Link>
+          <Link to={`/dashboard/addgifts/${product.handle}`}>
           <h3 className="text-sm font-[500] tracking-[0.057vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
+          </Link>
           <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{price}</p>
         </div>
 
         {/* Expanding Overlay */}
         <div className="absolute w-[116%] left-[-8%] lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
           <div>
+            <Link to={`/dashboard/addgifts/${product.handle}`}>
             <img
               src={firstImage}
               alt={product.title}
@@ -266,6 +273,7 @@ const ProductCard = React.memo(
             <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
+            </Link>
             <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
           </div>
 
@@ -362,11 +370,12 @@ const PorteTravel = () => {
       setAlertMessage('');
     }, 3000);
   }, []);
+  const topRef = useRef(null);
 
   return (
     <section>
       <Header />
-      
+      <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]"></div>
       <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[767px]:pt-[50px]">
         <Heading
           text={
@@ -511,9 +520,8 @@ const PorteTravel = () => {
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
-              Back to Top
-            </button>
+            <BackToTop topRef={topRef} />
+
           </div>
         </div>
       </section>
