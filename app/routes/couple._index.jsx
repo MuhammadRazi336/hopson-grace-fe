@@ -172,7 +172,7 @@ export function FindCoupleFormBanner() {
     <div
       className="flex justify-start items-center h-[80vh] mb-16"
       style={{
-        backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+        backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
@@ -270,7 +270,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
     <div
       className="flex justify-start items-center h-[80vh] mb-16"
       style={{
-        backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+        backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}

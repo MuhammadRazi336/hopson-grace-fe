@@ -37,27 +37,27 @@ const Faqs = ({content}) => {
   const coupleFaqs = [
     {
       number: 1,
-      heading: 'HOW DO I PURCHASE A GIFT?',
+      heading: 'How do I find a couple’s registry?',
       paragraph:
-        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
+        'Simply click Find a Couple on our homepage and enter the couple’s name. You’ll be taken directly to their registry. ',
     },
     {
       number: 2,
-      heading: 'How does it work?',
+      heading: 'When are gifts shipped?',
       paragraph:
-        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
+        'The Registry will hold your gift(s) and coordinate its delivery to the couple at their request and at a time that suits them — usually after the wedding.',
     },
     {
       number: 3,
-      heading: 'Can we register in person?',
+      heading: 'Can I contribute to a group gift or fund?',
       paragraph:
-        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
+        'Absolutely. Many gifts and funds on The Registry allow group contributions, so friends and family can give together. Whether it’s new bedding or a travel fund, you can contribute any amount that feels right.',
     },
     {
       number: 4,
-      heading: 'Can we register for cash?',
+      heading: 'How do I contribute to a couple’s cash fund?',
       paragraph:
-        'Lorem ipsum dolor sit amet. Qui consectetur ullam eum asperiores odio nam debitis pariatur et repudiandae quos eum fugit distinctio qui dicta optio est maxime.',
+        'Giving to a cash fund is as effortless as choosing a product. When viewing a couple’s registry, simply select the fund and enter the amount you’d like to give. Your contribution goes directly toward the couple’s fund, and you’ll have the chance to include a personal message at checkout. Funds are released when the couple is ready, with every contribution securely managed by The Registry.',
     },
   ];
 
@@ -126,10 +126,10 @@ const Faqs = ({content}) => {
           ))}
         </div>
         <div className="w-full text-center">
-          <Link to="/faq">
+          <Link to="/faq" state={{ activeTab: 'guests' }}>
             <ButtonComponent
-              className="button-cs text-[#1F1D1B] border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 cursor-pointer lg:mt-[4.688vw] w-80 lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:w-[224px] max-[1024px]:h-[44px] max-[1024px]:mt-8"
-              text={faqsBtn}
+              className="button-cs text-[#1F1D1B] max-[1024px]:border-2 border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 cursor-pointer lg:mt-[4.688vw] w-80 lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:w-[224px] max-[1024px]:h-[44px] max-[1024px]:mt-8"
+              text={faqsBtn} 
             />
           </Link>
         </div>

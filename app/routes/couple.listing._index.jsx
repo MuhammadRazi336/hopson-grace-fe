@@ -40,7 +40,7 @@ export default function FindCoupleForm() {
           <div
             className="flex justify-start items-center h-[80vh]"
             style={{
-              backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+              backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
@@ -160,7 +160,7 @@ export default function FindCoupleForm() {
           <div
             className="flex justify-start items-center h-[80vh]"
             style={{
-              backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+              backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
@@ -284,7 +284,7 @@ function CoupleListing({data}) {
         <div
           className="flex justify-start items-center h-[80vh]"
           style={{
-            backgroundImage: " url('/assets/Images/couple-banner-1.png')",
+            backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -356,9 +356,9 @@ function CoupleListing({data}) {
           </div>
         </div>
 
-        <h2 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+        <h2 className="mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
           {/* we found {data.filter(couple => couple.registry).length}  */}
-          Registries
+          registries
         </h2>
 
         <img
@@ -386,11 +386,11 @@ function CoupleListing({data}) {
                 className="w-32 h-32 mx-auto mt-12 rounded-full object-cover"
               /> */}
 
-              <h3 className="text-center prata uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto">
+              <h3 className="text-center prata md:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[35px] max-w-[700px] leading-[44px] lowercase">
                 {(couple.firstName || '') + ' ' + (couple.lastName || '') + ' & ' + (couple.fianceFirstName || '') + ' ' + (couple.fianceLastName || '')}
               </h3>
 
-              <p className="text-center text-lg text-[#1F1D1B]">
+              <p className="text-center text-lg text-[#1F1D1B] uppercase">
                 {couple.createdAt ? new Date(couple.createdAt).toLocaleDateString('en-US', {
                   month: 'long',
                   day: 'numeric',

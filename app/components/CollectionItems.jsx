@@ -221,7 +221,7 @@ const CollectionItems = () => {
         <Link to="/why-the-registry">
         <Button
           text="Learn More"
-          className="button-cs text-[#1F1D1B] cursor-pointer bg-white lg:text-[0.938vw] lg:leading-[0.938vw] border-3 border-[#1F1D1B]  py-[5px] lg:h-[4.583vw] lg:w-[18.75vw] w-[250px] h-[44px] rounded-none max-[768px]:text-lg hover:bg-gray-100 max-[1024px]:mt-[50px] max-[1024px]:mb-[85px]"
+          className="button-cs text-[#1F1D1B] cursor-pointer bg-white lg:text-[0.938vw] lg:leading-[0.938vw] border-3 max-[1024px]:border-2 border-[#1F1D1B]  py-[5px] lg:h-[4.583vw] lg:w-[18.75vw] w-[250px] h-[44px] rounded-none max-[768px]:text-lg hover:bg-gray-100 max-[1024px]:mt-[50px] max-[1024px]:mb-[85px]"
         />
         </Link>
       </div>

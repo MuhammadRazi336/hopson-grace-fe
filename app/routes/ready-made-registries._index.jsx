@@ -86,30 +86,30 @@ const ReadyMade = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[37.5vw] lg:h-[0.417vw]'}
         />
-        <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.979vw] font-normal w-[80%] lg:w-[60%] mx-auto mb-[5.26vw] mt-[1.771vw]">
+        {/* <p className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.979vw] font-normal w-[80%] lg:w-[60%] mx-auto mb-[5.26vw] mt-[1.771vw]">
         From real couples to curated style edits, our ready-made registries are <br/>personal, shoppable, and designed to make choosing easy.
-        </p>
+        </p> */}
       </div>
 
-             <div className='w-full flex flex-row justify-center lg:w-[61.354vw] gap-[3.49vw] mx-auto gap-8'>
+             <div className='w-full flex flex-row justify-center lg:w-[61.354vw] mx-auto gap-6 mt-12'>
          {readyMadeRegistries.length > 0 ? (
                        readyMadeRegistries.map((collection, index) => (
-              <div key={collection.id} className='flex flex-col items-center w-full max-w-4xl'>
+              <div key={collection.id} className='flex flex-col items-center'>
                <div 
-                 className={`rounded-full w-[100px] h-[100px] lg:w-[16.563vw] xl:w-[16.563vw] 2xl:w-[16.563vw] lg:h-[16.563vw] xl:h-[16.563vw] 2xl:h-[16.563vw] cursor-pointer transition-all duration-300 ${
-                   selectedParentCollection?.id === collection.id ? 'ring-4 ring-[#446184] ring-offset-4' : ''
+                 className={`p-6 w-[300px] border-black border-2 cursor-pointer ${
+                   selectedParentCollection?.id === collection.id ? 'bg-[#1F1D1B] text-white' : ''
                  }`}
                  onClick={() => setSelectedParentCollection(selectedParentCollection?.id === collection.id ? null : collection)}
                >
-                 <img 
+                 {/* <img 
                    src={collection.image?.url || '/assets/Images/placeholder.png'} 
                    className='w-full h-full rounded-full object-cover lg:w-[16.563vw] xl:w-[16.563vw] 2xl:w-[16.563vw] lg:h-[16.563vw] xl:h-[16.563vw] 2xl:h-[16.563vw]' 
                    alt={collection.image?.altText || collection.title} 
-                 />
-               </div>
-               <div className='text-center'>
-                 <h2 className='text-2xl lg:text-[1.458vw] mb-[2.292vw] mt-[2.656vw] uppercase lg:leading-[1.458vw] font-medium'>{collection.title}</h2>
-                 <p className='text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-normal max-w-2xl mx-auto'>{collection.description}</p>
+                 /> */}
+                  <div className='text-center'>
+                    <h2 className='text-base lg:text-base m-0 uppercase lg:leading-[1.458vw] tracking-widest font-bold'>{collection.title}</h2>
+                    {/* <p className='text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-normal max-w-2xl mx-auto'>{collection.description}</p> */}
+                  </div>
                </div>
              </div>
            ))
@@ -121,17 +121,17 @@ const ReadyMade = () => {
          )}
             </div>
 
-                <div className="mt-[9.219vw] px-[9.323vw]">                  
+                <div className="mt-[4.95vw] px-[9.323vw]">                  
                   <div className="grid grid-cols-1 lg:gap-[1.25vw] sm:grid-cols-2 lg:grid-cols-4">
                     {filteredSubCollections.map((item) => {
                       const { parentCollection, subCollection } = item;
                       
                       return (
-                        <div key={subCollection.id} className="w-[19.375vw] mb-[5.469vw]">
+                        <div key={subCollection.id} className="mb-[5.469vw]">
                           <div className="">
-                            <img src={subCollection.image?.url || '/assets/Images/placeholder.png'} alt={subCollection.image?.altText || subCollection.title} className='rounded-none' />
+                            <img src={subCollection.image?.url || '/assets/Images/placeholder.png'} alt={subCollection.image?.altText || subCollection.title} className='rounded-none w-full aspect-square object-cover' />
                             <h4 className="text-xl text-[#1F1D1B] lg:mb-[0.573vw] font-medium tracking-[0.5px] mt-[1.667vw] uppercase lg:text-[1.146vw] lg:leading-[1.458vw]">{subCollection.title}</h4>
-                            <p className="text-sm ivyora lg:text-[1.042vw] lg:leading-[1.042vw] text-[#1F1D1B] mb-3 lg:mb-[0.99vw] italic">{subCollection.description?.slice(0, 95)}...</p>
+                            <p className="text-sm ivyora lg:text-[1.042vw] lg:leading-[1.042vw] text-[#1F1D1B] mb-3 lg:mb-[0.99vw] itali tracking-wide">{subCollection.description?.slice(0, 95)}...</p>
                             
                             <div className='flex items-center justify-start mt-3'>
                               <Link to={`/registry/${subCollection.handle}`}>

@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
@@ -20,6 +20,7 @@ import {formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import BackToTop from '~/components/BackToTop';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
@@ -358,10 +359,11 @@ const DreamFund = () => {
     }, 3000);
   }, []);
 
+  const topRef = useRef(null);
   return (
     <section>
       <Header />
-      
+      <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]"></div>
       <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[767px]:pt-[50px]">
         <Heading
           text={
@@ -508,11 +510,7 @@ const DreamFund = () => {
 
             <WhiteThemeButton Text="View more" link="/quick-start-guide" />
 
-                        <button 
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
-              Back to Top
-            </button>
+              <BackToTop topRef={topRef} />
           </div>
         </div>
       </section>

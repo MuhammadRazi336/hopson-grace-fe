@@ -268,7 +268,7 @@ const Home = () => {
         <Link to="/ready-made-registries">
           <ButtonComponent
             text="EXPLORE READY-MADE REGISTRIES"
-            className="button-cs text-black cursor-pointer border-3 w-[224px] h-[44px] lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-black py-[2px] lg:py-[5px] bg-transparent rounded-none mt-11 lg:mt-[3.125vw] hover:bg-gray-100"
+            className="button-cs text-black cursor-pointer border-3 w-[224px] h-[44px] lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-black max-[1024px]:border-2 py-[2px] lg:py-[5px] bg-transparent rounded-none mt-11 lg:mt-[3.125vw] hover:bg-gray-100"
           />
           </Link>
         </div>
@@ -288,7 +288,7 @@ const Home = () => {
           <Link to="/our-brands">
           <ButtonComponent
             text="EXPLORE ALL BRANDS"
-            className="button-cs text-[#1F1D1B] cursor-pointer lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-3 border-[#1F1D1B] py-[2px] w-[224px] h-[44px] lg:py-[5px] bg-transparent rounded-none mt-2 lg:mt-11 hover:bg-gray-200"
+            className="button-cs text-[#1F1D1B] cursor-pointer lg:w-[18.75vw] lg:h-[4.01vw] lg:text-[0.938vw] lg:leading-[0.938vw] border-3 border-[#1F1D1B] max-[1024px]:border-2 py-[2px] w-[224px] h-[44px] lg:py-[5px] bg-transparent rounded-none mt-2 lg:mt-11 hover:bg-gray-200"
           />
           </Link>
         </div>
@@ -313,7 +313,7 @@ const Home = () => {
           <Link to="/inspiration">
             <ButtonComponent
               text="EXPLORE REAL WEDDINGS"
-            className="button-cs text-[#1F1D1B] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.688vw] hover:bg-gray-100"
+            className="button-cs text-[#1F1D1B] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:border-2 border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-4 bg-transparent rounded-none mt-2 lg:mt-[4.688vw] hover:bg-gray-100"
             />
           </Link>
         </div>

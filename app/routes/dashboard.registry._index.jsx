@@ -433,7 +433,7 @@ const index = () => {
 
         <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 lg:-translate-y-[200px] xl:-translate-y-[200px] 2xl:-translate-y-[200px] ">
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px] pr-[40px]">
-            <h1 className="lg:text-[3.2vw] xl:text-[3.2vw] 2xl:text-[3.2vw] lg:leading-[3.7vw] xl:leading-[3.7vw] 2xl:leading-[3.7vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px]">
+            <h1 className="lg:text-[3.2vw] xl:text-[3.2vw] 2xl:text-[3.2vw] lg:leading-[3.7vw] xl:leading-[3.7vw] 2xl:leading-[3.7vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px] lowercase">
               {userGet?.data?.user?.firstName} &{' '}<br />
               {userGet?.data?.user?.fianceFirstName}
             </h1>
@@ -832,7 +832,7 @@ const FundPage = ({data}) => {
           data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
         }`}
       >
-        <Link to="/dashboard/cashfunds">
+        <Link to="/dream-fund">
           <img
             src="/assets/Images/add-cash-placeholder.png"
             alt="Add cash fund placeholder"
