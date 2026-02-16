@@ -198,6 +198,36 @@ function CreateNewCashFund() {
     }
   };
 
+  const handleCroppedImageSave = (blob) => {
+    if (!blob) return;
+    const file = new File([blob], 'photo.jpg', { type: blob.type || 'image/jpeg' });
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(blob));
+    setIsEditPopupOpen(false);
+  };
+
+  const handleDragOverPhoto = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDropPhoto = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      if (file.size > 5 * 1024 * 1024) {
+        setAlertMessage('File size must be less than 5MB');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+        return;
+      }
+      setDroppedFile(file);
+      setIsEditPopupOpen(true);
+    }
+  };
+
   // Show feedback on fetcher.data change and redirect on success
   React.useEffect(() => {
     // Only process when fetcher is idle (submission complete) and we have data
