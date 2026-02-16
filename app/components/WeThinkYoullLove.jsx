@@ -9,7 +9,7 @@ import {formatShopifyPrice} from '~/utils/priceFormatter';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-const WeThinkYoullLove = ({recommendedProducts = [], productLinkPrefix = '/dashboard/addgifts'}) => {
+const WeThinkYoullLove = ({recommendedProducts = [], productLinkPrefix = '/dashboard/addgifts', className}) => {
   // Fallback products if no recommended products are provided
   const fallbackProducts = [
     {
@@ -46,7 +46,7 @@ const WeThinkYoullLove = ({recommendedProducts = [], productLinkPrefix = '/dashb
     : fallbackProducts;
 
   return (
-    <section className="bg-[#FAF9F6] py-[5.26vw] mb-[9.323vw]">
+    <section className={`bg-[#FAF9F6] py-[5.26vw] mb-[9.323vw] ${className}`}>
       <Heading
         text="we think you'll love"
         classes={
@@ -57,8 +57,8 @@ const WeThinkYoullLove = ({recommendedProducts = [], productLinkPrefix = '/dashb
       />
 
       <div className=" relative items-start mt-[5.573vw] max-[1024px]:my-10">
-        <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
-          <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+        <div className="w-[80.6%] mx-auto">
+          <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[32.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
             <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
             <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
               more
@@ -74,31 +74,31 @@ const WeThinkYoullLove = ({recommendedProducts = [], productLinkPrefix = '/dashb
               nextEl: '.swiper-button-next-prod',
               prevEl: '.swiper-button-prev-prod',
             }}
-            className="px-[178px]"
+            className="items-center"
             breakpoints={{
               345: {
                 spaceBetween: 10,
-                centeredSlides: true,
+                
               },
               475: {
                 spaceBetween: 15,
-                centeredSlides: true,
+                
               },
               768: {
                 spaceBetween: 20,
-                centeredSlides: true,
+                
               },
               1024: {
                 spaceBetween: 30,
-                centeredSlides: true,
+                
               },
               1366: {
-                spaceBetween: 39,
-                centeredSlides: true,
+                spaceBetween: 35,
+                
               },
               1600: {
-                spaceBetween: 66,
-                centeredSlides: true,
+                spaceBetween: 40,
+                
               },
             }}
           >
@@ -113,7 +113,7 @@ const WeThinkYoullLove = ({recommendedProducts = [], productLinkPrefix = '/dashb
                     <img 
                       src={firstImage?.url || '/assets/Images/placeholder.png'} 
                       alt={productNode.title || 'Product'} 
-                      className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                      className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none aspect-square object-cover" 
                     />
                     <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       {productNode.title}
@@ -124,7 +124,7 @@ const WeThinkYoullLove = ({recommendedProducts = [], productLinkPrefix = '/dashb
               );
             })}
           </Swiper>
-          <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
+          <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[32.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
             <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
               more
             </span>

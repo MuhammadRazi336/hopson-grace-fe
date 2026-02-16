@@ -80,7 +80,7 @@ const GiftDetail = ({
           </div>
 
           {/* Product Title */}
-          <h1 className="prata lowercase text-2xl lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[1.875vw] font-bold mt-0 mb-[1.146vw]">
+          <h1 className="prata lowercase text-2xl lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[48px] font-bold mt-0 mb-[1.146vw]">
             {productTitle}
           </h1>
 
