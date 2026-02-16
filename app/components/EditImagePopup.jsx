@@ -78,7 +78,7 @@ const removeImageFromStorage = (imageId) => {
   }
 };
 
-export default function EditImagePopup({ isOpen, onClose, onSave }) {
+export default function EditImagePopup({ isOpen, onClose, onSave, initialFile = null, onInitialFileConsumed }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -94,6 +94,14 @@ export default function EditImagePopup({ isOpen, onClose, onSave }) {
       setUploadedImages(storedImages);
     }
   }, [isOpen]);
+
+  // When opened with a dropped/initial file, load it into the cropper
+  useEffect(() => {
+    if (isOpen && initialFile && initialFile.type?.startsWith('image/')) {
+      processImageFile(initialFile);
+      onInitialFileConsumed?.();
+    }
+  }, [isOpen, initialFile]);
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
