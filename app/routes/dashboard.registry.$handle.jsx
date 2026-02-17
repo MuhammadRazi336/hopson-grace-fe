@@ -659,18 +659,18 @@ function ViewForm({state}) {
       <div className="flex flex-col gap-6">
         <div>
           <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">WEDDING DATE</div>
-          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.weddingDate}</div>
+          <div className="text-lg leading-lg mb-[3.542vw] lowercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.weddingDate}</div>
         </div>
         <div>
           <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">WEDDING VENUE</div>
-          <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.venue || '-'}</div>
+          <div className="text-lg leading-lg mb-[3.542vw] lowercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] ">{state.venue || '-'}</div>
         </div>
         <div className="flex flex-row gap-x-4">
           <div>
             <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">
               WEDDING LOCATION (CITY)
             </div>
-            <div className="text-lg leading-lg mb-[3.542vw] uppercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.location || '-'}</div>
+            <div className="text-lg leading-lg mb-[3.542vw] lowercase lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw]">{state.location || '-'}</div>
           </div>
           <div>
             <div className="text-xs tracking-widest mb-[1.25vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.389vw] xl:leading-[1.389vw] 2xl:leading-[1.389vw]">NO. OF GUESTS</div>

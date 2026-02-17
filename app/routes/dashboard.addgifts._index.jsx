@@ -33,6 +33,7 @@ import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import BestsellersSection from '~/components/BestsellersSection';
+import BackToTop from '~/components/BackToTop';
 
 export async function loader({request, context}) {
   try {
@@ -752,6 +753,8 @@ export default function AddGifts() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const topRef = useRef(null);
+
   const loaderData = useLoaderData();
   const { products, collections, user, registry, userData, readyMadeRegistries, bestsellerProducts, recommendedProducts } = loaderData;
   console.log('Raw loaderData received:', loaderData);
@@ -1206,7 +1209,7 @@ export default function AddGifts() {
           </div>
         </div>
       </section>
-
+      <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]"></div>
       <section className="px-[9.896vw]">
         <div className="flex flex-col gap-[2.99vw] md:flex-row pt-10">
           <SidebarFilter
@@ -1374,9 +1377,9 @@ export default function AddGifts() {
                 />
               )}
 
-            {productsToShow > 12 && (
-              <button
-                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+            {/* {productsToShow <= 12 && ( */}
+              {/* <button
+                className="border-b mx-auto cursor-pointer uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]"
                 onClick={() => {
                   setProductsToShow(12);
                   if (productGridRef.current) {
@@ -1388,8 +1391,9 @@ export default function AddGifts() {
                 }}
               >
                 Back to Top
-              </button>
-            )}
+              </button> */}
+              <BackToTop topRef={topRef} className={"mb-0"} />
+           
           </div>
         </div>
       </section>
@@ -1397,44 +1401,45 @@ export default function AddGifts() {
       {selectedSwiperCollectionId ? (
         <></>
       ):(
-        <section className="bg-[#FFFFFF] pt-16 mt-[7.813vw]">
-          <Heading
-            text="ready-made registries"
-            classes={
-              'prata text-[2.5vw] leading-[3.542vw] mb-1 font-normal text-center max-[1024px]:m-0'
-            }
-            image={lineImghead}
-            imageClasses={'max-[1024px]:max-w-[330px] w-[20.521vw] mb-[2.188vw]'}
-          />
+        // <section className="bg-[#FFFFFF] pt-16 mt-[7.813vw]">
+        //   <Heading
+        //     text="ready-made registriesss"
+        //     classes={
+        //       'prata text-[2.5vw] leading-[3.542vw] mb-1 font-normal text-center max-[1024px]:m-0'
+        //     }
+        //     image={lineImghead}
+        //     imageClasses={'max-[1024px]:max-w-[330px] w-[20.521vw] mb-[2.188vw]'}
+        //   />
 
-          <p className="text-center text-[1.354vw] leading-[1.979vw] w-[50vw] max-w-full mx-auto mb-[1.667vw] font-normal text-gray-500">From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.</p>
+        //   <p className="text-center text-[1.354vw] leading-[1.979vw] w-[50vw] max-w-full mx-auto mb-[1.667vw] font-normal text-gray-500">From real couples to curated style edits, our ready-made registries are personal, shoppable, and designed to make choosing easy.</p>
 
-          {/* Always render CustomTab - let it handle the data validation internally */}
-          <CustomTab
-            tabsData={[
-              {
-                label: 'REAL REGISTRIES',
-                value: 1,
-                route: 'realregistries',
-              },
-              {
-                label: 'THEMED REGISTRIES',
-                value: 2,
-                route: 'themedregistries',
-              }
-            ]}
-            featuredRegistryData={readyMadeRegistries}
-            user={user}
-          />
-          <div className="text-center">
-            <Link to="/ready-made-registries">
-              <ButtonComponent
-                text="EXPLORE READY-MADE REGISTRIES"
-                className="button-cs text-[18px] text-black border-3 w-[380px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-[2.083vw]"
-              />
-            </Link>
-          </div>
-        </section>
+        //   {/* Always render CustomTab - let it handle the data validation internally */}
+        //   <CustomTab
+        //     tabsData={[
+        //       {
+        //         label: 'REAL REGISTRIES',
+        //         value: 1,
+        //         route: 'realregistries',
+        //       },
+        //       {
+        //         label: 'THEMED REGISTRIES',
+        //         value: 2,
+        //         route: 'themedregistries',
+        //       }
+        //     ]}
+        //     featuredRegistryData={readyMadeRegistries}
+        //     user={user}
+        //   />
+        //   <div className="text-center">
+        //     <Link to="/ready-made-registries">
+        //       <ButtonComponent
+        //         text="EXPLORE READY-MADE REGISTRIES"
+        //         className="button-cs text-[18px] text-black border-3 w-[380px] border-black py-4 lg:py-[30px] bg-transparent rounded-none mt-[2.083vw]"
+        //       />
+        //     </Link>
+        //   </div>
+        // </section>
+        <></>
       )}
       
       <BestsellersSection
@@ -1445,7 +1450,7 @@ export default function AddGifts() {
             : 'bestsellers'
         }
         buttonText="browse bestsellers"
-        sectionClassName="pt-[9.01vw] my-12 lg:my-[240px] pb-[12.552vw]"
+        sectionClassName=" my-12 lg:my-[240px] pb-[2.552vw]"
         headingClasses="prata text-[2.292vw] leading-[1.875vw] font-normal text-center max-[1024px]:m-0"
         imageClasses={
           selectedSwiperCollectionId
