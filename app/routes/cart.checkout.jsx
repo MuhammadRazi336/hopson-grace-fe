@@ -1,4 +1,4 @@
-﻿import {useState, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import {PayPalScriptProvider, PayPalButtons} from '@paypal/react-paypal-js';
 import {Form, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
