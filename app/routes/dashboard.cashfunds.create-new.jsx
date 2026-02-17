@@ -77,7 +77,6 @@ function CreateNewCashFund() {
   const location = useLocation();
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [cashFundName, setCashFundName] = useState('');
   const [allowFixedAmount] = useState(true);
   const [totalGoal, setTotalGoal] = useState('');
@@ -140,13 +139,13 @@ function CreateNewCashFund() {
     }
   };
 
-  const handleCroppedImageSave = (blob) => {
-    if (!blob) return;
-    const file = new File([blob], 'photo.jpg', { type: blob.type || 'image/jpeg' });
-    setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(blob));
-    setIsEditPopupOpen(false);
-  };
+  // const handleCroppedImageSave = (blob) => {
+  //   if (!blob) return;
+  //   const file = new File([blob], 'photo.jpg', { type: blob.type || 'image/jpeg' });
+  //   setPhotoFile(file);
+  //   setPhotoPreview(URL.createObjectURL(blob));
+  //   setIsEditPopupOpen(false);
+  // };
 
   const handleDragOverPhoto = (e) => {
     e.preventDefault();
