@@ -184,7 +184,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
               </div>
 
               <div className='w-[25%] max-[1024px]:w-full'>
-                <h4 className="text-[0.938vw] leading-[0.938vw] mb-[1.771vw] mt-[0] font-[800] uppercase text-white tracking-[0.08em] hidden lg:block">
+                <h4 className="text-[0.938vw] leading-[0.938vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] uppercase mb-[1.771vw] mt-[0] text-white tracking-[0.08em] lg:block max-[1024px]:mt-[20px]">
                   Follow Us
                 </h4>
                 <nav>
@@ -227,9 +227,9 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 </nav>
 
                 <div>
-                <h3 className='prata lg:hidden max-[1024px]:visible max-[1024px]:mt-[44px] text-[16px] max-[1024px]:text-[16px] max-[1024px]:leading-[20px]'>Refer a friend for exclusive discounts & special offers</h3>
-                <p className='text-[12px] mb-[36px] leading-[36px] font-600 hidden max-[1024px]:block'>GET STARTED</p>
-                <h4 className="text-[0.938vw] leading-[1.25vw] mb-[1.615vw] mt-[2.76vw] max-[1024px]:mt-[0px] max-[1024px]:leading-[24px] max-[1024px]:text-[10px] max-[1024px]:mb-[4px] font-[800] uppercase text-white tracking-[0.08em]">
+                <h3 className='prata hidden max-[1024px]:visible max-[1024px]:mt-[44px] text-[16px] max-[1024px]:text-[16px] max-[1024px]:leading-[20px]'>Refer a friend for exclusive discounts & special offers</h3>
+                <p className='text-[12px] mb-[36px] leading-[36px] font-600 hidden'>GET STARTED</p>
+                <h4 className="text-[0.938vw] leading-[1.25vw] mb-[1.615vw] mt-[2.76vw] max-[1024px]:leading-[24px] max-[1024px]:text-[10px] max-[1024px]:mb-[4px] font-[800] uppercase text-white tracking-[0.08em]">
                   Stay in the Loop with Weekly Inspo
                 </h4>
                 <nav>

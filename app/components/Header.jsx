@@ -1885,7 +1885,7 @@ export function Header() {
       )}
 
       <div
-        className={`hidden max-[768px]:block bg-white fixed top-0 left-0 w-full h-full ease-in-out duration-[700ms] transition-all overflow-auto z-30 ${
+        className={`hidden max-[768px]:block bg-white fixed top-0 left-0 w-full h-full ease-in-out duration-[700ms] transition-all overflow-auto z-99 ${
           isMenuOpen ? 'left-0' : 'left-[-800px]'
         }`}
       >
