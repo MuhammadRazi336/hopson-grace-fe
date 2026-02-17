@@ -98,6 +98,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
   const [cropperSize, setCropperSize] = useState({ width: 600, height: 230 });
   const [minZoom, setMinZoom] = useState(1);
   const [cropBoundaries, setCropBoundaries] = useState({ top: 0, bottom: 0 });
+  const bannerAspectRatio = 3 / 1; // 3:1 aspect ratio for wide banner images
 
   // Load stored images when component mounts
   useEffect(() => {
@@ -120,10 +121,10 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
         const height = Math.max(10, Math.round(rect.height));
         setCropperSize({ width, height });
 
-        // Calculate crop area boundaries for 16:9 aspect ratio
-        const cropHeight = width * (9 / 16); // fit crop to full width, then compute height
+        // Calculate crop area boundaries for banner aspect ratio (3:1)
+        const cropHeight = width / bannerAspectRatio; // fit crop to full width, then compute height
         const topMargin = (height - cropHeight) / 2;
-        const topPercent = (topMargin / height) * 100;
+        const topPercent = Math.max(0, (topMargin / height) * 100);
         const bottomPercent = topPercent;
         setCropBoundaries({ top: topPercent, bottom: bottomPercent });
       }
@@ -132,14 +133,24 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
     updateSize();
     window.addEventListener('resize', updateSize);
     return () => window.removeEventListener('resize', updateSize);
-  }, [isOpen, imageSrc]);
+  }, [isOpen, imageSrc, bannerAspectRatio]);
 
   // Ensure the image initially covers the crop area — compute minZoom from media size
   const onMediaLoaded = useCallback((mediaSize) => {
     try {
-      const widthRatio = cropperSize.width / mediaSize.width;
-      const heightRatio = cropperSize.height / mediaSize.height;
+      if (!cropperSize.width || !cropperSize.height) return;
+      
+      // Calculate the crop area dimensions based on banner aspect ratio (3:1)
+      // For banner images, the crop area is wider than tall
+      const cropWidth = cropperSize.width;
+      const cropHeight = cropWidth / bannerAspectRatio;
+      
+      // Calculate minimum zoom to cover the crop area (not the container)
+      // The image needs to cover both width and height of the crop area
+      const widthRatio = cropWidth / mediaSize.width;
+      const heightRatio = cropHeight / mediaSize.height;
       const requiredMinZoom = Math.max(widthRatio, heightRatio, 1);
+      
       setMinZoom(requiredMinZoom);
       setZoom((z) => (z < requiredMinZoom ? requiredMinZoom : z));
       // center the crop
@@ -147,7 +158,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
     } catch (err) {
       console.error('Error computing min zoom:', err);
     }
-  }, [cropperSize]);
+  }, [cropperSize, bannerAspectRatio]);
 
   const processImageFile = (file) => {
     if (file && file.type.startsWith('image/')) {
@@ -196,7 +207,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
 
   const handleSave = async () => {
     if (!imageSrc || !croppedAreaPixels) return;
-    const croppedBlob = await getCroppedImg(imageSrc, crop, zoom, 16/9, croppedAreaPixels);
+    const croppedBlob = await getCroppedImg(imageSrc, crop, zoom, bannerAspectRatio, croppedAreaPixels);
     if (onSave) onSave(croppedBlob);
     onClose();
   };
@@ -249,15 +260,18 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
                       image={imageSrc}
                       crop={crop}
                       zoom={zoom}
-                      aspect={16 / 9}
+                      aspect={bannerAspectRatio}
                       onCropChange={setCrop}
                       onZoomChange={setZoom}
                       onCropComplete={onCropComplete}
                       onMediaLoaded={onMediaLoaded}
                       showGrid={false}
-                      cropSize={cropperSize}
+                      cropSize={{
+                        width: cropperSize.width,
+                        height: Math.round(cropperSize.width / bannerAspectRatio),
+                      }}
                       minZoom={minZoom}
-                      maxZoom={3}
+                      maxZoom={5}
                       restrictPosition={true}
                     />
                     {/* Dark overlay over top area (outside crop zone) */}

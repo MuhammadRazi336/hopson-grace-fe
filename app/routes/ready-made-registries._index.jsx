@@ -127,9 +127,9 @@ const ReadyMade = () => {
                       const { parentCollection, subCollection } = item;
                       
                       return (
-                        <div key={subCollection.id} className="mb-[5.469vw]">
+                        <div key={subCollection.id} className="w-[19.375vw] mb-[5.469vw] max-[767px]:w-full">
                           <div className="">
-                            <img src={subCollection.image?.url || '/assets/Images/placeholder.png'} alt={subCollection.image?.altText || subCollection.title} className='rounded-none w-full aspect-square object-cover' />
+                            <img src={subCollection.image?.url || '/assets/Images/placeholder.png'} alt={subCollection.image?.altText || subCollection.title} className='rounded-none h-[auto] min-[768px]:h-[20.205vw] max-[767px]:h-[70vw] w-full object-cover' />
                             <h4 className="text-xl text-[#1F1D1B] lg:mb-[0.573vw] font-medium tracking-[0.5px] mt-[1.667vw] uppercase lg:text-[1.146vw] lg:leading-[1.458vw]">{subCollection.title}</h4>
                             <p className="text-sm ivyora lg:text-[1.042vw] lg:leading-[1.042vw] text-[#1F1D1B] mb-3 lg:mb-[0.99vw] itali tracking-wide">{subCollection.description?.slice(0, 95)}...</p>
                             
