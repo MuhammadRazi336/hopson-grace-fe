@@ -1727,17 +1727,16 @@ export default function CoupleProfile() {
                 alt="No Products"
                 className="w-36 h-36 mx-auto mb-6 opacity-50"
               />
-              <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
+              <h3 className="text-[22px] font-semibold text-[#1F1D1B] mb-4">
                 No Products Found
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-[#1F1D1B] mb-6">
                 This registry doesn't have any products or cash funds added yet.
                 Check back later or contact the couple for more information.
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-gray-500">
-                  <strong>Tip:</strong> You can still contribute to their
-                  journey using the "Gift Any Amount" section below.
+                <p className="text-sm text-[#1F1D1B]">
+                  <strong>Tip:</strong> Add gifts to get your registry started.
                 </p>
               </div>
             </div>
@@ -1828,7 +1827,7 @@ export default function CoupleProfile() {
 
       {isPopupOpen && selectedGiftData && hasProducts && registryId && (
         <div
-          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
+          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-auto"
           onClick={closePopup}
         >
           <div

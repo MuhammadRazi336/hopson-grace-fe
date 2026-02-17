@@ -1031,7 +1031,7 @@ export function Header() {
                             <div
                               key={notification.id}
                               className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                notification.status === 'unread' ? 'bg-[#c522481e]' : ''
+                                notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
                               }`}
                               onClick={() => {
                                 if (notification.status === 'unread') {
@@ -1041,7 +1041,7 @@ export function Header() {
                             >
                               <div className="flex items-start space-x-3">
                                 <div className={`w-2 h-2 rounded-full mt-2 ${
-                                  notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
+                                  notification.status === 'unread' ? 'bg-[#C52248]' : 'bg-gray-300'
                                 }`}></div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium text-gray-900">
@@ -1556,7 +1556,7 @@ export function Header() {
                               <div
                                 key={notification.id}
                                 className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                  notification.status === 'unread' ? 'bg-[#c522481e]' : ''
+                                  notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
                                 }`}
                                 onClick={() => {
                                   if (notification.status === 'unread') {
@@ -1566,7 +1566,7 @@ export function Header() {
                               >
                                 <div className="flex items-start space-x-3">
                                   <div className={`w-2 h-2 rounded-full mt-2 ${
-                                    notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
+                                    notification.status === 'unread' ? 'bg-[#C52248]' : 'bg-gray-300'
                                   }`}></div>
                                   <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900">

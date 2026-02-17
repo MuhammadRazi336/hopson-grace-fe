@@ -15,6 +15,8 @@ import nextitem from '/assets/Images/next.png';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import EditImagePopup from '~/components/EditImagePopup';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export async function loader(args) {
   const {context} = args;
@@ -75,6 +77,7 @@ function CreateNewCashFund() {
   const location = useLocation();
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [cashFundName, setCashFundName] = useState('');
   const [allowFixedAmount] = useState(true);
   const [totalGoal, setTotalGoal] = useState('');
@@ -90,19 +93,50 @@ function CreateNewCashFund() {
   const fetcher = useFetcher();
   const formRef = useRef(null);
 
+  // Handle cropped image save from popup
+  const handleCroppedImageSave = async (croppedBlob) => {
+    if (!croppedBlob) {
+      toast.warn('No image to upload');
+      return;
+    }
+
+    try {
+      // Create a file object from the blob
+      const file = new File([croppedBlob], 'cashfund-image.jpg', { 
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      });
+      
+      setPhotoFile(file);
+      setPhotoPreview(URL.createObjectURL(file));
+      toast.success('Image selected successfully!');
+    } catch (err) {
+      console.error('Error processing cropped image:', err);
+      toast.error('Error processing image');
+    } finally {
+      setIsEditPopupOpen(false);
+    }
+  };
+
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        alert('Only image files are allowed');
+        toast.error('Only image files are allowed');
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        toast.error('File size must be less than 5MB');
         return;
       }
-      setPhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
+      // Open the cropping popup instead of directly setting the preview
+      const fileReader = new FileReader();
+      fileReader.onload = (e) => {
+        // We'll pass the file data to the popup
+        setPhotoFile(file);
+        setIsEditPopupOpen(true);
+      };
+      fileReader.readAsDataURL(file);
     }
   };
 
@@ -399,7 +433,7 @@ function CreateNewCashFund() {
                           id="totalGoal"
                           name="amount"
                           value={totalGoal}
-                          className="bg-white w-full !m-0 p-4 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0"
+                          className="bg-white w-full !m-0 p-4 text-lg h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0 placeholder:normal-case placeholder:font-normal"
                           placeholder="Total Goal*"
                           onChange={(e) => setTotalGoal(e.target.value)}
                         />
@@ -655,6 +689,27 @@ function CreateNewCashFund() {
       </section>
 
       <Footer />
+      
+      {/* Image Edit Popup */}
+      <EditImagePopup
+        isOpen={isEditPopupOpen}
+        onClose={() => setIsEditPopupOpen(false)}
+        onSave={handleCroppedImageSave}
+      />
+      
+      {/* Toast Container */}
+      <ToastContainer 
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       
       <style jsx>{`
         @keyframes fadeInOut {

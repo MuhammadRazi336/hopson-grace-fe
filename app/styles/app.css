@@ -1514,3 +1514,24 @@ html, body { height: 100%; margin: 0; }
 [id^='zoid-paypal-buttons'] {
   min-width: 400px !important;
 }
+.toastBody {
+  font-family: " bastardogrotesk" !important;
+}
+.toastProgress{
+  background: #446184 !important;
+  border-radius: 0 !important;
+}
+
+/* Background track behind progress */
+.Toastify__progress-bar--bg {
+  background: #dbe4ec !important; /* lighter shade of #446184 */
+  border-radius: 0 !important;
+}
+
+.toastBody svg {
+  fill: #446184 !important;
+}
+
+.Toastify__toast {
+  border-radius: 0 !important;
+}

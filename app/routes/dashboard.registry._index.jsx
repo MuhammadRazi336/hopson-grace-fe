@@ -94,6 +94,7 @@ export async function loader({request, context}) {
   const products = productsResult || {nodes: []};
   const productNodes = Array.isArray(products.nodes) ? products.nodes : [];
 
+
   if (res?.data?.length && productNodes.length > 0) {
     mergedArray = res.data.map((item1) => {
       const product = productNodes.find(
@@ -696,6 +697,7 @@ const ProductPage = ({data}) => {
       >
         {data.length > 0
           ? data.map((product) => {
+            console.log('Product:', product);
               // Use priceV2 from Shopify, fallback to backend amount
               const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
               const price =
@@ -735,14 +737,16 @@ const ProductPage = ({data}) => {
                 >
                   <div className="flex flex-col justify-between">
                     <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                      <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
                       <img
                         src={
                           product.images?.edges?.[0]?.node?.url ||
                           '/assets/Images/placeholder.png'
                         }
                         alt={product.title || 'Product'}
-                        className="w-full h-full object-cover mb-4"
+                        className="w-full h-full aspect-square object-cover mb-4"
                       />
+                      </Link>
 
                       {product.isGroupGift && (
                         <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
@@ -752,7 +756,7 @@ const ProductPage = ({data}) => {
                         </div>
                       )}
                     </div>
-
+                    <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
                     <h2
                       className={`text-[22px] uppercase m-0 font-semibold ${
                         isFullyGifted
@@ -762,7 +766,7 @@ const ProductPage = ({data}) => {
                     >
                       {product.title || 'No Name'}
                     </h2>
-
+                    </Link>
                     <div className="flex justify-between items-center mb-8">
                       <p className="text-2xl font-normal ">
                         {formatPrice(price?.amount || product.amount || 0)}
@@ -879,6 +883,8 @@ const FundPage = ({data}) => {
               const isFullyGifted = remainingAmount === 0;
               const isAnyAmount = fund.cashFund?.isAnyAmount || false;
 
+              console.log("fund", fund);
+
               return (
                 <div
                   key={fund.productId || Math.random()}
@@ -898,9 +904,8 @@ const FundPage = ({data}) => {
                           '/assets/Images/placeholder.png'
                         }
                         alt={fund.cashFund?.name || 'Cash Fund'}
-                        className="w-full h-full object-cover mb-4"
+                        className="w-full h-full aspect-square object-cover mb-4"
                       />
-
                       <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
                         <h2 className="prata text-black text-sm text-center font-bold mt-1">
                           cash <br /> fund
