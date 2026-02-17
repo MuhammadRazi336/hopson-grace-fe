@@ -1,18 +1,19 @@
 import {json} from '@shopify/remix-oxygen';
+import {getPayPalAccessToken, capturePayPalOrder} from '~/lib/paypal';
 
-// Action for step 2: Guest checkout
+// Action for step 2: Guest checkout — capture PayPal on server, then forward to API for order persistence
 export async function action({request, context}) {
   try {
     const formData = await request.formData();
-    const paymentIntentId = formData.get('paymentIntentId')?.trim();
-    
-    if (!paymentIntentId) {
+    const paypalOrderId = formData.get('paypalOrderId')?.trim();
+
+    if (!paypalOrderId || paypalOrderId.length < 10) {
       return json(
-        { error: 'Payment intent ID is required' },
+        { error: 'PayPal order ID is required' },
         { status: 400 }
       );
     }
-    
+
     // Get data from session
     const lineItems = JSON.parse(context.session.get('lineItems') || '[]');
     const message = context.session.get('message') || '';
@@ -20,19 +21,10 @@ export async function action({request, context}) {
     const lastName = context.session.get('lastName') || '';
     const email = context.session.get('email') || '';
     const registryId = context.session.get('registryId') || '';
-    
-    console.log('Session data:', {
-      lineItemsLength: lineItems.length,
-      firstName,
-      lastName,
-      email,
-      registryId,
-      message
-    });
-    
+
     if (!lineItems.length || !firstName || !lastName || !email || !registryId) {
       return json(
-        { 
+        {
           error: 'Missing required checkout data',
           details: {
             lineItemsLength: lineItems.length,
@@ -45,112 +37,83 @@ export async function action({request, context}) {
         { status: 400 }
       );
     }
-    
-    // Step 2: Guest checkout
+
+    const clientId =
+      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH';
+    const clientSecret =
+      context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET || 'EB65ot5LSOOHnP8pDYqsXf9xdrXKAa8d0oVRoVf5R0TEvhmS-mJwcjjkNMRG7gz6qLKSFLf5tMrlzjbb';
+
+    if (!clientId || !clientSecret) {
+      return json(
+        {
+          error: 'PayPal is not configured. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET on the server.'
+        },
+        { status: 500 }
+      );
+    }
+
+    // Capture PayPal order on server (credentials never sent to browser)
+    try {
+      const accessToken = await getPayPalAccessToken({ clientId, clientSecret });
+      await capturePayPalOrder(accessToken, paypalOrderId);
+    } catch (paypalErr) {
+      console.error('PayPal capture error:', paypalErr);
+      return json(
+        { error: paypalErr.message || 'PayPal capture failed' },
+        { status: 502 }
+      );
+    }
+
+    // Use the same per-registry message key used on the message step
+    const messageKey = registryId ? `message_${registryId}` : 'message';
+    const messageForRegistry = context.session.get(messageKey) || message || '';
+
     const guestCheckoutPayload = {
       registryId: Number(registryId),
       email: email.trim(),
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      lineItems: lineItems,
-      message: message.trim(),
-      paymentIntentId: paymentIntentId.trim()
+      lineItems,
+      message: messageForRegistry.trim(),
+      paypalOrderId: paypalOrderId.trim()
     };
-    
-    // Additional validation
-    if (!guestCheckoutPayload.registryId || guestCheckoutPayload.registryId <= 0) {
-      throw new Error('Invalid registry ID');
-    }
-    
-    if (!guestCheckoutPayload.email || !guestCheckoutPayload.email.includes('@')) {
-      throw new Error('Invalid email format');
-    }
-    
-    if (!guestCheckoutPayload.paymentIntentId || guestCheckoutPayload.paymentIntentId.length < 10) {
-      throw new Error('Invalid payment intent ID');
-    }
-    
-    console.log('Guest checkout payload:', guestCheckoutPayload);
-    console.log('Payload validation:', {
-      registryId: typeof guestCheckoutPayload.registryId,
-      email: typeof guestCheckoutPayload.email,
-      firstName: typeof guestCheckoutPayload.firstName,
-      lastName: typeof guestCheckoutPayload.lastName,
-      lineItemsLength: guestCheckoutPayload.lineItems?.length,
-      message: typeof guestCheckoutPayload.message,
-      paymentIntentId: typeof guestCheckoutPayload.paymentIntentId
-    });
-    
-    // Log line items structure for debugging
-    console.log('Line items details:', guestCheckoutPayload.lineItems.map((item, index) => ({
-      index,
-      id: item.id,
-      productId: item.productId,
-      price: item.price,
-      quantity: item.quantity,
-      title: item.title,
-      isCashFund: item.isCashFund,
-      amount: item.amount,
-      registryProductId: item.registryProductId
-    })));
-    
-    // Get API base URL from context
-    const apiBaseUrl = 'https://dev-hopsongrace.codup.io';
-    
+
+    // Forward to external API for order persistence (must accept paypalOrderId)
     let guestCheckoutResponse;
     try {
-      // Try using context.ClientPost first (like other transaction calls)
-      console.log('Trying context.ClientPost method...');
-      guestCheckoutResponse = await context.ClientPost(
-        guestCheckoutPayload,
-        'transactions/guest-checkout',
-        context,
-      );
-      console.log('Guest checkout response (ClientPost):', guestCheckoutResponse);
-    } catch (clientPostError) {
-      console.error('ClientPost failed, trying direct fetch:', clientPostError);
-      
-      // Fallback to direct fetch
-      try {
-        const response = await fetch(`${apiBaseUrl}/api/transactions/guest-checkout`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+      const baseUrl = (context?.env?.API_BASE_URL || process.env.API_BASE_URL || 'https://dev-hopsongrace.codup.io').replace(/\/$/, '');
+      const response = await fetch(`${baseUrl}/api/transactions/guest-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(guestCheckoutPayload),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('External guest-checkout failed:', response.status, errText);
+        return json(
+          {
+            error: 'Payment captured but order completion failed. Contact support with your PayPal order ID.',
+            details: errText
           },
-          body: JSON.stringify(guestCheckoutPayload),
-        });
-        
-        if (!response.ok) {
-          // Try to get error details from the response
-          let errorDetails;
-          try {
-            errorDetails = await response.json();
-          } catch (e) {
-            errorDetails = await response.text();
-          }
-          console.error('API Error Response:', {
-            status: response.status,
-            statusText: response.statusText,
-            headers: Object.fromEntries(response.headers.entries()),
-            body: errorDetails
-          });
-          throw new Error(`HTTP error! status: ${response.status}, details: ${JSON.stringify(errorDetails)}`);
-        }
-        
-        guestCheckoutResponse = await response.json();
-        console.log('Guest checkout response (fetch):', guestCheckoutResponse);
-      } catch (fetchError) {
-        console.error('Both ClientPost and fetch failed:', {
-          clientPostError: clientPostError.message,
-          fetchError: fetchError.message
-        });
-        throw new Error(`API call failed: ${fetchError.message || 'Unknown API error'}`);
+          { status: 502 }
+        );
       }
+
+      guestCheckoutResponse = await response.json();
+    } catch (forwardErr) {
+      console.error('Forward to external API error:', forwardErr);
+      return json(
+        {
+          error: 'Payment captured but order completion failed. Contact support with your PayPal order ID.'
+        },
+        { status: 502 }
+      );
     }
-    
+
     if (guestCheckoutResponse?.data?.checkoutNumber) {
       // Clear session data after successful checkout
-      context.session.set('paymentIntentId', '');
+      context.session.set('paypalOrderId', '');
       context.session.set('lineItems', '');
       context.session.set('message', '');
       context.session.set('firstName', '');
@@ -163,7 +126,7 @@ export async function action({request, context}) {
         {
           success: true,
           checkoutNumber: guestCheckoutResponse.data.checkoutNumber,
-          paymentIntentId: guestCheckoutResponse.data.paymentIntentId,
+          paypalOrderId: guestCheckoutResponse.data.paypalOrderId || paypalOrderId,
           greetingDetails: guestCheckoutResponse.data.greetingDetails
         },
         {

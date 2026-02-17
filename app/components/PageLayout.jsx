@@ -15,7 +15,7 @@ export function PageLayout({
 }) {
   return (
     <Aside.Provider>
-      <ToastContainer position="top-right" progressClassName="toastProgress"  bodyClassName="toastBody" />
+      <ToastContainer position="top-right" />
       <main>{children}</main>
       {/* Live chat - Fixed position on bottom right throughout the site */}
       <div className="fixed bottom-0 right-0 z-[1000]">

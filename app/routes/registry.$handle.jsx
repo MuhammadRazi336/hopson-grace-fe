@@ -375,7 +375,7 @@ const Registry = () => {
             setCheckedCollectionIds={setCheckedCollectionIds}
           />
                      <div 
-                       className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pt-0 p-4 relative z-0"
+                       className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-36 pt-0 p-4 relative z-0"
                        ref={productGridRef}
                      >
              {filteredProducts.slice(0, productsToShow).map((product, index) => {

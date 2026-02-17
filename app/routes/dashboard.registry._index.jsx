@@ -94,7 +94,6 @@ export async function loader({request, context}) {
   const products = productsResult || {nodes: []};
   const productNodes = Array.isArray(products.nodes) ? products.nodes : [];
 
-
   if (res?.data?.length && productNodes.length > 0) {
     mergedArray = res.data.map((item1) => {
       const product = productNodes.find(
@@ -394,13 +393,15 @@ const index = () => {
       />
       <div className="text-center pt-[4.115vw] px-[3.281vw] mx-auto font-sans max-[1024px]:pt-[50px] max-[1024px]:px-[20px]">
         <div className="relative">
-          <img
-            src={backgroundImage}
-            alt=" "
-            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] object-cover bg-[#446184]"
-          />
           <div
-            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] height[4vw]"
+            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] bg-[#446184] bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+            }}
+          >
+          </div>
+          <div
+            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] h-[4vw]"
             onClick={() =>
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
@@ -519,11 +520,17 @@ const index = () => {
                 className="max-w-[16.219vw] h-auto ml-auto max-[1024px]:mb-[50px]"
               />
               <div className="uppercase text-right ">
+                {eventGet?.data?.location && (
                 <p className="text-lg my-1">{eventGet?.data?.location}</p>
-                <p className="text-lg my-1">
-                  {eventGet?.data?.province}, {eventGet?.data?.city}
-                </p>
-                <p className="text-lg my-1">{eventGet?.data?.weddingTime}</p>
+                )}
+                {eventGet?.data?.province && (
+                  <p className="text-lg my-1">
+                    {eventGet?.data?.province}{eventGet?.data?.city && ', '} {eventGet?.data?.city}
+                  </p>
+                )}
+                {eventGet?.data?.weddingTime && (
+                  <p className="text-lg my-1">{eventGet?.data?.weddingTime}</p>
+                )}
               </div>
             </div>
           </div>
@@ -689,7 +696,6 @@ const ProductPage = ({data}) => {
       >
         {data.length > 0
           ? data.map((product) => {
-            console.log('Product:', product);
               // Use priceV2 from Shopify, fallback to backend amount
               const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
               const price =
@@ -729,16 +735,14 @@ const ProductPage = ({data}) => {
                 >
                   <div className="flex flex-col justify-between">
                     <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
-                      <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
                       <img
                         src={
                           product.images?.edges?.[0]?.node?.url ||
                           '/assets/Images/placeholder.png'
                         }
                         alt={product.title || 'Product'}
-                        className="w-full h-full aspect-square object-cover mb-4"
+                        className="w-full h-full object-cover mb-4"
                       />
-                      </Link>
 
                       {product.isGroupGift && (
                         <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
@@ -748,7 +752,7 @@ const ProductPage = ({data}) => {
                         </div>
                       )}
                     </div>
-                    <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
+
                     <h2
                       className={`text-[22px] uppercase m-0 font-semibold ${
                         isFullyGifted
@@ -758,7 +762,7 @@ const ProductPage = ({data}) => {
                     >
                       {product.title || 'No Name'}
                     </h2>
-                    </Link>
+
                     <div className="flex justify-between items-center mb-8">
                       <p className="text-2xl font-normal ">
                         {formatPrice(price?.amount || product.amount || 0)}
@@ -875,8 +879,6 @@ const FundPage = ({data}) => {
               const isFullyGifted = remainingAmount === 0;
               const isAnyAmount = fund.cashFund?.isAnyAmount || false;
 
-              console.log("fund", fund);
-
               return (
                 <div
                   key={fund.productId || Math.random()}
@@ -896,8 +898,9 @@ const FundPage = ({data}) => {
                           '/assets/Images/placeholder.png'
                         }
                         alt={fund.cashFund?.name || 'Cash Fund'}
-                        className="w-full h-full aspect-square object-cover mb-4"
+                        className="w-full h-full object-cover mb-4"
                       />
+
                       <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
                         <h2 className="prata text-black text-sm text-center font-bold mt-1">
                           cash <br /> fund

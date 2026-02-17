@@ -85,7 +85,7 @@ const TermsConditions = () => {
           <ul className="text-1xl lg:text-2xl font-normal list-disc pl-8">
             <li>
               Gift purchases are processed securely via our payment provider
-              Stripe.
+              PayPal.
             </li>
             <li>
               Registrant purchases are processed securely via Shopify Payments.

@@ -37,7 +37,7 @@ export default function FindCoupleForm() {
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
   };
 
   return (
@@ -165,7 +165,7 @@ export function FindCoupleFormBanner() {
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
   };
 
   return (
@@ -263,7 +263,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
   };
 
   return (

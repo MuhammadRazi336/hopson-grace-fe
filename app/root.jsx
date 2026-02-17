@@ -23,14 +23,8 @@ import {requireAuth} from '~/utils/auth-guard.js';
 import {getToast} from 'remix-toast';
 import {ToastContainer, toast as notify} from 'react-toastify';
 import {useEffect} from 'react';
-import {Elements} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
 import GuidedVideo from '~/components/GuidedVideo';
 import {Preloader} from '~/components/Preloader';
-
-const stripePromise = loadStripe(
-  'pk_test_51RHKe6ELfhE2pt9mxrrxK7hhAclxCvksadMtIQCvxowOQADlw5jCFRSoj1tq7JNEVqqIE3uThE9P6K0DTQ6X3Pam006Cn180x4',
-);
 
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
@@ -357,9 +351,7 @@ export function Layout({children}) {
             shop={data.shop}
             consent={data.consent}
           >
-            <Elements stripe={stripePromise}>
-              <PageLayout {...data}>{children}</PageLayout>
-            </Elements>
+            <PageLayout {...data}>{children}</PageLayout>
           </Analytics.Provider>
         ) : (
           <div>

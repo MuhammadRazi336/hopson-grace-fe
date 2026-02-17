@@ -204,13 +204,13 @@ function SidebarFilter({
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm">
-          {parentCollection.map((col) => (
-              <li key={col.id} className='mb-[1.69vw]'>
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+          <ul className="space-y-2 text-[16px]">
+            {parentCollection.map((col) => (
+              <li key={col.id} className='flex items-center'>
+                <label>
                   <input
                     type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                    className="mr-2 lg:mr-[0.885vw] xl:mr-[0.885vw] 2xl:mr-[0.885vw] lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] lg:h-[1.25vw] xl:h-[1.25vw] 2xl:h-[1.25vw]"
                     checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
@@ -272,13 +272,13 @@ function SidebarFilter({
           </span>
         </h2>
         {openSections.styles && (
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-[16px]">
             {subCollection.map((col) => (
-              <li key={col.id} className='mb-[1.69vw]'>
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+              <li key={col.id} className='flex items-center'>
+                <label>
                   <input
                     type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                    className="mr-2 lg:mr-[0.885vw] xl:mr-[0.885vw] 2xl:mr-[0.885vw] lg:w-[1.25vw] xl:w-[1.25vw] 2xl:w-[1.25vw] lg:h-[1.25vw] xl:h-[1.25vw] 2xl:h-[1.25vw]"
                     checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />

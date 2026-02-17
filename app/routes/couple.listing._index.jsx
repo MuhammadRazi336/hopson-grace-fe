@@ -1,4 +1,4 @@
-import {useCallback, useRef, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link, useSearchParams} from '@remix-run/react';
 import Faqs from '~/components/Faqs';
@@ -269,9 +269,6 @@ function CoupleListing({data}) {
   const [validationError, setValidationError] = useState('');
   const navigate = useNavigate();
 
-const resultsRef = useRef(null);
-
-
   const handleSearch = (e) => {
     e.preventDefault();
     if (!firstName.trim() && !fianceFirstName.trim()) {
@@ -279,7 +276,7 @@ const resultsRef = useRef(null);
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
   };
   return (
     <div className="">
@@ -359,7 +356,7 @@ const resultsRef = useRef(null);
           </div>
         </div>
 
-        <h2 id='results' ref={resultsRef} className="mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 scroll-mt-[60px]">
+        <h2 className="mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
           {/* we found {data.filter(couple => couple.registry).length}  */}
           registries
         </h2>

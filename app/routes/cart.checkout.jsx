@@ -1,27 +1,29 @@
-﻿import {useState, useEffect} from 'react';
-import {Elements} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
+import {useState, useEffect} from 'react';
+import {PayPalScriptProvider, PayPalButtons} from '@paypal/react-paypal-js';
 import {Form, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
-import {useStripe, useElements, CardElement} from '@stripe/react-stripe-js';
+import {getPayPalAccessToken, createPayPalOrder} from '~/lib/paypal';
 import {CoupleProfileViewHeader} from './couple.test._index';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {Footer} from '~/components/Footer';
-import ButtonComponent from '~/components/Button';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import ModalPortal from '~/components/ModalPortal';
+import billingAddressOptions from '~/data/billing-address-options.json';
 
 export async function loader({context, request}) {
   try {
-    const message = context.session.get('message') || '';
-    const couplesName = context.session.get('couplesName') || '';
-
     // Get email and registryId from URL params or try to get from session
     const url = new URL(request.url);
     const email = url.searchParams.get('email') || '';
     const registryId = url.searchParams.get('registryId') || '';
+
+    // Use per-registry session keys to match how message was saved
+    const messageKey = registryId ? `message_${registryId}` : 'message';
+    const couplesNameKey = registryId ? `couplesName_${registryId}` : 'couplesName';
+    const message = context.session.get(messageKey) || '';
+    const couplesName = context.session.get(couplesNameKey) || '';
 
     const registryApi = await context.ClientGet(
       `registries/${registryId}`,
@@ -30,8 +32,9 @@ export async function loader({context, request}) {
     console.log('registryApi', registryApi);
 
     let productData = [];
+    let cashFundData = [];
 
-    const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+    const apiBaseUrl = context.env?.API_BASE_URL || process.env.API_BASE_URL;
 
     // If we have email and registryId, fetch cart and product data
     if (email && registryId) {
@@ -64,34 +67,58 @@ export async function loader({context, request}) {
             );
             productData = products?.nodes || [];
           }
+
+          // Fetch cash fund data from registry API
+          try {
+            const cashRes = await context.ClientGet(
+              `registryProducts/${registryId}?type=cash`,
+              context,
+            );
+            if (cashRes?.data && Array.isArray(cashRes.data)) {
+              cashFundData = cashRes.data.map((item) => ({
+                ...item,
+                isCashFund: true,
+                productId: item.productId,
+              }));
+            }
+          } catch (cashError) {
+            console.error('Error fetching cash fund data:', cashError);
+          }
         }
       } catch (error) {
         console.error('Error fetching cart or product data:', error);
       }
     }
 
+    // Only public client ID is exposed to the browser; PAYPAL_CLIENT_SECRET stays server-only
     return json({
       message,
       couplesName,
       productData,
+      cashFundData,
       registryApi,
+      registryId,
+      email,
       apiBaseUrl:
         'https://dev-hopsongrace.codup.io',
-      stripePublishableKey: context.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
     });
   } catch {
     return json({
       message: '',
       couplesName: '',
       productData: [],
+      cashFundData: [],
       registryApi: {},
+      registryId: '',
+      email: '',
       apiBaseUrl: 'https://dev-hopsongrace.codup.io',
-      stripePublishableKey: context.env.PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
     });
   }
 }
 
-// Action for step 1: Create payment intent
+// Action for step 1: Create PayPal order
 export async function action({request, context}) {
   try {
     const formData = await request.formData();
@@ -99,8 +126,11 @@ export async function action({request, context}) {
     if (!email) {
       return json({error: 'Email is required'}, {status: 400});
     }
-    const message = context.session.get('message') || '';
     const registryId = formData.get('registryId')?.trim();
+
+    // Read the per-registry message key that cart.message._index.jsx stores
+    const messageKey = registryId ? `message_${registryId}` : 'message';
+    const message = context.session.get(messageKey) || '';
 
     if (!registryId || isNaN(registryId) || registryId <= 0) {
       return json(
@@ -240,57 +270,46 @@ export async function action({request, context}) {
       totalAmountWithTax = totalAmount;
     }
 
-    // Step 1: Create payment intent
-    const createPaymentIntentPayload = {
-      registryId: Number(registryId),
-      email: email,
-      firstName: formData.get('firstName')?.trim(),
-      lastName: formData.get('lastName')?.trim(),
-      taxPercentage: Math.round(taxPercentage * 100) / 100, // Round to 2 decimal places
-      totalAmountWithTax: Math.round(totalAmountWithTax * 100) / 100, // Total including tax
-    };
+    // Step 1: Create PayPal order (server-side only; credentials never sent to browser)
+    const clientId =
+      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH';
+    const clientSecret =
+      context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
 
-    console.log(
-      'Creating payment intent with payload:',
-      createPaymentIntentPayload,
-    );
-    console.log('API Base URL:', apiBaseUrl);
-    console.log(
-      'Full API URL would be:',
-      `${apiBaseUrl}/api/transactions/create-payment-intent`,
-    );
-
-    let createPaymentIntentResponse;
-    try {
-      createPaymentIntentResponse = await context.ClientPost(
-        createPaymentIntentPayload,
-        'transactions/create-payment-intent',
-        context,
-      );
-      console.log(
-        'Create payment intent response:',
-        createPaymentIntentResponse,
-      );
-    } catch (apiError) {
-      console.error('API Error:', apiError);
-      console.error('API Error Response:', apiError.response?.data);
-      console.error('API Error Status:', apiError.response?.status);
+    if (!clientId || !clientSecret) {
       return json(
         {
-          error: `API Error: ${
-            apiError.message || 'Failed to create payment intent'
-          }`,
+          error:
+            'PayPal is not configured. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET on the server.',
         },
         {status: 500},
       );
     }
 
-    if (createPaymentIntentResponse?.data?.clientSecret) {
-      // Store the payment intent data in session for step 2
-      context.session.set(
-        'paymentIntentId',
-        createPaymentIntentResponse.data.paymentIntentId,
+    const amount = Math.round(totalAmountWithTax * 100) / 100;
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return json({error: 'Invalid total amount'}, {status: 400});
+    }
+
+    let order;
+    try {
+      const accessToken = await getPayPalAccessToken({clientId, clientSecret});
+      order = await createPayPalOrder(accessToken, {
+        amount,
+        currencyCode: 'CAD',
+      });
+    } catch (paypalErr) {
+      console.error('Create PayPal order error:', paypalErr);
+      return json(
+        {
+          error: paypalErr.message || 'Failed to create PayPal order',
+        },
+        {status: 500},
       );
+    }
+
+    if (order?.id) {
+      context.session.set('paypalOrderId', order.id);
       context.session.set('lineItems', JSON.stringify(lineItems));
       context.session.set('message', message?.trim());
       context.session.set('firstName', formData.get('firstName')?.trim());
@@ -300,10 +319,9 @@ export async function action({request, context}) {
 
       return json(
         {
-          clientSecret: createPaymentIntentResponse.data.clientSecret,
-          paymentIntentId: createPaymentIntentResponse.data.paymentIntentId,
-          amount: createPaymentIntentResponse.data.amount,
-          customerId: createPaymentIntentResponse.data.customerId,
+          paypalOrderId: order.id,
+          amount,
+          currency: 'CAD',
         },
         {
           status: 200,
@@ -312,12 +330,12 @@ export async function action({request, context}) {
           },
         },
       );
-    } else {
-      return json(
-        {error: 'No clientSecret in create payment intent response'},
-        {status: 400},
-      );
     }
+
+    return json(
+      {error: 'No PayPal order ID returned'},
+      {status: 500},
+    );
   } catch (error) {
     console.error('Checkout action error:', error);
     console.error('Error stack:', error.stack);
@@ -333,10 +351,11 @@ export async function action({request, context}) {
 
 // Step 1: Details Form using useFetcher
 const DetailsForm = ({onNext}) => {
-  const {message, couplesName, productData, apiBaseUrl, registryApi} = useLoaderData();
+  const {message, couplesName, productData, cashFundData, apiBaseUrl, registryApi, registryId: loaderRegistryId, email: loaderEmail} = useLoaderData();
   // console.log('DetailsForm: productData:', productData);
   // console.log('DetailsForm: apiBaseUrl from loader:', apiBaseUrl);
   console.log('DetailsForm: registryApi from loader:', registryApi);
+  console.log('DetailsForm: cashFundData from loader:', cashFundData);
   const fetcher = useFetcher();
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
@@ -349,9 +368,28 @@ const DetailsForm = ({onNext}) => {
     address: '',
     city: '',
     province: '',
+    country: 'Canada',
     email: '',
     subscribe: false,
   });
+
+  // Normalize country key so dropdown data is always found (handles case / alternate names)
+  const countryRaw = (fields.country || 'Canada').trim();
+  const countryKey = billingAddressOptions[countryRaw]
+    ? countryRaw
+    : Object.keys(billingAddressOptions).find(
+        (k) => k.toLowerCase() === countryRaw.toLowerCase(),
+      ) || 'Canada';
+  const countryData = billingAddressOptions[countryKey] || null;
+  const statesOrProvinces = countryData
+    ? (countryData.states || countryData.provinces || [])
+    : [];
+  const citiesByRegion =
+    countryData?.citiesByState || countryData?.citiesByProvince || {};
+  const cityOptions = fields.province ? (citiesByRegion[fields.province] || []) : [];
+  const hasCityList = cityOptions.length > 0;
+  const cityValue =
+    hasCityList && cityOptions.includes(fields.city) ? fields.city : '';
 
   // Utility function to round currency values to 2 decimal places
   const roundCurrency = (value) => {
@@ -421,18 +459,13 @@ const DetailsForm = ({onNext}) => {
     }
   };
 
-  // Fetch cart items from API on client side
+  // Fetch cart items from API on client side (prefer URL/loader params so this checkout stays for the correct registry)
   useEffect(() => {
     const fetchCartItems = async () => {
-      const email =
-        typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
-      const registryId =
-        typeof window !== 'undefined' ? localStorage.getItem('registryId') : '';
-      console.log('DetailsForm: userEmail from localStorage:', email);
-      console.log('DetailsForm: registryId from localStorage:', registryId);
-      console.log('DetailsForm: localStorage guestEmail exists:', !!email);
-      console.log('DetailsForm: localStorage registryId exists:', !!registryId);
-      console.log('Cart Items:', cartItems);
+      const email = loaderEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
+      const registryId = loaderRegistryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') || '';
+      console.log('DetailsForm: userEmail (loader then localStorage):', email);
+      console.log('DetailsForm: registryId (loader then localStorage):', registryId);
 
       if (!email || !registryId) {
         setCartItems([]);
@@ -480,11 +513,16 @@ const DetailsForm = ({onNext}) => {
                 JSON.stringify(registryProduct, null, 2),
               );
 
-              // Try to find the product in our loaded Shopify data to get title and image
-              const productFromData = productData.find(
-                (p) =>
-                  p.id === `gid://shopify/Product/${registryProduct.productId}`,
-              );
+              const isCashFund = registryProduct.productTypeId === 2;
+
+              // For regular products, find in Shopify data
+              // For cash funds, find in cashFundData
+              const productFromData = isCashFund
+                ? cashFundData.find((p) => p.productId === registryProduct.productId)
+                : productData.find(
+                    (p) =>
+                      p.id === `gid://shopify/Product/${registryProduct.productId}`,
+                  );
 
               return {
                 id: cartItem.id,
@@ -493,12 +531,16 @@ const DetailsForm = ({onNext}) => {
                 title:
                   cartItem.title ||
                   productFromData?.title ||
+                  productFromData?.name ||
+                  productFromData?.cashFund?.name ||
                   `Product ${registryProduct.productId}`,
                 image:
                   cartItem.image ||
                   productFromData?.images?.edges?.[0]?.node?.url ||
-                  '/placeholder.svg',
-                isCashFund: registryProduct.productTypeId === 2,
+                  productFromData?.image?.fileUrl ||
+                  productFromData?.cashFund?.image?.fileUrl ||
+                  '/assets/Images/placeholder.png',
+                isCashFund: isCashFund,
                 productId: registryProduct.productId,
                 amount: roundCurrency(registryProduct.amount), // Round to 2 decimal places
                 registryProductId: registryProduct.id, // Keep registry product ID for reference
@@ -530,22 +572,19 @@ const DetailsForm = ({onNext}) => {
     };
 
     fetchCartItems();
-  }, []);
+  }, [loaderRegistryId, loaderEmail]);
 
-  // Set email from localStorage
+  // Set email from URL/loader first (this checkout's registry), then localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const localEmail = localStorage.getItem('guestEmail');
-      if (localEmail) {
-        setFields((prev) => ({...prev, email: localEmail}));
-      }
+    const email = loaderEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
+    if (email) {
+      setFields((prev) => ({...prev, email}));
     }
-  }, []);
+  }, [loaderEmail]);
 
   // Handle fetcher state
   useEffect(() => {
-    if (fetcher.data?.clientSecret && fetcher.state === 'idle') {
-      // Clear localStorage when checkout is successful
+    if (fetcher.data?.paypalOrderId && fetcher.state === 'idle') {
       if (fetcher.data.clearLocalStorage && typeof window !== 'undefined') {
         localStorage.removeItem('guestEmail');
         localStorage.removeItem('registryId');
@@ -554,21 +593,35 @@ const DetailsForm = ({onNext}) => {
         );
       }
       onNext({
-        clientSecret: fetcher.data.clientSecret,
-        paymentIntentId: fetcher.data.paymentIntentId,
+        paypalOrderId: fetcher.data.paypalOrderId,
         amount: fetcher.data.amount,
-        customerId: fetcher.data.customerId,
+        currency: fetcher.data.currency || 'CAD',
       });
     }
   }, [fetcher.data, fetcher.state, onNext]);
 
   const handleChange = (e) => {
     const {name, value, type, checked} = e.target;
-    setFields((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    setFields((prev) => {
+      const next = {...prev, [name]: type === 'checkbox' ? checked : value};
+      if (name === 'country') {
+        next.province = '';
+        next.city = '';
+      } else if (name === 'province') {
+        next.city = '';
+      }
+      return next;
+    });
   };
+
+  // Keep city in sync when province/country change makes current city invalid (fixes dropdown sometimes not working)
+  useEffect(() => {
+    if (!hasCityList || !fields.city) return;
+    const options = fields.province ? (citiesByRegion[fields.province] || []) : [];
+    if (options.length > 0 && !options.includes(fields.city)) {
+      setFields((prev) => ({...prev, city: ''}));
+    }
+  }, [hasCityList, fields.city, fields.province, countryKey]);
 
   // Log cartItems.length and cartLoading in render
   console.log('DetailsForm: cartItems.length in render:', cartItems.length);
@@ -635,11 +688,7 @@ const DetailsForm = ({onNext}) => {
             <input
               type="hidden"
               name="registryId"
-              value={
-                typeof window !== 'undefined'
-                  ? localStorage.getItem('registryId') || ''
-                  : ''
-              }
+              value={loaderRegistryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') || '' : '')}
             />
             <div className="flex items-start gap-x-4 w-full">
               <div className="w-1/2">
@@ -671,30 +720,63 @@ const DetailsForm = ({onNext}) => {
                     required
                   />
                   <div className="grid grid-cols-2 gap-x-4">
-                    <input
-                      placeholder="City *"
-                      name="city"
-                      value={fields.city}
+                    <select
+                      name="country"
+                      value={fields.country}
                       onChange={handleChange}
                       className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                       required
-                    />
-                    <input
-                      placeholder="Province/State *"
+                    >
+                      <option value="">Country *</option>
+                      {Object.entries(billingAddressOptions).map(([key, data]) => (
+                        <option key={key} value={key}>
+                          {data.label || key}
+                        </option>
+                      ))}
+                    </select>
+                    <select
                       name="province"
                       value={fields.province}
                       onChange={handleChange}
                       className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
                       required
-                    />
+                    >
+                      <option value="">
+                        {countryKey === 'USA' ? 'State *' : 'Province *'}
+                      </option>
+                      {statesOrProvinces.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="grid grid-cols-2 gap-x-4">
-                    <input
-                      placeholder="Country *"
-                      name="country"
-                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                      required
-                    />
+                    {hasCityList ? (
+                      <select
+                        name="city"
+                        value={cityValue}
+                        onChange={handleChange}
+                        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                        required
+                      >
+                        <option value="">City *</option>
+                        {cityOptions.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        placeholder="City *"
+                        name="city"
+                        value={fields.city}
+                        onChange={handleChange}
+                        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                        required
+                      />
+                    )}
                     <input
                       placeholder="Email *"
                       name="email"
@@ -704,6 +786,7 @@ const DetailsForm = ({onNext}) => {
                       required
                     />
                   </div>
+
                   <div className="flex items-center mt-4">
                     <input
                       id="subscribe"
@@ -853,148 +936,82 @@ const DetailsForm = ({onNext}) => {
 
 // Main Checkout component
 const Checkout = () => {
-  const {stripePublishableKey} = useLoaderData();
+  const {paypalClientId} = useLoaderData();
   const [step, setStep] = useState(1);
-  const [clientSecret, setClientSecret] = useState(null);
-  const [paymentIntentId, setPaymentIntentId] = useState(null);
-  
-  // Initialize Stripe promise with the key from environment
-  const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
-  
+  const [paypalOrderId, setPaypalOrderId] = useState(null);
+  const [orderAmount, setOrderAmount] = useState(null);
+  const [orderCurrency, setOrderCurrency] = useState('CAD');
+
   const handleNext = (data) => {
-    setClientSecret(data.clientSecret);
-    setPaymentIntentId(data.paymentIntentId);
+    setPaypalOrderId(data.paypalOrderId);
+    setOrderAmount(data.amount);
+    setOrderCurrency(data.currency || 'CAD');
     setStep(2);
   };
-  
-  if (!stripePromise) {
+
+  if (!paypalClientId) {
     return (
       <div className="pt-[80px] text-center">
-        <p className="text-red-500">Stripe is not configured. Please set PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment variables.</p>
+        <p className="text-red-500">PayPal is not configured.</p>
       </div>
     );
   }
-  
+
   return (
-    <Elements stripe={stripePromise}>
-      <div>
-        {step === 1 && <DetailsForm onNext={handleNext} />}
-        {step === 2 && (
-          <CardPaymentForm
-            clientSecret={clientSecret}
-            paymentIntentId={paymentIntentId}
-            onPrev={() => setStep(1)}
-          />
-        )}
-      </div>
-    </Elements>
+    <div>
+      {step === 1 && <DetailsForm onNext={handleNext} />}
+      {step === 2 && (
+        <PayPalPaymentForm
+          paypalOrderId={paypalOrderId}
+          paypalClientId={paypalClientId}
+          onPrev={() => setStep(1)}
+        />
+      )}
+    </div>
   );
 };
 
 export default Checkout;
 
-const CardPaymentForm = ({clientSecret, paymentIntentId, onPrev, onPay}) => {
-  const stripe = useStripe();
-  const elements = useElements();
+const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const fetcher = useFetcher();
 
-  // Handle fetcher state for guest checkout
   useEffect(() => {
     if (fetcher.data?.success && fetcher.state === 'idle') {
-      // Clear localStorage when checkout is successful
       if (typeof window !== 'undefined') {
         localStorage.removeItem('guestEmail');
         localStorage.removeItem('registryId');
         console.log(
-          'CardPaymentForm: Cleared guestEmail and registryId from localStorage after successful checkout',
+          'PayPalPaymentForm: Cleared guestEmail and registryId from localStorage after successful checkout',
         );
       }
-      // Navigate to thank you page
       navigate('/thankyou');
     } else if (fetcher.data?.error && fetcher.state === 'idle') {
       setError(fetcher.data.error);
-      setLoading(false);
       setShowPopup(true);
     }
   }, [fetcher.data, fetcher.state, navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    if (!stripe || !elements) {
-      setError('Stripe is not loaded');
-      setLoading(false);
+  const handleApprove = (data) => {
+    if (!data?.orderID) {
+      setError('PayPal order ID not received');
       setShowPopup(true);
       return;
     }
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      setError('Card element not found');
-      setLoading(false);
-      setShowPopup(true);
-      return;
-    }
-    const {error: confirmError, paymentIntent} =
-      await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-        },
-      });
-    if (confirmError) {
-      setError(confirmError.message);
-      setLoading(false);
-      setShowPopup(true);
-    } else {
-      // Payment successful, now call guest-checkout API
-      if (paymentIntentId) {
-        const formData = new FormData();
-        formData.append('paymentIntentId', paymentIntentId);
-
-        fetcher.submit(formData, {
-          method: 'POST',
-          action: '/cart/checkout/guest-checkout',
-        });
-      } else {
-        setError('Payment intent ID not found');
-        setLoading(false);
-        setShowPopup(true);
-      }
-    }
+    const formData = new FormData();
+    formData.append('paypalOrderId', data.orderID);
+    fetcher.submit(formData, {
+      method: 'POST',
+      action: '/cart/checkout/guest-checkout',
+    });
   };
+
   return (
     <div className="pt-[80px]">
-      {showPopup && (
-        <ModalPortal>
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#000000b0] bg-opacity-50">
-          <div
-            className={`rounded-lg shadow-lg px-8 py-16 max-w-xl w-full text-center ${
-              success ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
-            }`}
-          >
-            <h2 className="text-2xl font-bold mb-4">
-              {!success ? 'Sorry for the Inconvenience' : 'Payment Successful!'}
-            </h2>
-            <p className="mb-6">
-              {!success
-                ? error || 'There was an error processing your payment.'
-                : 'Thank you for your payment.'}
-            </p>
-            <button
-              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
-              onClick={() => setShowPopup(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-        </ModalPortal>
-      )}
       <CoupleProfileViewHeader />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
@@ -1028,51 +1045,65 @@ const CardPaymentForm = ({clientSecret, paymentIntentId, onPrev, onPay}) => {
       </div>
       <div className="container mx-auto py-[100px]">
         <div className="bg-[#446184] py-16 px-16">
-          <Form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor="card-element"
-                className="block text-sm text-center text-white font-medium mb-1"
+          <div className="grid grid-cols-1 gap-6">
+            <label className="block text-sm text-center text-white font-medium mb-1">
+              PAYMENT
+            </label>
+            <div className="flex justify-center min-w-[400px] [&_[id^='zoid-paypal-buttons']]:!min-w-[400px]">
+              <PayPalScriptProvider
+                options={{
+                  clientId: paypalClientId,
+                  currency: 'CAD',
+                  intent: 'capture',
+                }}
               >
-                PAYMENT
-              </label>
-              <div className="">
-                <CardElement
-                  className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                  id="card-element"
-                  options={{
-                    style: {
-                      base: {
-                        fontSize: '16px',
-                        color: '#424770',
-                        '::placeholder': {color: '#aab7c4'},
-                      },
-                      invalid: {color: '#9e2146'},
-                    },
+                <PayPalButtons
+                  createOrder={() => Promise.resolve(paypalOrderId)}
+                  onApprove={(data) => handleApprove(data)}
+                  onError={(err) => {
+                    setError(err?.message || 'PayPal error');
+                    setShowPopup(true);
                   }}
+                  style={{layout: 'vertical', color: 'gold', shape: 'rect'}}
+                  disabled={fetcher.state === 'submitting' || !paypalOrderId}
                 />
-              </div>
+              </PayPalScriptProvider>
             </div>
-            {error && <div className="text-[#FD446F]">{error}</div>}
+            {error && <div className="text-[#FD446F] text-center mt-4">{error}</div>}
             {success && (
-              <div className="text-white bg-green-500 px-2 py-4">
+              <div className="text-white bg-green-500 px-2 py-4 text-center mt-4">
                 Payment successful!
               </div>
             )}
-            <div className="flex justify-end">
-              <ButtonComponent
-                className={
-                  'w-[200px] py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-bold text-black text-center'
-                }
-                type="submit"
-                text={loading ? 'Processing...' : 'Pay'}
-                disabled={loading || !stripe}
-              />
-            </div>
-          </Form>
+          </div>
         </div>
       </div>
-      
+      {showPopup && (
+        <ModalPortal>
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#000000b0] bg-opacity-50">
+            <div
+              className={`rounded-lg shadow-lg px-8 py-16 max-w-xl w-full text-center ${
+                success ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
+              }`}
+            >
+              <h2 className="text-2xl font-bold mb-4">
+                {!success ? 'Sorry for the Inconvenience' : 'Payment Successful!'}
+              </h2>
+              <p className="mb-6">
+                {!success
+                  ? error || 'There was an error processing your payment.'
+                  : 'Thank you for your payment.'}
+              </p>
+              <button
+                className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
+                onClick={() => setShowPopup(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
     </div>
   );
 };

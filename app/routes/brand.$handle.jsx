@@ -188,7 +188,7 @@ const Brand = () => {
       <Header />
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="w-full h-[500px] lg:h-[39.58vw] flex flex-row items-center justify-center">
+      <div className="w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
             <Heading

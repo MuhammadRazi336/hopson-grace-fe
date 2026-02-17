@@ -15,8 +15,6 @@ import nextitem from '/assets/Images/next.png';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import EditImagePopup from '~/components/EditImagePopup';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export async function loader(args) {
   const {context} = args;
@@ -77,7 +75,6 @@ function CreateNewCashFund() {
   const location = useLocation();
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [cashFundName, setCashFundName] = useState('');
   const [allowFixedAmount] = useState(true);
   const [totalGoal, setTotalGoal] = useState('');
@@ -87,53 +84,55 @@ function CreateNewCashFund() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
+  const [droppedFile, setDroppedFile] = useState(null);
   const fetcher = useFetcher();
-  const fileInputRef = useRef(null);
-
-  // Handle cropped image save from popup
-  const handleCroppedImageSave = async (croppedBlob) => {
-    if (!croppedBlob) {
-      toast.warn('No image to upload');
-      return;
-    }
-
-    try {
-      // Create a file object from the blob
-      const file = new File([croppedBlob], 'cashfund-image.jpg', { 
-        type: 'image/jpeg',
-        lastModified: Date.now()
-      });
-      
-      setPhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
-      toast.success('Image selected successfully!');
-    } catch (err) {
-      console.error('Error processing cropped image:', err);
-      toast.error('Error processing image');
-    } finally {
-      setIsEditPopupOpen(false);
-    }
-  };
+  const formRef = useRef(null);
 
   const handlePhotoUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        toast.error('Only image files are allowed');
+        alert('Only image files are allowed');
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size must be less than 5MB');
+        alert('File size must be less than 5MB');
         return;
       }
-      // Open the cropping popup instead of directly setting the preview
-      const fileReader = new FileReader();
-      fileReader.onload = (e) => {
-        // We'll pass the file data to the popup
-        setPhotoFile(file);
-        setIsEditPopupOpen(true);
-      };
-      fileReader.readAsDataURL(file);
+      setPhotoFile(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleCroppedImageSave = (blob) => {
+    if (!blob) return;
+    const file = new File([blob], 'photo.jpg', { type: blob.type || 'image/jpeg' });
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(blob));
+    setIsEditPopupOpen(false);
+  };
+
+  const handleDragOverPhoto = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDropPhoto = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      if (file.size > 5 * 1024 * 1024) {
+        setAlertMessage('File size must be less than 5MB');
+        setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
+        return;
+      }
+      setDroppedFile(file);
+      setIsEditPopupOpen(true);
     }
   };
 
@@ -166,8 +165,6 @@ function CreateNewCashFund() {
   }, [fetcher.data, fetcher.state, navigate]);
 
   const handleFormSubmit = (e) => {
-
-
     if (!agreedToTerms) {
       e.preventDefault();
       setAlertMessage('You must agree to the terms and conditions.');
@@ -179,9 +176,7 @@ function CreateNewCashFund() {
       }, 3000);
       return;
     }
-    // Check if required fields are filled
     const isMissingRequiredFields = !cashFundName || !registry?.data[0]?.id || !totalGoal;
-    
     if (isMissingRequiredFields) {
       e.preventDefault();
       setAlertMessage('Please fill in all required fields.');
@@ -193,7 +188,14 @@ function CreateNewCashFund() {
       }, 3000);
       return;
     }
-    // Otherwise, allow form to submit
+    // Build FormData so we can include photo from modal (cropped blob as File)
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    if (photoFile) {
+      formData.set('file', photoFile);
+    }
+    fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
   };
 
   return (
@@ -300,15 +302,19 @@ function CreateNewCashFund() {
           </p> */}
 
           <div className="w-full mx-auto">
-            <fetcher.Form method="post" encType="multipart/form-data" onSubmit={handleFormSubmit}>
+            <fetcher.Form ref={formRef} method="post" encType="multipart/form-data" onSubmit={handleFormSubmit}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3.49vw]">
                 {/* Photo Section */}
                 <div className="space-y-4 lg:w-[41.08vw] xl:w-[41.08vw] 2xl:w-[41.08vw]">
                   <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-[2px]">
                   UPLOAD YOUR OWN PHOTO OR KEEP THIS
                   </h2>
-                  <div className="bg-[#F5F2ED] aspect-square relative flex items-center justify-center w-full h-[41.08vw]">
-                    <div className="text-center">
+                  <div
+                    className="bg-[#F5F2ED] aspect-square relative flex items-center justify-center w-full h-[41.08vw] border-2 border-dashed border-transparent hover:border-gray-300 transition-colors"
+                    onDragOver={handleDragOverPhoto}
+                    onDrop={handleDropPhoto}
+                  >
+                    <div className="text-center w-full h-full flex items-center justify-center">
                       {photoPreview ? (
                         <img
                           src={photoPreview}
@@ -317,38 +323,44 @@ function CreateNewCashFund() {
                         />
                       ) : (
                         <img
-                          src={"/assets/Images/registrylogoSteps.png"}
-                        alt="Cash Fund"
-                        className="w-[16.042vw] object-cover"
-                      />
+                          src="/assets/Images/registrylogoSteps.png"
+                          alt="Cash Fund"
+                          className="w-[16.042vw] object-cover"
+                        />
                       )}
                     </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      style={{ display: 'none' }}
-                      ref={fileInputRef}
-                      name="file"
-                      onChange={handlePhotoUpload}
-                    />
                     <button
                       className="cursor-pointer"
                       type="button"
-                      onClick={() => {
-                        // Reset the file input and trigger click
-                        if (fileInputRef.current) {
-                          fileInputRef.current.value = '';
-                          fileInputRef.current.click();
-                        }
-                      }}
+                      onClick={() => !isPhotoUploading && setIsEditPopupOpen(true)}
                     >
-                      <img
-                        src="/assets/Images/edit-icon.png"
-                        alt="edit"
-                        className="absolute -top-6 size-[5.938vw] -right-4 "
-                      />
+                      <div className="absolute -top-6 -right-4 size-[5.938vw] flex items-center justify-center bg-white rounded-full shadow-lg hover:bg-gray-50">
+                        <img
+                          src="/assets/Images/edit-icon.png"
+                          alt="edit"
+                          className={`w-auto h-auto ${isPhotoUploading ? 'opacity-50' : ''}`}
+                        />
+                        {isPhotoUploading && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600" />
+                          </div>
+                        )}
+                      </div>
                     </button>
                   </div>
+                  <p className="text-white/80 text-xs lg:text-[0.729vw] mt-1">
+                    Drop an image here or click the edit icon to upload and crop
+                  </p>
+                  <EditImagePopup
+                    isOpen={isEditPopupOpen}
+                    onClose={() => {
+                      setIsEditPopupOpen(false);
+                      setDroppedFile(null);
+                    }}
+                    onSave={handleCroppedImageSave}
+                    initialFile={droppedFile}
+                    onInitialFileConsumed={() => setDroppedFile(null)}
+                  />
                 </div>
 
                 {/* Details Section */}
@@ -387,7 +399,7 @@ function CreateNewCashFund() {
                           id="totalGoal"
                           name="amount"
                           value={totalGoal}
-                          className="bg-white w-full !m-0 p-4 text-lg h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0 placeholder:normal-case placeholder:font-normal"
+                          className="bg-white w-full !m-0 p-4 h-[4.271vw] max-[767px]:text-[16px] max-[767px]:px-[15px] max-[767px]:h-[50px] max-[767px]:py-0"
                           placeholder="Total Goal*"
                           onChange={(e) => setTotalGoal(e.target.value)}
                         />
@@ -643,27 +655,6 @@ function CreateNewCashFund() {
       </section>
 
       <Footer />
-      
-      {/* Image Edit Popup */}
-      <EditImagePopup
-        isOpen={isEditPopupOpen}
-        onClose={() => setIsEditPopupOpen(false)}
-        onSave={handleCroppedImageSave}
-      />
-      
-      {/* Toast Container */}
-      <ToastContainer 
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
       
       <style jsx>{`
         @keyframes fadeInOut {

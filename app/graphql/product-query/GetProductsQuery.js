@@ -42,7 +42,6 @@ export async function fetchProducts(storefront, ids) {
             title
             descriptionHtml
             description
-            handle
             images(first: 10) {
               edges {
                 node {

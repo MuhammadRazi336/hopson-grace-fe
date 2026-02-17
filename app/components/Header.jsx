@@ -964,20 +964,44 @@ export function Header() {
                     onClick={toggleNotificationDropdown}
                     className="relative inline-block hover:opacity-80 transition-opacity"
                   >
-                    {/* Bell Icon (SVG) */}
-                    <svg width="60" height="60" className="w-[3.125vw] h-[3.125vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/>
+                    <svg
+                      width="60"
+                      height="60"
+                      className="w-[3.125vw] h-[3.125vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px]"
+                      viewBox="0 0 60 60"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      {/* Bell Icon */}
+                      <path
+                        d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z"
+                        stroke={isFixed ? "#FFFFFF" : "#1C1C1E"}
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+
+                      {/* Red Circle Badge */}
+                      {unreadCount > 0 && (
+                        <>
+                          <circle cx="40.625" cy="19.375" r="10" fill="#C52248" />
+
+                          {/* Number inside the circle */}
+                          <text
+                            x="40.625"
+                            y="19.375"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="white"
+                            fontSize="10"
+                            fontWeight="bold"
+                          >
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </text>
+                        </>
+                      )}
                     </svg>
 
-                    {/* Red Dot for unread notifications */}
-                    {unreadCount > 0 && (
-                      <span className="absolute -top-[1.1px] -right-[1.4px] w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
-                        <span className="text-xs text-white font-bold">
-                          {unreadCount > 9 ? '9+' : unreadCount}
-                        </span>
-                      </span>
-                    )}
                   </button>
 
                   {/* Notification Dropdown */}
@@ -1007,7 +1031,7 @@ export function Header() {
                             <div
                               key={notification.id}
                               className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
+                                notification.status === 'unread' ? 'bg-[#c522481e]' : ''
                               }`}
                               onClick={() => {
                                 if (notification.status === 'unread') {
@@ -1017,7 +1041,7 @@ export function Header() {
                             >
                               <div className="flex items-start space-x-3">
                                 <div className={`w-2 h-2 rounded-full mt-2 ${
-                                  notification.status === 'unread' ? 'bg-[#C52248]' : 'bg-gray-300'
+                                  notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
                                 }`}></div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium text-gray-900">
@@ -1079,7 +1103,7 @@ export function Header() {
                       className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                   >
                     <span
-                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full bg-white shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                         isDraft 
                           ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                           : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1466,20 +1490,43 @@ export function Header() {
                       onClick={toggleNotificationDropdown}
                       className="relative inline-block hover:opacity-80 transition-opacity"
                     >
-                      {/* Bell Icon (SVG) */}
-                      <svg width="60" height="60" className="w-[3.125vw] h-[3.125vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px]" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z" stroke={isFixed ? "#FFFFFF" : "#1C1C1E"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M40.625 30C46.493 30 51.25 25.243 51.25 19.375C51.25 13.507 46.493 8.75 40.625 8.75C34.757 8.75 30 13.507 30 19.375C30 25.243 34.757 30 40.625 30Z" fill="#C52248"/>
+                      <svg
+                        width="60"
+                        height="60"
+                        className="w-[3.125vw] h-[3.125vw] max-[1024px]:w-[30px] max-[1024px]:h-[30px]"
+                        viewBox="0 0 60 60"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        {/* Bell Icon */}
+                        <path
+                          d="M12.5 36.725H47.5M30 9.22498C33.6467 9.22498 37.1441 10.6736 39.7227 13.2523C42.3013 15.8309 43.75 19.3282 43.75 22.975V36.725H16.25V22.975C16.25 19.3282 17.6987 15.8309 20.2773 13.2523C22.8559 10.6736 26.3533 9.22498 30 9.22498ZM35 45.775C35 48.5364 32.7614 50.775 30 50.775C27.2386 50.775 25 48.5364 25 45.775C25 43.0135 27.2386 40.775 30 40.775C32.7614 40.775 35 43.0135 35 45.775Z"
+                          stroke={isFixed ? "#FFFFFF" : "#1C1C1E"}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+
+                        {/* Red Circle Badge */}
+                        {unreadCount > 0 && (
+                          <>
+                            <circle cx="40.625" cy="19.375" r="10" fill="#C52248" />
+                            {/* Number inside the circle */}
+                            <text
+                              x="40.625"
+                              y="19.375"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              fill="white"
+                              fontSize="10"
+                              fontWeight="bold"
+                            >
+                              {unreadCount > 9 ? "9+" : unreadCount}
+                            </text>
+                          </>
+                        )}
                       </svg>
 
-                      {/* Red Dot for unread notifications */}
-                      {unreadCount > 0 && (
-                        <span className="absolute -top-[1.1px] -right-[1.4px] w-6 h-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
-                          <span className="text-xs text-white font-bold">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                          </span>
-                        </span>
-                      )}
                     </button>
 
                     {/* Notification Dropdown */}
@@ -1509,7 +1556,7 @@ export function Header() {
                               <div
                                 key={notification.id}
                                 className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                  notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
+                                  notification.status === 'unread' ? 'bg-[#c522481e]' : ''
                                 }`}
                                 onClick={() => {
                                   if (notification.status === 'unread') {
@@ -1519,7 +1566,7 @@ export function Header() {
                               >
                                 <div className="flex items-start space-x-3">
                                   <div className={`w-2 h-2 rounded-full mt-2 ${
-                                    notification.status === 'unread' ? 'bg-[#C52248]' : 'bg-gray-300'
+                                    notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
                                   }`}></div>
                                   <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900">

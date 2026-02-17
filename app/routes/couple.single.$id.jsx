@@ -833,7 +833,7 @@ export default function CoupleProfile() {
   };
 
   // Modified Add to Cart
-  const handleAddToCart = (productId, quantity = 1) => {
+  const handleAddToCart = async (productId, quantity = 1) => {
     // Don't allow adding to cart if there are no products
     if (!hasProducts || !registryId) {
       setAlertMessage('No products available in this registry');
@@ -848,6 +848,17 @@ export default function CoupleProfile() {
     if (!email) {
       setPendingCartAction({type: 'add', productId, quantity});
       setShowEmailModal(true);
+      return;
+    }
+
+    // Ensure a cart exists for this email + registry before adding items.
+    // This is important when the same guestEmail is used for a different couple/registry.
+    const initResult = await callCartApi(email);
+    if (!initResult.success) {
+      setAlertMessage(initResult.error || 'Failed to initialize cart');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
       return;
     }
 
@@ -892,27 +903,26 @@ export default function CoupleProfile() {
       quantity: Number(quantity),
     };
 
-    callAddToCartApiWithQuantity(email, payload).then((result) => {
-      if (result.success) {
-        // Refresh cart items after successful addition
-        fetchCartItems();
-        setAlertMessage(
-          `${product.title || 'Item'} (${quantity}) added to cart successfully`,
-        );
-        setAlertType('success');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      } else {
-        setAlertMessage('Failed to add item to cart');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
-      }
-    });
+    const result = await callAddToCartApiWithQuantity(email, payload);
+    if (result.success) {
+      // Refresh cart items after successful addition
+      fetchCartItems();
+      setAlertMessage(
+        `${product.title || 'Item'} (${quantity}) added to cart successfully`,
+      );
+      setAlertType('success');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    } else {
+      setAlertMessage('Failed to add item to cart');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
   };
 
   // Modified Contribute
-  const handleContribute = (productId, amount) => {
+  const handleContribute = async (productId, amount) => {
     // Don't allow contributing if there are no products
     if (!hasProducts || !registryId) {
       setAlertMessage('No products available in this registry');
@@ -929,6 +939,17 @@ export default function CoupleProfile() {
       setShowEmailModal(true);
       return;
     }
+
+    // Ensure a cart exists for this email + registry before contributing.
+    const initResult = await callCartApi(email);
+    if (!initResult.success) {
+      setAlertMessage(initResult.error || 'Failed to initialize cart');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+
     const product = safeData.find((item) => item.id === productId);
     if (!product) return;
 
@@ -954,25 +975,22 @@ export default function CoupleProfile() {
     }
     // Use the correct product ID for registryProductId
     const registryProductId = product.productId || product.id;
-    callAddToCartApi(email, registryProductId, amount, product).then(
-      (result) => {
-        if (result.success) {
-          // Refresh cart items after successful contribution
-          fetchCartItems();
-          setAlertMessage(
-            `$${amount} contributed to ${product.title || 'fund'} successfully`,
-          );
-          setAlertType('success');
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        } else {
-          setAlertMessage('Failed to contribute to fund');
-          setAlertType('error');
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        }
-      },
-    );
+    const result = await callAddToCartApi(email, registryProductId, amount, product);
+    if (result.success) {
+      // Refresh cart items after successful contribution
+      fetchCartItems();
+      setAlertMessage(
+        `$${amount} contributed to ${product.title || 'fund'} successfully`,
+      );
+      setAlertType('success');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    } else {
+      setAlertMessage('Failed to contribute to fund');
+      setAlertType('error');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
   };
 
   // Modal submit handler - handles email submission and adds pending products to cart
@@ -1709,16 +1727,17 @@ export default function CoupleProfile() {
                 alt="No Products"
                 className="w-36 h-36 mx-auto mb-6 opacity-50"
               />
-              <h3 className="text-[22px] font-semibold text-[#1F1D1B] mb-4">
+              <h3 className="text-2xl font-semibold text-gray-700 mb-4 prata">
                 No Products Found
               </h3>
-              <p className="text-[#1F1D1B] mb-6">
+              <p className="text-gray-600 mb-6">
                 This registry doesn't have any products or cash funds added yet.
                 Check back later or contact the couple for more information.
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-[#1F1D1B]">
-                  <strong>Tip:</strong> Add gifts to get your registry started.
+                <p className="text-sm text-gray-500">
+                  <strong>Tip:</strong> You can still contribute to their
+                  journey using the "Gift Any Amount" section below.
                 </p>
               </div>
             </div>
@@ -1802,12 +1821,14 @@ export default function CoupleProfile() {
           onAddRecommendedProduct={handleAddRecommendedProduct}
           cashFunds={recommendedCashFunds}
           onAddCashFund={(cashFund) => handleAddToCart(cashFund.id)}
+          registryId={registryId}
+          guestEmail={guestEmail}
         />
       )}
 
       {isPopupOpen && selectedGiftData && hasProducts && registryId && (
         <div
-          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-auto"
+          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-y-auto"
           onClick={closePopup}
         >
           <div
