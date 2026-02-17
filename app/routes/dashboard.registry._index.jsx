@@ -393,13 +393,15 @@ const index = () => {
       />
       <div className="text-center pt-[4.115vw] px-[3.281vw] mx-auto font-sans max-[1024px]:pt-[50px] max-[1024px]:px-[20px]">
         <div className="relative">
-          <img
-            src={backgroundImage}
-            alt=" "
-            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] object-cover bg-[#446184]"
-          />
           <div
-            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] height[4vw]"
+            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] bg-[#446184] bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+            }}
+          >
+          </div>
+          <div
+            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] h-[4vw]"
             onClick={() =>
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
