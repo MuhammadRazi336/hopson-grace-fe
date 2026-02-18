@@ -1510,14 +1510,14 @@ export function Header() {
                         {/* Red Circle Badge */}
                         {unreadCount > 0 && (
                           <>
-                            <circle cx="40.625" cy="19.375" r="10" fill="#C52248" />
+                            <circle cx="40.625" cy="19.375" r="10" fill="#F5F2ED" />
                             {/* Number inside the circle */}
                             <text
                               x="40.625"
                               y="19.375"
                               textAnchor="middle"
                               dominantBaseline="middle"
-                              fill="white"
+                              fill="#C52248"
                               fontSize="10"
                               fontWeight="bold"
                             >
@@ -1538,7 +1538,7 @@ export function Header() {
                           {unreadCount > 0 && (
                             <button
                               onClick={markAllAsRead}
-                              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                              className="text-sm text-[#C52248] hover:text-[#911b36] font-medium"
                             >
                               Mark all as read
                             </button>
@@ -1561,6 +1561,18 @@ export function Header() {
                                 onClick={() => {
                                   if (notification.status === 'unread') {
                                     markNotificationAsRead(notification.id);
+                                  }
+                                  if (notification.type === "gift_purchased"){
+                                    navigate("/dashboard/gifttracker")
+                                  }
+                                  if (notification.type === "registry"){
+                                    navigate(`/couple/single/${notification.userId}`)
+                                  }
+                                  if (notification.type === "signup" || notification.type === "login"){
+                                    navigate(`/dashboard`)
+                                  }
+                                  if (notification.type === "product_discontinued" || notification.type === "product_new_added" || notification.type === "gift"){
+                                    navigate(`/dashboard/addgifts`)
                                   }
                                 }}
                               >
