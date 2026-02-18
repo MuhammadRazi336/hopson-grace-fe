@@ -179,7 +179,7 @@ export default function EditImagePopup({ isOpen, onClose, onSave, initialFile = 
     <ModalPortal>
       <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
         <div className="bg-[#fff] w-[68.25vw] h-[38vw] max-h-[80vh] max-w-[90vw] px-[6.12vw] py-[2.75vw] relative">
-          <h2 className="text-2xl lg:text-[1vw] xl:text-[1vw] 2xl:text-[1vw] lg:leading-[1.5v] xl:leading-[1.5v] 2xl:leading-[1.5v] font-[500] bastardogrotesk m-0 max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">UPLOAD YOUR PROFILE IMAGE</h2>
+          <h2 className="text-2xl lg:text-[1vw] xl:text-[1vw] 2xl:text-[1vw] lg:leading-[1.5v] xl:leading-[1.5v] 2xl:leading-[1.5v] font-[500] bastardogrotesk m-0 max-[1024px]:text-[20px] max-[1024px]:leading-[20px] uppercase">Upload your own image or use one of ours</h2>
           {/* Close Button */}
           <button
             onClick={onClose}

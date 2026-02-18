@@ -411,6 +411,9 @@ export default function CoupleProfile() {
   const safeCollections = Array.isArray(collections) ? collections : [];
   const safeResponse = response || {};
 
+  const eventCity = safeResponse?.data?.[0]?.events?.[0]?.city || '';
+  const eventProvince = safeResponse?.data?.[0]?.events?.[0]?.province || '';
+
   const [selectedCategory, setSelectedCategory] = useState('');
   const [availability, setAvailability] = useState('');
   const [priceSort, setPriceSort] = useState('');
@@ -1569,26 +1572,34 @@ export default function CoupleProfile() {
               />
               <div className="text-right ">
                 <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
-                  {safeResponse?.data?.[0]?.events?.[0]?.location ||
-                    'Location TBD'}
+                  {safeResponse?.data?.[0]?.events?.[0]?.location || ''}
                 </p>
                 <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
-                  {safeResponse?.data?.[0]?.events?.[0]?.city || 'City'},{' '}
-                  {safeResponse?.data?.[0]?.events?.[0]?.province || 'Province'}
+                  {eventCity}
+                  {eventCity && eventProvince ? ', ' : ''}
+                  {eventProvince}
                 </p>
               </div>
             </div>
           </div>
         </div>
+
+        {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage ?
+        <>
+        <p className="w-[58.073vw] max-w-[100%] text-[16px] tracking-[0.5px] lg:text-[1.875vw] lg:leading-[2.604vw] mx-auto mt-5 mb-[7.552vw] leading-relaxed">
+          {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage}
+        </p>
+        </> : <>
         <h2 className="text-[42px] -tracking-[0.3px] mb-[9px] lg:text-[2.917vw] lg:leading-[3.125vw] xl:mt-0 mt-16 font-normal prata">
           we are looking <span className="font-italic">so forward</span> to
           celebrating with you
         </h2>
 
         <p className="w-[58.073vw] max-w-[100%] text-[16px] tracking-[0.5px] lg:text-[1.875vw] lg:leading-[2.604vw] mx-auto mt-5 mb-[7.552vw] leading-relaxed">
-          {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage ||
-            'Thank you for being part of our special day!'}
+            'Thank you for being part of our special day!'
         </p>
+        </>
+        }
       </div>
 
       <div className="w-[92.135vw] max-w-[100%] mx-auto bg-[#FAF9F6] py-[5.469vw] px-[5.99vw]">
@@ -2027,8 +2038,17 @@ export default function CoupleProfile() {
           >
             <div className="flex py-32 max-[768px]:py-10 justify-center max-[768px]:flex-col max-[768px]:items-center max-[768px]:px-4 container">
               <div className="bg-steel-blue text-white py-[110px] px-[90px] lg:w-[52.083vw] pb-28 pt-[100px] relative max-[768px]:max-w-[100%] max-w-[1000px] max-[1024px]:p-6 max-[768px]:pb-20 max-[768px]:pt-14 max-[768px]:w-full text-center">
+
+              <button
+          onClick={() => setShowEmailModal(false)}
+          className="absolute top-6 right-6 text-white text-3xl font-light hover:opacity-70 transition"
+          aria-label="Close modal"
+        >
+          &times;
+        </button>
+
                 <h3 className="text-5xl font-[400] lg:text-[2.292vw] lg:leading-[3.125vw] prata text-center max-[768px]:text-2xl afterimg">
-                  let's get to know each other.
+                Ready to purchase your gift for the couple?
                 </h3>
                 <div className="mb-10">
                   <div className="flex h-full items-center">
@@ -2038,7 +2058,7 @@ export default function CoupleProfile() {
                     >
                       <div className="text-center mt-6">
                         <Heading
-                          text="ENTER YOUR EMAIL"
+                          text="Enter your email to continute."
                           classes="font-normal text-[22px] m-0"
                         />
                       </div>

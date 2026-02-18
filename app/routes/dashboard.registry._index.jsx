@@ -334,6 +334,10 @@ const index = () => {
     }
   };
 
+  // Filters for "our registry selections"
+  const [priceSort, setPriceSort] = useState('low-to-high'); // 'low-to-high' | 'high-to-low'
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'gifted' | 'ungifted'
+
   return (
     <>
       <div className="flex justify-between mt-[2.865vw] max-[1024px]:flex-wrap max-[1024px]:mt-[50px] max-[1024px]:px-[20px]">
@@ -582,21 +586,43 @@ const index = () => {
           <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px]">
             <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
               {' '}
-              <strong>Categories</strong> All{' '} 
+              <strong>Categories</strong> All{' '}
               <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
               </svg>
             </h3>
-            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
+            <h3
+              className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer"
+              onClick={() => {
+                const options = ['low-to-high', 'high-to-low'];
+                const currentIndex = options.indexOf(priceSort);
+                const nextIndex = (currentIndex + 1) % options.length;
+                setPriceSort(options[nextIndex]);
+              }}
+            >
               {' '}
-              <strong>price</strong> low to high{' '}
+              <strong>price</strong>{' '}
+              {priceSort === 'low-to-high' ? 'low to high' : 'high to low'}{' '}
               <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
               </svg>
             </h3>
-            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
+            <h3
+              className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer"
+              onClick={() => {
+                const options = ['all', 'gifted', 'ungifted'];
+                const currentIndex = options.indexOf(statusFilter);
+                const nextIndex = (currentIndex + 1) % options.length;
+                setStatusFilter(options[nextIndex]);
+              }}
+            >
               {' '}
-              <strong>status</strong> All{' '}
+              <strong>status</strong>{' '}
+              {statusFilter === 'gifted'
+                ? 'Gifted'
+                : statusFilter === 'ungifted'
+                ? 'Ungifted'
+                : 'All'}{' '}
               <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
               </svg>
@@ -605,12 +631,12 @@ const index = () => {
         </div>
         <div className="gap-6 mt-[5.938vw]">
           <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
-          <ProductPage data={data} />
+          <ProductPage data={data} priceSort={priceSort} statusFilter={statusFilter} />
         </div>
 
         <div className="gap-6 mt-[6vw]">
           <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">CASH FUNDS</h2>
-          <FundPage data={cashfundData} />
+          <FundPage data={cashfundData} priceSort={priceSort} statusFilter={statusFilter} />
         </div>
       </div>
       <div className="py-[8.177vw] w-full flex justify-center items-center max-[1024px]:py-[50px]">
@@ -657,9 +683,47 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = ({data}) => {
+const ProductPage = ({data, priceSort, statusFilter}) => {
+  if (!Array.isArray(data)) return null;
+
+  // Helper: determine if a product is gifted
+  const isProductGifted = (product) => {
+    // Prefer explicit backend flag when available
+    if (typeof product.isPurchased === 'boolean') {
+      return product.isPurchased;
+    }
+    const quantity = Number(product.quantity) || 1;
+    const purchasedQuantity = Number(product.purchasedQuantity) || 0;
+    const stillNeeds = Math.max(0, quantity - purchasedQuantity);
+    return stillNeeds === 0;
+  };
+
+  // Helper: get numeric amount for sorting
+  const getProductAmount = (product) => {
+    const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
+    if (priceObj && priceObj.amount) {
+      return Number(priceObj.amount) || 0;
+    }
+    return Number(product.amount) || 0;
+  };
+
+  // Apply status filter
+  let filteredData = [...data];
+  if (statusFilter === 'gifted') {
+    filteredData = filteredData.filter((product) => isProductGifted(product));
+  } else if (statusFilter === 'ungifted') {
+    filteredData = filteredData.filter((product) => !isProductGifted(product));
+  }
+
+  // Apply price sort
+  if (priceSort === 'low-to-high') {
+    filteredData.sort((a, b) => getProductAmount(a) - getProductAmount(b));
+  } else if (priceSort === 'high-to-low') {
+    filteredData.sort((a, b) => getProductAmount(b) - getProductAmount(a));
+  }
+
   // Calculate how many placeholder images to show
-  const actualGiftsCount = data.length;
+  const actualGiftsCount = filteredData.length;
   const placeholderCount = Math.max(0, 4 - actualGiftsCount);
 
   // Create array of placeholder elements
@@ -687,7 +751,7 @@ const ProductPage = ({data}) => {
     <div className="">
       <div
         className={`${
-          data.length > 4
+          filteredData.length > 4
             ? 'flex gap-[2.917vw] mt-0 overflow-x-auto snap-x snap-mandatory'
             : 'grid gap-[2.917vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
@@ -695,8 +759,8 @@ const ProductPage = ({data}) => {
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
         }}
       >
-        {data.length > 0
-          ? data.map((product) => {
+        {filteredData.length > 0
+          ? filteredData.map((product) => {
             console.log('Product:', product);
               // Use priceV2 from Shopify, fallback to backend amount
               const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
@@ -715,14 +779,6 @@ const ProductPage = ({data}) => {
               const purchasedQuantity = Number(product.purchasedQuantity) || 0;
               const stillNeeds = Math.max(0, quantity - purchasedQuantity);
               const isFullyGifted = stillNeeds === 0;
-
-              // Determine status
-              let status = 'addToCart';
-              if (isFullyGifted) {
-                status = 'purchased';
-              } else if (product.isGroupGift) {
-                status = 'groupGift';
-              }
 
               return (
                 <div
@@ -824,14 +880,46 @@ const ProductPage = ({data}) => {
     </div>
   );
 };
-const FundPage = ({data}) => {
-  data.length === 0;
-
+const FundPage = ({data, priceSort, statusFilter}) => {
   // Defensive: handle missing or malformed data
   if (!Array.isArray(data)) return <div>No funds available.</div>;
 
+  // Helper: determine if a fund is gifted
+  const isFundGifted = (fund) => {
+    const totalAmount = Number(fund.amount) || 0;
+    const collectedAmount = Number(fund.collectedAmount) || 0;
+    const remainingAmount = Math.max(0, totalAmount - collectedAmount);
+    const isAnyAmount = fund.cashFund?.isAnyAmount || false;
+
+    // Prefer explicit backend flag when available
+    if (typeof fund.isPurchased === 'boolean') {
+      return fund.isPurchased;
+    }
+
+    // Fallback: fully funded non "any amount" funds are treated as gifted
+    return !isAnyAmount && remainingAmount === 0;
+  };
+
+  // Helper: numeric amount for sorting
+  const getFundAmount = (fund) => Number(fund.amount) || 0;
+
+  // Apply status filter
+  let filteredData = [...data];
+  if (statusFilter === 'gifted') {
+    filteredData = filteredData.filter((fund) => isFundGifted(fund));
+  } else if (statusFilter === 'ungifted') {
+    filteredData = filteredData.filter((fund) => !isFundGifted(fund));
+  }
+
+  // Apply price sort
+  if (priceSort === 'low-to-high') {
+    filteredData.sort((a, b) => getFundAmount(a) - getFundAmount(b));
+  } else if (priceSort === 'high-to-low') {
+    filteredData.sort((a, b) => getFundAmount(b) - getFundAmount(a));
+  }
+
   // Calculate how many placeholder images to show
-  const actualFundsCount = data.length;
+  const actualFundsCount = filteredData.length;
   const placeholderCount = Math.max(0, 4 - actualFundsCount);
 
   // Create array of placeholder elements
@@ -841,7 +929,7 @@ const FundPage = ({data}) => {
       <div
         key={`placeholder-${index}`}
         className={`mb-4 flex items-center justify-center ${
-          data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
+          filteredData.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
         }`}
       >
         <Link to="/dream-fund">
@@ -863,7 +951,7 @@ const FundPage = ({data}) => {
     <div className="min-[1025px]:px-[5vw]">
       <div
         className={`${
-          data.length > 4
+          filteredData.length > 4
             ? 'flex gap-[3.281vw] pb-4 overflow-x-auto snap-x snap-mandatory'
             : 'grid gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
@@ -871,8 +959,8 @@ const FundPage = ({data}) => {
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
         }}
       >
-        {data.length > 0
-          ? data.map((fund) => {
+        {filteredData.length > 0
+          ? filteredData.map((fund) => {
               // Calculate if fund is fully gifted
               const totalAmount = Number(fund.amount) || 0;
               const collectedAmount = Number(fund.collectedAmount) || 0;
@@ -882,8 +970,6 @@ const FundPage = ({data}) => {
               );
               const isFullyGifted = remainingAmount === 0;
               const isAnyAmount = fund.cashFund?.isAnyAmount || false;
-
-              console.log("fund", fund);
 
               return (
                 <div
