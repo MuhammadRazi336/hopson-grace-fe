@@ -3,7 +3,7 @@ import registryLogo from "/assets/Images/registry-logo.png"
 import line from "/assets/Images/Vector 23.png"
 import cancel from "/assets/Images/Group 125.png"
 import Button from '~/components/Button.jsx';
-import { Link, NavLink } from "@remix-run/react";
+import { Link, NavLink, useNavigate } from "@remix-run/react";
 import brandImg from "/assets/Images/menu-our-brand2.png"
 import productImg from "/assets/Images/menu-product.png"
 import instagram from "/assets/Images/instagram.png"
@@ -16,6 +16,7 @@ import { useState } from 'react';
 
 
 const HeaderMobileMenu = ({ onClose, onPopup }) => {
+  const navigate = useNavigate();
   const [isBrandSubMenuOpen, setIsBrandSubMenuOpen] = useState(false);
   const [isProductSubMenuOpen, setIsProductSubMenuOpen] = useState(false);
   const [activeBrand, setActiveBrand] = useState(null);
@@ -48,8 +49,11 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
         </button>
       </div>
       <div className="flex gap-2 mt-8 px-8">
-        <Button text="Find a Couple"
-          className="button-cs-sm text-[#1F1D1B] border-2 text-sm border-[#1F1D1B] bg-transparent rounded-none py-5 px-1 w-full" />
+        <Button
+          onClick={() => { onClose(); navigate('/couple'); }}
+          text="Find a Couple"
+          className="button-cs-sm text-[#1F1D1B] border-2 text-sm border-[#1F1D1B] bg-transparent rounded-none py-5 px-1 w-full"
+        />
         <Button text="GET STARTED" onClick={() => { onClose(); onPopup(); }}
           className="text-white bg-[#446184] rounded-none text-sm button-cs-sm py-5 w-full px-1" />
       </div>
