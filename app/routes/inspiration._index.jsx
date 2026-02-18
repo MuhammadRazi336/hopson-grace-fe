@@ -258,14 +258,6 @@ const Inspiration = () => {
                   </Link>
                 </div>
               </div>
-              {/* Circular Icon with J - Right Side */}
-              <div className="absolute right-[4.167vw] top-1/2 transform -translate-y-1/2 z-10 hidden lg:block">
-                <div className="w-[60px] h-[60px] lg:w-[4.688vw] lg:h-[4.688vw] rounded-full bg-[#4a4a4a] flex items-center justify-center">
-                  <div className="w-[45px] h-[45px] lg:w-[3.5vw] lg:h-[3.5vw] rounded-full bg-[#ff69b4] flex items-center justify-center">
-                    <span className="text-white text-[24px] lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw] font-bold">J</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </SwiperSlide>
 
@@ -290,14 +282,6 @@ const Inspiration = () => {
                   <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
                   </Link>
-                </div>
-              </div>
-              {/* Circular Icon with J - Right Side */}
-              <div className="absolute right-[4.167vw] top-1/2 transform -translate-y-1/2 z-10 hidden lg:block">
-                <div className="w-[60px] h-[60px] lg:w-[4.688vw] lg:h-[4.688vw] rounded-full bg-[#4a4a4a] flex items-center justify-center">
-                  <div className="w-[45px] h-[45px] lg:w-[3.5vw] lg:h-[3.5vw] rounded-full bg-[#ff69b4] flex items-center justify-center">
-                    <span className="text-white text-[24px] lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw] font-bold">J</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -326,14 +310,6 @@ const Inspiration = () => {
                   </Link>
                 </div>
               </div>
-              {/* Circular Icon with J - Right Side */}
-              <div className="absolute right-[4.167vw] top-1/2 transform -translate-y-1/2 z-10 hidden lg:block">
-                <div className="w-[60px] h-[60px] lg:w-[4.688vw] lg:h-[4.688vw] rounded-full bg-[#4a4a4a] flex items-center justify-center">
-                  <div className="w-[45px] h-[45px] lg:w-[3.5vw] lg:h-[3.5vw] rounded-full bg-[#ff69b4] flex items-center justify-center">
-                    <span className="text-white text-[24px] lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw] font-bold">J</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </SwiperSlide>
 
@@ -358,14 +334,6 @@ const Inspiration = () => {
                   <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
                   </Link>
-                </div>
-              </div>
-              {/* Circular Icon with J - Right Side */}
-              <div className="absolute right-[4.167vw] top-1/2 transform -translate-y-1/2 z-10 hidden lg:block">
-                <div className="w-[60px] h-[60px] lg:w-[4.688vw] lg:h-[4.688vw] rounded-full bg-[#4a4a4a] flex items-center justify-center">
-                  <div className="w-[45px] h-[45px] lg:w-[3.5vw] lg:h-[3.5vw] rounded-full bg-[#ff69b4] flex items-center justify-center">
-                    <span className="text-white text-[24px] lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw] font-bold">J</span>
-                  </div>
                 </div>
               </div>
             </div>
