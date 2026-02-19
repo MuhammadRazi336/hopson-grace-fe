@@ -102,7 +102,17 @@ const Registry = () => {
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
   const fetcher = useFetcher();
-  
+
+  // Browser console: ready made registries only
+  useEffect(() => {
+    console.log('Ready made registries:', otherRegistries);
+  }, [otherRegistries]);
+
+  // Browser console: registry query result (collection with blog_link metafield, etc.)
+  useEffect(() => {
+    console.log('Registry query (collection):', collection);
+  }, [collection]);
+
   // Handle fetcher responses
   useEffect(() => {
     if (fetcher.data) {
@@ -353,7 +363,7 @@ const Registry = () => {
             <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw]">
               {collection.description}
             </p>
-            <Link to={`#`} className="text-lg tracking-widest font-bold font-bold uppercase mt-14 inline-block p-5 border-black border-2 px-10">
+            <Link to={`${collection.blogLinkMetafield?.value}`} className="text-lg tracking-widest font-bold uppercase mt-14 inline-block p-5 border-black border-2 px-10">
               READ ABOUT THEIR WEDDING
             </Link>
           </div>
@@ -730,6 +740,10 @@ const REGISTRY_QUERY = `#graphql
        altText
        width
        height
+     }
+     blogLinkMetafield: metafield(namespace: "custom", key: "blog_link") {
+       id
+       value
      }
      products(first: 250) {
        edges {

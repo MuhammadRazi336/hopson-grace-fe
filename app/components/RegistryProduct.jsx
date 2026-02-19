@@ -9,7 +9,8 @@ const ProductCard = ({
   description,
   onAddToRegistry,
   productHandle,
-  isLoggedIn = false, // Show quantity counter only when logged in
+  isLoggedIn = false,
+  isAddingToRegistry = false,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
@@ -112,10 +113,11 @@ const ProductCard = ({
               {/* )} */}
               {/* Add to Registry Button */}
               <button
-                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest"
+                className={`uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 tracking-widest ${isAddingToRegistry ? 'bg-black cursor-wait' : 'bg-[#446184] cursor-pointer'}`}
                 onClick={handleAddToRegistry}
+                disabled={isAddingToRegistry}
               >
-                ADD TO REGISTRY
+                {isAddingToRegistry ? 'ADDED' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>

@@ -1,7 +1,7 @@
+import React, {useState, useEffect, useRef} from 'react';
 import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
-import {useState, useEffect, useRef} from 'react';
 import {Link, useFetcher, useLoaderData, useNavigate, useParams} from '@remix-run/react';
 import {defer, json} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
@@ -19,6 +19,7 @@ import youll3 from '/assets/Images/youll-3.png';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import Heading from '~/components/Heading';
 import lineImghead from '/assets/Images/heading-bottom-curve.png';
+import giftBottomCurve from '/assets/Images/gifts-bottom-line.png';
 import CustomTab from '~/components/CustomTab';
 import brandline from '/assets/Images/brandline.png';
 import ProductSlider from '~/components/ProductSlider';
@@ -135,32 +136,53 @@ async function loadCollectionData({context}) {
   }
 }
 
+const isExcludedFundsCollection = (col) => {
+  const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+  return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+};
+
+const isParentForSlides = (col) =>
+  col.parentMetafield?.value === 'true' &&
+  col.readyMadeMetafield?.value !== 'true' &&
+  !isExcludedFundsCollection(col);
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
   setCheckedCollectionIds,
   selectedCollectionId,
+  selectedSwiperCollectionId,
+  selectedSubCollections,
+  shopAllChecked,
+  setShopAllChecked,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    brands: true,
     styles: true,
   });
 
-  const parentCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'true',
+  const parentCollection = collections.filter(isParentForSlides);
+
+  const baseSubCollection = collections.filter(
+    (col) =>
+      col.parentMetafield?.value === 'false' &&
+      col.readyMadeMetafield?.value !== 'true',
   );
 
-  const subCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'false',
-  );
+  const subCollection =
+    selectedSwiperCollectionId && selectedSubCollections?.length > 0
+      ? selectedSubCollections
+      : baseSubCollection;
 
-  // Pre-select the collection if selectedCollectionId is provided
   useEffect(() => {
-    if (selectedCollectionId && !checkedCollectionIds.includes(selectedCollectionId)) {
+    if (
+      !selectedSwiperCollectionId &&
+      selectedCollectionId &&
+      !checkedCollectionIds.includes(selectedCollectionId)
+    ) {
       setCheckedCollectionIds([selectedCollectionId]);
     }
-  }, [selectedCollectionId, checkedCollectionIds, setCheckedCollectionIds]);
+  }, [selectedSwiperCollectionId, selectedCollectionId, checkedCollectionIds, setCheckedCollectionIds]);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
@@ -181,73 +203,48 @@ function SidebarFilter({
 
   return (
     <div className="w-full lg:w-[19.031vw] xl:w-[19.031vw] 2xl:w-[19.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6]">
-      <div className="mb-6">
-        <h2
-          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
-          onClick={() => toggleSection('categories')}
-        >
-          Product Categories
-          <span className="text-lg relative -top-[3px]">
-            {openSections.categories ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.categories && (
-          <ul className="space-y-2 text-sm">
-          {parentCollection.map((col) => (
-              <li key={col.id} className='mb-[1.69vw]'>
+      {!selectedSwiperCollectionId && (
+        <div className="mb-6">
+          <h2
+            className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+            onClick={() => toggleSection('categories')}
+          >
+            Product Categories
+            <span className="text-lg relative -top-[3px]">
+              {openSections.categories ? (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="minus"
+                  className="w-[0.833vw] h-[0.833vw] rotate-180"
+                />
+              ) : (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="plus"
+                  className="w-[0.833vw] h-[0.833vw]"
+                />
+              )}
+            </span>
+          </h2>
+          {openSections.categories && (
+            <ul className="space-y-2 text-sm">
+              {parentCollection.map((col) => (
+                <li key={col.id} className="mb-[1.69vw]">
                   <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                  <input
-                    type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                    checked={checkedCollectionIds.includes(col.id)}
-                    onChange={() => handleSidebarCheckbox(col.id)}
-                  />
-                  {col.title}
-                </label>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="my-10">
-        <h2
-          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
-          onClick={() => toggleSection('brands')}
-        >
-          Our Brands
-          <span className="text-lg relative -top-[3px]">
-            {openSections.brands ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
-              />
-            )}
-          </span>
-        </h2>
-        {openSections.brands && (
-          <p className="lg:text-[0.834vw] xl:text-[0.834vw] 2xl:text-[0.834vw] text-[16px] text-gray-500 italic">No data</p>
-        )}
-      </div>
+                    <input
+                      type="checkbox"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                      checked={checkedCollectionIds.includes(col.id)}
+                      onChange={() => handleSidebarCheckbox(col.id)}
+                    />
+                    {col.title}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <div>
         <h2
@@ -273,9 +270,20 @@ function SidebarFilter({
         </h2>
         {openSections.styles && (
           <ul className="space-y-2 text-sm">
+            <li className="mb-[1.69vw]">
+              <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                <input
+                  type="checkbox"
+                  className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                  checked={shopAllChecked}
+                  onChange={() => setShopAllChecked((prev) => !prev)}
+                />
+                Shop All
+              </label>
+            </li>
             {subCollection.map((col) => (
-              <li key={col.id} className='mb-[1.69vw]'>
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+              <li key={col.id} className="mb-[1.69vw]">
+                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                   <input
                     type="checkbox"
                     className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
@@ -308,13 +316,55 @@ export default function ProductCollection() {
 
   const userId = userData?.user?.id;
 
-  // State for checked collections and displayed products
   const [checkedCollectionIds, setCheckedCollectionIds] = useState(selectedCollection ? [selectedCollection.id] : []);
-  const [displayedProducts, setDisplayedProducts] = useState([]);
   const initialPreferencesApplied = useRef(false);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
-  const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null); // Always start with null to show swiper
+  const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
+  const [selectedSubCollections, setSelectedSubCollections] = useState([]);
+  const [shopAllChecked, setShopAllChecked] = useState(false);
+
+  const getSubCollectionsForParent = (parentCol) => {
+    if (!parentCol) return [];
+    if (parentCol.subCollectionMetafield?.references?.edges) {
+      return parentCol.subCollectionMetafield.references.edges.map((edge) => edge.node);
+    }
+    if (parentCol.subMetafield?.value) {
+      try {
+        const gids = JSON.parse(parentCol.subMetafield.value);
+        return collections.filter((c) => gids.includes(c.id));
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  useEffect(() => {
+    if (!selectedCollection || !collections?.length) return;
+    const isParent = selectedCollection.parentMetafield?.value === 'true';
+    if (isParent) {
+      const subs = getSubCollectionsForParent(selectedCollection);
+      const subIds = subs.map((s) => s.id);
+      setSelectedSwiperCollectionId(selectedCollection.id);
+      setSelectedSubCollections(subs);
+      setCheckedCollectionIds(subIds);
+      setShopAllChecked(true);
+    } else {
+      const parent = collections.find((col) => {
+        if (col.parentMetafield?.value !== 'true') return false;
+        const subs = getSubCollectionsForParent(col);
+        return subs.some((s) => s.id === selectedCollection.id);
+      });
+      if (parent) {
+        const subs = getSubCollectionsForParent(parent);
+        setSelectedSwiperCollectionId(parent.id);
+        setSelectedSubCollections(subs);
+        setCheckedCollectionIds([selectedCollection.id]);
+        setShopAllChecked(false);
+      }
+    }
+  }, [selectedCollection?.id, collections?.length]);
 
   // Helper to get all products for checked collections
   const getProductsForCheckedCollections = (checkedIds) => {
@@ -328,21 +378,25 @@ export default function ProductCollection() {
     );
     let parentProducts = [];
     checkedParents.forEach((parentCol) => {
-      let subCollectionGids = [];
-      const subColMeta = parentCol.subMetafield;
-      if (subColMeta?.value) {
-        try {
-          subCollectionGids = JSON.parse(subColMeta.value);
-        } catch (error) {
-          console.error('Error parsing subCollectionGids:', error);
+      let subCols = [];
+      if (parentCol.subCollectionMetafield?.references?.edges) {
+        subCols = parentCol.subCollectionMetafield.references.edges.map((edge) => edge.node);
+      } else {
+        let subCollectionGids = [];
+        const subColMeta = parentCol.subMetafield;
+        if (subColMeta?.value) {
+          try {
+            subCollectionGids = JSON.parse(subColMeta.value);
+          } catch (error) {
+            console.error('Error parsing subCollectionGids:', error);
+          }
         }
+        subCols = collections.filter(
+          (col) =>
+            col.parentMetafield?.value === 'false' &&
+            subCollectionGids.includes(col.id),
+        );
       }
-      // Find sub-collections by GID
-      const subCols = collections.filter(
-        (col) =>
-          col.parentMetafield?.value === 'false' &&
-          subCollectionGids.includes(col.id),
-      );
       parentProducts = parentProducts.concat(
         subCols.length > 0
           ? subCols.flatMap((col) =>
@@ -364,14 +418,15 @@ export default function ProductCollection() {
     return uniqueProducts;
   };
 
-  // Update displayedProducts when checkedCollectionIds changes
-  useEffect(() => {
-    setDisplayedProducts(
-      getProductsForCheckedCollections(checkedCollectionIds),
-    );
-    // Only sync Swiper selection if it's manually changed, not from initial URL
-    // Removed automatic sync to keep swiper visible initially
-  }, [checkedCollectionIds]);
+  const displayedProducts = React.useMemo(() => {
+    if (shopAllChecked && selectedSwiperCollectionId && selectedSubCollections?.length > 0) {
+      const all = selectedSubCollections.flatMap((col) =>
+        (col.products?.edges || []).map((edge) => edge.node),
+      );
+      return Array.from(new Map(all.map((p) => [p.id, p])).values());
+    }
+    return getProductsForCheckedCollections(checkedCollectionIds);
+  }, [shopAllChecked, selectedSwiperCollectionId, selectedSubCollections, checkedCollectionIds, collections]);
 
   const handleAddtoRegistry = (product) => {
     try {
@@ -475,9 +530,11 @@ export default function ProductCollection() {
       return 0;
     });
 
-  const parentCollection = collections.filter(
-    (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
-  );
+  const parentCollectionForSwiper = collections.filter((col) => isParentForSlides(col));
+
+  useEffect(() => {
+    if (!selectedSwiperCollectionId) setShopAllChecked(false);
+  }, [selectedSwiperCollectionId]);
 
   return (
     <>
@@ -485,30 +542,7 @@ export default function ProductCollection() {
 
       <div className="w-full h-[2px] bg-black"></div>
 
-      <div className="relative mt-[5.938vw]">
-        <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[1.875vw] font-normal mb-1">
-          {selectedSwiperCollectionId ? (
-            <span className="prata lowercase">
-              {collections.find(col => col.id === selectedSwiperCollectionId)?.title || ''}
-            </span>
-          ) : selectedCollection ? (
-            <span className="prata lowercase">{selectedCollection.title}</span>
-          ) : (
-            <span className="prata lowercase">Browse Products</span>
-          )}
-        </h2>
-        <img
-          src="/assets/Images/heading-bottom-curve.png"
-          alt="Couple"
-          className="max-w-[360px] lg:w-[18.75vw] xl:w-[18.75vw] 2xl:w-[18.75vw] mt-5 h-auto mx-auto"
-        />
-        <p className="max-w-xl lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] mx-auto text-center  mt-[1.875vw] mb-[3.281vw] font-normal leading-relaxed">
-          Browse by category, filter by price, or get inspired with our curated
-          edits. Add, update, or switch things up whenever you like.
-        </p>
-      </div>
-
-      <section className="lg:px-[8.125vw] xl:px-[8.125vw] 2xl:px-[8.125vw] ">
+      <section className="">
         <div className=" relative items-start mt-[0] mb-0 max-[1024px]:my-10">
           <div className=" ">
             {!selectedSwiperCollectionId && (
@@ -562,18 +596,20 @@ export default function ProductCollection() {
                   }}
                 >
                   {/* Dynamic slides from Shopify collections */}
-                  {collections
-                    .filter((col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true')
-                    .map((col) => (
-                      <SwiperSlide
-                        key={col.id}
-                        onClick={() => {
-                          setCheckedCollectionIds([col.id]);
-                          setSelectedSwiperCollectionId(col.id);
-                        }}
-                        style={{ cursor: 'pointer'}}
-                        className='lg:w-[33.33%] xl:w-[33.33%] 2xl:w-[33.33%]'
-                      >
+                  {parentCollectionForSwiper.map((col) => (
+                    <SwiperSlide
+                      key={col.id}
+                      onClick={() => {
+                        const subCollections = getSubCollectionsForParent(col);
+                        const subCollectionGids = subCollections.map((s) => s.id);
+                        setCheckedCollectionIds(subCollectionGids);
+                        setSelectedSubCollections(subCollections);
+                        setSelectedSwiperCollectionId(col.id);
+                        setShopAllChecked(true);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                      className="lg:w-[33.33%] xl:w-[33.33%] 2xl:w-[33.33%]"
+                    >
                         <img
                           src={col.image?.url || '/assets/Images/placeholder.png'}
                           alt={col.title}
@@ -591,12 +627,76 @@ export default function ProductCollection() {
               </>
             )}
 
-            {/* Selected collection image at 100% width - replaces swiper */}
-            {selectedSwiperCollectionId && (
+            {/* Selected collection: sub-collections carousel (like add gifts) */}
+            {selectedSwiperCollectionId && selectedSubCollections?.length > 0 && (
+              <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] min-h-[27.083vw] pl-[7.396vw] pr-[7.396vw] py-[2vw] relative">
+                <div className="flex items-center gap-[8.698vw] w-full">
+                  <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px] shrink-0">
+                    {collections.find((col) => col.id === selectedSwiperCollectionId)?.title?.toLowerCase() || 'collection'}
+                    <img
+                      src={giftBottomCurve}
+                      alt=""
+                      className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto"
+                    />
+                  </h3>
+                  <div className="relative flex-1">
+                    <div className="z-10 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
+                      <img src={nextitem} alt="" className="rotate-90 size-6" />
+                    </div>
+                    <Swiper
+                      spaceBetween={18}
+                      slidesPerView={5}
+                      loop={false}
+                      modules={[Navigation]}
+                      navigation={{
+                        nextEl: '.swiper-button-next-sub',
+                        prevEl: '.swiper-button-prev-sub',
+                      }}
+                      className="relative w-full"
+                      breakpoints={{
+                        345: { slidesPerView: 1.25, spaceBetween: 10 },
+                        475: { slidesPerView: 2.25, spaceBetween: 15 },
+                        768: { slidesPerView: 2.25, spaceBetween: 18 },
+                        1024: { slidesPerView: 3, spaceBetween: 18 },
+                        1025: { slidesPerView: 4, spaceBetween: 18 },
+                        1365: { slidesPerView: 5, spaceBetween: 18 },
+                      }}
+                    >
+                      {selectedSubCollections.map((subCol) => (
+                        <SwiperSlide
+                          key={subCol.id}
+                          onClick={() => {
+                            setCheckedCollectionIds([subCol.id]);
+                            setShopAllChecked(false);
+                          }}
+                          className="cursor-pointer group min-w-[13.542vw] max-w-[13.542vw]"
+                        >
+                          <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
+                            <img
+                              src={subCol.image?.url || '/assets/Images/placeholder.png'}
+                              alt={subCol.title}
+                              className="w-full h-[180px] lg:h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <h4 className="mt-3 text-center uppercase text-xs lg:text-sm font-medium tracking-wider text-black">
+                            {subCol.title}
+                          </h4>
+                        </SwiperSlide>
+                      ))}
+                    </Swiper>
+                    <div className="swiper-button-next-sub absolute right-[50px] cursor-pointer uppercase items-center bg-white z-10 top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
+                      <img src={nextitem} className="size-6 rotate-270" alt="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {selectedSwiperCollectionId && (!selectedSubCollections || selectedSubCollections.length === 0) && (
               <div className="relative">
                 <img
-                  src={collections.find(col => col.id === selectedSwiperCollectionId)?.image?.url || '/assets/Images/placeholder.png'}
-                  alt={collections.find(col => col.id === selectedSwiperCollectionId)?.title}
+                  src={collections.find((col) => col.id === selectedSwiperCollectionId)?.image?.url || '/assets/Images/placeholder.png'}
+                  alt={collections.find((col) => col.id === selectedSwiperCollectionId)?.title}
                   className="w-full h-[510px] lg:h-[800px] object-cover"
                 />
               </div>
@@ -612,6 +712,10 @@ export default function ProductCollection() {
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
             selectedCollectionId={selectedCollection?.id}
+            selectedSwiperCollectionId={selectedSwiperCollectionId}
+            selectedSubCollections={selectedSubCollections}
+            shopAllChecked={shopAllChecked}
+            setShopAllChecked={setShopAllChecked}
           />
           <div
             className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]"
@@ -941,14 +1045,14 @@ const COLLECTION_QUERY = `#graphql
         title
         id
         handle
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
-      readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
           id
           value
         }
@@ -958,8 +1062,31 @@ const COLLECTION_QUERY = `#graphql
         }
         subMetafield: metafield(namespace: "sub", key: "collection") {
           id
-      value
-    }
+          value
+        }
+        subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+          references(first: 20) {
+            edges {
+              node {
+                ... on Collection {
+                  id
+                  title
+                  handle
+                  description
+                  image {
+                    id
+                    url
+                    altText
+                    width
+                    height
+                  }
+                }
+              }
+            }
+          }
+        }
         products(first: 10){
           edges {
             node {

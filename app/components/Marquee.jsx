@@ -6,9 +6,6 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 const Marquee = ({ brands = [] }) => {
-  // Debug logging
-  console.log('Marquee component received brands:', brands);
-  console.log('Brands length:', brands.length);
   
   // Fallback to static images if no brands are provided
   const fallbackBrands = [
@@ -39,9 +36,6 @@ const Marquee = ({ brands = [] }) => {
 
   // Use dynamic featured brands if available, otherwise use fallback
   const displayBrands = filteredDynamic.length > 0 ? filteredDynamic : fallbackBrands;
-  
-  console.log('Display brands:', displayBrands);
-  console.log('Using dynamic brands:', brands.length > 0);
 
   // Function to get brand image URL
   const getBrandImage = (brand) => {
