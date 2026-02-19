@@ -13,6 +13,7 @@ import { Footer } from '~/components/Footer';
 import {formatPrice} from '~/utils/priceFormatter';
 
 export async function loader({request, context}) {
+  try {
   const user = context?.session?.get('@User');
   const registry = await context.ClientGet(
     `registries/by-userId/${user.user.id}`,
@@ -134,6 +135,13 @@ export async function loader({request, context}) {
     user,
     apiBaseUrl,
   });
+  } catch (e) {
+    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    throw e;
+  }
 }
 
 export async function action({request, context}) {

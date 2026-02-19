@@ -1,6 +1,6 @@
 import {redirect, json} from '@shopify/remix-oxygen';
 import {requireAuth} from '~/utils/auth-guard.js';
-import {Link, useActionData, useFetcher, useSubmit, useNavigate} from '@remix-run/react';
+import {Link, useActionData, useFetcher, useSubmit, useNavigate, useLocation} from '@remix-run/react';
 import {toast} from 'react-toastify';
 
 import Input from '~/components/Input.jsx';
@@ -73,8 +73,28 @@ const LoginIndex = () => {
   const submit = useSubmit();
   const actionData = useActionData();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPopup, setShowPopup] = useState(false);
   console.log(actionData, 'ActionData');
+
+  // When redirected after session expiry: clear all client storage and cookies, then clean URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('session_expired') === '1' && typeof window !== 'undefined') {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        // Clear all cookies accessible to JS (non-HttpOnly)
+        document.cookie.split(';').forEach((c) => {
+          const name = c.replace(/^\s*|\s*$/g, '').split('=')[0];
+          document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        });
+      } catch (e) {
+        console.warn('Error clearing storage on session expiry:', e);
+      }
+      navigate('/login', {replace: true});
+    }
+  }, [location.search, navigate]);
 
   const handleOpenPopup = () => {
     setShowPopup(true);

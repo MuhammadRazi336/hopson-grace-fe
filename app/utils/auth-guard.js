@@ -13,7 +13,7 @@ export async function clearSessionAndRedirect(context) {
   // Destroy the session completely
   await context.session.destroy();
   
-  return redirect('/login', {
+  return redirect('/login?session_expired=1', {
     headers: {
       'Set-Cookie': await context.session.commit(),
     },
