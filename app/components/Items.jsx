@@ -7,11 +7,7 @@ import linkIcon from '/assets/Images/hopson-linkicon.png';
 const Items = ({ featuredRegistryData = null }) => {
   const navigate = useNavigate();
   
-  // Debug logging
-  console.log('🔍 DEBUG: Items component received:', featuredRegistryData);
-  
   if (!featuredRegistryData) {
-    console.log('🔍 DEBUG: No featuredRegistryData in Items component');
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">No registry data available</p>
@@ -26,15 +22,9 @@ const Items = ({ featuredRegistryData = null }) => {
 
   const { parentCollection, subCollection } = featuredRegistryData;
   
-  console.log('🔍 DEBUG: Parent collection in Items:', parentCollection);
-  console.log('🔍 DEBUG: Sub collection in Items:', subCollection);
-  
   // Get products from the sub-collection
   const products = subCollection?.products?.edges || [];
   
-  console.log('🔍 DEBUG: Products count in Items:', products.length);
-  console.log('🔍 DEBUG: Products in Items:', products);
-
   return (
     <div>
       <div className="flex relative items-center grid-cols-2 lg:grid-cols-[77.73vw_52.08vw] lg:grid-rows-2 max-[1024px]:gap-y-[20px] max-[767px]:flex-col max-[767px]:px-[23px]">
