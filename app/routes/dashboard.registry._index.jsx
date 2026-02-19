@@ -12,6 +12,25 @@ import PreviewRegistry from '~/components/PreviewRegistry';
 import { Footer } from '~/components/Footer';
 import {formatPrice} from '~/utils/priceFormatter';
 
+// Minimal query for parent collections (same filtering as dashboard addgifts)
+const REGISTRY_COLLECTION_QUERY = `#graphql
+  query RegistryParentCollections {
+    collections(first: 250) {
+      nodes {
+        id
+        title
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
+          id
+          value
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
+      }
+    }
+  }`;
+
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
   const registry = await context.ClientGet(
@@ -126,6 +145,24 @@ export async function loader({request, context}) {
 
   const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
 
+  // Fetch parent collections for categories filter (same logic as dashboard addgifts: exclude CASH FUNDS, TRAVEL FUNDS)
+  let parentCollections = [];
+  try {
+    const {collections} = await context.storefront.query(REGISTRY_COLLECTION_QUERY);
+    const nodes = collections?.nodes || [];
+    const isExcludedFundsCollection = (col) => {
+      const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+      return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+    };
+    const isParentForSlides = (col) =>
+      col.parentMetafield?.value === 'true' &&
+      col.readyMadeMetafield?.value !== 'true' &&
+      !isExcludedFundsCollection(col);
+    parentCollections = nodes.filter(isParentForSlides);
+  } catch (err) {
+    console.error('Error fetching parent collections for registry:', err);
+  }
+
   return defer({
     data: mergedArray,
     cashfundData: cashRes?.data || [],
@@ -134,6 +171,7 @@ export async function loader({request, context}) {
     registry,
     user,
     apiBaseUrl,
+    parentCollections,
   });
 }
 
@@ -154,7 +192,7 @@ export async function action({request, context}) {
 
 const index = () => {
   const loaderData = useLoaderData();
-  const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
+  const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl, parentCollections = []} =
     loaderData;
 
     console.log('cashfundData', cashfundData);
@@ -337,6 +375,13 @@ const index = () => {
   // Filters for "our registry selections"
   const [priceSort, setPriceSort] = useState('low-to-high'); // 'low-to-high' | 'high-to-low'
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'gifted' | 'ungifted'
+  // Category filter: 'all' or parent collection id (only gifts from that parent collection)
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const categoryOptions = ['all', ...(parentCollections || []).map((c) => c.id)];
+  const categoryLabel =
+    categoryFilter === 'all'
+      ? 'All'
+      : (parentCollections || []).find((c) => c.id === categoryFilter)?.title ?? 'All';
 
   return (
     <>
@@ -559,22 +604,14 @@ const index = () => {
               onClick={handleSavePreview}
               type="button"
             >
-              Save & Preview
+              Save
             </button>
-            <Link to={`/dashboard/registry/${registryData.events[0].id}`}>
-              <button
-                className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1 max-[1024px]:text-[14px] max-[1024px]:mx-[10px]"
-                type="button"
-              >
-                Edit Registry Details
-              </button>
-            </Link>
           </div>
         </div>
       </div>
       <div className="mx-auto w-[calc(100%-13.3vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] max-[1024px]:w-full max-[1024px]:px-[20px]">
         <h2 className="mt-0 lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal mb-[1.302vw]">
-          our registry selections
+          your registry selections
         </h2>
         <img
           src="/assets/Images/heading-bottom-curve.png"
@@ -584,9 +621,16 @@ const index = () => {
 
         <div className="filters">
           <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px]">
-            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
+            <h3
+              className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer"
+              onClick={() => {
+                const currentIndex = categoryOptions.indexOf(categoryFilter);
+                const nextIndex = (currentIndex + 1) % categoryOptions.length;
+                setCategoryFilter(categoryOptions[nextIndex]);
+              }}
+            >
               {' '}
-              <strong>Categories</strong> All{' '}
+              <strong>Categories</strong> {categoryLabel}{' '}
               <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
               </svg>
@@ -631,7 +675,7 @@ const index = () => {
         </div>
         <div className="gap-6 mt-[5.938vw]">
           <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
-          <ProductPage data={data} priceSort={priceSort} statusFilter={statusFilter} />
+          <ProductPage data={data} priceSort={priceSort} statusFilter={statusFilter} categoryFilter={categoryFilter} />
         </div>
 
         <div className="gap-6 mt-[6vw]">
@@ -683,7 +727,7 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = ({data, priceSort, statusFilter}) => {
+const ProductPage = ({data, priceSort, statusFilter, categoryFilter}) => {
   if (!Array.isArray(data)) return null;
 
   // Helper: determine if a product is gifted
@@ -707,8 +751,15 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
     return Number(product.amount) || 0;
   };
 
-  // Apply status filter
+  // Apply category filter (parent collection): only show gifts that have this parentCollectionId
   let filteredData = [...data];
+  if (categoryFilter && categoryFilter !== 'all') {
+    filteredData = filteredData.filter(
+      (product) => product.parentCollectionId === categoryFilter,
+    );
+  }
+
+  // Apply status filter
   if (statusFilter === 'gifted') {
     filteredData = filteredData.filter((product) => isProductGifted(product));
   } else if (statusFilter === 'ungifted') {
@@ -932,7 +983,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
           filteredData.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
         }`}
       >
-        <Link to="/dream-fund">
+        <Link to="/cash-funds">
           <img
             src="/assets/Images/add-cash-placeholder.png"
             alt="Add cash fund placeholder"
