@@ -483,8 +483,6 @@ export default function ProductCollection() {
     <>
       <Header />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <div className="relative mt-[5.938vw]">
         <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[1.875vw] font-normal mb-1">
           {selectedSwiperCollectionId ? (

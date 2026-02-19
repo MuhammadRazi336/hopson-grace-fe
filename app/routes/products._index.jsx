@@ -284,8 +284,6 @@ const Products = () => {
     <section>
       <Header />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <div className="w-full h-fit pt-[6.771vw]">
         <Heading
           text={searchQuery ? `search results for "${searchQuery}"` : "browse by category"}

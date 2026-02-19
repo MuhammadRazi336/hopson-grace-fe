@@ -756,12 +756,12 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
   );
 
   return (
-    <div className="">
+    <div className="min-[1025px]:px-[5vw]">
       <div
         className={`${
           filteredData.length > 4
             ? 'flex gap-[2.917vw] mt-0 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-[2.917vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            : 'grid items-start gap-[3.281vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
@@ -800,7 +800,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
                   }`}
                 >
                   <div className="flex flex-col justify-between">
-                    <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                    <div className="h-[inherit] w-full mb-4 flex justify-center relative">
                       <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
                       <img
                         src={
@@ -808,7 +808,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
                           '/assets/Images/placeholder.png'
                         }
                         alt={product.title || 'Product'}
-                        className="w-full h-full aspect-square object-cover mb-4"
+                        className="w-full aspect-square object-cover mb-4"
                       />
                       </Link>
 
@@ -961,7 +961,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
         className={`${
           filteredData.length > 4
             ? 'flex gap-[3.281vw] pb-4 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            : 'grid items-start gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
@@ -991,14 +991,14 @@ const FundPage = ({data, priceSort, statusFilter}) => {
                   }`}
                 >
                   <div className="flex flex-col justify-between">
-                    <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                    <div className="h-[inherit] w-full mb-4 flex justify-center relative">
                       <img
                         src={
                           fund.cashFund.image?.fileUrl ||
                           '/assets/Images/placeholder.png'
                         }
                         alt={fund.cashFund?.name || 'Cash Fund'}
-                        className="w-full h-full aspect-square object-cover mb-4"
+                        className="w-full aspect-square object-cover mb-4"
                       />
                       <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
                         <h2 className="prata text-black text-sm text-center font-bold mt-1">

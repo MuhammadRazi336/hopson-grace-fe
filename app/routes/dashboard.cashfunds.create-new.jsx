@@ -381,9 +381,6 @@ function CreateNewCashFund() {
                       </div>
                     </button>
                   </div>
-                  <p className="text-white/80 text-xs lg:text-[0.729vw] mt-1">
-                    Drop an image here or click the edit icon to upload and crop
-                  </p>
                   <EditImagePopup
                     isOpen={isEditPopupOpen}
                     onClose={() => {
@@ -393,6 +390,7 @@ function CreateNewCashFund() {
                     onSave={handleCroppedImageSave}
                     initialFile={droppedFile}
                     onInitialFileConsumed={() => setDroppedFile(null)}
+                    cropShape="rect"
                   />
                 </div>
 
@@ -694,6 +692,7 @@ function CreateNewCashFund() {
         isOpen={isEditPopupOpen}
         onClose={() => setIsEditPopupOpen(false)}
         onSave={handleCroppedImageSave}
+        cropShape="rect"
       />
       
       {/* Toast Container */}
