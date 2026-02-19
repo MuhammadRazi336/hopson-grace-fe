@@ -154,7 +154,6 @@ export function Header() {
               })
               .then(registryData => {
                 if (registryData) {
-                  console.log('Registry API response:', registryData);
                   if (registryData.code === 200 && registryData.data && registryData.data.length > 0) {
                     const registry = registryData.data[0];
                     setRegistryData(registry);
@@ -164,14 +163,12 @@ export function Header() {
                 setIsLoadingRegistry(false);
               })
               .catch(error => {
-                console.error('Error fetching registry data:', error);
                 setIsLoadingRegistry(false);
               });
 
             }
           }
         } catch (error) {
-          console.error('Error decoding token:', error);
         }
       }
     }
@@ -180,7 +177,6 @@ export function Header() {
   // Fetch unread count when user data is available
   useEffect(() => {
     if (userData?.id && user) {
-      console.log('User data loaded, fetching unread count...');
       fetchUnreadCount();
     }
   }, [userData?.id, user]);
@@ -188,14 +184,7 @@ export function Header() {
 
   // Socket connection and notification handling
   useEffect(() => {
-    console.log('Socket useEffect triggered:', {
-      userDataId: userData?.id,
-      hasUser: !!user,
-      apiBaseUrl
-    });
-
     if (userData?.id && user) {
-      console.log('Initializing socket connection to:', apiBaseUrl);
       
       // Initialize socket connection
       const socket = io(apiBaseUrl, {
@@ -209,33 +198,26 @@ export function Header() {
 
       // Listen for new notifications
       socket.on('notification', (notification) => {
-        console.log('New notification received:', notification);
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(prev => prev + 1);
-        console.log('Incremented unread count to:', unreadCount + 1);
       });
 
       // Listen for connection status
       socket.on('connect', () => {
-        console.log('Connected to notification server');
       });
 
       socket.on('disconnect', () => {
-        console.log('Disconnected from notification server');
       });
 
       socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
       });
 
       // Fetch existing notifications and unread count
-      console.log('Calling fetchNotifications...');
       fetchNotifications();
       fetchUnreadCount();
 
       // TEMPORARY: Create a test notification (remove this after testing)
       setTimeout(() => {
-        console.log('Creating test notification...');
         fetch(`${apiBaseUrl}/api/notifications/test`, {
           method: 'POST',
           headers: {
@@ -245,7 +227,6 @@ export function Header() {
         })
         .then(res => res.json())
         .then(data => {
-          console.log('Test notification created:', data);
           // Refresh notifications after creating test
           setTimeout(() => fetchNotifications(), 1000);
         })
@@ -254,26 +235,16 @@ export function Header() {
 
       // Cleanup on unmount
       return () => {
-        console.log('Cleaning up socket connection');
         socket.disconnect();
       };
-    } else {
-      console.log('Socket connection skipped - missing requirements');
     }
   }, [userData?.id, user, apiBaseUrl]);
 
   // Fetch notifications from API
   const fetchNotifications = async () => {
     if (!userData?.id || !user) {
-      console.log('Cannot fetch notifications - missing userData.id or user token:', {
-        userDataId: userData?.id,
-        hasUser: !!user
-      });
       return;
     }
-
-    console.log('Fetching notifications for user:', userData.id);
-    console.log('API URL:', `${apiBaseUrl}/api/notifications`);
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/notifications`, {
@@ -283,48 +254,29 @@ export function Header() {
         }
       });
 
-      console.log('Notifications API response status:', response.status);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Raw notifications response:', result);
         
         // Handle new API structure with data wrapper
         if (result.code === 200 && result.data && Array.isArray(result.data)) {
-          console.log('Setting notifications:', result.data);
           setNotifications(result.data);
           // Calculate unread count from notifications
           const unreadNotifications = result.data.filter(n => n.status === 'unread');
-          console.log('Unread notifications count from notifications API:', unreadNotifications.length);
           setUnreadCount(unreadNotifications.length);
         } else {
-          console.log('Notifications response structure unexpected:', result);
         }
       } else {
         const errorText = await response.text();
-        console.error('Notifications API error response:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        });
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
     }
   };
 
   // Fetch unread count from API
   const fetchUnreadCount = async () => {
     if (!userData?.id || !user) {
-      console.log('Cannot fetch unread count - missing userData.id or user token:', {
-        userDataId: userData?.id,
-        hasUser: !!user
-      });
       return;
     }
-
-    console.log('Fetching unread count for user:', userData.id);
-    console.log('API URL:', `${apiBaseUrl}/api/notifications/unread/count`);
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/notifications/unread/count`, {
@@ -334,13 +286,9 @@ export function Header() {
         }
       });
 
-      console.log('Unread count API response status:', response.status);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Unread count API response:', result);
         if (result.code === 200 && result.data) {
-          console.log('Setting unread count to:', result.data.count);
           setUnreadCount(result.data.count || 0);
         }
       } else {
@@ -1510,14 +1458,14 @@ export function Header() {
                         {/* Red Circle Badge */}
                         {unreadCount > 0 && (
                           <>
-                            <circle cx="40.625" cy="19.375" r="10" fill="#F5F2ED" />
+                            <circle cx="40.625" cy="19.375" r="10" fill="#C52248" />
                             {/* Number inside the circle */}
                             <text
                               x="40.625"
                               y="19.375"
                               textAnchor="middle"
                               dominantBaseline="middle"
-                              fill="#C52248"
+                              fill="white"
                               fontSize="10"
                               fontWeight="bold"
                             >
@@ -1758,10 +1706,10 @@ export function Header() {
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dream-fund' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dream-fund">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/cash-funds' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/cash-funds">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
                     <div className="z-20 text-inherit">
-                      <span className="relative inline-block leading-6">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dream-fund' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                      <span className="relative inline-block leading-6">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/cash-funds' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>

@@ -23,14 +23,11 @@ const NavBarLinks = (mobileClasses) => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Navigation collections data:', data);
           setCollections(data.collections || []);
         } else {
-          console.error('Failed to fetch collections');
           setCollections([]);
         }
       } catch (error) {
-        console.error('Error fetching collections:', error);
         setCollections([]);
       } finally {
         setLoading(false);

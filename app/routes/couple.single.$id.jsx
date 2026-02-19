@@ -451,7 +451,6 @@ export default function CoupleProfile() {
   const fetchCartItems = async () => {
     // Don't try to fetch cart items if there are no products or no registry ID
     if (!hasProducts || !registryId) {
-      console.log('fetchCartItems: Skipping - no products or registry ID');
       setCartItems([]);
       cartItemsRef.current = [];
       return;
@@ -459,17 +458,7 @@ export default function CoupleProfile() {
 
     const email =
       typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
-    console.log(
-      'fetchCartItems called with email:',
-      email,
-      'registryId:',
-      registryId,
-    );
-
     if (!email || !registryId) {
-      console.log(
-        'fetchCartItems: Missing email or registryId, returning early',
-      );
       return;
     }
 
@@ -486,17 +475,11 @@ export default function CoupleProfile() {
       if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
         // Extract registryProducts from the first cart
         const cartData = apiData.data[0];
-        console.log('Cart API Response:', cartData);
-        console.log('Cart Items:', cartData.cartItemProducts);
 
         // Transform the API data to match SideCart expectations
         const transformedItems = (cartData.cartItemProducts || []).map(
           (cartItem) => {
             const registryProduct = cartItem.registryProduct;
-            console.log('Cart Item:', cartItem);
-            console.log('Registry Product:', registryProduct);
-            console.log('CartItem quantity:', cartItem.quantity);
-            console.log('RegistryProduct quantity:', registryProduct.quantity);
 
             // Try to find the product in our loaded data to get title and image
             const productFromData = safeData.find(
@@ -530,7 +513,6 @@ export default function CoupleProfile() {
             };
           },
         );
-        console.log('Transformed Items:', transformedItems);
         setCartItems(transformedItems);
         // Also update the ref for immediate access
         cartItemsRef.current = transformedItems;
@@ -539,7 +521,6 @@ export default function CoupleProfile() {
         cartItemsRef.current = [];
       }
     } catch (error) {
-      console.error('Error fetching cart:', error);
       setCartItems([]);
       cartItemsRef.current = [];
     } finally {
@@ -549,19 +530,9 @@ export default function CoupleProfile() {
 
   // Fetch cart items on component mount and when email changes
   useEffect(() => {
-    console.log(
-      'useEffect triggered - guestEmail:',
-      guestEmail,
-      'registryId:',
-      registryId,
-      'hasProducts:',
-      hasProducts,
-    );
-    if (guestEmail && registryId && hasProducts) {
-      console.log('Calling fetchCartItems from useEffect');
+      if (guestEmail && registryId && hasProducts) {
       fetchCartItems();
     } else {
-      console.log('useEffect: Skipping fetchCartItems - missing requirements');
       setCartItems([]);
       cartItemsRef.current = [];
     }
@@ -573,21 +544,6 @@ export default function CoupleProfile() {
       fetchCartItems();
     }
   }, [sideCartOpen, cartItems.length, hasProducts, registryId]);
-
-  // Force re-render when cart items change and sidecart is open
-  useEffect(() => {
-    console.log('Cart items state changed:', cartItems);
-    console.log('Cart items ref:', cartItemsRef.current);
-    if (sideCartOpen && cartItems.length > 0) {
-      // This will force a re-render when cart items are updated
-      console.log('Cart items updated, forcing re-render for sidecart');
-    }
-  }, [cartItems, sideCartOpen]);
-
-  // Watch for force render changes
-  useEffect(() => {
-    console.log('Force render triggered:', forceRender);
-  }, [forceRender]);
 
   // Handle fetcher responses
   useEffect(() => {
@@ -631,16 +587,10 @@ export default function CoupleProfile() {
 
     // If we don't have cart items loaded, fetch them first
     if (cartItems.length === 0) {
-      console.log(
-        'handleCartClick: No cart items, fetching before opening sidecart',
-      );
       fetchCartItems().then(() => {
         setSideCartOpen(true);
       });
     } else {
-      console.log(
-        'handleCartClick: Cart items already loaded, opening sidecart',
-      );
       setSideCartOpen(true);
     }
   };
@@ -715,7 +665,6 @@ export default function CoupleProfile() {
   // Helper to call /api/cart
   const callCartApi = async (email) => {
     if (!hasProducts || !registryId) {
-      console.log('callCartApi: Skipping - no products or registry ID');
       return {success: false, error: 'No products available'};
     }
 
@@ -755,7 +704,6 @@ export default function CoupleProfile() {
     productData,
   ) => {
     if (!hasProducts || !registryId) {
-      console.log('callAddToCartApi: Skipping - no products or registry ID');
       return {success: false, error: 'No products available'};
     }
 
@@ -772,7 +720,6 @@ export default function CoupleProfile() {
         description:
           productData.description || productData.cashFund?.note || '',
       };
-      console.log('Sending to Cart API:', payload);
 
       // Ensure apiBaseUrl is set and encode email for URL
       const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
@@ -801,15 +748,11 @@ export default function CoupleProfile() {
   // Helper to call /api/cart/add-to-cart/{registryId}/{userEmail} with quantity
   const callAddToCartApiWithQuantity = async (email, payload) => {
     if (!hasProducts || !registryId) {
-      console.log(
-        'callAddToCartApiWithQuantity: Skipping - no products or registry ID',
-      );
       return {success: false, error: 'No products available'};
     }
 
     setIsApiLoading(true);
     try {
-      console.log('Sending to Cart API with quantity:', payload);
 
       // Ensure apiBaseUrl is set and encode email for URL
       const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
@@ -1000,7 +943,6 @@ export default function CoupleProfile() {
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     const email = guestEmail.trim();
-    console.log('handleEmailSubmit: Starting with email:', email);
     if (!email) return;
 
     // Email validation - check if it's a valid email format
@@ -1017,23 +959,15 @@ export default function CoupleProfile() {
       console.log('handleEmailSubmit: Stored email in localStorage:', email);
     }
     // First call the initial cart API
-    console.log('handleEmailSubmit: Calling callCartApi with email:', email);
     await callCartApi(email);
     setShowEmailModal(false);
 
     // Update guest email state first to trigger useEffect
-    console.log('handleEmailSubmit: Setting guestEmail state to:', email);
     setGuestEmail(email);
 
     // Fetch cart items directly with the email before opening sidecart
     // This ensures we have the cart data before the sidecart opens
-    const emailForCart = email; // Use the email we just set
-    console.log(
-      'handleEmailSubmit: Fetching cart items with email:',
-      emailForCart,
-      'registryId:',
-      registryId,
-    );
+      const emailForCart = email; // Use the email we just set
     if (emailForCart && registryId) {
       setCartLoading(true);
       try {
@@ -1048,20 +982,11 @@ export default function CoupleProfile() {
         if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
           // Extract registryProducts from the first cart
           const cartData = apiData.data[0];
-          console.log('Cart API Response:', cartData);
-          console.log('Cart Items:', cartData.cartItemProducts);
 
           // Transform the API data to match SideCart expectations
           const transformedItems = (cartData.cartItemProducts || []).map(
             (cartItem) => {
               const registryProduct = cartItem.registryProduct;
-              console.log('Cart Item:', cartItem);
-              console.log('Registry Product:', registryProduct);
-              console.log('CartItem quantity:', cartItem.quantity);
-              console.log(
-                'RegistryProduct quantity:',
-                registryProduct.quantity,
-              );
 
               // Try to find the product in our loaded data to get title and image
               const productFromData = safeData.find(
@@ -1094,11 +1019,8 @@ export default function CoupleProfile() {
               };
             },
           );
-          console.log('Transformed Items:', transformedItems);
 
           // Set cart items and wait for state update to complete
-          console.log('About to set cart items:', transformedItems);
-
           // Use a Promise to ensure the state update is complete
           await new Promise((resolve) => {
             setCartItems(transformedItems);
@@ -1107,7 +1029,6 @@ export default function CoupleProfile() {
 
             // Use a longer delay to ensure React processes the state update
             setTimeout(() => {
-              console.log('State update delay completed');
               resolve();
             }, 300);
           });
@@ -1115,19 +1036,12 @@ export default function CoupleProfile() {
           // Store the items locally to ensure they're available when opening sidecart
           const localCartItems = transformedItems;
 
-          console.log(
-            'handleEmailSubmit: Cart items set, now opening sidecart',
-          );
-          console.log('Local cart items:', localCartItems);
-          console.log('Cart items ref:', cartItemsRef.current);
-
           // Force a re-render to ensure the component updates
           setForceRender((prev) => prev + 1);
         } else {
           setCartItems([]);
         }
       } catch (error) {
-        console.error('Error fetching cart:', error);
         setCartItems([]);
       } finally {
         setCartLoading(false);
@@ -1145,10 +1059,6 @@ export default function CoupleProfile() {
           // Store registryId in localStorage when first item is added to cart
           if (typeof window !== 'undefined' && product.registryId) {
             localStorage.setItem('registryId', product.registryId);
-            console.log(
-              'CoupleProfile: Stored registryId in localStorage:',
-              product.registryId,
-            );
           }
 
           const registryProductId = product.productId || product.id;
@@ -1168,7 +1078,6 @@ export default function CoupleProfile() {
             quantity: Number(quantity),
           };
 
-          console.log('Adding pending product to cart:', payload);
           const result = await callAddToCartApiWithQuantity(email, payload);
 
           if (result.success) {
@@ -1197,11 +1106,7 @@ export default function CoupleProfile() {
           // Store registryId in localStorage when first item is added to cart
           if (typeof window !== 'undefined' && product.registryId) {
             localStorage.setItem('registryId', product.registryId);
-            console.log(
-              'CoupleProfile: Stored registryId in localStorage:',
-              product.registryId,
-            );
-          }
+            }
 
           const registryProductId = product.productId || product.id;
           const result = await callAddToCartApi(
@@ -1235,11 +1140,6 @@ export default function CoupleProfile() {
       setPendingCartAction(null);
     }
 
-    console.log(
-      'handleEmailSubmit: Opening sidecart, current cartItems:',
-      cartItems,
-    );
-
     // Now open the sidecart - cart items should already be loaded
     setSideCartOpen(true);
   };
@@ -1247,9 +1147,6 @@ export default function CoupleProfile() {
   // Re-add handleRemoveFromCart for SideCart
   const handleRemoveFromCart = (itemId, updatedItem = null) => {
     if (!hasProducts || !registryId) {
-      console.log(
-        'handleRemoveFromCart: Skipping - no products or registry ID',
-      );
       return;
     }
 
@@ -1302,7 +1199,6 @@ export default function CoupleProfile() {
           }
         })
         .catch((error) => {
-          console.error('Error updating quantity:', error);
           setAlertMessage('Error updating quantity');
           setAlertType('error');
           setShowAlert(true);
@@ -1337,7 +1233,6 @@ export default function CoupleProfile() {
           }
         })
         .catch((error) => {
-          console.error('Error removing item from cart:', error);
           setAlertMessage('Error removing item from cart');
           setAlertType('error');
           setShowAlert(true);
@@ -1349,7 +1244,6 @@ export default function CoupleProfile() {
   // Re-add handleClearCart for SideCart
   const handleClearCart = () => {
     if (!hasProducts || !registryId) {
-      console.log('handleClearCart: Skipping - no products or registry ID');
       return;
     }
 
@@ -1557,7 +1451,22 @@ export default function CoupleProfile() {
                 className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto"
               />
             ) : (
-              <span className="text-gray-500">No Image Available</span>
+              <div className='placeholders mt-[70px] flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none rounded-full bg-[#F5F2ED] h-[400px] w-[400px] mx-auto object-cover'>
+                        <img 
+                          src="/assets/Images/copyrightLogo.png" 
+                          alt='placeholder' 
+                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain' 
+                          onError={(e) => console.error('Failed to load copyrightLogo.png', e)}
+                          onLoad={() => console.log('copyrightLogo.png loaded successfully')}
+                        />
+                        <img 
+                          src="/assets/Images/placeholder-line.png" 
+                          alt='placeholder' 
+                          className='object-contain w-[16.042vw] h-[4px] mt-2' 
+                          onError={(e) => console.error('Failed to load placeholder-line.png', e)}
+                          onLoad={() => console.log('placeholder-line.png loaded successfully')}
+                        />
+                      </div>
             )}
           </div>
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
@@ -1742,14 +1651,8 @@ export default function CoupleProfile() {
                 No Products Found
               </h3>
               <p className="text-[#1F1D1B] mb-6">
-                This registry doesn't have any products or cash funds added yet.
-                Check back later or contact the couple for more information.
+              Add gifts to get your registry started.
               </p>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-sm text-[#1F1D1B]">
-                  <strong>Tip:</strong> Add gifts to get your registry started.
-                </p>
-              </div>
             </div>
           </div>
         )}

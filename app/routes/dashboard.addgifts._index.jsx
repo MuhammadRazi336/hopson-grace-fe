@@ -28,7 +28,7 @@ import ProductSlider from '~/components/ProductSlider';
 import {Footer} from '~/components/Footer';
 import {Navigation} from 'swiper/modules';
 import arrowDown from '/assets/Images/arrowDown.png';
-import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
+import {RECOMMENDED_PRODUCTS_QUERY} from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
@@ -37,8 +37,6 @@ import BackToTop from '~/components/BackToTop';
 
 export async function loader({request, context}) {
   try {
-
-    
     // Run all independent async operations in parallel to avoid I/O context issues
     const [productsData, collectionsData, user] = await Promise.all([
       loadCriticalData({context}),
@@ -49,224 +47,193 @@ export async function loader({request, context}) {
     const {products} = productsData;
     const {collections} = collectionsData;
 
-    
-
     // Fetch registry and userData in parallel
     const [registry, userData] = await Promise.all([
-      context.ClientGet(
-        `registries/by-userId/${user.user.id}`,
-        context,
-      ),
+      context.ClientGet(`registries/by-userId/${user.user.id}`, context),
       context?.ClientGet(`users/${user?.user?.id}`, context),
     ]);
 
-  // Fetch ready-made registries using the same pattern as home index
-  let featuredRegistryData = null;
-  try {
-    console.log('Starting to fetch ready-made registries...');
-    const {collections: readyMadeCollections} = await context.storefront.query(
-      READY_MADE_REGISTRIES_QUERY,
-    );
+    // Fetch ready-made registries using the same pattern as home index
+    let featuredRegistryData = null;
+    try {
+      const {collections: readyMadeCollections} =
+        await context.storefront.query(READY_MADE_REGISTRIES_QUERY);
 
-    console.log('All collections from query:', readyMadeCollections?.nodes);
-    console.log('Collections count:', readyMadeCollections?.nodes?.length || 0);
-
-    // Log metafield values for debugging
-    if (readyMadeCollections?.nodes) {
-      readyMadeCollections.nodes.forEach((collection, index) => {
-        console.log(`Collection ${index + 1} (${collection.title}):`, {
-          readyMadeMetafield: collection.readyMadeMetafield?.value,
-          parentCollectionMetafield:
-            collection.parentCollectionMetafield?.value,
-          subCollectionMetafield: collection.subCollectionMetafield?.value,
-        });
-      });
-    }
-
-    // Filter collections that have both readyMadeMetafield AND parentCollectionMetafield set to true
-    const filteredReadyMadeCollections =
-      readyMadeCollections?.nodes?.filter(
-        (collection) =>
-          collection.readyMadeMetafield?.value === 'true' &&
-          collection.parentCollectionMetafield?.value === 'true',
-      ) || [];
-
-    console.log(
-      'Filtered ready-made parent collections:',
-      filteredReadyMadeCollections,
-    );
-    console.log(
-      'Filtered collections count:',
-      filteredReadyMadeCollections.length,
-    );
-
-    // Categorize collections by type
-    const realRegistries = filteredReadyMadeCollections.filter((collection) => {
-      const title = collection.title?.toLowerCase() || '';
-      const description = collection.description?.toLowerCase() || '';
-
-      // Include collections with real/authentic terms
-      const realTerms = ['real', 'authentic', 'couple', 'wedding'];
-      const hasRealTerms = realTerms.some(
-        (term) => title.includes(term) || description.includes(term),
-      );
-
-      // Exclude themed and lorem collections
-      const excludeTerms = ['themed', 'minimalist', 'lorem'];
-      const hasExcludeTerms = excludeTerms.some(
-        (term) => title.includes(term) || description.includes(term),
-      );
-
-      return hasRealTerms && !hasExcludeTerms;
-    });
-
-    const themedRegistries = filteredReadyMadeCollections.filter(
-      (collection) => {
-        const title = collection.title?.toLowerCase() || '';
-        const description = collection.description?.toLowerCase() || '';
-
-        return title.includes('themed') || description.includes('themed');
-      },
-    );
-
-    console.log('Real registries:', realRegistries);
-    console.log('Themed registries:', themedRegistries);
-
-    // Select the best collection for each type
-    let realRegistriesCollection =
-      realRegistries.find((col) => col.title?.toLowerCase().includes('real')) ||
-      realRegistries[0];
-
-    let themedRegistriesCollection =
-      themedRegistries.find((col) =>
-        col.title?.toLowerCase().includes('themed'),
-      ) || themedRegistries[0];
-
-    console.log('Selected collections:', {
-      real: realRegistriesCollection?.title,
-      themed: themedRegistriesCollection?.title,
-    });
-
-    // Helper function to fetch sub-collections for a given parent collection
-    const fetchSubCollections = async (parentCollection) => {
-      if (!parentCollection) return [];
-
-      const subCollections = [];
-      const subCollectionMetafield = parentCollection.subCollectionMetafield;
-
-      if (subCollectionMetafield?.value) {
-        let subCollectionIds = [];
-
-        try {
-          // Try to parse as JSON first
-          if (typeof subCollectionMetafield.value === 'string') {
-            subCollectionIds = JSON.parse(subCollectionMetafield.value);
-          } else if (Array.isArray(subCollectionMetafield.value)) {
-            subCollectionIds = subCollectionMetafield.value;
-          }
-
-          if (!Array.isArray(subCollectionIds)) {
-            subCollectionIds = [subCollectionIds];
-          }
-        } catch (error) {
-          // Fallback to comma split
-          if (typeof subCollectionMetafield.value === 'string') {
-            subCollectionIds = subCollectionMetafield.value
-              .split(',')
-              .map((id) => id.trim())
-              .filter((id) => id.length > 0);
-          }
-        }
-
-        // Fetch all sub-collections in parallel to avoid I/O context issues
-        if (subCollectionIds.length > 0) {
-          try {
-            const subCollectionPromises = subCollectionIds.map(async (subCollectionId) => {
-              try {
-                const subCollectionData = await context.storefront.query(
-                  SUB_COLLECTION_QUERY,
-                  {
-                    variables: {id: subCollectionId},
-                  },
-                );
-                return subCollectionData?.collection || null;
-              } catch (error) {
-                console.error(
-                  'Error fetching sub-collection:',
-                  subCollectionId,
-                  error,
-                );
-                return null;
-              }
-            });
-
-            const subCollectionResults = await Promise.all(subCollectionPromises);
-            subCollections.push(...subCollectionResults.filter(Boolean));
-          } catch (error) {
-            console.error('Error fetching sub-collections in parallel:', error);
-          }
-        }
+      // Log metafield values for debugging
+      if (readyMadeCollections?.nodes) {
+        readyMadeCollections.nodes.forEach((collection, index) => {});
       }
 
-      return subCollections;
-    };
+      // Filter collections that have both readyMadeMetafield AND parentCollectionMetafield set to true
+      const filteredReadyMadeCollections =
+        readyMadeCollections?.nodes?.filter(
+          (collection) =>
+            collection.readyMadeMetafield?.value === 'true' &&
+            collection.parentCollectionMetafield?.value === 'true',
+        ) || [];
 
-    // Fetch sub-collections for each type in parallel
-    const [realSubCollections, themedSubCollections] = await Promise.all([
-      fetchSubCollections(realRegistriesCollection),
-      fetchSubCollections(themedRegistriesCollection),
-    ]);
+      // Categorize collections by type
+      const realRegistries = filteredReadyMadeCollections.filter(
+        (collection) => {
+          const title = collection.title?.toLowerCase() || '';
+          const description = collection.description?.toLowerCase() || '';
 
-    console.log('Fetched sub-collections:', {
-      real: realSubCollections.length,
-      themed: themedSubCollections.length,
-    });
+          // Include collections with real/authentic terms
+          const realTerms = ['real', 'authentic', 'couple', 'wedding'];
+          const hasRealTerms = realTerms.some(
+            (term) => title.includes(term) || description.includes(term),
+          );
 
-    // Structure the data with registry types
-    if (realRegistriesCollection || themedRegistriesCollection) {
-      featuredRegistryData = {
-        real: {
-          parentCollection: realRegistriesCollection,
-          subCollections: realSubCollections,
+          // Exclude themed and lorem collections
+          const excludeTerms = ['themed', 'minimalist', 'lorem'];
+          const hasExcludeTerms = excludeTerms.some(
+            (term) => title.includes(term) || description.includes(term),
+          );
+
+          return hasRealTerms && !hasExcludeTerms;
         },
-        themed: {
-          parentCollection: themedRegistriesCollection,
-          subCollections: themedSubCollections,
+      );
+
+      const themedRegistries = filteredReadyMadeCollections.filter(
+        (collection) => {
+          const title = collection.title?.toLowerCase() || '';
+          const description = collection.description?.toLowerCase() || '';
+
+          return title.includes('themed') || description.includes('themed');
         },
+      );
+
+      // Select the best collection for each type
+      let realRegistriesCollection =
+        realRegistries.find((col) =>
+          col.title?.toLowerCase().includes('real'),
+        ) || realRegistries[0];
+
+      let themedRegistriesCollection =
+        themedRegistries.find((col) =>
+          col.title?.toLowerCase().includes('themed'),
+        ) || themedRegistries[0];
+
+      // Helper function to fetch sub-collections for a given parent collection
+      const fetchSubCollections = async (parentCollection) => {
+        if (!parentCollection) return [];
+
+        const subCollections = [];
+        const subCollectionMetafield = parentCollection.subCollectionMetafield;
+
+        if (subCollectionMetafield?.value) {
+          let subCollectionIds = [];
+
+          try {
+            // Try to parse as JSON first
+            if (typeof subCollectionMetafield.value === 'string') {
+              subCollectionIds = JSON.parse(subCollectionMetafield.value);
+            } else if (Array.isArray(subCollectionMetafield.value)) {
+              subCollectionIds = subCollectionMetafield.value;
+            }
+
+            if (!Array.isArray(subCollectionIds)) {
+              subCollectionIds = [subCollectionIds];
+            }
+          } catch (error) {
+            // Fallback to comma split
+            if (typeof subCollectionMetafield.value === 'string') {
+              subCollectionIds = subCollectionMetafield.value
+                .split(',')
+                .map((id) => id.trim())
+                .filter((id) => id.length > 0);
+            }
+          }
+
+          // Fetch all sub-collections in parallel to avoid I/O context issues
+          if (subCollectionIds.length > 0) {
+            try {
+              const subCollectionPromises = subCollectionIds.map(
+                async (subCollectionId) => {
+                  try {
+                    const subCollectionData = await context.storefront.query(
+                      SUB_COLLECTION_QUERY,
+                      {
+                        variables: {id: subCollectionId},
+                      },
+                    );
+                    return subCollectionData?.collection || null;
+                  } catch (error) {
+                    console.error(
+                      'Error fetching sub-collection:',
+                      subCollectionId,
+                      error,
+                    );
+                    return null;
+                  }
+                },
+              );
+
+              const subCollectionResults = await Promise.all(
+                subCollectionPromises,
+              );
+              subCollections.push(...subCollectionResults.filter(Boolean));
+            } catch (error) {
+              console.error(
+                'Error fetching sub-collections in parallel:',
+                error,
+              );
+            }
+          }
+        }
+
+        return subCollections;
       };
-      console.log(
-        'Structured featuredRegistryData with registry types:',
-        featuredRegistryData,
-      );
-    }
 
-    console.log(
-      'Final featuredRegistryData before fallback check:',
-      featuredRegistryData,
-    );
-    console.log(
-      'Final featuredRegistryData type:',
-      typeof featuredRegistryData,
-    );
-    console.log(
-      'Final featuredRegistryData has subCollections:',
-      !!featuredRegistryData?.subCollections,
-    );
+      // Fetch sub-collections for each type in parallel
+      const [realSubCollections, themedSubCollections] = await Promise.all([
+        fetchSubCollections(realRegistriesCollection),
+        fetchSubCollections(themedRegistriesCollection),
+      ]);
 
-    // If no ready-made registries found, try to use regular collections as fallback
-    if (
-      !featuredRegistryData ||
-      (!featuredRegistryData.real?.subCollections?.length &&
-        !featuredRegistryData.themed?.subCollections?.length)
-    ) {
-      console.log(
-        'No ready-made registries found, trying fallback with regular collections',
-      );
+      // Structure the data with registry types
+      if (realRegistriesCollection || themedRegistriesCollection) {
+        featuredRegistryData = {
+          real: {
+            parentCollection: realRegistriesCollection,
+            subCollections: realSubCollections,
+          },
+          themed: {
+            parentCollection: themedRegistriesCollection,
+            subCollections: themedSubCollections,
+          },
+        };
+      }
 
-      // Use the first few collections as a fallback
+      // If no ready-made registries found, try to use regular collections as fallback
+      if (
+        !featuredRegistryData ||
+        (!featuredRegistryData.real?.subCollections?.length &&
+          !featuredRegistryData.themed?.subCollections?.length)
+      ) {
+        // Use the first few collections as a fallback
+        const fallbackCollections = collections?.slice(0, 3) || [];
+        if (fallbackCollections.length > 0) {
+          featuredRegistryData = {
+            real: {
+              parentCollection: {title: 'Fallback Collections'},
+              subCollections: fallbackCollections,
+            },
+            themed: {
+              parentCollection: {title: 'Fallback Collections'},
+              subCollections: [],
+            },
+          };
+        }
+      }
+    } catch (error) {
+      // Handle any errors in fetching ready-made registries
+      console.error('Error fetching ready-made registries:', error);
+      console.error('Error stack:', error.stack);
+
+      // Try fallback with regular collections
       const fallbackCollections = collections?.slice(0, 3) || [];
       if (fallbackCollections.length > 0) {
-        console.log('Using fallback collections:', fallbackCollections);
         featuredRegistryData = {
           real: {
             parentCollection: {title: 'Fallback Collections'},
@@ -279,55 +246,37 @@ export async function loader({request, context}) {
         };
       }
     }
-  } catch (error) {
-    // Handle any errors in fetching ready-made registries
-    console.error('Error fetching ready-made registries:', error);
-    console.error('Error stack:', error.stack);
 
-    // Try fallback with regular collections
-    console.log('Trying fallback with regular collections due to error');
-    const fallbackCollections = collections?.slice(0, 3) || [];
-    if (fallbackCollections.length > 0) {
-      console.log(
-        'Using fallback collections after error:',
-        fallbackCollections,
-      );
-      featuredRegistryData = {
-        real: {
-          parentCollection: {title: 'Fallback Collections'},
-          subCollections: fallbackCollections,
-        },
-        themed: {
-          parentCollection: {title: 'Fallback Collections'},
-          subCollections: [],
-        },
-      };
-    }
-  }
-
-    // Extract products only from parent collections (parentMetafield.value === 'true' and readyMadeMetafield.value !== 'true')
+    // Extract products only from parent collections (parentMetafield.value === 'true' and readyMadeMetafield.value !== 'true', or title includes FUNDS e.g. CASH FUNDS, TRAVEL FUNDS)
     let allProducts = [];
     const productMap = new Map(); // Use Map to track unique products by ID
-    
+
+    const isExcludedFundsCollection = (col) => {
+      const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+      return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+    };
+
+    const isParentForSlides = (col) =>
+      col.parentMetafield?.value === 'true' &&
+      col.readyMadeMetafield?.value !== 'true' &&
+      !isExcludedFundsCollection(col);
+
     try {
-      // First, find all parent collections
-      const parentCollections = collections.filter(
-        (col) =>
-          col.parentMetafield?.value === 'true' &&
-          col.readyMadeMetafield?.value !== 'true',
-      );
+      // First, find all parent collections (exclude CASH FUNDS and TRAVEL FUNDS)
+      const parentCollections = collections.filter(isParentForSlides);
 
       // Process all parent collections synchronously (no async operations here)
       for (const parentCollection of parentCollections) {
         // Get sub-collection GIDs from the parent's subCollectionMetafield (Collection type) or subMetafield (JSON string)
         let subCollectionGids = [];
         let subCollections = [];
-        
+
         // First, try to get from the new Collection type metafield (references)
         if (parentCollection.subCollectionMetafield?.references?.edges) {
-          subCollections = parentCollection.subCollectionMetafield.references.edges.map(
-            (edge) => edge.node,
-          );
+          subCollections =
+            parentCollection.subCollectionMetafield.references.edges.map(
+              (edge) => edge.node,
+            );
           subCollectionGids = subCollections.map((sub) => sub.id);
         } else if (parentCollection.subMetafield?.value) {
           // Fallback to old JSON string format
@@ -349,14 +298,14 @@ export async function loader({request, context}) {
         // Extract products from sub-collections (synchronous operation)
         for (const subCollectionRef of subCollections) {
           // Find the full collection data from the main collections array
-          const subCollection = collections.find(
-            (col) => col.id === subCollectionRef.id,
-          ) || subCollectionRef; // Fallback to reference if not found
-          
+          const subCollection =
+            collections.find((col) => col.id === subCollectionRef.id) ||
+            subCollectionRef; // Fallback to reference if not found
+
           if (subCollection.products?.edges) {
             for (const edge of subCollection.products.edges) {
               const product = edge.node;
-              
+
               // Only add product if it hasn't been added before (deduplication)
               if (!productMap.has(product.id)) {
                 const productData = {
@@ -365,18 +314,20 @@ export async function loader({request, context}) {
                   handle: product.handle,
                   description: product.description,
                   image: product.images?.edges?.[0]?.node?.url || null,
-                  price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+                  price:
+                    product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
                   currency:
                     product.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
                     'USD',
                   availableForSale:
-                    product.variants?.edges?.[0]?.node?.availableForSale || false,
+                    product.variants?.edges?.[0]?.node?.availableForSale ||
+                    false,
                   createdAt: product.createdAt,
                   collectionId: subCollection.id, // Use sub-collection ID
                   parentCollectionId: parentCollection.id, // Also track parent collection ID
                   parentCollectionTitle: parentCollection.title, // Track parent collection title
                 };
-                
+
                 productMap.set(product.id, productData);
                 allProducts.push(productData);
               } else {
@@ -385,9 +336,13 @@ export async function loader({request, context}) {
                 if (existingProduct) {
                   // Add this sub-collection info to the existing product
                   if (!existingProduct.collectionIds) {
-                    existingProduct.collectionIds = [existingProduct.collectionId];
+                    existingProduct.collectionIds = [
+                      existingProduct.collectionId,
+                    ];
                   }
-                  if (!existingProduct.collectionIds.includes(subCollection.id)) {
+                  if (
+                    !existingProduct.collectionIds.includes(subCollection.id)
+                  ) {
                     existingProduct.collectionIds.push(subCollection.id);
                   }
                 }
@@ -401,45 +356,40 @@ export async function loader({request, context}) {
       console.error('Error extracting products from collections:', error);
     }
 
-  // Log deduplication results
-  console.log('Product deduplication results:', {
-    totalProductsBeforeDedup: productMap.size,
-    totalProductsAfterDedup: allProducts.length,
-    uniqueProductIds: Array.from(productMap.keys()),
-    duplicateProducts: allProducts.filter((product, index, self) => 
-      self.findIndex(p => p.id === product.id) !== index
-    ).length
-  });
+    // Log deduplication results
 
     // Fetch bestseller and recommended products in parallel
     let bestsellerProducts = [];
     let recommendedProducts = [];
-    
+
     try {
       const [bestsellerResult, recommendedResult] = await Promise.all([
-        context.storefront.query(BESTSELLER_PRODUCTS_QUERY).catch(error => {
+        context.storefront.query(BESTSELLER_PRODUCTS_QUERY).catch((error) => {
           console.error('Error fetching bestseller products:', error);
           return {products: {edges: []}};
         }),
-        context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
-          variables: { first: 8 } 
-        }).catch(error => {
-          console.error('Error loading recommended products:', error);
-          return {products: {edges: []}};
-        }),
+        context.storefront
+          .query(RECOMMENDED_PRODUCTS_QUERY, {
+            variables: {first: 8},
+          })
+          .catch((error) => {
+            console.error('Error loading recommended products:', error);
+            return {products: {edges: []}};
+          }),
       ]);
 
-      bestsellerProducts = bestsellerResult?.products?.edges?.map(edge => ({
-        node: {
-          id: edge.node.id,
-          title: edge.node.title,
-          handle: edge.node.handle,
-          description: edge.node.description,
-          images: edge.node.images,
-          priceRange: edge.node.priceRange,
-          variants: edge.node.variants,
-        }
-      })) || [];
+      bestsellerProducts =
+        bestsellerResult?.products?.edges?.map((edge) => ({
+          node: {
+            id: edge.node.id,
+            title: edge.node.title,
+            handle: edge.node.handle,
+            description: edge.node.description,
+            images: edge.node.images,
+            priceRange: edge.node.priceRange,
+            variants: edge.node.variants,
+          },
+        })) || [];
 
       recommendedProducts = recommendedResult?.products?.edges || [];
     } catch (error) {
@@ -447,42 +397,6 @@ export async function loader({request, context}) {
       bestsellerProducts = [];
       recommendedProducts = [];
     }
-
-  console.log('Loader returning data:', {
-    productsLength: allProducts?.length || 0,
-    collectionsLength: collections?.length || 0,
-    user: !!user,
-    registry: !!registry,
-    userData: !!userData,
-    readyMadeRegistriesStructure: {
-      hasData: !!featuredRegistryData,
-      hasSubCollections: !!featuredRegistryData?.subCollections,
-      subCollectionsCount: featuredRegistryData?.subCollections?.length || 0,
-      parentCollection: featuredRegistryData?.parentCollection?.title || 'None',
-    },
-  });
-
-    console.log('About to return featuredRegistryData:', featuredRegistryData);
-    console.log(
-      'About to return featuredRegistryData type:',
-      typeof featuredRegistryData,
-    );
-    console.log(
-      'About to return featuredRegistryData === null:',
-      featuredRegistryData === null,
-    );
-    console.log(
-      'About to return readyMadeRegistries in json:',
-      featuredRegistryData,
-    );
-    console.log(
-      'About to return featuredRegistryData.subCollections:',
-      featuredRegistryData?.subCollections,
-    );
-    console.log(
-      'About to return featuredRegistryData.parentCollection:',
-      featuredRegistryData?.parentCollection,
-    );
 
     const returnData = {
       products: allProducts,
@@ -494,12 +408,6 @@ export async function loader({request, context}) {
       bestsellerProducts,
       recommendedProducts,
     };
-
-    console.log('Final return data:', returnData);
-    console.log(
-      'Final return data readyMadeRegistries:',
-      returnData.readyMadeRegistries,
-    );
 
     return json(returnData);
   } catch (error) {
@@ -568,6 +476,9 @@ function SidebarFilter({
   checkedCollectionIds,
   setCheckedCollectionIds,
   selectedSwiperCollectionId,
+  selectedSubCollections,
+  shopAllChecked,
+  setShopAllChecked,
   registry,
 }) {
   const [openSections, setOpenSections] = useState({
@@ -576,19 +487,31 @@ function SidebarFilter({
     styles: true,
   });
 
+  const isExcludedFundsCollection = (col) => {
+    const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+    return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+  };
+
+  const isParentForSlides = (col) =>
+    col.parentMetafield?.value === 'true' &&
+    col.readyMadeMetafield?.value !== 'true' &&
+    !isExcludedFundsCollection(col);
+
   // Get parent collections for the swiper and Product Categories
-  const parentCollection = collections.filter(
-    (col) =>
-      col.parentMetafield?.value === 'true' &&
-      col.readyMadeMetafield?.value !== 'true',
-  );
+  const parentCollection = collections.filter(isParentForSlides);
 
   // Get sub-collections for Shop by Style (these are the ones that actually contain products)
-  const subCollection = collections.filter(
+  const baseSubCollection = collections.filter(
     (col) =>
       col.parentMetafield?.value === 'false' &&
       col.readyMadeMetafield?.value !== 'true',
   );
+
+  // When a parent collection is selected in the swiper, show only its sub-collections in "Shop by Style"
+  const subCollection =
+    selectedSwiperCollectionId && selectedSubCollections?.length > 0
+      ? selectedSubCollections
+      : baseSubCollection;
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
@@ -610,73 +533,48 @@ function SidebarFilter({
   return (
     <div className="w-[400px] h-fit lg:w-[22.28vw] xl:w-[22.28vw] 2xl:w-[22.28vw]">
       <div className=" bg-[#FAF9F6] px-[1.979vw] pt-[2.865vw] pb-[3.802vw]">
-        <div className="mb-[3.438vw]">
-          <h2
-            className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-            onClick={() => toggleSection('categories')}
-          >
-            Product Categories
-            <span className="text-lg relative -top-[3px]">
-              {openSections.categories ? (
-                <img
-                  src="/assets/Images/next.png"
-                  alt="minus"
-                  className="w-[0.833vw] h-[0.833vw] rotate-180"
-                />
-              ) : (
-                <img
-                  src="/assets/Images/next.png"
-                  alt="plus"
-                  className="w-[0.833vw] h-[0.833vw]"
-                />
-              )}
-            </span>
-          </h2>
-          {openSections.categories && (
-            <ul className="space-y-2 text-sm">
-              {parentCollection.map((col) => (
-                <li key={col.id} className='mb-[1.69vw]'>
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                    <input
-                      type="checkbox"
-                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                      checked={checkedCollectionIds.includes(col.id)}
-                      onChange={() => handleSidebarCheckbox(col.id)}
-                    />
-                    {col.title}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="mb-[3.438vw]">
-          <h2
-            className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-            onClick={() => toggleSection('brands')}
-          >
-            Our Brands
-            <span className="text-lg relative -top-[3px]">
-              {openSections.brands ? (
-                <img
-                  src="/assets/Images/next.png"
-                  alt="minus"
-                  className="w-[0.833vw] h-[0.833vw] rotate-180"
-                />
-              ) : (
-                <img
-                  src="/assets/Images/next.png"
-                  alt="plus"
-                  className="w-[0.833vw] h-[0.833vw]"
-                />
-              )}
-            </span>
-          </h2>
-          {openSections.brands && (
-            <p className="text-sm text-gray-500 italic">No data</p>
-          )}
-        </div>
+        {!selectedSwiperCollectionId && (
+          <div className="mb-[3.438vw]">
+            <h2
+              className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+              onClick={() => toggleSection('categories')}
+            >
+              Product Categories
+              <span className="text-lg relative -top-[3px]">
+                {openSections.categories ? (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="minus"
+                    className="w-[0.833vw] h-[0.833vw] rotate-180"
+                  />
+                ) : (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="plus"
+                    className="w-[0.833vw] h-[0.833vw]"
+                  />
+                )}
+              </span>
+            </h2>
+            {openSections.categories && (
+              <ul className="space-y-2 text-sm">
+                {parentCollection.map((col) => (
+                  <li key={col.id} className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                        checked={checkedCollectionIds.includes(col.id)}
+                        onChange={() => handleSidebarCheckbox(col.id)}
+                      />
+                      {col.title}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
         <div>
           <h2
@@ -702,8 +600,19 @@ function SidebarFilter({
           </h2>
           {openSections.styles && (
             <ul className="space-y-2 text-sm">
+              <li className="mb-[1.69vw]">
+                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                  <input
+                    type="checkbox"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                    checked={shopAllChecked}
+                    onChange={() => setShopAllChecked((prev) => !prev)}
+                  />
+                  Shop All
+                </label>
+              </li>
               {subCollection.map((col) => (
-                <li key={col.id} className='mb-[1.69vw]'>
+                <li key={col.id} className="mb-[1.69vw]">
                   <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
@@ -720,19 +629,19 @@ function SidebarFilter({
         </div>
       </div>
       <Link to={`/couple/single/${registry?.data?.[0]?.userId}`}>
-          <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
-            <div className="w-full mx-auto flex justify-center items-center gap-6 h-full">
-              <img
-                src="/assets/Images/share-icon.png"
-                alt="preview"
-                className="w-[36px] filter brightness-100"
-              />
-              <h2 className="text-white text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
-                PREVIEW PAGE
-              </h2>
-            </div>
+        <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
+          <div className="w-full mx-auto flex justify-center items-center gap-6 h-full">
+            <img
+              src="/assets/Images/share-icon.png"
+              alt="preview"
+              className="w-[36px] filter brightness-100"
+            />
+            <h2 className="text-white text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
+              PREVIEW PAGE
+            </h2>
           </div>
-          </Link>
+        </div>
+      </Link>
       {/* Show PreviewRegistry only after a parent collection is selected */}
       {selectedSwiperCollectionId && (
         <div className="mt-6">
@@ -756,39 +665,33 @@ export default function AddGifts() {
   const topRef = useRef(null);
 
   const loaderData = useLoaderData();
-  const { products, collections, user, registry, userData, readyMadeRegistries, bestsellerProducts, recommendedProducts } = loaderData;
-  console.log('Raw loaderData received:', loaderData);
-  console.log('Raw loaderData keys:', Object.keys(loaderData || {}));
-
-  // Debug logging for ready-made registries
-  console.log('Dashboard addgifts received loaderData:', loaderData);
-  console.log(
-    'Dashboard addgifts received readyMadeRegistries:',
+  const {
+    products,
+    collections,
+    user,
+    registry,
+    userData,
     readyMadeRegistries,
-  );
+    bestsellerProducts,
+    recommendedProducts,
+  } = loaderData;
 
   if (
     readyMadeRegistries &&
     readyMadeRegistries.subCollections &&
     readyMadeRegistries.subCollections.length > 0
-  ) {
-    console.log(
-      'First ready-made registry sample:',
-      readyMadeRegistries.subCollections[0],
-    );
-  }
-
-  // Show loading state if data is not yet available
-  if (!loaderData || !products || !collections) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-lg text-gray-600 mb-4">Loading dashboard...</p>
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+  )
+    if (!loaderData || !products || !collections) {
+      // Show loading state if data is not yet available
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-lg text-gray-600 mb-4">Loading dashboard...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   // Get all products from all collections for search results
   const allProducts = collections.flatMap(
@@ -822,31 +725,46 @@ export default function AddGifts() {
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] =
     useState(null);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
+  const [shopAllChecked, setShopAllChecked] = useState(false);
+  const [addingProductId, setAddingProductId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
 
-  // Filter products based on selected collections
-  const filteredProducts =
-    checkedCollectionIds.length > 0
-      ? products.filter((product) => {
-          // Check if the product's collection is directly selected
-          if (checkedCollectionIds.includes(product.collectionId)) {
-            return true;
-          }
+  useEffect(() => {
+    if (fetcher.state === 'idle') setAddingProductId(null);
+  }, [fetcher.state]);
 
-          // Check if the product's parent collection is selected
-          if (checkedCollectionIds.includes(product.parentCollectionId)) {
-            return true;
-          }
-
-          // Check if the product exists in any of the selected collections (for products in multiple collections)
-          if (product.collectionIds && product.collectionIds.some(id => checkedCollectionIds.includes(id))) {
-            return true;
-          }
-
-          return false;
-        })
-      : products;
+  // Filter products based on selected collections or "Shop All"
+  const filteredProducts = (() => {
+    if (shopAllChecked) {
+      // When "Shop All" is checked and a parent is selected: show all products of that parent
+      if (selectedSwiperCollectionId) {
+        return products.filter(
+          (product) =>
+            product.parentCollectionId === selectedSwiperCollectionId,
+        );
+      }
+      // When "Shop All" is checked and no parent selected (default sidebar): show all products
+      return products;
+    }
+    if (checkedCollectionIds.length > 0) {
+      return products.filter((product) => {
+        if (checkedCollectionIds.includes(product.collectionId)) return true;
+        if (checkedCollectionIds.includes(product.parentCollectionId))
+          return true;
+        if (
+          product.collectionIds &&
+          product.collectionIds.some((id) =>
+            checkedCollectionIds.includes(id),
+          )
+        ) {
+          return true;
+        }
+        return false;
+      });
+    }
+    return products;
+  })();
 
   // Sort products based on selected sort option
   const sortedProducts = React.useMemo(() => {
@@ -883,7 +801,7 @@ export default function AddGifts() {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
-        
+
         setTimeout(() => {
           setShowAlert(false);
           setAlertMessage('');
@@ -898,8 +816,10 @@ export default function AddGifts() {
         productTypeId: 1,
         quantity: quantity || 1,
         isGroupPayment: isGroupGift || false,
+        ...(product.parentCollectionId && {parentCollectionId: product.parentCollectionId}),
       };
 
+      setAddingProductId(product.id);
       fetcher.submit(
         {payload: JSON.stringify(payload)},
         {
@@ -922,7 +842,7 @@ export default function AddGifts() {
       setAlertMessage('Failed to add to registry. Please try again.');
       setAlertType('error');
       setShowAlert(true);
-      
+
       setTimeout(() => {
         setShowAlert(false);
         setAlertMessage('');
@@ -944,34 +864,43 @@ export default function AddGifts() {
     };
   }, []);
 
-  const parentCollection = collections.filter(
-    (col) =>
-      col.parentMetafield?.value === 'true' &&
-      col.readyMadeMetafield?.value !== 'true',
-  );
+  useEffect(() => {
+    if (!selectedSwiperCollectionId) setShopAllChecked(false);
+  }, [selectedSwiperCollectionId]);
+
+  const isExcludedFundsCollection = (col) => {
+    const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+    return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+  };
+
+  const isParentForSlides = (col) =>
+    col.parentMetafield?.value === 'true' &&
+    col.readyMadeMetafield?.value !== 'true' &&
+    !isExcludedFundsCollection(col);
+
+  const parentCollection = collections.filter(isParentForSlides);
 
   return (
     <>
-    {selectedSwiperCollectionId ? (
-      <></>  
-    ) : (
-      <div className="pt-[3.75vw] relative px-4">
-        <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
-          <span className="prata">
-            gifts
-          </span>
-        </h2>
-        <img
-          src={headingBottomCurve}
-          alt="Couple"
-          className="w-[9.375vw] h-[6px] mt-2 mx-auto"
-        />
-        <p className="w-[46.771vw] max-w-full mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal leading-relaxed">
-          Browse by category, filter by price, or get inspired with our curated edits.
-          <br className="max-[1024px]:hidden" />
-          Add, update, or switch things up whenever you like.
-        </p>
-      </div>
+      {selectedSwiperCollectionId ? (
+        <></>
+      ) : (
+        <div className="pt-[3.75vw] relative px-4">
+          <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
+            <span className="prata">gifts</span>
+          </h2>
+          <img
+            src={headingBottomCurve}
+            alt="Couple"
+            className="w-[9.375vw] h-[6px] mt-2 mx-auto"
+          />
+          <p className="w-[46.771vw] max-w-full mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal leading-relaxed">
+            Browse by category, filter by price, or get inspired with our
+            curated edits.
+            <br className="max-[1024px]:hidden" />
+            Add, update, or switch things up whenever you like.
+          </p>
+        </div>
       )}
 
       <section className="">
@@ -980,7 +909,11 @@ export default function AddGifts() {
             {!selectedSwiperCollectionId && (
               <>
                 <div className="z-10 mb-8 swiper-button-prev-prod absolute left-[1%] max-[1601px]:-left-[0%] cursor-pointer text-white uppercase  max-[1601px]:w-[90px] items-center bg-white top-[38%] px-8 py-10 justify-center max-[1024px]:w-[33px] max-[1024px]:h-[33px] max-[1024px]:p-0 flex">
-                  <img src={nextitem} alt="" className="rotate-90 size-6 max-[1024px]:size-2" />
+                  <img
+                    src={nextitem}
+                    alt=""
+                    className="rotate-90 size-6 max-[1024px]:size-2"
+                  />
                 </div>
 
                 <Swiper
@@ -1029,11 +962,7 @@ export default function AddGifts() {
                 >
                   {/* Dynamic slides from Shopify collections */}
                   {collections
-                    .filter(
-                      (col) =>
-                        col.parentMetafield?.value === 'true' &&
-                        col.readyMadeMetafield?.value !== 'true',
-                    )
+                    .filter((col) => isParentForSlides(col))
                     .map((col) => (
                       <SwiperSlide
                         key={col.id}
@@ -1041,13 +970,16 @@ export default function AddGifts() {
                           // Get sub-collections from the Collection type metafield references
                           let subCollections = [];
                           let subCollectionGids = [];
-                          
+
                           // First, try to get from the new Collection type metafield (references)
                           if (col.subCollectionMetafield?.references?.edges) {
-                            subCollections = col.subCollectionMetafield.references.edges.map(
-                              (edge) => edge.node,
+                            subCollections =
+                              col.subCollectionMetafield.references.edges.map(
+                                (edge) => edge.node,
+                              );
+                            subCollectionGids = subCollections.map(
+                              (sub) => sub.id,
                             );
-                            subCollectionGids = subCollections.map((sub) => sub.id);
                           } else if (col.subMetafield?.value) {
                             // Fallback to old JSON string format
                             try {
@@ -1067,6 +999,7 @@ export default function AddGifts() {
                           setCheckedCollectionIds(subCollectionGids);
                           setSelectedSubCollections(subCollections);
                           setSelectedSwiperCollectionId(col.id);
+                          setShopAllChecked(true);
                         }}
                         style={{cursor: 'pointer'}}
                       >
@@ -1084,7 +1017,11 @@ export default function AddGifts() {
                     ))}
                 </Swiper>
                 <div className="swiper-button-next-prod absolute right-[1%] max-[1601px]:-right-[0%] cursor-pointer uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[38%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px] max-[1024px]:h-[33px] max-[1024px]:p-0 flex">
-                  <img src={nextitem} className="size-6 rotate-270 max-[1024px]:size-2" alt="" />
+                  <img
+                    src={nextitem}
+                    className="size-6 rotate-270 max-[1024px]:size-2"
+                    alt=""
+                  />
                 </div>
               </>
             )}
@@ -1115,95 +1052,107 @@ export default function AddGifts() {
                   }
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 /> */}
-                
+
                 {/* Sub-collections carousel */}
-                {selectedSubCollections && selectedSubCollections.length > 0 && (
-                  <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative">
-                    <div className="flex items-center gap-[8.698vw] w-full">
-                      <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px]">
-                        {collections.find(
-                          (col) => col.id === selectedSwiperCollectionId,
-                        )?.title?.toLowerCase() || 'collection'}
-                        <img
-                          src={giftBottomCurve}
-                          alt="Couple"
-                          className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto"
-                        />
-                      </h3>
-                      
-                      <div className="relative">
-                        <div className="z-10 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer text-white uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
-                          <img src={nextitem} alt="" className="rotate-90 size-6" />
-                        </div>
+                {selectedSubCollections &&
+                  selectedSubCollections.length > 0 && (
+                    <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative">
+                      <div className="flex items-center gap-[8.698vw] w-full">
+                        <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px]">
+                          {collections
+                            .find(
+                              (col) => col.id === selectedSwiperCollectionId,
+                            )
+                            ?.title?.toLowerCase() || 'collection'}
+                          <img
+                            src={giftBottomCurve}
+                            alt="Couple"
+                            className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto"
+                          />
+                        </h3>
 
-                        <Swiper
-                          spaceBetween={18}
-                          slidesPerView={5} // Shows 3 full + a portion of 4th
-                          loop={false}
-                          modules={[Navigation]}
-                          navigation={{
-                            nextEl: '.swiper-button-next-sub',
-                            prevEl: '.swiper-button-prev-sub',
-                          }}
-                          className="relative w-full"
-                          breakpoints={{
-                            345: {
-                              slidesPerView: 1.25,
-                              spaceBetween: 10,
-                            },
-                            475: {
-                              slidesPerView: 2.25,
-                              spaceBetween: 15,
-                            },
-                            768: {
-                              slidesPerView: 2.25,
-                              spaceBetween: 18,
-                            },
-                            1024: {
-                              slidesPerView: 3,
-                              spaceBetween: 18,
-                            },
-                            1025: {
-                              slidesPerView: 4,
-                              spaceBetween: 18,
-                            },
-                            1365: {
-                              slidesPerView: 5,
-                              spaceBetween: 18,
-                            },
-                          }}
-                        >
-                          {selectedSubCollections.map((subCol) => (
-                            <SwiperSlide
-                              key={subCol.id}
-                              onClick={() => {
-                                setCheckedCollectionIds([subCol.id]);
-                              }}
-                              className="cursor-pointer group min-w-[13.542vw] max-w-[13.542vw]"
-                            >
-                              <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
-                                <img
-                                  src={
-                                    subCol.image?.url || '/assets/Images/placeholder.png'
-                                  }
-                                  alt={subCol.title}
-                                  className="w-full h-[180px] lg:h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                              </div>
-                              <h4 className="mt-3 text-center uppercase text-xs lg:text-sm font-medium tracking-wider text-black">
-                                {subCol.title}
-                              </h4>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
+                        <div className="relative">
+                          <div className="z-10 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer text-white uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
+                            <img
+                              src={nextitem}
+                              alt=""
+                              className="rotate-90 size-6"
+                            />
+                          </div>
 
-                        <div className="swiper-button-next-sub absolute right-[50px] cursor-pointer uppercase items-center bg-white z-10 top-[43%] translate-y-[-50%] px-8 py-10 justify-center text-white max-[1024px]:w-[33px]">
-                          <img src={nextitem} className="size-6 rotate-270" alt="" />
+                          <Swiper
+                            spaceBetween={18}
+                            slidesPerView={5} // Shows 3 full + a portion of 4th
+                            loop={false}
+                            modules={[Navigation]}
+                            navigation={{
+                              nextEl: '.swiper-button-next-sub',
+                              prevEl: '.swiper-button-prev-sub',
+                            }}
+                            className="relative w-full"
+                            breakpoints={{
+                              345: {
+                                slidesPerView: 1.25,
+                                spaceBetween: 10,
+                              },
+                              475: {
+                                slidesPerView: 2.25,
+                                spaceBetween: 15,
+                              },
+                              768: {
+                                slidesPerView: 2.25,
+                                spaceBetween: 18,
+                              },
+                              1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 18,
+                              },
+                              1025: {
+                                slidesPerView: 4,
+                                spaceBetween: 18,
+                              },
+                              1365: {
+                                slidesPerView: 5,
+                                spaceBetween: 18,
+                              },
+                            }}
+                          >
+                            {selectedSubCollections.map((subCol) => (
+                              <SwiperSlide
+                                key={subCol.id}
+                                onClick={() => {
+                                  setCheckedCollectionIds([subCol.id]);
+                                }}
+                                className="cursor-pointer group min-w-[13.542vw] max-w-[13.542vw]"
+                              >
+                                <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
+                                  <img
+                                    src={
+                                      subCol.image?.url ||
+                                      '/assets/Images/placeholder.png'
+                                    }
+                                    alt={subCol.title}
+                                    className="w-full h-[180px] lg:h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                </div>
+                                <h4 className="mt-3 text-center uppercase text-xs lg:text-sm font-medium tracking-wider text-black">
+                                  {subCol.title}
+                                </h4>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+
+                          <div className="swiper-button-next-sub absolute right-[50px] cursor-pointer uppercase items-center bg-white z-10 top-[43%] translate-y-[-50%] px-8 py-10 justify-center text-white max-[1024px]:w-[33px]">
+                            <img
+                              src={nextitem}
+                              className="size-6 rotate-270"
+                              alt=""
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             )}
           </div>
@@ -1217,6 +1166,9 @@ export default function AddGifts() {
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
             selectedSwiperCollectionId={selectedSwiperCollectionId}
+            selectedSubCollections={selectedSubCollections}
+            shopAllChecked={shopAllChecked}
+            setShopAllChecked={setShopAllChecked}
             registry={registry}
           />
           <div className="flex flex-col lg:w-[75.52vw] xl:w-[75.52vw] 2xl:w-[75.52vw]">
@@ -1343,8 +1295,11 @@ export default function AddGifts() {
                         price={product.price}
                         description={product.description}
                         productHandle={product.handle}
-                        onAddToRegistry={(quantity, isGroupGift) => handleAddtoRegistry(product, quantity, isGroupGift)}
+                        onAddToRegistry={(quantity, isGroupGift) =>
+                          handleAddtoRegistry(product, quantity, isGroupGift)
+                        }
                         isLoggedIn={user && user.user && user.user.id}
+                        isAddingToRegistry={addingProductId === product.id}
                       />
                     );
                   });
@@ -1378,7 +1333,7 @@ export default function AddGifts() {
               )}
 
             {/* {productsToShow <= 12 && ( */}
-              {/* <button
+            {/* <button
                 className="border-b mx-auto cursor-pointer uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]"
                 onClick={() => {
                   setProductsToShow(12);
@@ -1392,15 +1347,14 @@ export default function AddGifts() {
               >
                 Back to Top
               </button> */}
-              <BackToTop topRef={topRef} className={"mb-0"} />
-           
+            <BackToTop topRef={topRef} className={'mb-0'} />
           </div>
         </div>
       </section>
 
       {selectedSwiperCollectionId ? (
         <></>
-      ):(
+      ) : (
         // <section className="bg-[#FFFFFF] pt-16 mt-[7.813vw]">
         //   <Heading
         //     text="ready-made registriesss"
@@ -1441,12 +1395,16 @@ export default function AddGifts() {
         // </section>
         <></>
       )}
-      
+
       <BestsellersSection
         bestsellerProducts={bestsellerProducts}
         title={
           selectedSwiperCollectionId
-            ? `bestsellers in ${collections.find((col) => col.id === selectedSwiperCollectionId)?.title?.toLowerCase() || 'collection'}`
+            ? `bestsellers in ${
+                collections
+                  .find((col) => col.id === selectedSwiperCollectionId)
+                  ?.title?.toLowerCase() || 'collection'
+              }`
             : 'bestsellers'
         }
         buttonText="browse bestsellers"
@@ -1464,12 +1422,12 @@ export default function AddGifts() {
       {selectedSwiperCollectionId && (
         <section className="mb-[7.813vw]">
           <Heading
-            text='explore more categories'
+            text="explore more categories"
             classes={
               'prata text-[2.292vw] leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
             }
             image={brandline}
-            imageClasses='w-[33.021vw] max-w-[100%]'
+            imageClasses="w-[33.021vw] max-w-[100%]"
           />
           <div className="relative items-start mt-[4.01vw] mb-10 max-[1024px]:my-10">
             <div className="flex flex-row items-center justify-center">
@@ -1525,8 +1483,7 @@ export default function AddGifts() {
                 {collections
                   .filter(
                     (col) =>
-                      col.parentMetafield?.value === 'true' &&
-                      col.readyMadeMetafield?.value !== 'true' &&
+                      isParentForSlides(col) &&
                       col.id !== selectedSwiperCollectionId, // Exclude current parent collection
                   )
                   .map((col) => (
@@ -1536,13 +1493,16 @@ export default function AddGifts() {
                         // Get sub-collections from the Collection type metafield references
                         let subCollections = [];
                         let subCollectionGids = [];
-                        
+
                         // First, try to get from the new Collection type metafield (references)
                         if (col.subCollectionMetafield?.references?.edges) {
-                          subCollections = col.subCollectionMetafield.references.edges.map(
-                            (edge) => edge.node,
+                          subCollections =
+                            col.subCollectionMetafield.references.edges.map(
+                              (edge) => edge.node,
+                            );
+                          subCollectionGids = subCollections.map(
+                            (sub) => sub.id,
                           );
-                          subCollectionGids = subCollections.map((sub) => sub.id);
                         } else if (col.subMetafield?.value) {
                           // Fallback to old JSON string format
                           try {
@@ -1562,13 +1522,12 @@ export default function AddGifts() {
                         setCheckedCollectionIds(subCollectionGids);
                         setSelectedSubCollections(subCollections);
                         setSelectedSwiperCollectionId(col.id);
+                        setShopAllChecked(true);
                       }}
                       style={{cursor: 'pointer'}}
                     >
                       <img
-                        src={
-                          col.image?.url || '/assets/Images/placeholder.png'
-                        }
+                        src={col.image?.url || '/assets/Images/placeholder.png'}
                         alt={col.title}
                         className="w-full h-[440px] object-cover"
                       />

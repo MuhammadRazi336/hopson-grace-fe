@@ -8,13 +8,11 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
   const transformData = (data, activeTabValue) => {
     // Add safety checks
     if (!data) {
-      console.log('🔍 DEBUG: No data provided to CustomTab');
       return null;
     }
     
     // Case 1: New structured data with real/themed categories
     if (data.real || data.themed) {
-      console.log('🔍 DEBUG: Data has categorized structure');
       
       let selectedData = null;
       
@@ -30,7 +28,6 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
           selectedData = data.real; // Default to real registries
       }
       
-      console.log('🔍 DEBUG: Selected data for tab', activeTabValue, ':', selectedData);
       
       if (selectedData && selectedData.parentCollection && selectedData.subCollections) {
         return selectedData;
@@ -41,16 +38,13 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
     
     // Case 2: Legacy data structure (from home page)
     if (data.parentCollection && data.subCollections) {
-      console.log('🔍 DEBUG: Data already in correct format (home page structure)');
       return data;
     }
     
     // Case 3: Data is an array of collections (legacy)
     if (Array.isArray(data)) {
-      console.log('🔍 DEBUG: Data is array, transforming to expected format');
       
       if (data.length === 0) {
-        console.log('🔍 DEBUG: Collections array is empty');
         return null;
       }
       
@@ -72,7 +66,6 @@ const CustomTab = ({ tabsData, featuredRegistryData }) => {
     }
     
     // Case 4: Unknown data structure
-    console.log('🔍 DEBUG: Unknown data structure:', typeof data, data);
     return null;
   };
 

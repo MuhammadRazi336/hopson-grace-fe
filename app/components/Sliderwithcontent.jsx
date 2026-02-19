@@ -11,11 +11,7 @@ import nextitem from '/assets/Images/next.png';
 const Sliderwithcontent = ({ featuredRegistryData }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   
-  // Debug logging
-  console.log('🔍 DEBUG: Sliderwithcontent received:', featuredRegistryData);
-  
   if (!featuredRegistryData || !featuredRegistryData.subCollections) {
-    console.log('🔍 DEBUG: No valid data structure in Sliderwithcontent');
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">No registry data available</p>
@@ -30,7 +26,6 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
   }
 
   if (featuredRegistryData.subCollections.length === 0) {
-    console.log('🔍 DEBUG: Empty subcollections array in Sliderwithcontent');
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">No subcollections available</p>
@@ -46,10 +41,6 @@ const Sliderwithcontent = ({ featuredRegistryData }) => {
 
   const { parentCollection, subCollections } = featuredRegistryData;
   
-  console.log('🔍 DEBUG: Parent collection:', parentCollection);
-  console.log('🔍 DEBUG: Sub collections count:', subCollections?.length);
-  console.log('🔍 DEBUG: Sub collections:', subCollections);
-
   return (
     <div>
       <Heading

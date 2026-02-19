@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
@@ -22,6 +22,7 @@ import {formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import BackToTop from '~/components/BackToTop';
 
 export async function loader({request, context}) {
   try {
@@ -283,12 +284,14 @@ const ProductCard = React.memo(
             <div className="flex flex-col w-full items-center text-xs">
               <button
                 onClick={handleAddToRegistry}
-                disabled={fetcher.state === 'submitting'}
-                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+                disabled={fetcher.state !== 'idle'}
+                className={`uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50 ${
+                  fetcher.state !== 'idle'
+                    ? 'bg-black cursor-wait'
+                    : 'bg-[#446184] cursor-pointer'
+                }`}
               >
-                {fetcher.state === 'submitting'
-                  ? 'Adding...'
-                  : 'Add to registry'}
+                {fetcher.state !== 'idle' ? 'Added' : 'Add to registry'}
               </button>
             </div>
           </div>
@@ -305,6 +308,9 @@ const CashFund = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
   const [checkedCategories, setCheckedCategories] = useState([]); // ['Honeymoon','Home','Date Night']
+  const INITIAL_VISIBLE = 16;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const topRef = useRef(null);
 
   // Build a mapping of category labels to collection IDs (by collection title, fuzzy includes)
   const categoryToCollectionIds = React.useMemo(() => {
@@ -367,9 +373,14 @@ const CashFund = () => {
     }, 3000);
   }, []);
 
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = filteredProducts.length > INITIAL_VISIBLE;
+  const canLoadMore = visibleCount < filteredProducts.length;
+
   return (
     <section>
       <Header />
+      <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]" />
 
       <div className="w-full h-[2px] bg-black"></div>
 
@@ -452,7 +463,7 @@ const CashFund = () => {
             setCheckedCategories={setCheckedCategories}
           /> */}
           <div className="w-full grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 max-[1024px]:grid-cols-4 max-[767px]:grid-cols-3 max-[550px]:grid-cols-2 gap-[2.083vw] pt-0 p-0 relative z-0 lg:w-[81.25vw] xl:w-[81.25vw] 2xl:w-[81.25vw] mx-auto">
-            {filteredProducts.slice(0, 16).map((product) => {
+            {visibleProducts.map((product) => {
               // Find the collection for this product
               const collection = collections.find(col => col.id === product.collectionId);
               return (
@@ -473,14 +484,16 @@ const CashFund = () => {
         <div className="flex justify-center items-center">
           <div className="w-full flex flex-col items-center">
             <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
-              LOADING {Math.min(16, filteredProducts.length)} of {filteredProducts.length}
+              LOADING {visibleProducts.length} of {filteredProducts.length}
             </p>
 
-            <WhiteThemeButton Text="View more" link="/quick-start-guide" />
-
-            <button className="border-b mx-auto cursor-pointer mb-[9.635vw] uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]">
-              Back to Top
-            </button>
+            {hasMore && canLoadMore && (
+              <WhiteThemeButton
+                Text="View more"
+                onClick={() => setVisibleCount((prev) => Math.min(prev + 16, filteredProducts.length))}
+              />
+            )}
+            {hasMore && <BackToTop topRef={topRef} />}
           </div>
         </div>
       </section>
@@ -542,49 +555,46 @@ const CashFund = () => {
                 },
               }}
             >
-              {/* Dynamic recommended products */}
-              {recommendedProducts && recommendedProducts.length > 0 ? (
-                recommendedProducts.map((product) => {
-                  const productNode = product.node;
-                  const firstImage = productNode.images?.edges?.[0]?.node;
-                  const price = productNode.priceRange?.minVariantPrice;
-                  
+              {/* First 6 cash funds from the current page */}
+              {visibleProducts.length > 0 ? (
+                visibleProducts.slice(0, 6).map((product) => {
+                  const firstImage = product.image || '/assets/Images/placeholder.png';
+                  const priceFormatted = formatPrice(product.price);
                   return (
-                    <SwiperSlide key={productNode.id} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
-                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
-                        <img 
-                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                          alt={productNode.title || 'Product'} 
-                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                    <SwiperSlide key={`${product.id}-${product.collectionId}`} className="w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]">
+                      <div className="block cursor-pointer">
+                        <img
+                          src={firstImage}
+                          alt={product.title || 'Cash fund'}
+                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity"
                         />
-                        <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
-                          {productNode.title}
+                        <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors">
+                          {product.title}
                         </h3>
-                        <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
-                      </Link>
+                        <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2">{priceFormatted}</p>
+                      </div>
                     </SwiperSlide>
                   );
                 })
               ) : (
-                // Fallback to static slides if no recommended products
                 <>
                   <SwiperSlide>
                     <img src={youll1} alt="New Arrival" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                    <h3 className="mt-2.5 lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                       ARKE GLASS BOTTLE FOR CARBONATOR PRO
                     </h3>
                     <p className="lg:text-2xl text-sm">$95.00</p>
                   </SwiperSlide>
                   <SwiperSlide>
                     <img src={youll2} alt="Tableware" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                    <h3 className="mt-2.5 lg:mt-[1.25vw] uppercase lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                       SMEG TOASTER, 2 SLICE
                     </h3>
                     <p className="lg:text-2xl text-sm">$95.00</p>
                   </SwiperSlide>
                   <SwiperSlide>
                     <img src={youll3} alt="Staub Cast Iron Q4" className="w-full rounded-none" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[1.25vw]  lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider">
                       THE BARISTA TOUCH ESPRESSO MAKER
                     </h3>
                     <p className="lg:text-2xl text-sm">$95.00</p>
