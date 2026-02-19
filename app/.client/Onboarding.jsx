@@ -38,6 +38,9 @@ import ModalPortal from '~/components/ModalPortal';
 import nextitem from '/assets/Images/next.png';
 import placeholder from '/assets/Images/placeholder.jpg';
 import notsure from '/assets/Images/notsure.jpg';
+import modern from '/assets/Images/modern.png';
+import classic from '/assets/Images/classic.png';
+import electic from '/assets/Images/electic.jpg';
 import {STATES_BY_COUNTRY} from '~/constants/StatesByCountry';
 
 const OnboardingClient = ({onStepChange}) => {
@@ -1356,104 +1359,37 @@ const Step6 = ({collections, onCollectionsSelect}) => {
   );
 };
 
+// Fixed 4 style options for Step 7 – always shown regardless of Step 6 selections
+const STEP7_FIXED_STYLES = [
+  { id: 'style-modern', title: 'Modern', image: { url: modern }, handle: 'modern', description: 'Modern' },
+  { id: 'style-classic', title: 'Classic', image: { url: classic }, handle: 'classic', description: 'Classic' },
+  { id: 'style-electic', title: 'Electic', image: { url: electic }, handle: 'electic', description: 'Electic' },
+  { id: 'style-not-sure', title: 'Not Sure', image: { url: notsure }, handle: 'not-sure', description: 'Not Sure' },
+];
+
 const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [subCollectionsData, setSubCollectionsData] = useState([]);
-  const [error, setError] = useState(null);
   const [swiper, setSwiper] = useState(null);
 
-  useEffect(() => {
-    const fetchSubCollections = async () => {
-      setError(null);
-      const subCollectionIds = selectedCollections.flatMap((collection) => {
-        const subCollectionsValue = collection.subCollections?.value;
-        if (subCollectionsValue) {
-          try {
-            return JSON.parse(subCollectionsValue);
-          } catch (e) {
-            return [];
-          }
-        }
-        return [];
-      });
-      if (subCollectionIds.length > 0) {
-        try {
-          const response = await fetch('/api/collections', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ids: subCollectionIds}),
-          });
-          const data = await response.json();
-          if (!response.ok) {
-            throw new Error(data.error || 'Failed to fetch collections');
-          }
-          
-          // Filter subcategories to only show MODERN, CLASSIC, ELECTIC, and NOT SURE
-          const allowedNames = ['MODERN', 'CLASSIC', 'ELECTIC', 'NOT SURE'];
-          const filteredCollections = (data.collections || []).filter((collection) => {
-            const title = collection.title?.toUpperCase().trim();
-            return allowedNames.includes(title);
-          });
-          
-          // Remove duplicates based on title (case-insensitive)
-          const uniqueCollections = filteredCollections.reduce((acc, current) => {
-            const titleUpper = current.title?.toUpperCase().trim();
-            const exists = acc.find(item => item.title?.toUpperCase().trim() === titleUpper);
-            if (!exists) {
-              acc.push(current);
-            }
-            return acc;
-          }, []);
-          
-          setSubCollectionsData(uniqueCollections);
-        } catch (error) {
-          setError(error.message);
-        }
-      } else {
-        setSubCollectionsData([]);
-      }
-    };
-    fetchSubCollections();
-  }, [selectedCollections]);
-
-  // Update Swiper when data changes
-  useEffect(() => {
-    if (swiper) {
-      const timer = setTimeout(() => {
-        swiper.update();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [subCollectionsData, swiper]);
-
-  const handleOptionClick = (subCollection) => {
+  const handleOptionClick = (option) => {
     setSelectedOptions((prev) => {
-      const isSelected = prev.some((item) => item.id === subCollection.id);
+      const isSelected = prev.some((item) => item.id === option.id);
       const newSelection = isSelected
-        ? prev.filter((item) => item.id !== subCollection.id)
+        ? prev.filter((item) => item.id !== option.id)
         : [
             ...prev,
             {
-              id: subCollection.id,
-              title: subCollection.title,
-              image: subCollection.image,
-              handle: subCollection.handle,
-              description: subCollection.description,
+              id: option.id,
+              title: option.title,
+              image: option.image,
+              handle: option.handle,
+              description: option.description,
             },
           ];
       onSubCollectionsSelect(newSelection);
       return newSelection;
     });
   };
-
-  // Calculate total slides (subCollections + "Not Sure" slide)
-  const totalSlides = subCollectionsData.length > 0 
-    ? subCollectionsData.length + 1 
-    : 1;
-  // Loop requires at least double the max slidesPerView (4 * 2 = 8)
-  const shouldLoop = totalSlides > 8;
 
   return (
     <div className="">
@@ -1464,7 +1400,6 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
       <p className="font-normal mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
-      {error && <p className="text-red-500 mb-4">Error: {error}</p>}
       <div className="relative">
         <div className="swiper-button-prev-subcollection absolute top-[60px] max-[1024px]:top-[45%] -left-16 max-[1024px]:-left-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex ">
           <img src={nextitem} alt="" className="rotate-90 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" />
@@ -1473,10 +1408,10 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
           </span>
         </div>
         <Swiper
-          key={subCollectionsData.length}
+          key="step7-fixed-styles"
           spaceBetween={20}
           slidesPerView={4}
-          loop={shouldLoop}
+          loop={false}
           className="subcollection-swiper"
           modules={[Navigation]}
           navigation={{
@@ -1507,174 +1442,42 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
             },
           }}
         >
-          {subCollectionsData.length > 0 ? (
-            <>
-              {subCollectionsData.map((subCollection) => (
-                <SwiperSlide key={subCollection.id}>
-                  <button
-                    key={subCollection.id}
-                    onClick={() => handleOptionClick(subCollection)}
-                    className={`$${
-                      selectedOptions.some((item) => item.id === subCollection.id)
-                        ? ''
-                        : ''
-                    }`}
-                  >
-                    {subCollection.image ? (
-                      <div
-                        className={
-                          selectedOptions.some(
-                            (item) => item.id === subCollection.id,
-                          )
-                            ? 'tickafter'
-                            : ''
-                        }
-                      >
-                        <Image
-                          alt={subCollection.image.altText || subCollection.title}
-                          aspectRatio="1/1"
-                          data={{
-                            url: subCollection.image.url,
-                            altText: subCollection.image.altText,
-                            width: 200,
-                            height: 220,
-                          }}
-                          loading="lazy"
-                          sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
-                        />
-                      </div>
-                    ) : (
-                      <div
-                        className={
-                          selectedOptions.some(
-                            (item) => item.id === subCollection.id,
-                          )
-                            ? 'tickafter'
-                            : ''
-                        }
-                      >
-                        <Image
-                          alt={subCollection.title}
-                          aspectRatio="1/1"
-                          data={{
-                            url: placeholder,
-                            altText: subCollection.title,
-                            width: 400,
-                            height: 400,
-                          }}
-                          loading="lazy"
-                          sizes="(min-width: 45em) 400px, 100vw"
-                        />
-                      </div>
-                    )}
-                    <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
-                      {subCollection.title}
-                    </span>
-                  </button>
-                </SwiperSlide>
-              ))}
-              {/* Static "Not Sure" option */}
-              <SwiperSlide key="not-sure-static">
-                <button
-                  onClick={() => {
-                    const notSureOption = {
-                      id: 'not-sure-static',
-                      title: 'Not Sure',
-                      image: { url: notsure },
-                      handle: 'not-sure',
-                      description: 'Not Sure'
-                    };
-                    handleOptionClick(notSureOption);
-                  }}
-                  className={`$${
-                    selectedOptions.some((item) => item.id === 'not-sure-static')
-                      ? ''
+          {STEP7_FIXED_STYLES.map((option) => (
+            <SwiperSlide key={option.id}>
+              <button
+                onClick={() => handleOptionClick(option)}
+                className={`${
+                  selectedOptions.some((item) => item.id === option.id)
+                    ? ''
+                    : ''
+                }`}
+              >
+                <div
+                  className={
+                    selectedOptions.some((item) => item.id === option.id)
+                      ? 'tickafter'
                       : ''
-                  }`}
+                  }
                 >
-                  <div
-                    className={
-                      selectedOptions.some(
-                        (item) => item.id === 'not-sure-static',
-                      )
-                        ? 'tickafter'
-                        : ''
-                    }
-                  >
-                    <Image
-                      alt="Not Sure"
-                      aspectRatio="1/1"
-                      data={{
-                        url: notsure,
-                        altText: 'Not Sure',
-                        width: 400,
-                        height: 400,
-                      }}
-                      loading="lazy"
-                      sizes="(min-width: 45em) 400px, 100vw"
-                    />
-                  </div>
-                  <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
-                    Not Sure
-                  </span>
-                </button>
-              </SwiperSlide>
-            </>
-          ) : (
-            <>
-              {error ? (
-                <p className="col-span-2 text-center text-gray-500">
-                  Error loading sub-categories
-                </p>
-              ) : (
-                <SwiperSlide key="not-sure-static">
-                  <button
-                    onClick={() => {
-                      const notSureOption = {
-                        id: 'not-sure-static',
-                        title: 'Not Sure',
-                        image: { url: notsure },
-                        handle: 'not-sure',
-                        description: 'Not Sure'
-                      };
-                      handleOptionClick(notSureOption);
+                  <Image
+                    alt={option.image?.altText || option.title}
+                    aspectRatio="1/1"
+                    data={{
+                      url: option.image?.url || placeholder,
+                      altText: option.title,
+                      width: 200,
+                      height: 220,
                     }}
-                    className={`$${
-                      selectedOptions.some((item) => item.id === 'not-sure-static')
-                        ? ''
-                        : ''
-                    }`}
-                  >
-                    <div
-                      className={
-                        selectedOptions.some(
-                          (item) => item.id === 'not-sure-static',
-                        )
-                          ? 'tickafter'
-                          : ''
-                      }
-                    >
-                      <Image
-                        alt="Not Sure"
-                        aspectRatio="1/1"
-                        data={{
-                          url: notsure,
-                          altText: 'Not Sure',
-                          width: 400,
-                          height: 400,
-                        }}
-                        loading="lazy"
-                        sizes="(min-width: 45em) 400px, 100vw"
-                      />
-                    </div>
-                    <span className="mt-4 block tracking-wider text-[15px] font-medium">
-                      Not Sure
-                    </span>
-                  </button>
-                </SwiperSlide>
-              )}
-            </>
-          )}
+                    loading="lazy"
+                    sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
+                  />
+                </div>
+                <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
+                  {option.title}
+                </span>
+              </button>
+            </SwiperSlide>
+          ))}
         </Swiper>
         <div className="swiper-button-next-subcollection absolute top-[60px] max-[1024px]:top-[45%] -right-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex">
           <span className="rotate-90 text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] block tracking-wider max-[1024px]:hidden">
