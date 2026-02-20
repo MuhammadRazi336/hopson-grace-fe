@@ -4,6 +4,11 @@ import productImg from '/assets/Images/menu-product.png';
 import lineImg from '/assets/Images/line.png';
 import arrowImg from '/assets/Images/arrow.png';
 
+const isExcludedFundsCollection = (col) => {
+  const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+  return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+};
+
 const NavBarLinks = (mobileClasses) => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +28,8 @@ const NavBarLinks = (mobileClasses) => {
 
         if (response.ok) {
           const data = await response.json();
-          setCollections(data.collections || []);
+          const raw = data.collections || [];
+          setCollections(raw.filter((col) => !isExcludedFundsCollection(col)));
         } else {
           setCollections([]);
         }
@@ -107,7 +113,7 @@ const NavBarLinks = (mobileClasses) => {
                     </li>
                     <li className='flex items-center gap-2'>
                       <NavLink
-                        to="/dashboard/giftcards"
+                        to="/products"
                         className="mb-[26px] text-black font-semibold underline flex items-center gap-2"
                       >
                         SHOP ALL

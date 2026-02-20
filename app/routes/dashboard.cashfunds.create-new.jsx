@@ -12,7 +12,7 @@ import {Navigation} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import nextitem from '/assets/Images/next.png';
-import {formatShopifyPrice} from '~/utils/priceFormatter';
+import {formatShopifyPrice, formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import EditImagePopup from '~/components/EditImagePopup';
 import { toast, ToastContainer } from 'react-toastify';
@@ -36,18 +36,51 @@ export async function loader(args) {
     throw new Response('Registry not found in session', {status: 404});
   }
 
-  // Fetch recommended products
+  // Fetch cash fund products (same as cash-funds page: collections with cashfund=true or category match)
+  let cashFundProducts = [];
+  try {
+    const [{collections: collectionsData}] = await Promise.all([
+      context.storefront.query(COLLECTION_QUERY),
+    ]);
+    const collections = collectionsData?.nodes || [];
+    collections.forEach((collection) => {
+      const titleLc = (collection?.title || '').trim().toLowerCase();
+      const isCategoryMatch = titleLc.includes('honeymoon') || titleLc.includes('home') || titleLc.includes('date night') || titleLc.includes('date nights');
+      const includeCollection = collection.cashfundMetafield?.value === 'true' || isCategoryMatch;
+      if (includeCollection && collection.products?.edges) {
+        collection.products.edges.forEach((edge) => {
+          const product = edge.node;
+          cashFundProducts.push({
+            id: product.id,
+            title: product.title,
+            handle: product.handle,
+            description: product.description,
+            image: product.images?.edges?.[0]?.node?.url || null,
+            price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+            currency: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
+            availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
+            collectionId: collection.id,
+            collectionTitle: collection.title,
+          });
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching cash fund collections:', error);
+  }
+
+  // Fetch recommended products (fallback when no cash fund products)
   let recommendedProducts = [];
   try {
-    const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
-      variables: { first: 8 } 
+    const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, {
+      variables: { first: 8 },
     });
     recommendedProducts = recommendedProductsData?.edges || [];
   } catch (error) {
     console.error('Error loading recommended products:', error);
   }
 
-  return {registry, recommendedProducts: recommendedProducts || []};
+  return {registry, recommendedProducts: recommendedProducts || [], cashFundProducts: cashFundProducts || []};
 }
 
 export async function action({request, context}) {
@@ -72,7 +105,7 @@ export async function action({request, context}) {
 }
 
 function CreateNewCashFund() {
-  const {registry, recommendedProducts} = useLoaderData();
+  const {registry, recommendedProducts, cashFundProducts} = useLoaderData();
   const navigate = useNavigate();
   const location = useLocation();
   const [photoFile, setPhotoFile] = useState(null);
@@ -648,20 +681,39 @@ function CreateNewCashFund() {
                 },
               }}
             >
-              {/* Dynamic recommended products */}
-              {recommendedProducts && recommendedProducts.length > 0 ? (
+              {/* Cash fund products (same as cash-funds page); fallback to recommended products */}
+              {cashFundProducts && cashFundProducts.length > 0 ? (
+                cashFundProducts.slice(0, 6).map((product) => {
+                  const firstImage = product.image || '/assets/Images/placeholder.png';
+                  const priceFormatted = formatPrice(product.price);
+                  return (
+                    <SwiperSlide key={`${product.id}-${product.collectionId}`} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
+                      <Link to="/cash-funds" className="block cursor-pointer hover:no-underline pointer-events-auto">
+                        <img
+                          src={firstImage}
+                          alt={product.title || 'Cash fund'}
+                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none"
+                        />
+                        <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
+                          {product.title}
+                        </h3>
+                        <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2 pointer-events-none">{priceFormatted}</p>
+                      </Link>
+                    </SwiperSlide>
+                  );
+                })
+              ) : recommendedProducts && recommendedProducts.length > 0 ? (
                 recommendedProducts.map((product) => {
                   const productNode = product.node;
                   const firstImage = productNode.images?.edges?.[0]?.node;
                   const price = productNode.priceRange?.minVariantPrice;
-                  
                   return (
                     <SwiperSlide key={productNode.id} className='w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]'>
                       <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
-                        <img 
-                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                          alt={productNode.title || 'Product'} 
-                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
+                        <img
+                          src={firstImage?.url || '/assets/Images/placeholder.png'}
+                          alt={productNode.title || 'Product'}
+                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none"
                         />
                         <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                           {productNode.title}
@@ -672,7 +724,6 @@ function CreateNewCashFund() {
                   );
                 })
               ) : (
-                // Fallback message if no recommended products
                 <SwiperSlide>
                   <p className="text-center">No recommended products available</p>
                 </SwiperSlide>
@@ -735,5 +786,58 @@ function CreateNewCashFund() {
     </>
   );
 }
+
+const COLLECTION_QUERY = `#graphql
+  query {
+    collections(first: 250) {
+      nodes {
+        description
+        title
+        id
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        cashfundMetafield: metafield(namespace: "custom", key: "cashfund") {
+          id
+          value
+        }
+        products(first: 10){
+          edges {
+            node {
+              id
+              title
+              handle
+              description
+              images(first: 10) {
+                edges {
+                  node {
+                    id
+                    url
+                  }
+                }
+              }
+              variants(first: 1) {
+                edges {
+                  node {
+                    id
+                    availableForSale
+                    priceV2 {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export default CreateNewCashFund;

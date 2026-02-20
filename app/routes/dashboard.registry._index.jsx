@@ -4,7 +4,7 @@ import {Link, useLoaderData, json} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
-import {useState} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
@@ -12,9 +12,9 @@ import PreviewRegistry from '~/components/PreviewRegistry';
 import { Footer } from '~/components/Footer';
 import {formatPrice} from '~/utils/priceFormatter';
 
-// Minimal query for parent collections (same filtering as dashboard addgifts)
+// Collections with products per node (same approach as addgifts: parent -> sub -> products -> parentCollectionId)
 const REGISTRY_COLLECTION_QUERY = `#graphql
-  query RegistryParentCollections {
+  query RegistryCollectionsWithProducts {
     collections(first: 250) {
       nodes {
         id
@@ -26,6 +26,47 @@ const REGISTRY_COLLECTION_QUERY = `#graphql
         readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
           id
           value
+        }
+        subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+        subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+          references(first: 50) {
+            edges {
+              node {
+                ... on Collection {
+                  id
+                }
+              }
+            }
+          }
+        }
+        products(first: 50) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    }
+  }`;
+
+// Fallback: get each product's collections so we can resolve parentCollectionId when product isn't in collection.products
+const REGISTRY_PRODUCT_COLLECTIONS_QUERY = `#graphql
+  query RegistryProductCollections($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Product {
+        id
+        collections(first: 50) {
+          edges {
+            node {
+              id
+            }
+          }
         }
       }
     }
@@ -106,51 +147,24 @@ export async function loader({request, context}) {
     cashRes = {data: []};
   }
 
-  let mergedArray = [];
   const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
-  );
+  ) || [];
   const productsResult = await fetchProducts(context.storefront, ids);
   const products = productsResult || {nodes: []};
   const productNodes = Array.isArray(products.nodes) ? products.nodes : [];
 
-
-  if (res?.data?.length && productNodes.length > 0) {
-    mergedArray = res.data.map((item1) => {
-      const product = productNodes.find(
-        (item2) =>
-          item2 && item2.id === `gid://shopify/Product/${item1.productId}`,
-      );
-      // Ensure numeric fields are numbers
-      const amount =
-        item1.amount !== undefined ? Number(item1.amount) : undefined;
-      const collectedAmount =
-        item1.collectedAmount !== undefined
-          ? Number(item1.collectedAmount)
-          : undefined;
-      if (product) {
-        return {
-          ...item1,
-          ...product,
-          amount,
-          collectedAmount,
-        };
-      }
-      return {
-        ...item1,
-        amount,
-        collectedAmount,
-      };
-    });
-  }
-
+  let mergedArray = [];
   const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
 
-  // Fetch parent collections for categories filter (same logic as dashboard addgifts: exclude CASH FUNDS, TRAVEL FUNDS)
+  // Same as addgifts: fetch collections with products, build parentCollections and productId -> parentId (first parent that contains the product wins)
   let parentCollections = [];
+  const productIdToParentId = {};
+  const subCollectionIdToParentId = {};
+  const productIdToCollectionIds = {}; // from collection query: which sub-collections each product appeared in
   try {
     const {collections} = await context.storefront.query(REGISTRY_COLLECTION_QUERY);
-    const nodes = collections?.nodes || [];
+    const collectionsList = collections?.nodes || [];
     const isExcludedFundsCollection = (col) => {
       const t = (col.title && String(col.title).toUpperCase().trim()) || '';
       return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
@@ -159,9 +173,125 @@ export async function loader({request, context}) {
       col.parentMetafield?.value === 'true' &&
       col.readyMadeMetafield?.value !== 'true' &&
       !isExcludedFundsCollection(col);
-    parentCollections = nodes.filter(isParentForSlides);
+    parentCollections = collectionsList.filter(isParentForSlides);
+    // Sort by id so order is deterministic and "first parent wins" matches addgifts (e.g. Tableware 283241316451 before 288315506787)
+    parentCollections = [...parentCollections].sort((a, b) => (a.id || '').localeCompare(b.id || ''));
+
+    // Identical to addgifts: for each parent -> sub-collections -> products; first parent that contains product wins (if (!productMap.has(product.id)))
+    for (const parentCollection of parentCollections) {
+      let subCollectionGids = [];
+      let subCollections = [];
+      if (parentCollection.subCollectionMetafield?.references?.edges) {
+        subCollections = parentCollection.subCollectionMetafield.references.edges.map(
+          (edge) => edge.node,
+        );
+        subCollectionGids = subCollections.map((sub) => sub.id);
+      } else if (parentCollection.subMetafield?.value) {
+        try {
+          subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
+          subCollections = collectionsList.filter(
+            (col) =>
+              col.parentMetafield?.value === 'false' &&
+              col.readyMadeMetafield?.value !== 'true' &&
+              subCollectionGids.includes(col.id),
+          );
+        } catch (e) {
+          console.error('Error parsing subMetafield in registry loader:', e);
+        }
+      }
+      for (const subRef of subCollections) {
+        const subId = subRef?.id;
+        if (subId) subCollectionIdToParentId[subId] = parentCollection.id;
+        const subCollection =
+          collectionsList.find((col) => col.id === subId) || subRef;
+        if (subCollection?.products?.edges) {
+          for (const edge of subCollection.products.edges) {
+            const productId = edge?.node?.id;
+            if (productId) {
+              if (productIdToParentId[productId] === undefined) {
+                productIdToParentId[productId] = parentCollection.id;
+              }
+              if (!productIdToCollectionIds[productId]) productIdToCollectionIds[productId] = [];
+              if (!productIdToCollectionIds[productId].includes(subId)) {
+                productIdToCollectionIds[productId].push(subId);
+              }
+            }
+          }
+        }
+      }
+    }
   } catch (err) {
-    console.error('Error fetching parent collections for registry:', err);
+    console.error('Error fetching collections for registry:', err);
+  }
+
+  // Fallback: if registry product wasn't in collection query (e.g. not in first 50 products), get its collections from Storefront
+  if (ids?.length > 0) {
+    try {
+      const productCollectionsResult = await context.storefront.query(
+        REGISTRY_PRODUCT_COLLECTIONS_QUERY,
+        {variables: {ids}},
+      );
+      const nodes = productCollectionsResult?.nodes || [];
+      nodes.forEach((node) => {
+        if (node?.id && node?.collections?.edges) {
+          const list = node.collections.edges.map((e) => e?.node?.id).filter(Boolean);
+          if (list.length && !productIdToCollectionIds[node.id]) {
+            productIdToCollectionIds[node.id] = list;
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Error fetching product collections for registry fallback:', err);
+    }
+  }
+
+  // Merge: API parentCollectionId (normalized), then productIdToParentId (same as addgifts), then resolve via productIdToCollectionIds + subCollectionIdToParentId for products not seen in collection query
+  if (res?.data?.length && productNodes.length > 0) {
+    mergedArray = res.data.map((item1) => {
+      const product = productNodes.find(
+        (item2) =>
+          item2 && item2.id === `gid://shopify/Product/${item1.productId}`,
+      );
+      const amount =
+        item1.amount !== undefined ? Number(item1.amount) : undefined;
+      const collectedAmount =
+        item1.collectedAmount !== undefined
+          ? Number(item1.collectedAmount)
+          : undefined;
+      let parentCollectionId = item1.parentCollectionId;
+      if (parentCollectionId != null && typeof parentCollectionId !== 'string') {
+        parentCollectionId = `gid://shopify/Collection/${parentCollectionId}`;
+      } else if (typeof parentCollectionId === 'string' && !parentCollectionId.startsWith('gid://')) {
+        parentCollectionId = `gid://shopify/Collection/${parentCollectionId}`;
+      }
+      if (parentCollectionId == null && product?.id) {
+        parentCollectionId = productIdToParentId[product.id];
+        if (parentCollectionId == null) {
+          const collectionIds = productIdToCollectionIds[product.id] || [];
+          for (const cid of collectionIds) {
+            if (subCollectionIdToParentId[cid]) {
+              parentCollectionId = subCollectionIdToParentId[cid];
+              break;
+            }
+          }
+        }
+      }
+      if (product) {
+        return {
+          ...item1,
+          ...product,
+          amount,
+          collectedAmount,
+          parentCollectionId: parentCollectionId ?? product.parentCollectionId,
+        };
+      }
+      return {
+        ...item1,
+        amount,
+        collectedAmount,
+        parentCollectionId,
+      };
+    });
   }
 
   return defer({
@@ -203,7 +333,13 @@ const index = () => {
   const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl, parentCollections = []} =
     loaderData;
 
+  // Browser console: verify registry category filter data
+  useEffect(() => {
+    console.log('[Registry Dashboard] parentCollections:', parentCollections?.length ?? 0, parentCollections?.map((c) => ({ id: c.id, title: c.title })));
+    const gifts = Array.isArray(data) ? data : [];
+    console.log('[Registry Dashboard] gifts (data):', gifts.length, gifts.map((g) => ({ id: g.id, title: g?.title, parentCollectionId: g?.parentCollectionId })));
     console.log('cashfundData', cashfundData);
+  }, [data, parentCollections, cashfundData]);
 
   // Fallback for apiBaseUrl if it's not available from loader
   const finalApiBaseUrl =
@@ -385,11 +521,31 @@ const index = () => {
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'gifted' | 'ungifted'
   // Category filter: 'all' or parent collection id (only gifts from that parent collection)
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const categoryOptions = ['all', ...(parentCollections || []).map((c) => c.id)];
+  const [openFilter, setOpenFilter] = useState(null); // null | 'category' | 'price' | 'status'
+  const filterRef = useRef(null);
+
   const categoryLabel =
     categoryFilter === 'all'
       ? 'All'
       : (parentCollections || []).find((c) => c.id === categoryFilter)?.title ?? 'All';
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setOpenFilter(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filterTriggerClass =
+    'text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer border-0 bg-transparent p-0 font-inherit';
+  const Arrow = ({ isOpen }) => (
+    <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+      <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
+    </svg>
+  );
 
   return (
     <>
@@ -627,58 +783,59 @@ const index = () => {
           className="max-w-[630px] h-auto mx-auto lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] max-[1024px]:w-[70%]"
         />
 
-        <div className="filters">
-          <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px]">
-            <h3
-              className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer"
-              onClick={() => {
-                const currentIndex = categoryOptions.indexOf(categoryFilter);
-                const nextIndex = (currentIndex + 1) % categoryOptions.length;
-                setCategoryFilter(categoryOptions[nextIndex]);
-              }}
-            >
-              {' '}
-              <strong>Categories</strong> {categoryLabel}{' '}
-              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
-              </svg>
-            </h3>
-            <h3
-              className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer"
-              onClick={() => {
-                const options = ['low-to-high', 'high-to-low'];
-                const currentIndex = options.indexOf(priceSort);
-                const nextIndex = (currentIndex + 1) % options.length;
-                setPriceSort(options[nextIndex]);
-              }}
-            >
-              {' '}
-              <strong>price</strong>{' '}
-              {priceSort === 'low-to-high' ? 'low to high' : 'high to low'}{' '}
-              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
-              </svg>
-            </h3>
-            <h3
-              className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer"
-              onClick={() => {
-                const options = ['all', 'gifted', 'ungifted'];
-                const currentIndex = options.indexOf(statusFilter);
-                const nextIndex = (currentIndex + 1) % options.length;
-                setStatusFilter(options[nextIndex]);
-              }}
-            >
-              {' '}
-              <strong>status</strong>{' '}
-              {statusFilter === 'gifted'
-                ? 'Gifted'
-                : statusFilter === 'ungifted'
-                ? 'Ungifted'
-                : 'All'}{' '}
-              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
-              </svg>
-            </h3>
+        <div className="filters" ref={filterRef}>
+          <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px] items-start">
+            {/* Categories dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                className={filterTriggerClass}
+                onClick={() => setOpenFilter(openFilter === 'category' ? null : 'category')}
+              >
+                <strong>Categories</strong> {categoryLabel} <Arrow isOpen={openFilter === 'category'} />
+              </button>
+              {openFilter === 'category' && (
+                <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter('all'); setOpenFilter(null); }}>All</button>
+                  {(parentCollections || []).map((c) => (
+                    <button key={c.id} type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter(c.id); setOpenFilter(null); }}>{c.title}</button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Price dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                className={filterTriggerClass}
+                onClick={() => setOpenFilter(openFilter === 'price' ? null : 'price')}
+              >
+                <strong>price</strong> {priceSort === 'low-to-high' ? 'low to high' : 'high to low'} <Arrow isOpen={openFilter === 'price'} />
+              </button>
+              {openFilter === 'price' && (
+                <div className="absolute top-full left-0 mt-1 min-w-[160px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setPriceSort('low-to-high'); setOpenFilter(null); }}>low to high</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setPriceSort('high-to-low'); setOpenFilter(null); }}>high to low</button>
+                </div>
+              )}
+            </div>
+            {/* Status dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                className={filterTriggerClass}
+                onClick={() => setOpenFilter(openFilter === 'status' ? null : 'status')}
+              >
+                <strong>status</strong> {statusFilter === 'gifted' ? 'Gifted' : statusFilter === 'ungifted' ? 'Ungifted' : 'All'} <Arrow isOpen={openFilter === 'status'} />
+              </button>
+              {openFilter === 'status' && (
+                <div className="absolute top-full left-0 mt-1 min-w-[140px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setStatusFilter('all'); setOpenFilter(null); }}>All</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setStatusFilter('gifted'); setOpenFilter(null); }}>Gifted</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setStatusFilter('ungifted'); setOpenFilter(null); }}>Ungifted</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="gap-6 mt-[5.938vw]">
@@ -737,6 +894,14 @@ const index = () => {
 export default index;
 const ProductPage = ({data, priceSort, statusFilter, categoryFilter}) => {
   if (!Array.isArray(data)) return null;
+
+  // Browser console: verify category filter applied
+  useEffect(() => {
+    const filtered = categoryFilter && categoryFilter !== 'all'
+      ? data.filter((p) => p.parentCollectionId === categoryFilter)
+      : data;
+    console.log('[Registry ProductPage] categoryFilter:', categoryFilter, '| total gifts:', data.length, '| after category filter:', filtered.length, '| filtered:', filtered.map((g) => ({ id: g.id, title: g?.title, parentCollectionId: g?.parentCollectionId })));
+  }, [categoryFilter, data]);
 
   // Helper: determine if a product is gifted
   const isProductGifted = (product) => {
