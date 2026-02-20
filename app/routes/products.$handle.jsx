@@ -146,6 +146,13 @@ const isParentForSlides = (col) =>
   col.readyMadeMetafield?.value !== 'true' &&
   !isExcludedFundsCollection(col);
 
+const STYLE_OPTIONS = [
+  { id: 'modern', label: 'Modern' },
+  { id: 'classic', label: 'Classic' },
+  { id: 'eclectic', label: 'Eclectic' },
+  { id: 'shopAll', label: 'Shop All' },
+];
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
@@ -155,10 +162,13 @@ function SidebarFilter({
   selectedSubCollections,
   shopAllChecked,
   setShopAllChecked,
+  checkedStyles,
+  onStyleCheckbox,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     styles: true,
+    productType: true,
   });
 
   const parentCollection = collections.filter(isParentForSlides);
@@ -203,6 +213,7 @@ function SidebarFilter({
 
   return (
     <div className="w-full lg:w-[19.031vw] xl:w-[19.031vw] 2xl:w-[19.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6]">
+      {/* When no collection selected: Product Categories + Shop by Style (Shop All + sub-collections) */}
       {!selectedSwiperCollectionId && (
         <div className="mb-6">
           <h2
@@ -246,57 +257,146 @@ function SidebarFilter({
         </div>
       )}
 
-      <div>
-        <h2
-          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
-          onClick={() => toggleSection('styles')}
-        >
-          Shop by Style
-          <span className="text-lg relative -top-[3px]">
-            {openSections.styles ? (
-              <img
-                src="/assets/Images/next.png"
-                alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
-              />
-            ) : (
-              <img
-                src="/assets/Images/next.png"
-                alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
-              />
+      {/* When a parent collection is selected: Product Type (sub-collections) + Style (hardcoded) */}
+      {selectedSwiperCollectionId && (
+        <>
+          <div className="mb-6">
+            <h2
+              className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+              onClick={() => toggleSection('productType')}
+            >
+              Product Type
+              <span className="text-lg relative -top-[3px]">
+                {openSections.productType ? (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="minus"
+                    className="w-[0.833vw] h-[0.833vw] rotate-180"
+                  />
+                ) : (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="plus"
+                    className="w-[0.833vw] h-[0.833vw]"
+                  />
+                )}
+              </span>
+            </h2>
+            {openSections.productType && (selectedSubCollections || []).length > 0 && (
+              <ul className="space-y-2 text-sm">
+                {(selectedSubCollections || []).map((col) => (
+                  <li key={col.id} className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                        checked={checkedCollectionIds.includes(col.id)}
+                        onChange={() => handleSidebarCheckbox(col.id)}
+                      />
+                      {col.title}
+                    </label>
+                  </li>
+                ))}
+              </ul>
             )}
-          </span>
-        </h2>
-        {openSections.styles && (
-          <ul className="space-y-2 text-sm">
-            <li className="mb-[1.69vw]">
-              <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                <input
-                  type="checkbox"
-                  className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                  checked={shopAllChecked}
-                  onChange={() => setShopAllChecked((prev) => !prev)}
+          </div>
+          <div>
+            <h2
+              className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+              onClick={() => toggleSection('styles')}
+            >
+              Style
+              <span className="text-lg relative -top-[3px]">
+                {openSections.styles ? (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="minus"
+                    className="w-[0.833vw] h-[0.833vw] rotate-180"
+                  />
+                ) : (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="plus"
+                    className="w-[0.833vw] h-[0.833vw]"
+                  />
+                )}
+              </span>
+            </h2>
+            {openSections.styles && (
+              <ul className="space-y-2 text-sm">
+                {STYLE_OPTIONS.map((opt) => (
+                  <li key={opt.id} className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                        checked={checkedStyles?.[opt.id]}
+                        onChange={() => onStyleCheckbox?.(opt.id)}
+                      />
+                      {opt.label}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* When no collection selected: Shop by Style (Shop All + sub-collections) */}
+      {!selectedSwiperCollectionId && (
+        <div>
+          <h2
+            className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+            onClick={() => toggleSection('styles')}
+          >
+            Shop by Style
+            <span className="text-lg relative -top-[3px]">
+              {openSections.styles ? (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="minus"
+                  className="w-[0.833vw] h-[0.833vw] rotate-180"
                 />
-                Shop All
-              </label>
-            </li>
-            {subCollection.map((col) => (
-              <li key={col.id} className="mb-[1.69vw]">
+              ) : (
+                <img
+                  src="/assets/Images/next.png"
+                  alt="plus"
+                  className="w-[0.833vw] h-[0.833vw]"
+                />
+              )}
+            </span>
+          </h2>
+          {openSections.styles && (
+            <ul className="space-y-2 text-sm">
+              <li className="mb-[1.69vw]">
                 <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                   <input
                     type="checkbox"
                     className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                    checked={checkedCollectionIds.includes(col.id)}
-                    onChange={() => handleSidebarCheckbox(col.id)}
+                    checked={shopAllChecked}
+                    onChange={() => setShopAllChecked((prev) => !prev)}
                   />
-                  {col.title}
+                  Shop All
                 </label>
               </li>
-            ))}
-          </ul>
-        )}
-      </div>
+              {subCollection.map((col) => (
+                <li key={col.id} className="mb-[1.69vw]">
+                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                    <input
+                      type="checkbox"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                      checked={checkedCollectionIds.includes(col.id)}
+                      onChange={() => handleSidebarCheckbox(col.id)}
+                    />
+                    {col.title}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -323,6 +423,12 @@ export default function ProductCollection() {
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
   const [shopAllChecked, setShopAllChecked] = useState(false);
+  const [checkedStyles, setCheckedStyles] = useState(() =>
+    STYLE_OPTIONS.reduce((acc, o) => ({ ...acc, [o.id]: false }), {}),
+  );
+  const handleStyleCheckbox = (id) => {
+    setCheckedStyles((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const getSubCollectionsForParent = (parentCol) => {
     if (!parentCol) return [];
@@ -380,7 +486,11 @@ export default function ProductCollection() {
     checkedParents.forEach((parentCol) => {
       let subCols = [];
       if (parentCol.subCollectionMetafield?.references?.edges) {
-        subCols = parentCol.subCollectionMetafield.references.edges.map((edge) => edge.node);
+        const refs = parentCol.subCollectionMetafield.references.edges.map((edge) => edge.node);
+        // Resolve reference nodes to full collections (with products) from loader data
+        subCols = refs
+          .map((ref) => collections.find((c) => c.id === ref.id))
+          .filter(Boolean);
       } else {
         let subCollectionGids = [];
         const subColMeta = parentCol.subMetafield;
@@ -419,14 +529,45 @@ export default function ProductCollection() {
   };
 
   const displayedProducts = React.useMemo(() => {
-    if (shopAllChecked && selectedSwiperCollectionId && selectedSubCollections?.length > 0) {
-      const all = selectedSubCollections.flatMap((col) =>
-        (col.products?.edges || []).map((edge) => edge.node),
-      );
-      return Array.from(new Map(all.map((p) => [p.id, p])).values());
+    let list = [];
+    // Resolve sub-collection references to full collections (with products) from loader data
+    const fullSubCollections = (selectedSubCollections || [])
+      .map((ref) => collections.find((c) => c.id === ref.id))
+      .filter(Boolean);
+
+    if (selectedSwiperCollectionId && fullSubCollections.length > 0) {
+      if (shopAllChecked) {
+        list = fullSubCollections.flatMap((col) =>
+          (col.products?.edges || []).map((edge) => edge.node),
+        );
+      } else if (checkedCollectionIds.length > 0) {
+        const subCols = fullSubCollections.filter((col) =>
+          checkedCollectionIds.includes(col.id),
+        );
+        list = subCols.flatMap((col) =>
+          (col.products?.edges || []).map((edge) => edge.node),
+        );
+      } else {
+        list = fullSubCollections.flatMap((col) =>
+          (col.products?.edges || []).map((edge) => edge.node),
+        );
+      }
+      list = Array.from(new Map(list.map((p) => [p.id, p])).values());
+      // Style filter (product style metafield)
+      const selectedStyleIds = STYLE_OPTIONS.filter(
+        (o) => o.id !== 'shopAll' && checkedStyles[o.id],
+      ).map((o) => o.id);
+      if (selectedStyleIds.length > 0) {
+        list = list.filter((product) => {
+          const productStyle = (product.styleMetafield?.value || '').trim().toLowerCase();
+          if (!productStyle) return false;
+          return selectedStyleIds.some((id) => productStyle === id);
+        });
+      }
+      return list;
     }
     return getProductsForCheckedCollections(checkedCollectionIds);
-  }, [shopAllChecked, selectedSwiperCollectionId, selectedSubCollections, checkedCollectionIds, collections]);
+  }, [shopAllChecked, selectedSwiperCollectionId, selectedSubCollections, checkedCollectionIds, checkedStyles, collections]);
 
   const handleAddtoRegistry = (product) => {
     try {
@@ -716,6 +857,8 @@ export default function ProductCollection() {
             selectedSubCollections={selectedSubCollections}
             shopAllChecked={shopAllChecked}
             setShopAllChecked={setShopAllChecked}
+            checkedStyles={checkedStyles}
+            onStyleCheckbox={handleStyleCheckbox}
           />
           <div
             className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]"
@@ -1094,6 +1237,10 @@ const COLLECTION_QUERY = `#graphql
     title
     handle
     description
+              styleMetafield: metafield(namespace: "custom", key: "style") {
+                id
+                value
+              }
               images(first: 10) {
                 edges {
                   node {

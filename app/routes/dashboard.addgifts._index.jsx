@@ -323,6 +323,7 @@ export async function loader({request, context}) {
                     product.variants?.edges?.[0]?.node?.availableForSale ||
                     false,
                   createdAt: product.createdAt,
+                  style: product.styleMetafield?.value || null, // Modern, Classic, Eclectic
                   collectionId: subCollection.id, // Use sub-collection ID
                   parentCollectionId: parentCollection.id, // Also track parent collection ID
                   parentCollectionTitle: parentCollection.title, // Track parent collection title
@@ -471,6 +472,13 @@ async function loadCollectionData({context}) {
   }
 }
 
+const STYLE_OPTIONS = [
+  { id: 'modern', label: 'Modern' },
+  { id: 'classic', label: 'Classic' },
+  { id: 'eclectic', label: 'Eclectic' },
+  { id: 'shopAll', label: 'Shop All' },
+];
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
@@ -480,11 +488,14 @@ function SidebarFilter({
   shopAllChecked,
   setShopAllChecked,
   registry,
+  checkedStyles,
+  onStyleCheckbox,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
     styles: true,
+    productType: true,
   });
 
   const isExcludedFundsCollection = (col) => {
@@ -539,7 +550,7 @@ function SidebarFilter({
               className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
               onClick={() => toggleSection('categories')}
             >
-              Product Categories
+              Product Types
               <span className="text-lg relative -top-[3px]">
                 {openSections.categories ? (
                   <img
@@ -576,57 +587,146 @@ function SidebarFilter({
           </div>
         )}
 
-        <div>
-          <h2
-            className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-            onClick={() => toggleSection('styles')}
-          >
-            Shop by Style
-            <span className="text-lg relative -top-[3px]">
-              {openSections.styles ? (
-                <img
-                  src="/assets/Images/next.png"
-                  alt="minus"
-                  className="w-[0.833vw] h-[0.833vw] rotate-180"
-                />
-              ) : (
-                <img
-                  src="/assets/Images/next.png"
-                  alt="plus"
-                  className="w-[0.833vw] h-[0.833vw]"
-                />
+        {/* When a parent collection is selected: Product Type (sub-collections) + Style (hardcoded) */}
+        {selectedSwiperCollectionId && (
+          <>
+            <div className="mb-[3.438vw]">
+              <h2
+                className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+                onClick={() => toggleSection('productType')}
+              >
+                Product Type
+                <span className="text-lg relative -top-[3px]">
+                  {openSections.productType ? (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="minus"
+                      className="w-[0.833vw] h-[0.833vw] rotate-180"
+                    />
+                  ) : (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="plus"
+                      className="w-[0.833vw] h-[0.833vw]"
+                    />
+                  )}
+                </span>
+              </h2>
+              {openSections.productType && (
+                <ul className="space-y-2 text-sm">
+                  {(selectedSubCollections || []).map((col) => (
+                    <li key={col.id} className="mb-[1.69vw]">
+                      <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                        <input
+                          type="checkbox"
+                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                          checked={checkedCollectionIds.includes(col.id)}
+                          onChange={() => handleSidebarCheckbox(col.id)}
+                        />
+                        {col.title}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
               )}
-            </span>
-          </h2>
-          {openSections.styles && (
-            <ul className="space-y-2 text-sm">
-              <li className="mb-[1.69vw]">
-                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                  <input
-                    type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                    checked={shopAllChecked}
-                    onChange={() => setShopAllChecked((prev) => !prev)}
+            </div>
+            <div>
+              <h2
+                className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+                onClick={() => toggleSection('styles')}
+              >
+                Style
+                <span className="text-lg relative -top-[3px]">
+                  {openSections.styles ? (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="minus"
+                      className="w-[0.833vw] h-[0.833vw] rotate-180"
+                    />
+                  ) : (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="plus"
+                      className="w-[0.833vw] h-[0.833vw]"
+                    />
+                  )}
+                </span>
+              </h2>
+              {openSections.styles && (
+                <ul className="space-y-2 text-sm">
+                  {STYLE_OPTIONS.map((opt) => (
+                    <li key={opt.id} className="mb-[1.69vw]">
+                      <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                        <input
+                          type="checkbox"
+                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                          checked={checkedStyles?.[opt.id]}
+                          onChange={() => onStyleCheckbox?.(opt.id)}
+                        />
+                        {opt.label}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* When no collection selected: only Style section (Shop All + sub-collections) */}
+        {!selectedSwiperCollectionId && (
+          <div>
+            <h2
+              className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+              onClick={() => toggleSection('styles')}
+            >
+              Style
+              <span className="text-lg relative -top-[3px]">
+                {openSections.styles ? (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="minus"
+                    className="w-[0.833vw] h-[0.833vw] rotate-180"
                   />
-                  Shop All
-                </label>
-              </li>
-              {subCollection.map((col) => (
-                <li key={col.id} className="mb-[1.69vw]">
+                ) : (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="plus"
+                    className="w-[0.833vw] h-[0.833vw]"
+                  />
+                )}
+              </span>
+            </h2>
+            {openSections.styles && (
+              <ul className="space-y-2 text-sm">
+                <li className="mb-[1.69vw]">
                   <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
                       className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                      checked={checkedCollectionIds.includes(col.id)}
-                      onChange={() => handleSidebarCheckbox(col.id)}
+                      checked={shopAllChecked}
+                      onChange={() => setShopAllChecked((prev) => !prev)}
                     />
-                    {col.title}
+                    Shop All
                   </label>
                 </li>
-              ))}
-            </ul>
-          )}
-        </div>
+                {subCollection.map((col) => (
+                  <li key={col.id} className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                        checked={checkedCollectionIds.includes(col.id)}
+                        onChange={() => handleSidebarCheckbox(col.id)}
+                      />
+                      {col.title}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
       <Link to={`/couple/single/${registry?.data?.[0]?.userId}`}>
         <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
@@ -726,6 +826,12 @@ export default function AddGifts() {
     useState(null);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
   const [shopAllChecked, setShopAllChecked] = useState(false);
+  const [checkedStyles, setCheckedStyles] = useState(() =>
+    STYLE_OPTIONS.reduce((acc, o) => ({ ...acc, [o.id]: false }), {}),
+  );
+  const handleStyleCheckbox = (id) => {
+    setCheckedStyles((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
   const [addingProductId, setAddingProductId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
@@ -734,17 +840,48 @@ export default function AddGifts() {
     if (fetcher.state === 'idle') setAddingProductId(null);
   }, [fetcher.state]);
 
-  // Filter products based on selected collections or "Shop All"
+  // Filter products based on selected collections, Product Type, and Style (metafield)
   const filteredProducts = (() => {
-    if (shopAllChecked) {
-      // When "Shop All" is checked and a parent is selected: show all products of that parent
-      if (selectedSwiperCollectionId) {
-        return products.filter(
-          (product) =>
-            product.parentCollectionId === selectedSwiperCollectionId,
-        );
+    let list = products;
+
+    // When a parent collection is selected: show only that parent's products, filtered by Product Type (sub-collection) checkboxes
+    if (selectedSwiperCollectionId) {
+      list = products.filter(
+        (product) =>
+          product.parentCollectionId === selectedSwiperCollectionId,
+      );
+      if (checkedCollectionIds.length > 0) {
+        list = list.filter((product) => {
+          if (checkedCollectionIds.includes(product.collectionId))
+            return true;
+          if (
+            product.collectionIds &&
+            product.collectionIds.some((id) =>
+              checkedCollectionIds.includes(id),
+            )
+          ) {
+            return true;
+          }
+          return false;
+        });
       }
-      // When "Shop All" is checked and no parent selected (default sidebar): show all products
+
+      // Style filter (when parent selected): filter by style metafield (Modern, Classic, Eclectic)
+      const selectedStyleIds = STYLE_OPTIONS.filter(
+        (o) => o.id !== 'shopAll' && checkedStyles[o.id],
+      ).map((o) => o.id);
+      if (selectedStyleIds.length > 0) {
+        list = list.filter((product) => {
+          const productStyle = (product.style || '').trim().toLowerCase();
+          if (!productStyle) return false;
+          return selectedStyleIds.some((id) => productStyle === id);
+        });
+      }
+      return list;
+    }
+
+    // No parent selected: use Shop All or Product Categories (default sidebar)
+    if (shopAllChecked) {
       return products;
     }
     if (checkedCollectionIds.length > 0) {
@@ -793,6 +930,12 @@ export default function AddGifts() {
       return 0;
     });
   }, [filteredProducts, priceSort, dateSort]);
+
+  // Browser console: show products and filtered products
+  useEffect(() => {
+    console.log('Add Gifts – products:', products);
+    console.log('Add Gifts – filteredProducts:', filteredProducts);
+  }, [products, filteredProducts]);
 
   const handleAddtoRegistry = (product, quantity = 1, isGroupGift = false) => {
     try {
@@ -1170,6 +1313,8 @@ export default function AddGifts() {
             shopAllChecked={shopAllChecked}
             setShopAllChecked={setShopAllChecked}
             registry={registry}
+            checkedStyles={checkedStyles}
+            onStyleCheckbox={handleStyleCheckbox}
           />
           <div className="flex flex-col lg:w-[75.52vw] xl:w-[75.52vw] 2xl:w-[75.52vw]">
             {/* Sort Filter */}
@@ -1198,7 +1343,7 @@ export default function AddGifts() {
                       />
                     </button>
                     {isDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-10 min-w-[200px] max-[1024px]:min-w-unset">
+                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded shadow-lg z-100 min-w-[200px] max-[1024px]:min-w-unset">
                         <button
                           onClick={() => {
                             setPriceSort('');
@@ -1713,6 +1858,10 @@ const COLLECTION_QUERY = `#graphql
               handle
               description
               createdAt
+              styleMetafield: metafield(namespace: "custom", key: "style") {
+                id
+                value
+              }
               images(first: 10) {
                 edges {
                   node {
@@ -1834,6 +1983,10 @@ const SUB_COLLECTION_QUERY = `#graphql
             handle
             description
             createdAt
+            styleMetafield: metafield(namespace: "custom", key: "style") {
+              id
+              value
+            }
             images(first: 1) {
               edges {
                 node {

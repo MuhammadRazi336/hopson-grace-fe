@@ -206,9 +206,9 @@ const Brand = () => {
         </div>
         <div className="w-[50%] h-full flex items-center justify-center">
           <img
-            src={collection.image?.url || '/assets/Images/dreamFunds.png'}
+            src={collection.brandImageMetafield?.reference?.image?.url || collection.image?.url || '/assets/Images/dreamFunds.png'}
             className="mx-auto object-contain object-center"
-            alt={collection.image?.altText || collection.title}
+            alt={collection.brandImageMetafield?.reference?.image?.altText || collection.image?.altText || collection.title}
           />
         </div>
       </div>
@@ -322,15 +322,12 @@ const Brand = () => {
                           disabled={fetcher.state === 'submitting'}
                           className={`text-white text-xs lg:text-[0.729vw] cursor-pointer lg:h-[4.01vw] lg:w-[10.156vw] font-bold py-[5px] px-[5px] ${
                             fetcher.state === 'submitting'
-                              ? 'bg-gray-400 cursor-not-allowed'
+                              ? 'bg-black cursor-not-allowed'
                               : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
                           }`}
                         >
                           {fetcher.state === 'submitting' ? (
-                            <div className="flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Adding...
-                            </div>
+                            'ADDED'
                           ) : (
                             'ADD TO REGISTRY'
                           )}
@@ -552,6 +549,18 @@ const BRAND_QUERY = `#graphql
       metafield(namespace: "custom", key: "brand") {
         id
         value
+      }
+      brandImageMetafield: metafield(namespace: "custom", key: "brand_image") {
+        reference {
+          ... on MediaImage {
+            image {
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
       }
       products(first: 20) {
         pageInfo {
