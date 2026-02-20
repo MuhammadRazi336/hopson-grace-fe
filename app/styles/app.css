@@ -1519,7 +1519,8 @@ html, body { height: 100%; margin: 0; }
   min-width: 400px !important;
 }
 .toastBody {
-  font-family: " bastardogrotesk" !important;
+  font-family: "bastardogrotesk" !important;
+  text-transform: uppercase;
 }
 .toastProgress{
   background: #446184 !important;

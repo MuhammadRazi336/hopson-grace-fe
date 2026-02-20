@@ -186,7 +186,6 @@ const Brand = () => {
   return (
     <section>
       <Header />
-      <div className="w-full h-[2px] bg-black"></div>
 
       <div className="w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">

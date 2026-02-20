@@ -4,68 +4,96 @@ import {Footer} from '~/components/Footer';
 
 const ShipGifts = () => {
   return (
-    <div className="pt-[80px]">
+    <div className="pt-[4.323vw]">
       <div className=" p-4">
-        <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+        <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
           <span className="prata">ready to </span><span className='italic'>FULFILL & SHIP?</span>
         </h2>
         <img
-          src="/assets/Images/profile-view-page-bdr.png"
+          src="/assets/Images/heading-bottom-curve.png"
           alt="Couple"
-          className="max-w-[630px] mt-10 h-auto mx-auto"
+          className="max-w-[23.646vw] mt-4 h-auto mx-auto"
         />
-        <p className="max-w-[1060px] mx-auto text-center my-12 mb-6  font-normal leading-relaxed">
-          Fulfilling your registry gives you the freedom to finalize everything in one place. Before placing your final order, you can review your list, adjust quantities, or even add new gifts you’d like to purchase using your store credit. You can also choose how you’d like to use your remaining funds — withdraw cash, convert funds into store credit, or activate your Porte Travel fund. Your store credit updates in real time so you can always see your balance. Once your credit is applied, enjoy your one-time 15% Newlywed Discount on anything you purchase beyond your remaining balance.
+        <p className="max-w-[45.26vw] mx-auto text-center mt-[4.01vw] mb-6 lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] font-normal leading-relaxed lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-[1024px]:max-w-[90%]">
+          Your registry gifts and funds will be ready when you are — though many couples find it easiest to finalize selections and arrange deliveries after the wedding, once plans and living arrangements are settled. Our Concierge team will guide you through everything when the time comes.
         </p>
       </div>
 
-      <div className="mb-16"></div>
-      <section className="container mx-auto mb-10">
-        <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-stretch">
-          <div className="lg:w-[40%] w-full">
+      <div className="mb-16 max-[1024px]:mb-[4vw]"></div>
+      <section className="mx-auto mb-10 px-[3.906vw] max-[1024px]:px-[40px]">
+        <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-center">
+          <div className="lg:w-[40%] w-full lg:h-[92.813vw] xl:h-[92.813vw] 2xl:h-[92.813vw] relative xl:-right-8 lg:-right-8 2xl:-right-8">
+            <img className="w-[10.417vw] h-[7.813vw] object-contain absolute top-[3.385vw] left-[-3.5vw]" src="/assets/Images/imglogo.png" alt="image icon" />
             <img
-              src="/assets/Images/fullshipgifts.png"
+              src="/assets/Images/fullshipgifts.jpg"
               alt="Image Banner"
-              className="max-[1024px]:h-full object-cover object-[80%]"
+              className="h-full object-cover object-center"
             />
           </div>
-          <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[60%] w-full max-[768px]:p-10">
+          <div className="bg-[#446184] xl:-left-8 lg:-left-8 2xl:-left-8  left-0 py-[4.688vw] relative flex items-center justify-center flex-col lg:w-[60%] w-full max-[768px]:p-10">
             <div className="flex flex-col items-center justify-center">
-              <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center">
+              <h2 className="prata font-normal text-2xl text-white lg:text-[3.75vw] xl:text-[3.75vw] 2xl:text-[3.75vw] 3xl:w-full mb-[1.042vw] max-w-[410px] text-center">
+              1.
+              </h2>
+              <h3 className="text-lg text-white font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full max-w-[410px] text-center">
                 FULFILL MY REGITRY + SHIP
               </h3>
               <img
-                src="/assets/Images/white-bdr.png"
+                src="/assets/Images/heading-bottom-curve.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] 2xl:w-[30%]"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100"
               />
-              <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                Enjoy two complimentary shipments of your gifts. Standard
-                shipping rates apply to any extra deliveries.
+              <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] mt-4 mb-4 text-center text-white">
+                When you're ready to fulfill your registry our team will help you review and make any final adjustments, then coordinate delivery. Simply let us know you're ready and we’ll be in touch to guide you through the final steps. Enjoy two complimentary shipments of your gifts; standard shipping rates apply to any extra deliveries. 
               </p>
               <div>
-                <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm  hover:bg-gray-100">
-                  FULFILL MY REGISTRY <br /> & SHIP MY GIFTS
+                <button className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer">
+                  FULFILL MY REGISTRY
                 </button>
               </div>
             </div>
-            <div className="mt-14 flex flex-col items-center justify-center">
-              <h3 className="text-2xl text-white lg:text-5xl 2xl:text-xl 3xl:w-full max-w-[410px] text-center">
-                BOOK AN APPOINTMENT
+            <div className="mt-[6.25vw] flex flex-col items-center justify-center">
+              <h2 className="prata font-normal text-2xl text-white lg:text-[3.75vw] xl:text-[3.75vw] 2xl:text-[3.75vw] 3xl:w-full mb-[1.042vw] max-w-[410px] text-center">
+              2.
+              </h2>
+              <h3 className="text-lg text-white font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full max-w-[410px] text-center">
+                WITHDRAW CASH FUNDS
               </h3>
               <img
-                src="/assets/Images/white-bdr.png"
+                src="/assets/Images/heading-bottom-curve.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] 2xl:w-[30%] mx-auto"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100"
               />
-              <p className="text-sm lg:text-xl  max-w-[488px] mt-4 mb-4 text-center text-white">
-                Looking for advice or guidance? Book a virtual appointment with
-                a registry concierge and we’ll do this with you.
+              <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] mt-4 mb-4 text-center text-white">
+                Withdraw your cash at any time, or wait until after your wedding to receive the full amount. When you’re ready, let us know and we’ll securely arrange your transfer. Two withdrawals are on us; additional transfers incur a small processing fee. 
               </p>
               <div>
                 <Link to={'https://calendly.com/concierge-theregistry/30min'} target="_blank" rel="noopener noreferrer">
-                  <button className=" font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
-                    BOOK AN APPOINTMENT
+                  <button className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer">
+                    WITHDRAW CASH
+                  </button>
+                </Link>
+              </div>
+            </div>
+            <div className="mt-[6.25vw] flex flex-col items-center justify-center">
+              <h2 className="prata font-normal text-2xl text-white lg:text-[3.75vw] xl:text-[3.75vw] 2xl:text-[3.75vw] 3xl:w-full mb-[1.042vw] max-w-[410px] text-center">
+              3.
+              </h2>
+              <h3 className="text-lg text-white font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] 3xl:w-full max-w-[410px] text-center">
+                ACTIVATE MY TRAVEL FUNDS
+              </h3>
+              <img
+                src="/assets/Images/heading-bottom-curve.png"
+                alt="lineimg"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100"
+              />
+              <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] mt-4 mb-4 text-center text-white">
+                Ready to begin planning? We'll connect you directly with Porte Travel to start designing your journey.
+              </p>
+              <div>
+                <Link to={'https://calendly.com/concierge-theregistry/30min'} target="_blank" rel="noopener noreferrer">
+                  <button className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer">
+                    ACTIVATE NOW
                   </button>
                 </Link>
               </div>
@@ -73,26 +101,26 @@ const ShipGifts = () => {
           </div>
         </div>
       </section>
-      <div className="mt-[120px]"></div>
+      <div className="mt-[2.969vw]"></div>
 
       <div className="container  mx-auto flex flex-col items-center justify-center">
         <img
-          src="/assets/Images/registrylogoSteps.png"
+          src="/assets/Images/imglogo.png"
           width={100}
           alt="Image Banner"
           className="max-[1024px]:h-full object-cover object-[80%]"
         />
-        <h3 className="text-xl text-center mt-10">
-          DIDN’T GET EVERYTHING ON YOUR LIST?
+        <h3 className="text-xl font-[500] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mt-[1.771vw]">
+          FULFILLMENT QUESTIONS? LET US HELP.
         </h3>
-        <p className="text-sm lg:text-xl  max-w-[600px] mt-4 mb-4 text-center ">
-          Take advantage of our 15% discount, a one-time opportunity to complete
-          your registry.
+        <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-w-[38.49vw] mt-4 mb-4 text-center ">
+          Book a virtual appointment with a registry concierge 
+        <br />and we’ll do this with you. 
         </p>
         <div>
           <Link to="/Home">
-          <button className="border w-[300px] mb-20 font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
-            KEEP SHOPPING
+          <button className="border w-[300px] lg:w-[24.688vw] xl:w-[24.688vw] 2xl:w-[24.688vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mb-20 font-bold bg-white text-black px-6 mt-3 py-4 text-sm hover:bg-gray-100">
+            BOOK AN APPOINTMENT
           </button>
           </Link>
         </div>

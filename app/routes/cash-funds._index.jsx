@@ -382,8 +382,6 @@ const CashFund = () => {
       <Header />
       <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]" />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <div className="w-full h-fit pt-[5.313vw] max-[767px]:px-[20px] max-[767px]:pt-[50px]">
         <Heading
           text={

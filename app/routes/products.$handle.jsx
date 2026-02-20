@@ -540,8 +540,6 @@ export default function ProductCollection() {
     <>
       <Header />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <section className="">
         <div className=" relative items-start mt-[0] mb-0 max-[1024px]:my-10">
           <div className=" ">
