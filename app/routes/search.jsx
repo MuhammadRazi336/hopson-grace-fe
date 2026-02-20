@@ -567,7 +567,6 @@ export default function SearchResults() {
     return (
       <section>
         <Header />
-        <div className="w-full h-[2px] bg-black"></div>
         <div className="container mx-auto py-16 text-center">
           <h1 className="text-2xl font-semibold mb-4">Search Results</h1>
           <p className="text-gray-600">Enter a search term to find products, cash funds, collections, and blogs.</p>
@@ -582,8 +581,6 @@ export default function SearchResults() {
   return (
     <section>
       <Header />
-
-      <div className="w-full h-[2px] bg-black"></div>
 
       <div className="w-full h-fit pt-[100px]">
         <Heading

@@ -54,8 +54,6 @@ const Returns = () => {
     <section>
       <Header />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <div className="w-full h-fit pt-[5.313vw]">
         <Heading
           text="returns & exchanges"

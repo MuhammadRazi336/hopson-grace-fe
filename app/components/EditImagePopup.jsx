@@ -78,7 +78,7 @@ const removeImageFromStorage = (imageId) => {
   }
 };
 
-export default function EditImagePopup({ isOpen, onClose, onSave, initialFile = null, onInitialFileConsumed }) {
+export default function EditImagePopup({ isOpen, onClose, onSave, initialFile = null, onInitialFileConsumed, cropShape = 'round' }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -208,7 +208,7 @@ export default function EditImagePopup({ isOpen, onClose, onSave, initialFile = 
                         onCropChange={setCrop}
                         onZoomChange={setZoom}
                         onCropComplete={onCropComplete}
-                        cropShape="round"
+                        cropShape={cropShape}
                         showGrid={false}
                         cropSize={{ width: 300, height: 300 }}
                       />

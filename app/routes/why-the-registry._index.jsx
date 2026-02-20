@@ -12,8 +12,6 @@ const WhyTheRegistry = () => {
     <section>
       <Header />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <div className='w-full h-fit bg-[#FAF9F6]'>
 
       <div className="container mx-auto pt-[8.958vw]">

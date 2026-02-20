@@ -27,8 +27,6 @@ const ContactUs = () => {
     <section>
       <Header />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <div className={`w-full h-fit pt-[3.75vw] max-[1024px]:pt-[40px] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
         <Heading
           text="questions?"
