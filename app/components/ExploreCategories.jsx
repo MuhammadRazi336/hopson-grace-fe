@@ -25,7 +25,7 @@ function ExploreCategories({ collections = [] }) {
       />
 
       {/* slides here */}
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-row-[3.408vw] gap-col-[3.438vw] mt-[5.313vw]">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-col-[3.438vw] mt-[5.313vw]">
         {parentCollections.map((col) => (
           <Link key={col.id} to={`/products/${col.handle}`} className="hover:no-underline group">
             <div className="cursor-pointer">

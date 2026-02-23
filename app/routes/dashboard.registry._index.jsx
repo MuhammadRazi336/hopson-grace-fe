@@ -157,7 +157,7 @@ export async function loader({request, context}) {
   let mergedArray = [];
   const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
 
-  // Same as addgifts: fetch collections with products, build parentCollections and productId -> parentId (first parent that contains the product wins)
+  // Fetch collections and build productId -> parentId (and subCollectionId -> parentId) for merging parentCollectionId onto registry gifts
   let parentCollections = [];
   const productIdToParentId = {};
   const subCollectionIdToParentId = {};
@@ -302,7 +302,6 @@ export async function loader({request, context}) {
     registry,
     user,
     apiBaseUrl,
-    parentCollections,
   });
   } catch (e) {
     if (e.isSessionExpired || e.status === 401 || e.status === 403) {
@@ -330,16 +329,15 @@ export async function action({request, context}) {
 
 const index = () => {
   const loaderData = useLoaderData();
-  const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl, parentCollections = []} =
+  const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
     loaderData;
 
-  // Browser console: verify registry category filter data
+  // Browser console: verify registry data
   useEffect(() => {
-    console.log('[Registry Dashboard] parentCollections:', parentCollections?.length ?? 0, parentCollections?.map((c) => ({ id: c.id, title: c.title })));
     const gifts = Array.isArray(data) ? data : [];
-    console.log('[Registry Dashboard] gifts (data):', gifts.length, gifts.map((g) => ({ id: g.id, title: g?.title, parentCollectionId: g?.parentCollectionId })));
+    console.log('[Registry Dashboard] gifts (data):', gifts.length);
     console.log('cashfundData', cashfundData);
-  }, [data, parentCollections, cashfundData]);
+  }, [data, cashfundData]);
 
   // Fallback for apiBaseUrl if it's not available from loader
   const finalApiBaseUrl =
@@ -519,7 +517,7 @@ const index = () => {
   // Filters for "our registry selections"
   const [priceSort, setPriceSort] = useState('low-to-high'); // 'low-to-high' | 'high-to-low'
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'gifted' | 'ungifted'
-  // Category filter: 'all' or parent collection id (only gifts from that parent collection)
+  // Category filter: 'all' | 'gifts' | 'cashfunds' — which section(s) to show (Gifts div and/or Cash Funds div)
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [openFilter, setOpenFilter] = useState(null); // null | 'category' | 'price' | 'status'
   const filterRef = useRef(null);
@@ -527,7 +525,11 @@ const index = () => {
   const categoryLabel =
     categoryFilter === 'all'
       ? 'All'
-      : (parentCollections || []).find((c) => c.id === categoryFilter)?.title ?? 'All';
+      : categoryFilter === 'gifts'
+        ? 'Gifts'
+        : categoryFilter === 'cashfunds'
+          ? 'Cash Funds'
+          : 'All';
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -797,9 +799,8 @@ const index = () => {
               {openFilter === 'category' && (
                 <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
                   <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter('all'); setOpenFilter(null); }}>All</button>
-                  {(parentCollections || []).map((c) => (
-                    <button key={c.id} type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter(c.id); setOpenFilter(null); }}>{c.title}</button>
-                  ))}
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter('gifts'); setOpenFilter(null); }}>Gifts</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter('cashfunds'); setOpenFilter(null); }}>Cash Funds</button>
                 </div>
               )}
             </div>
@@ -838,15 +839,19 @@ const index = () => {
             </div>
           </div>
         </div>
-        <div className="gap-6 mt-[5.938vw]">
-          <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
-          <ProductPage data={data} priceSort={priceSort} statusFilter={statusFilter} categoryFilter={categoryFilter} />
-        </div>
+        {(categoryFilter === 'all' || categoryFilter === 'gifts') && (
+          <div className="gap-6 mt-[5.938vw]">
+            <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
+            <ProductPage data={data} priceSort={priceSort} statusFilter={statusFilter} />
+          </div>
+        )}
 
-        <div className="gap-6 mt-[6vw]">
-          <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">CASH FUNDS</h2>
-          <FundPage data={cashfundData} priceSort={priceSort} statusFilter={statusFilter} />
-        </div>
+        {(categoryFilter === 'all' || categoryFilter === 'cashfunds') && (
+          <div className="gap-6 mt-[6vw]">
+            <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">CASH FUNDS</h2>
+            <FundPage data={cashfundData} priceSort={priceSort} statusFilter={statusFilter} />
+          </div>
+        )}
       </div>
       <div className="py-[8.177vw] w-full flex justify-center items-center max-[1024px]:py-[50px]">
         <div className="py-10 lg:py-[3.438vw] xl:py-[3.438vw] 2xl:py-[3.438vw] bg-[#446184] flex items-center justify-between flex-row lg:w-[81.354vw] xl:w-[81.354vw] 2xl:w-[81.354vw] lg:min-h-[28.698vw] xl:min-h-[28.698vw] 2xl:min-h-[28.698vw] w-full max-[768px]:p-10 mt-0 gap-x-16 max-[1024px]:p-[20px] max-[1024px]:flex-wrap max-[1024px]:items-center">
@@ -892,16 +897,8 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = ({data, priceSort, statusFilter, categoryFilter}) => {
+const ProductPage = ({data, priceSort, statusFilter}) => {
   if (!Array.isArray(data)) return null;
-
-  // Browser console: verify category filter applied
-  useEffect(() => {
-    const filtered = categoryFilter && categoryFilter !== 'all'
-      ? data.filter((p) => p.parentCollectionId === categoryFilter)
-      : data;
-    console.log('[Registry ProductPage] categoryFilter:', categoryFilter, '| total gifts:', data.length, '| after category filter:', filtered.length, '| filtered:', filtered.map((g) => ({ id: g.id, title: g?.title, parentCollectionId: g?.parentCollectionId })));
-  }, [categoryFilter, data]);
 
   // Helper: determine if a product is gifted
   const isProductGifted = (product) => {
@@ -924,13 +921,7 @@ const ProductPage = ({data, priceSort, statusFilter, categoryFilter}) => {
     return Number(product.amount) || 0;
   };
 
-  // Apply category filter (parent collection): only show gifts that have this parentCollectionId
   let filteredData = [...data];
-  if (categoryFilter && categoryFilter !== 'all') {
-    filteredData = filteredData.filter(
-      (product) => product.parentCollectionId === categoryFilter,
-    );
-  }
 
   // Apply status filter
   if (statusFilter === 'gifted') {

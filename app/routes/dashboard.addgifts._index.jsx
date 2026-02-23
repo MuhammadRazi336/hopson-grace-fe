@@ -30,7 +30,6 @@ import {Navigation} from 'swiper/modules';
 import arrowDown from '/assets/Images/arrowDown.png';
 import {RECOMMENDED_PRODUCTS_QUERY} from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
-import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import BestsellersSection from '~/components/BestsellersSection';
 import BackToTop from '~/components/BackToTop';
@@ -574,7 +573,7 @@ function SidebarFilter({
                     <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                       <input
                         type="checkbox"
-                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
                         checked={checkedCollectionIds.includes(col.id)}
                         onChange={() => handleSidebarCheckbox(col.id)}
                       />
@@ -619,7 +618,7 @@ function SidebarFilter({
                       <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                         <input
                           type="checkbox"
-                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
                           checked={checkedCollectionIds.includes(col.id)}
                           onChange={() => handleSidebarCheckbox(col.id)}
                         />
@@ -659,7 +658,7 @@ function SidebarFilter({
                       <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                         <input
                           type="checkbox"
-                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
                           checked={checkedStyles?.[opt.id]}
                           onChange={() => onStyleCheckbox?.(opt.id)}
                         />
@@ -673,7 +672,7 @@ function SidebarFilter({
           </>
         )}
 
-        {/* When no collection selected: only Style section (Shop All + sub-collections) */}
+        {/* When no collection selected: Style section with hardcoded Modern, Classic, Eclectic, Shop All (Shop All at lowest) */}
         {!selectedSwiperCollectionId && (
           <div>
             <h2
@@ -699,30 +698,30 @@ function SidebarFilter({
             </h2>
             {openSections.styles && (
               <ul className="space-y-2 text-sm">
+                {STYLE_OPTIONS.filter((o) => o.id !== 'shopAll').map((opt) => (
+                  <li key={opt.id} className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                        checked={checkedStyles?.[opt.id]}
+                        onChange={() => onStyleCheckbox?.(opt.id)}
+                      />
+                      {opt.label}
+                    </label>
+                  </li>
+                ))}
                 <li className="mb-[1.69vw]">
                   <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
-                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                      checked={shopAllChecked}
-                      onChange={() => setShopAllChecked((prev) => !prev)}
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                      checked={checkedStyles?.shopAll}
+                      onChange={() => onStyleCheckbox?.('shopAll')}
                     />
                     Shop All
                   </label>
                 </li>
-                {subCollection.map((col) => (
-                  <li key={col.id} className="mb-[1.69vw]">
-                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                      <input
-                        type="checkbox"
-                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
-                        checked={checkedCollectionIds.includes(col.id)}
-                        onChange={() => handleSidebarCheckbox(col.id)}
-                      />
-                      {col.title}
-                    </label>
-                  </li>
-                ))}
               </ul>
             )}
           </div>
@@ -756,9 +755,6 @@ export default function AddGifts() {
   const [availability, setAvailability] = useState('');
   const [priceSort, setPriceSort] = useState('');
   const [dateSort, setDateSort] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -880,12 +876,11 @@ export default function AddGifts() {
       return list;
     }
 
-    // No parent selected: use Shop All or Product Categories (default sidebar)
+    // No parent selected: use Product Categories (parent checkboxes), then apply Style filter (Modern/Classic/Eclectic/Shop All)
     if (shopAllChecked) {
-      return products;
-    }
-    if (checkedCollectionIds.length > 0) {
-      return products.filter((product) => {
+      list = products;
+    } else if (checkedCollectionIds.length > 0) {
+      list = products.filter((product) => {
         if (checkedCollectionIds.includes(product.collectionId)) return true;
         if (checkedCollectionIds.includes(product.parentCollectionId))
           return true;
@@ -899,8 +894,21 @@ export default function AddGifts() {
         }
         return false;
       });
+    } else {
+      list = products;
     }
-    return products;
+    // Style filter when no parent selected: same as when parent selected (by style metafield)
+    const selectedStyleIds = STYLE_OPTIONS.filter(
+      (o) => o.id !== 'shopAll' && checkedStyles?.[o.id],
+    ).map((o) => o.id);
+    if (selectedStyleIds.length > 0) {
+      list = list.filter((product) => {
+        const productStyle = (product.style || '').trim().toLowerCase();
+        if (!productStyle) return false;
+        return selectedStyleIds.some((id) => productStyle === id);
+      });
+    }
+    return list;
   })();
 
   // Sort products based on selected sort option
@@ -970,26 +978,7 @@ export default function AddGifts() {
           encType: 'application/json',
         },
       );
-
-      // Show success alert
-      setAlertMessage(`${product.title} has been added to your registry!`);
-      setAlertType('success');
-      setShowAlert(true);
-
-      // Hide alert after 3 seconds
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
     } catch (error) {
-      setAlertMessage('Failed to add to registry. Please try again.');
-      setAlertType('error');
-      setShowAlert(true);
-
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
     }
   };
 
@@ -1037,7 +1026,7 @@ export default function AddGifts() {
             alt="Couple"
             className="w-[9.375vw] h-[6px] mt-2 mx-auto"
           />
-          <p className="w-[46.771vw] max-w-full mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal leading-relaxed">
+          <p className="w-[46.771vw] max-w-full mx-auto text-center text-[1.25vw] leading-[1.667vw] mt-[1.771vw] mb-[4.583vw] font-normal">
             Browse by category, filter by price, or get inspired with our
             curated edits.
             <br className="max-[1024px]:hidden" />
@@ -1138,8 +1127,8 @@ export default function AddGifts() {
                             }
                           }
 
-                          // Set the checked collection IDs to all sub-collections of this parent
-                          setCheckedCollectionIds(subCollectionGids);
+                          // Parent selected: show its sub-collections in sidebar but do not pre-select any Product Type
+                          setCheckedCollectionIds([]);
                           setSelectedSubCollections(subCollections);
                           setSelectedSwiperCollectionId(col.id);
                           setShopAllChecked(true);
@@ -1663,8 +1652,8 @@ export default function AddGifts() {
                           }
                         }
 
-                        // Set the checked collection IDs to all sub-collections of this parent
-                        setCheckedCollectionIds(subCollectionGids);
+                        // Parent selected: show its sub-collections in sidebar but do not pre-select any Product Type
+                        setCheckedCollectionIds([]);
                         setSelectedSubCollections(subCollections);
                         setSelectedSwiperCollectionId(col.id);
                         setShopAllChecked(true);
@@ -1690,46 +1679,6 @@ export default function AddGifts() {
         </section>
       )}
 
-      {/* Alert Component - Rendered outside app-scale via portal */}
-      {showAlert && (
-        <AlertPortal>
-          <div
-            className={`fixed top-4 right-4 ${
-              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-          >
-            <div className="flex items-center">
-              {alertType === 'success' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
-                </svg>
-              )}
-              {alertType === 'error' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
-              <span>{alertMessage}</span>
-            </div>
-          </div>
-        </AlertPortal>
-      )}
       <style jsx>{`
         @keyframes fadeInOut {
           0% {

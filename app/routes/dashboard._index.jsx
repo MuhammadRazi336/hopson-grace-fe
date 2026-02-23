@@ -362,7 +362,7 @@ const index = () => {
             <img src="/assets/Images/heart.png" alt="" />
           </div>
 
-          <h2 className="md:text-[42px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] text-center xl:mt-0 mt-16 max-[1024px]:mt-2 font-normal ivyora mb-[48px] max-[1024px]:mb-[20px] lg:mb-[2.5vw] xl:mb-[2.5vw] 2xl:mb-[2.5vw] mt-2 max-[1024px]:!text-[30px]">
+          <h2 className="md:text-[42px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] text-center xl:mt-0 mt-16 max-[1024px]:mt-2 font-normal ivyora mb-[48px] max-[1024px]:mb-[20px] lg:mb-[2.5vw] xl:mb-[2.5vw] 2xl:mb-[2.5vw] max-[1024px]:!text-[30px]">
             welcome to the heart of your wedding,
             <span className="block lowercase prata mt-4">{user?.user.firstName} & {user?.user.fianceFirstName}</span>
           </h2>
