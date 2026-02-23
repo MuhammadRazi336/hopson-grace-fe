@@ -18,7 +18,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import {Link, useLoaderData, useFetcher, useLocation, redirect, json} from '@remix-run/react';
-import {formatPrice} from '~/utils/priceFormatter';
+import {formatPrice, formatPriceForTemplate} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import BackToTop from '~/components/BackToTop';
@@ -165,7 +165,8 @@ const ProductCard = React.memo(
     const previousFetcherData = React.useRef(null);
 
     const firstImage = product.image || '/assets/Images/placeholder.png';
-    const price = formatPrice(product.price);
+    const displayPrice = formatPrice(product.price);
+    const numericAmount = formatPriceForTemplate(product.price);
 
     // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
@@ -177,10 +178,16 @@ const ProductCard = React.memo(
         (fetcher.data.success === true || fetcher.data.error === true)
       ) {
         if (fetcher.data.success === true) {
-          onSuccess(`${product.title} has been added to your registry!`);
+          if (typeof onSuccess === 'function') {
+            onSuccess(`${product.title} has been added to your registry!`);
+          }
           hasShownFeedback.current = true;
         } else if (fetcher.data.error === true) {
-          onError('There was an error adding the cash fund.');
+          if (typeof onError === 'function') {
+            onError('There was an error adding the cash fund.');
+          } else {
+            console.error('There was an error adding the cash fund.');
+          }
           hasShownFeedback.current = true;
         }
 
@@ -217,7 +224,7 @@ const ProductCard = React.memo(
 
         const formData = new FormData();
         formData.append('name', product.title);
-        formData.append('amount', price);
+        formData.append('amount', numericAmount);
         formData.append('isAnyAmount', 'false');
         formData.append('isFixedAmount', 'true');
         formData.append('isAmountHide', 'false');
@@ -233,7 +240,7 @@ const ProductCard = React.memo(
         // Fallback: submit without image if image fetch fails
         const formData = new FormData();
         formData.append('name', product.title);
-        formData.append('amount', price);
+        formData.append('amount', numericAmount);
         formData.append('isAnyAmount', 'false');
         formData.append('isFixedAmount', 'true');
         formData.append('isAmountHide', 'false');
@@ -259,7 +266,7 @@ const ProductCard = React.memo(
           <h3 className="text-sm font-[500] tracking-[0.057vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mt-[1.563vw]">
             {product.title}
           </h3>
-          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{price}</p>
+            <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{displayPrice}</p>
         </div>
 
         {/* Expanding Overlay */}
@@ -276,7 +283,7 @@ const ProductCard = React.memo(
             <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
-            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
+            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{displayPrice}</p>
           </div>
 
           <div className="flex items-center justify-between mt-[2.813vw]">
