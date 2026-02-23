@@ -1051,7 +1051,7 @@ export function Header() {
                       className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                   >
                     <span
-                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                         isDraft 
                           ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                           : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1075,7 +1075,7 @@ export function Header() {
                       className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                   >
                     <span
-                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                         isDraft 
                           ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                           : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1588,7 +1588,7 @@ export function Header() {
                         className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                     >
                       <span
-                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                           isDraft 
                             ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                             : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1612,7 +1612,7 @@ export function Header() {
                         className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                     >
                       <span
-                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                           isDraft 
                             ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                             : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1677,58 +1677,58 @@ export function Header() {
               </div> */}
               
               {/* Desktop navigation - hidden on mobile */}
-              <div className="flex w-full shadow-md justify-center min-[1025px]:gap-x-[4.167vw] bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px] max-[1024px]:overflow-x-auto max-[1024px]:justify-start">
-              <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+              <div className="relative flex w-full shadow-md justify-center min-[1025px]:gap-x-[4.167vw] bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px] max-[1024px]:overflow-x-auto max-[1024px]:justify-start">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">MY DASHBOARD<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${registryData?.events?.[0]?.id && location.pathname === `/dashboard/registry/${registryData.events[0].id}` ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href={registryData?.events?.[0]?.id ? `/dashboard/registry/${registryData.events[0].id}` : '/dashboard/registry'}>
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${registryData?.events?.[0]?.id && location.pathname === `/dashboard/registry/${registryData.events[0].id}` ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href={registryData?.events?.[0]?.id ? `/dashboard/registry/${registryData.events[0].id}` : '/dashboard/registry'}>
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">MY DETAILS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${registryData?.events?.[0]?.id && location.pathname === `/dashboard/registry/${registryData.events[0].id}` ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/registry' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/registry">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/registry' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/registry">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">MY REGISTRY HOMEPAGE<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/registry' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">ADD OR EDIT GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/addgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/cash-funds' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/cash-funds">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/cash-fund' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/cash-funds">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/cash-funds' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/gifttracker' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/gifttracker">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/gifttracker' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/gifttracker">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">GIFTS + THANK YOU TRACKER<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/gifttracker' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">FULFILL + SHIP GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/shipgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`invisible hidden w-0 text-center px-1 py-1 text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/support' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/support">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
+                <a className={`invisible hidden w-0 text-center px-1 py-1 text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/support' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/support">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">SUPPORT<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/support' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
@@ -1825,7 +1825,7 @@ export function Header() {
                       FULFILL + SHIP GIFTS
                     </a>
                     <a 
-                      className={`hidden block px-4 py-3 rounded-lg transition-colors ${
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
                         location.pathname === '/dashboard/support' 
                           ? 'bg-gray-100 text-black font-semibold' 
                           : 'text-gray-600 hover:bg-gray-50'

@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useRef} from 'react';
+import React, {useState, useRef} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
@@ -21,7 +21,6 @@ import {Link, useLoaderData, useFetcher, useLocation, redirect, json} from '@rem
 import {formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
-import AlertPortal from '~/components/AlertPortal';
 import BackToTop from '~/components/BackToTop';
 
 export async function loader({request, context}) {
@@ -285,13 +284,13 @@ const ProductCard = React.memo(
               <button
                 onClick={handleAddToRegistry}
                 disabled={fetcher.state !== 'idle'}
-                className={`uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50 ${
+                className={`uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 ${
                   fetcher.state !== 'idle'
-                    ? 'bg-black cursor-wait'
+                    ? 'bg-[#1F1D1B] cursor-wait'
                     : 'bg-[#446184] cursor-pointer'
                 }`}
               >
-                {fetcher.state !== 'idle' ? 'Added' : 'Add to registry'}
+                {fetcher.state !== 'idle' ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>
@@ -304,9 +303,6 @@ const ProductCard = React.memo(
 const CashFund = () => {
   const {products, collections, searchQuery, registryId, user, recommendedProducts} = useLoaderData();
   const location = useLocation();
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
   const [checkedCategories, setCheckedCategories] = useState([]); // ['Honeymoon','Home','Date Night']
   const INITIAL_VISIBLE = 16;
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
@@ -351,27 +347,6 @@ const CashFund = () => {
 
     filteredProducts = products.filter((product) => allowedIds.has(product.collectionId));
   }
-
-  // Alert handlers
-  const handleSuccess = useCallback((message) => {
-    setAlertMessage(message);
-    setAlertType('success');
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-      setAlertMessage('');
-    }, 3000);
-  }, []);
-
-  const handleError = useCallback((message) => {
-    setAlertMessage(message);
-    setAlertType('error');
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-      setAlertMessage('');
-    }, 3000);
-  }, []);
 
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = filteredProducts.length > INITIAL_VISIBLE;
@@ -473,8 +448,6 @@ const CashFund = () => {
                   collection={collection}
                   registryId={registryId}
                   user={user}
-                  onSuccess={handleSuccess}
-                  onError={handleError}
                 />
               );
             })}
@@ -609,46 +582,6 @@ const CashFund = () => {
         </div>
       </section>
 
-      {/* Alert Component - Rendered outside app-scale via portal */}
-      {showAlert && (
-        <AlertPortal>
-          <div
-            className={`fixed top-4 right-4 ${
-              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-          >
-            <div className="flex items-center">
-              {alertType === 'success' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
-                </svg>
-              )}
-              {alertType === 'error' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
-              <span>{alertMessage}</span>
-            </div>
-          </div>
-        </AlertPortal>
-      )}
       <style jsx>{`
         @keyframes fadeInOut {
           0% {

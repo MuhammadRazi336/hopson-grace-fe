@@ -712,7 +712,7 @@ function SidebarFilter({
               <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                   <input
                     type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
                     checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
