@@ -613,7 +613,7 @@ const index = () => {
         </div>
       </div>
       <div className="py-[8.177vw] w-full flex justify-center items-center max-[1024px]:py-[50px]">
-        <div className="py-10 lg:py-[3.438vw] xl:py-[3.438vw] 2xl:py-[3.438vw] bg-[#446184] flex items-center justify-between flex-row lg:w-[81.354vw] xl:w-[81.354vw] 2xl:w-[81.354vw] lg:min-h-[28.698vw] xl:min-h-[28.698vw] 2xl:min-h-[28.698vw] w-full max-[768px]:p-10 mt-0 gap-x-16 max-[1024px]:p-[20px] max-[1024px]:flex-wrap max-[1024px]:items-center">
+        <div className="py-10 lg:py-[3.438vw] xl:py-[3.438vw] 2xl:py-[3.438vw] bg-[#446184] flex items-center justify-between flex-row lg:w-[110.954vw] xl:w-[110.954vw] 2xl:w-[110.954vw] lg:min-h-[28.698vw] xl:min-h-[28.698vw] 2xl:min-h-[28.698vw] w-full max-[768px]:p-10 mt-0 gap-x-16 max-[1024px]:p-[20px] max-[1024px]:flex-wrap max-[1024px]:items-center">
           <div className='pl-[25px] max-[1024px]:pl-[0px]'>
             <img
               src="/assets/Images/giftCard.png"

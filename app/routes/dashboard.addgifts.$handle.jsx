@@ -24,6 +24,7 @@ import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 const images = [
     '/assets/Images/gift-prod-1.png',
@@ -326,10 +327,10 @@ const GiftDetailHandle = () => {
         </div>
 
         <section className="mt-[9.74vw] bg-[#446184] text-white ">
-          <div className="mx-auto flex flex-col lg:flex-row gap-24 py-[5.7vw] px-[7.5vw]">
+          <div className="mx-auto flex flex-col lg:flex-row gap-24 py-[5.7vw] px-[7.5vw] max-[1024px]:gap-8 max-[1024px]:px-4 max-[1024px]:py-10">
             {/* Left Text Section */}
             <div className="lg:w-4/12 w-full flex items-center flex-col gap-2">
-              <p className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-wider uppercase pb-1">
+              <p className="text-[22px] max-[1024px]:text-[14px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-wider uppercase pb-1">
                 Meet the Maker
               </p>
               <img
@@ -337,26 +338,26 @@ const GiftDetailHandle = () => {
                 alt=""
                 className="w-auto lg:w-[18.594vw] xl:w-[18.594vw] 2xl:w-[18.594vw]"
               />
-              <h5 className="text-[40px] lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[42px] xl:leading-[42px] 2xl:leading-[42px] prata my-[1.042vw] text-center">
+              <h5 className="text-[40px] max-[1024px]:text-[32px] lg:leading-[42px] xl:leading-[42px] 2xl:leading-[42px] prata my-[1.042vw] text-center">
                 {product?.vendor || 'Hopson Grace'}
               </h5>
-              <p className="text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mb-2">Toronto</p>
-              <p className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] text-center mb-0">
+              <p className="text-[14px] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mb-2">Toronto</p>
+              <p className="text-[18px] max-[1024px]:text-[16px] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] text-center mb-0">
                 {product?.description ? 
                   product.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : 
                   'Discover the craftsmanship and quality that defines our brand. Each product is carefully selected to bring beauty and functionality to your home.'
                 }
               </p>
               <Link to={`/brand/${product?.vendor?.toLowerCase().replace(/\s+/g, '-') || 'hopson-grace'}`}>
-                <button className="text-white border-b pt-2 pb-1 text-[14px] lg:text-[0.729vw] xl:text-[0.729vw] 2xl:text-[0.729vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] font-semibold uppercase tracking-wide hover:text-gray-300 transition-colors cursor-pointer">
+                <button className="text-white border-b pt-2 pb-1 text-[14px] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] font-semibold uppercase tracking-wide hover:text-gray-300 transition-colors cursor-pointer">
                   View Full Profile
                 </button>
               </Link>
             </div>
-            <section className="lg:w-[71.6%] w-full  container ">
+            <section className="lg:w-[66.7%] w-full  container ">
               <div className="relative items-start max-[1024px]:my-10">
                 <div className=" 2xl:max-w-[1560px] xl:max-w-[1100px] lg:max-w-[767px] max-[1600px]:max-w-[80%] max-w-[85%] mx-auto">
-                  <div className="swiper-button-prev-prod absolute top-[40%] -translate-y-1/2 h-[40px] left-[-7vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
+                  <div className="swiper-button-prev-prod absolute top-[40%] -translate-y-1/2 h-[40px] left-[-7vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10 max-[1024px]:left-[-7px]"> 
                     <img src={nextitem} className="invert rotate-90 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw]" alt="" />
                     <span className="-rotate-90 text-white block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                       more
@@ -388,15 +389,15 @@ const GiftDetailHandle = () => {
                       },
                       1366: {
                         slidesPerView: 3,
-                        spaceBetween: 19,
+                        spaceBetween: 36,
                       },
                       1440: {
                         slidesPerView: 4,
-                        spaceBetween: 19,
+                        spaceBetween: 36,
                       },
                       1600: {
                         slidesPerView: 3,
-                        spaceBetween: 19,
+                        spaceBetween: 36,
                       },
                     }}
                   >
@@ -471,7 +472,7 @@ const GiftDetailHandle = () => {
                       </>
                     )}
                   </Swiper>
-                  <div className="swiper-button-next-prod absolute top-[40%] -translate-y-1/2 h-[40px] right-[-7vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10">
+                  <div className="swiper-button-next-prod absolute top-[40%] -translate-y-1/2 h-[40px] right-[-7vw] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-10 max-[1024px]:right-[-7px]">
                     <span className="rotate-90 text-white block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                       more
                     </span>
@@ -504,7 +505,8 @@ const GiftDetailHandle = () => {
             />
           </div>
         </section> */}
-      <WeThinkYoullLove recommendedProducts={recommendedProducts} className="mt-[9.375vw]" />
+      {/* <WeThinkYoullLove recommendedProducts={recommendedProducts} className="mt-[9.375vw]" /> */}
+      <WeThinkYouLove recommendedProducts={recommendedProducts} className="mt-[9.375vw]" />
       <Footer />
     </>
 

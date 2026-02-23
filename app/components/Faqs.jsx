@@ -88,8 +88,9 @@ const Faqs = ({content}) => {
     },
   ];
 
-  const faqs = content === 'couple' ? coupleFaqs : generalFaqs;
-  const faqsBtn = content === 'couple' ? "SEE ALL GUEST FAQS" : "READ ALL";
+  const faqs = content === 'guest' ? coupleFaqs : generalFaqs;
+  const faqsBtn = content === 'guest' ? "SEE ALL GUEST FAQS" : "READ ALL";
+  const faqsURL = content === 'guest' ? "guests" : "couples";
 
   return (
     <div
@@ -126,7 +127,7 @@ const Faqs = ({content}) => {
           ))}
         </div>
         <div className="w-full text-center">
-          <Link to="/faq" state={{ activeTab: 'guests' }}>
+          <Link to="/faq" state={{ activeTab: faqsURL }}>
             <ButtonComponent
               className="button-cs text-[#1F1D1B] max-[1024px]:border-2 border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 cursor-pointer lg:mt-[4.688vw] w-80 lg:w-[18.75vw] lg:h-[4.01vw] max-[1024px]:w-[224px] max-[1024px]:h-[44px] max-[1024px]:mt-8"
               text={faqsBtn} 

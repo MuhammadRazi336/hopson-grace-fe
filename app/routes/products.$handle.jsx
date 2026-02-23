@@ -29,6 +29,7 @@ import ExploreCategories from '~/components/ExploreCategories';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 const tabsData = [
   {
@@ -704,127 +705,7 @@ export default function ProductCollection() {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] pt-[5.26vw] pb-8 mt-[6.896vw]">
-        <Heading
-          text="we think you'll love"
-          classes={
-            'prata text-2xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw] lg:h-[0.417vw]'}
-        />
-
-        <div className=" relative items-start mt-[5.573vw] mb-10 max-[1024px]:my-10">
-          <div className="lg:px-[11.823vw] xl:px-[11.823vw] 2xl:px-[11.823vw] mx-auto">
-            <div className="swiper-button-prev-prod absolute items-center top-12 left-[2.344vw] cursor-pointer uppercase flex w-[139px] lg:w-[2.813vw] xl:w-[2.813vw] 2xl:w-[2.813vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw]" />
-              <span className="-rotate-90 text-black lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-            </div>
-
-            <Swiper
-              spaceBetween={15}
-              slidesPerView={3}
-              loop={true}
-              modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
-              }}
-              className=""
-              breakpoints={{
-                345: {
-                  spaceBetween: 10,
-                  slidesPerView: 1,
-                  centeredSlides: true,
-                },
-                475: {
-                  spaceBetween: 15,
-                  slidesPerView: 1,
-                  centeredSlides: true,
-                },
-                768: {
-                  spaceBetween: 20,
-                  slidesPerView: 2,
-                  centeredSlides: true,
-                },
-                1024: {
-                  spaceBetween: 30,
-                  slidesPerView: 3,
-                  centeredSlides: false,
-                },
-                1366: {
-                  spaceBetween: 39,
-                  slidesPerView: 3,
-                  centeredSlides: false,
-                },
-                1600: {
-                  spaceBetween: 39,
-                  slidesPerView: 3,
-                  centeredSlides: false,
-                },
-              }}
-            >
-              {/* Dynamic recommended products */}
-              {recommendedProducts.length > 0 ? (
-                recommendedProducts.map((product) => {
-                  const productNode = product.node;
-                  const firstImage = productNode.images?.edges?.[0]?.node;
-                  const price = productNode.priceRange?.minVariantPrice;
-                  
-                  return (
-                    <SwiperSlide key={productNode.id}>
-                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
-                        <img 
-                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                          alt={productNode.title || 'Product'} 
-                          className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
-                        />
-                        <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
-                          {productNode.title}
-                        </h3>
-                        <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
-                      </Link>
-                    </SwiperSlide>
-                  );
-                })
-              ) : (
-                // Fallback to static slides if no recommended products
-                <>
-                  <SwiperSlide>
-                    <img src={youll1} alt="New Arrival" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                      ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                    </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={youll2} alt="Tableware" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                      SMEG TOASTER, 2 SLICE
-                    </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[30px]  lg:text-2xl text-sm font-medium tracking-wider">
-                      THE BARISTA TOUCH ESPRESSO MAKER
-                    </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
-                  </SwiperSlide>
-                </>
-              )}
-            </Swiper>
-            <div className="swiper-button-next-prod absolute top-12 right-[3.8vw] cursor-pointer  uppercase flex w-[139px] items-center lg:w-[2.813vw] xl:w-[2.813vw] 2xl:w-[2.813vw] max-[768px]:h-[41.35vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-              <img src={nextitem} className="rotate-270 lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw]" alt="" />
-            </div>
-          </div>
-        </div>
-      </section>
+        <WeThinkYouLove recommendedProducts={recommendedProducts} />
 
       <div className="py-[5.26vw] px-0">
           <ExploreCategories collections={collections} />

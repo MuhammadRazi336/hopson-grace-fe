@@ -1,4 +1,4 @@
-import {useCallback, useState} from 'react';
+import {useCallback, useState, useEffect} from 'react';
 import {defer, Form, redirect, useLoaderData} from '@remix-run/react';
 import {Link, useSearchParams} from '@remix-run/react';
 import Faqs from '~/components/Faqs';
@@ -7,6 +7,7 @@ import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {useNavigate} from 'react-router-dom';
 import {Header} from '~/components/Header';
+import { Footer } from  '~/components/Footer';
 
 export async function loader({request, context}) {
   const url = new URL(request.url);
@@ -28,6 +29,28 @@ export default function FindCoupleForm() {
   
   // Check if we have search parameters (from header search)
   const hasSearchParams = searchParams.get('firstName') || searchParams.get('fianceFirstName');
+  
+  // Scroll to registry section when data is available and URL has search params
+  useEffect(() => {
+    // Check if URL contains search parameters to determine if we should scroll
+    const urlParams = new URLSearchParams(window.location.search);
+    const firstNameParam = urlParams.get('firstName');
+    const fianceFirstNameParam = urlParams.get('fianceFirstName');
+    
+    // Only scroll if there are search parameters and data exists
+    if ((firstNameParam || fianceFirstNameParam) && data && data.length > 0) {
+      // Wait for the component to render before scrolling
+      setTimeout(() => {
+        const registrySection = document.getElementById('registrySection');
+        if (registrySection) {
+          registrySection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100); // Small delay to ensure DOM is rendered
+    }
+  }, [data]);
   
   return (
     <div>
@@ -139,19 +162,21 @@ export default function FindCoupleForm() {
           </div>
 
 
-          <Faqs />
+          <Faqs content="guest" />
           <div className="mb-16"></div>
-          <section className=" my-12 lg:my-[240px]">
-            <ImageAndText
-              direction={'right'}
-              imgBanner={teaImg}
-              lineimg={lineImg3}
-              title="need any advice?"
-              description="Our registry experts are awaiting your call to advise on anything you need."
-              buttontext={'LIVE CHAT'}
-              buttontype={'Color'}
-            />
-          </section>
+         <section className=" my-12 lg:my-[240px]">
+                     <ImageAndText
+                       direction={'right'}
+                       imgBanner={teaImg}
+                       lineimg={lineImg3}
+                       title="questions?"
+                       description="We’ve got answers."
+                       buttontext={'CONTACT US'}
+                       buttontype={'Color'}
+                       buttonLink={'/contact-us'}
+                     />
+                   </section>
+          <Footer />
         </>
         // Show no results when searching
         
@@ -242,19 +267,21 @@ export default function FindCoupleForm() {
           </div>
 
           <div className="mt-20"></div>
-          <Faqs />
+          <Faqs content="guest" />
           <div className="mb-16"></div>
-          <section className=" my-12 lg:my-[240px]">
-            <ImageAndText
-              direction={'right'}
-              imgBanner={teaImg}
-              lineimg={lineImg3}
-              title="need any advice?"
-              description="Our registry experts are awaiting your call to advise on anything you need."
-              buttontext={'LIVE CHAT'}
-              buttontype={'Color'}
-            />
-          </section>
+         <section className=" my-12 lg:my-[240px]">
+                     <ImageAndText
+                       direction={'right'}
+                       imgBanner={teaImg}
+                       lineimg={lineImg3}
+                       title="questions?"
+                       description="We’ve got answers."
+                       buttontext={'CONTACT US'}
+                       buttontype={'Color'}
+                       buttonLink={'/contact-us'}
+                     />
+                   </section>
+          <Footer />
         </>
       )}
 
@@ -268,6 +295,28 @@ function CoupleListing({data}) {
   const [fianceFirstName, setFianceFirstName] = useState('');
   const [validationError, setValidationError] = useState('');
   const navigate = useNavigate();
+
+  // Scroll to registry section when component mounts and there are search params
+  useEffect(() => {
+    // Check if URL contains search parameters to determine if we should scroll
+    const urlParams = new URLSearchParams(window.location.search);
+    const firstNameParam = urlParams.get('firstName');
+    const fianceFirstNameParam = urlParams.get('fianceFirstName');
+    
+    // Only scroll if there are search parameters (meaning user came from search)
+    if ((firstNameParam || fianceFirstNameParam) && data && data.length > 0) {
+      // Wait for the component to render before scrolling
+      setTimeout(() => {
+        const registrySection = document.getElementById('registrySection');
+        if (registrySection) {
+          registrySection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100); // Small delay to ensure DOM is rendered
+    }
+  }, [data]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -356,7 +405,7 @@ function CoupleListing({data}) {
           </div>
         </div>
 
-        <h2 className="mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+        <h2 id="registrySection" className="scroll-mt-30 mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
           {/* we found {data.filter(couple => couple.registry).length}  */}
           registries
         </h2>
@@ -413,19 +462,21 @@ function CoupleListing({data}) {
         </div>
 
         <div className="mt-20"></div>
-        <Faqs />
+        <Faqs content="guest" />
         <div className="mb-16"></div>
         <section className=" my-12 lg:my-[240px]">
-          <ImageAndText
-            direction={'right'}
-            imgBanner={teaImg}
-            lineimg={lineImg3}
-            title="need any advice?"
-            description="Our registry experts are awaiting your call to advise on anything you need."
-            buttontext={'LIVE CHAT'}
-            buttontype={'Color'}
-          />
-        </section>
+                    <ImageAndText
+                      direction={'right'}
+                      imgBanner={teaImg}
+                      lineimg={lineImg3}
+                      title="questions?"
+                      description="We’ve got answers."
+                      buttontext={'CONTACT US'}
+                      buttontype={'Color'}
+                      buttonLink={'/contact-us'}
+                    />
+                  </section>
+        <Footer />
       </>
     </div>
   );

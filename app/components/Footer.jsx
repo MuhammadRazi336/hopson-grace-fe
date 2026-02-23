@@ -141,7 +141,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/faq">
+                      <Link className="text-white" to="/faq" state={{ activeTab: 'couples' }}>
                         FAQs
                       </Link>
                     </li>

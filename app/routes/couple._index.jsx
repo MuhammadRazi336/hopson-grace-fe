@@ -131,7 +131,7 @@ export default function FindCoupleForm() {
           </div>
 
           <div className="mt-20 lg:mt-[9.01vw]"></div>
-          <Faqs content="couple"/>
+          <Faqs content="guest"/>
           <div className="mb-16"></div>
           <section className=" my-12 lg:my-[240px]">
             <ImageAndText
@@ -142,8 +142,10 @@ export default function FindCoupleForm() {
               description="We’ve got answers."
               buttontext={'CONTACT US'}
               buttontype={'Color'}
+              buttonLink={'/contact-us'}
             />
           </section>
+          <Footer />
         </>
       )}
 
