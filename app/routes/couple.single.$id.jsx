@@ -1781,7 +1781,7 @@ export default function CoupleProfile() {
                       {selectedGiftData.images.edges.map((imageEdge, index) => (
                         <div
                           key={index}
-                          className={`border p-1 w-20 h-20 border-[#3d5a80] border-2 cursor-pointer transition-all hover:border-[#2c425e] ${
+                          className={`p-1 w-20 h-20 border-[#3d5a80] border-2 cursor-pointer transition-all hover:border-[#2c425e] ${
                             selectedImageIndex === index
                               ? 'border-[#2c425e] border-4'
                               : ''
@@ -1801,7 +1801,7 @@ export default function CoupleProfile() {
                     </>
                   ) : (
                     // Fallback: show single thumbnail for cash funds or single images
-                    <div className="border p-1 w-20 h-20 border-[#3d5a80] border-2">
+                    <div className="p-1 w-20 h-20 border-[#3d5a80] border-2">
                       <img
                         src={
                           selectedGiftData.images?.edges?.[0]?.node?.url ||

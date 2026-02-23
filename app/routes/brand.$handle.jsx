@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -11,7 +11,6 @@ import Marquee from '~/components/Marquee';
 import ButtonComponent from '~/components/Button';
 import lineImg4 from '/assets/Images/Vector 14.png';
 import {formatPrice} from '~/utils/priceFormatter';
-import AlertPortal from '~/components/AlertPortal';
 
 export async function loader({params, context}) {
   const {handle} = params;
@@ -80,9 +79,6 @@ export async function action({request, context}) {
 const Brand = () => {
   const {collection, registry, brands, user} = useLoaderData();
   const [quantities, setQuantities] = useState({});
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success');
   const fetcher = useFetcher();
 
   // Calculate displayed products count and total
@@ -92,33 +88,6 @@ const Brand = () => {
   const totalProductsCount = collection?.products?.pageInfo?.hasNextPage 
     ? `${displayedProductsCount}+` // Show + if there are more pages
     : displayedProductsCount;
-
-  // Handle fetcher responses
-  useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.success) {
-        // Success - show green alert
-        setAlertMessage('Product has been added to your registry!');
-        setAlertType('success');
-        setShowAlert(true);
-
-        // Hide alert after 3 seconds
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
-      } else if (fetcher.data.error) {
-        // Error - show red alert
-        setAlertMessage(`Failed to add to registry: ${fetcher.data.error}`);
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
-      }
-    }
-  }, [fetcher.data]);
 
   const handleAddToRegistry = async (product, selectedQuantity) => {
     try {
@@ -205,9 +174,9 @@ const Brand = () => {
         </div>
         <div className="w-[50%] h-full flex items-center justify-center">
           <img
-            src={collection.image?.url || '/assets/Images/dreamFunds.png'}
+            src={collection.brandImageMetafield?.reference?.image?.url || collection.image?.url || '/assets/Images/dreamFunds.png'}
             className="mx-auto object-contain object-center"
-            alt={collection.image?.altText || collection.title}
+            alt={collection.brandImageMetafield?.reference?.image?.altText || collection.image?.altText || collection.title}
           />
         </div>
       </div>
@@ -321,15 +290,12 @@ const Brand = () => {
                           disabled={fetcher.state === 'submitting'}
                           className={`text-white text-xs lg:text-[0.729vw] cursor-pointer lg:h-[4.01vw] lg:w-[10.156vw] font-bold py-[5px] px-[5px] ${
                             fetcher.state === 'submitting'
-                              ? 'bg-gray-400 cursor-not-allowed'
+                              ? 'bg-[#1F1D1B] cursor-not-allowed'
                               : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
                           }`}
                         >
                           {fetcher.state === 'submitting' ? (
-                            <div className="flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Adding...
-                            </div>
+                            'ADDED!'
                           ) : (
                             'ADD TO REGISTRY'
                           )}
@@ -378,47 +344,6 @@ const Brand = () => {
           </Link>
         </div>
       </section>
-
-      {/* Alert Component - Rendered outside app-scale via portal */}
-      {showAlert && (
-        <AlertPortal>
-          <div
-            className={`fixed top-4 right-4 ${
-              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-          >
-            <div className="flex items-center">
-              {alertType === 'success' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
-                </svg>
-              )}
-              {alertType === 'error' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
-              <span>{alertMessage}</span>
-            </div>
-          </div>
-        </AlertPortal>
-      )}
 
       <style jsx>{`
         @keyframes fadeInOut {
@@ -551,6 +476,18 @@ const BRAND_QUERY = `#graphql
       metafield(namespace: "custom", key: "brand") {
         id
         value
+      }
+      brandImageMetafield: metafield(namespace: "custom", key: "brand_image") {
+        reference {
+          ... on MediaImage {
+            image {
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
       }
       products(first: 20) {
         pageInfo {

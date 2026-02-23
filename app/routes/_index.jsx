@@ -1,15 +1,15 @@
-import {requireAuth} from '~/utils/auth-guard.js';
+import {requireAuth, clearSessionAndRedirect} from '~/utils/auth-guard.js';
 import {redirect} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 
 export async function loader(args) {
-  
-  const {context, request} = args;
-  // Await the critical data required to render initial state of the page
+  const {context} = args;
   const user = await requireAuth(context);
   if (!user) {
     return redirect('/login');
-  } else {
+  }
+
+  try {
     const getUser = await context.ClientGet(`users/${user?.user?.id}`, context);
     const sessionUser = {
       accessToken: user.accessToken,
@@ -24,19 +24,22 @@ export async function loader(args) {
           'Set-Cookie': cookie,
         },
       });
-    } else {
-      const getRegistries = await context.ClientGet(
-        `registries/by-userId/${sessionUser?.user?.id}`,
-        context,
-      );
-      
-      // Remove @Registry session storage - only keep @User
-      return redirect('/dashboard', {
-        headers: {
-          'Set-Cookie': cookie,
-        },
-      });
     }
+
+    await context.ClientGet(
+      `registries/by-userId/${sessionUser?.user?.id}`,
+      context,
+    );
+    return redirect('/dashboard', {
+      headers: {
+        'Set-Cookie': cookie,
+      },
+    });
+  } catch (err) {
+    if (err?.isSessionExpired || err?.status === 401 || err?.status === 403) {
+      return clearSessionAndRedirect(context);
+    }
+    throw err;
   }
 }
 

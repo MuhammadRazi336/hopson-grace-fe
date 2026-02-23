@@ -1361,10 +1361,10 @@ const Step6 = ({collections, onCollectionsSelect}) => {
 
 // Fixed 4 style options for Step 7 – always shown regardless of Step 6 selections
 const STEP7_FIXED_STYLES = [
-  { id: 'style-modern', title: 'Modern', image: { url: modern }, handle: 'modern', description: 'Modern' },
-  { id: 'style-classic', title: 'Classic', image: { url: classic }, handle: 'classic', description: 'Classic' },
-  { id: 'style-electic', title: 'Electic', image: { url: electic }, handle: 'electic', description: 'Electic' },
-  { id: 'style-not-sure', title: 'Not Sure', image: { url: notsure }, handle: 'not-sure', description: 'Not Sure' },
+  { id: 'style-modern', title: 'MODERN', image: { url: modern }, handle: 'modern', description: 'Modern' },
+  { id: 'style-classic', title: 'CLASSIC', image: { url: classic }, handle: 'classic', description: 'Classic' },
+  { id: 'style-eclectic', title: 'ECLECTIC', image: { url: electic }, handle: 'eclectic', description: 'Eclectic' },
+  { id: 'style-not-sure', title: 'NOT SURE', image: { url: notsure }, handle: 'not-sure', description: 'Not Sure' },
 ];
 
 const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
