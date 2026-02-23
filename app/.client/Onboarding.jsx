@@ -1363,7 +1363,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
 const STEP7_FIXED_STYLES = [
   { id: 'style-modern', title: 'MODERN', image: { url: modern }, handle: 'modern', description: 'Modern' },
   { id: 'style-classic', title: 'CLASSIC', image: { url: classic }, handle: 'classic', description: 'Classic' },
-  { id: 'style-electic', title: 'ELECTRIC', image: { url: electic }, handle: 'electic', description: 'Electic' },
+  { id: 'style-eclectic', title: 'ECLECTIC', image: { url: electic }, handle: 'eclectic', description: 'Eclectic' },
   { id: 'style-not-sure', title: 'NOT SURE', image: { url: notsure }, handle: 'not-sure', description: 'Not Sure' },
 ];
 
