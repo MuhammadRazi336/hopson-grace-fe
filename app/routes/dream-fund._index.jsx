@@ -158,10 +158,16 @@ const ProductCard = React.memo(
         });
 
         if (fetcher.data.success === true) {
-          onSuccess(`${product.title} has been added to your registry!`);
+          if (typeof onSuccess === 'function') {
+            onSuccess(`${product.title} has been added to your registry!`);
+          }
           hasShownFeedback.current = true;
         } else if (fetcher.data.error === true) {
-          onError('There was an error adding the cash fund.');
+          if (typeof onError === 'function') {
+            onError('There was an error adding the cash fund.');
+          } else {
+            console.error('There was an error adding the cash fund.');
+          }
           hasShownFeedback.current = true;
         }
 
@@ -194,7 +200,11 @@ const ProductCard = React.memo(
 
         // Check if registry exists
         if (!registryId) {
-          onError('Registry not found. Please create a registry first.');
+          if (typeof onError === 'function') {
+            onError('Registry not found. Please create a registry first.');
+          } else {
+            console.error('Registry not found. Please create a registry first.');
+          }
           return;
         }
 
