@@ -75,8 +75,6 @@ const ReadyMade = () => {
     <section>
       <Header />
 
-      <div className="w-full h-[2px] bg-black"></div>
-
       <div className="w-full h-fit pt-[4.375vw]">
         <Heading
           text={"ready-made registries"}

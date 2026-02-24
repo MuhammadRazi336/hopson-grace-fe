@@ -325,7 +325,7 @@ function CoupleListing({data}) {
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
   };
   return (
     <div className="">

@@ -4,7 +4,7 @@ import {Link, useLoaderData, json} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
-import {useState} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import RegistryStatusCard from '~/components/RegistryStatusCard';
@@ -12,7 +12,68 @@ import PreviewRegistry from '~/components/PreviewRegistry';
 import { Footer } from '~/components/Footer';
 import {formatPrice} from '~/utils/priceFormatter';
 
+// Collections with products per node (same approach as addgifts: parent -> sub -> products -> parentCollectionId)
+const REGISTRY_COLLECTION_QUERY = `#graphql
+  query RegistryCollectionsWithProducts {
+    collections(first: 250) {
+      nodes {
+        id
+        title
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
+          id
+          value
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
+        subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+        subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+          references(first: 50) {
+            edges {
+              node {
+                ... on Collection {
+                  id
+                }
+              }
+            }
+          }
+        }
+        products(first: 50) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    }
+  }`;
+
+// Fallback: get each product's collections so we can resolve parentCollectionId when product isn't in collection.products
+const REGISTRY_PRODUCT_COLLECTIONS_QUERY = `#graphql
+  query RegistryProductCollections($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Product {
+        id
+        collections(first: 50) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    }
+  }`;
+
 export async function loader({request, context}) {
+  try {
   const user = context?.session?.get('@User');
   const registry = await context.ClientGet(
     `registries/by-userId/${user.user.id}`,
@@ -86,44 +147,152 @@ export async function loader({request, context}) {
     cashRes = {data: []};
   }
 
-  let mergedArray = [];
   const ids = res?.data?.map(
     (product) => `gid://shopify/Product/${product.productId}`,
-  );
+  ) || [];
   const productsResult = await fetchProducts(context.storefront, ids);
   const products = productsResult || {nodes: []};
   const productNodes = Array.isArray(products.nodes) ? products.nodes : [];
 
+  let mergedArray = [];
+  const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+
+  // Fetch collections and build productId -> parentId (and subCollectionId -> parentId) for merging parentCollectionId onto registry gifts
+  let parentCollections = [];
+  const productIdToParentId = {};
+  const subCollectionIdToParentId = {};
+  const productIdToCollectionIds = {}; // from collection query: which sub-collections each product appeared in
+  try {
+    const {collections} = await context.storefront.query(REGISTRY_COLLECTION_QUERY);
+    const collectionsList = collections?.nodes || [];
+    const isExcludedFundsCollection = (col) => {
+      const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+      return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+    };
+    const isParentForSlides = (col) =>
+      col.parentMetafield?.value === 'true' &&
+      col.readyMadeMetafield?.value !== 'true' &&
+      !isExcludedFundsCollection(col);
+    parentCollections = collectionsList.filter(isParentForSlides);
+    // Sort by id so order is deterministic and "first parent wins" matches addgifts (e.g. Tableware 283241316451 before 288315506787)
+    parentCollections = [...parentCollections].sort((a, b) => (a.id || '').localeCompare(b.id || ''));
+
+    // Identical to addgifts: for each parent -> sub-collections -> products; first parent that contains product wins (if (!productMap.has(product.id)))
+    for (const parentCollection of parentCollections) {
+      let subCollectionGids = [];
+      let subCollections = [];
+      if (parentCollection.subCollectionMetafield?.references?.edges) {
+        subCollections = parentCollection.subCollectionMetafield.references.edges.map(
+          (edge) => edge.node,
+        );
+        subCollectionGids = subCollections.map((sub) => sub.id);
+      } else if (parentCollection.subMetafield?.value) {
+        try {
+          subCollectionGids = JSON.parse(parentCollection.subMetafield.value);
+          subCollections = collectionsList.filter(
+            (col) =>
+              col.parentMetafield?.value === 'false' &&
+              col.readyMadeMetafield?.value !== 'true' &&
+              subCollectionGids.includes(col.id),
+          );
+        } catch (e) {
+          console.error('Error parsing subMetafield in registry loader:', e);
+        }
+      }
+      for (const subRef of subCollections) {
+        const subId = subRef?.id;
+        if (subId) subCollectionIdToParentId[subId] = parentCollection.id;
+        const subCollection =
+          collectionsList.find((col) => col.id === subId) || subRef;
+        if (subCollection?.products?.edges) {
+          for (const edge of subCollection.products.edges) {
+            const productId = edge?.node?.id;
+            if (productId) {
+              if (productIdToParentId[productId] === undefined) {
+                productIdToParentId[productId] = parentCollection.id;
+              }
+              if (!productIdToCollectionIds[productId]) productIdToCollectionIds[productId] = [];
+              if (!productIdToCollectionIds[productId].includes(subId)) {
+                productIdToCollectionIds[productId].push(subId);
+              }
+            }
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching collections for registry:', err);
+  }
+
+  // Fallback: if registry product wasn't in collection query (e.g. not in first 50 products), get its collections from Storefront
+  if (ids?.length > 0) {
+    try {
+      const productCollectionsResult = await context.storefront.query(
+        REGISTRY_PRODUCT_COLLECTIONS_QUERY,
+        {variables: {ids}},
+      );
+      const nodes = productCollectionsResult?.nodes || [];
+      nodes.forEach((node) => {
+        if (node?.id && node?.collections?.edges) {
+          const list = node.collections.edges.map((e) => e?.node?.id).filter(Boolean);
+          if (list.length && !productIdToCollectionIds[node.id]) {
+            productIdToCollectionIds[node.id] = list;
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Error fetching product collections for registry fallback:', err);
+    }
+  }
+
+  // Merge: API parentCollectionId (normalized), then productIdToParentId (same as addgifts), then resolve via productIdToCollectionIds + subCollectionIdToParentId for products not seen in collection query
   if (res?.data?.length && productNodes.length > 0) {
     mergedArray = res.data.map((item1) => {
       const product = productNodes.find(
         (item2) =>
           item2 && item2.id === `gid://shopify/Product/${item1.productId}`,
       );
-      // Ensure numeric fields are numbers
       const amount =
         item1.amount !== undefined ? Number(item1.amount) : undefined;
       const collectedAmount =
         item1.collectedAmount !== undefined
           ? Number(item1.collectedAmount)
           : undefined;
+      let parentCollectionId = item1.parentCollectionId;
+      if (parentCollectionId != null && typeof parentCollectionId !== 'string') {
+        parentCollectionId = `gid://shopify/Collection/${parentCollectionId}`;
+      } else if (typeof parentCollectionId === 'string' && !parentCollectionId.startsWith('gid://')) {
+        parentCollectionId = `gid://shopify/Collection/${parentCollectionId}`;
+      }
+      if (parentCollectionId == null && product?.id) {
+        parentCollectionId = productIdToParentId[product.id];
+        if (parentCollectionId == null) {
+          const collectionIds = productIdToCollectionIds[product.id] || [];
+          for (const cid of collectionIds) {
+            if (subCollectionIdToParentId[cid]) {
+              parentCollectionId = subCollectionIdToParentId[cid];
+              break;
+            }
+          }
+        }
+      }
       if (product) {
         return {
           ...item1,
           ...product,
           amount,
           collectedAmount,
+          parentCollectionId: parentCollectionId ?? product.parentCollectionId,
         };
       }
       return {
         ...item1,
         amount,
         collectedAmount,
+        parentCollectionId,
       };
     });
   }
-
-  const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
 
   return defer({
     data: mergedArray,
@@ -134,6 +303,13 @@ export async function loader({request, context}) {
     user,
     apiBaseUrl,
   });
+  } catch (e) {
+    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+      const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
+      return clearSessionAndRedirect(context);
+    }
+    throw e;
+  }
 }
 
 export async function action({request, context}) {
@@ -156,7 +332,12 @@ const index = () => {
   const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
     loaderData;
 
+  // Browser console: verify registry data
+  useEffect(() => {
+    const gifts = Array.isArray(data) ? data : [];
+    console.log('[Registry Dashboard] gifts (data):', gifts.length);
     console.log('cashfundData', cashfundData);
+  }, [data, cashfundData]);
 
   // Fallback for apiBaseUrl if it's not available from loader
   const finalApiBaseUrl =
@@ -332,6 +513,41 @@ const index = () => {
       setIsBackgroundUploading(false);
     }
   };
+
+  // Filters for "our registry selections"
+  const [priceSort, setPriceSort] = useState('low-to-high'); // 'low-to-high' | 'high-to-low'
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'gifted' | 'ungifted'
+  // Category filter: 'all' | 'gifts' | 'cashfunds' — which section(s) to show (Gifts div and/or Cash Funds div)
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [openFilter, setOpenFilter] = useState(null); // null | 'category' | 'price' | 'status'
+  const filterRef = useRef(null);
+
+  const categoryLabel =
+    categoryFilter === 'all'
+      ? 'All'
+      : categoryFilter === 'gifts'
+        ? 'Gifts'
+        : categoryFilter === 'cashfunds'
+          ? 'Cash Funds'
+          : 'All';
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setOpenFilter(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filterTriggerClass =
+    'text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer border-0 bg-transparent p-0 font-inherit';
+  const Arrow = ({ isOpen }) => (
+    <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg" className={`shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+      <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
+    </svg>
+  );
 
   return (
     <>
@@ -554,22 +770,14 @@ const index = () => {
               onClick={handleSavePreview}
               type="button"
             >
-              Save & Preview
+              Save
             </button>
-            <Link to={`/dashboard/registry/${registryData.events[0].id}`}>
-              <button
-                className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1 max-[1024px]:text-[14px] max-[1024px]:mx-[10px]"
-                type="button"
-              >
-                Edit Registry Details
-              </button>
-            </Link>
           </div>
         </div>
       </div>
       <div className="mx-auto w-[calc(100%-13.3vw)] pt-[4.427vw] pb-[9vw] px-[3.906vw] bg-[#FAF9F6] max-[1024px]:w-full max-[1024px]:px-[20px]">
         <h2 className="mt-0 lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal mb-[1.302vw]">
-          our registry selections
+          your registry selections
         </h2>
         <img
           src="/assets/Images/heading-bottom-curve.png"
@@ -577,40 +785,73 @@ const index = () => {
           className="max-w-[630px] h-auto mx-auto lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] max-[1024px]:w-[70%]"
         />
 
-        <div className="filters">
-          <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px]">
-            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
-              {' '}
-              <strong>Categories</strong> All{' '} 
-              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
-              </svg>
-            </h3>
-            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
-              {' '}
-              <strong>price</strong> low to high{' '}
-              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
-              </svg>
-            </h3>
-            <h3 className="text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw]">
-              {' '}
-              <strong>status</strong> All{' '}
-              <svg width="13" height="11" viewBox="0 0 13 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z" fill="black"/>
-              </svg>
-            </h3>
+        <div className="filters" ref={filterRef}>
+          <div className="filter-item flex gap-x-[5.208vw] mt-[5.208vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px] items-start">
+            {/* Categories dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                className={filterTriggerClass}
+                onClick={() => setOpenFilter(openFilter === 'category' ? null : 'category')}
+              >
+                <strong>Categories</strong> {categoryLabel} <Arrow isOpen={openFilter === 'category'} />
+              </button>
+              {openFilter === 'category' && (
+                <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter('all'); setOpenFilter(null); }}>All</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter('gifts'); setOpenFilter(null); }}>Gifts</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setCategoryFilter('cashfunds'); setOpenFilter(null); }}>Cash Funds</button>
+                </div>
+              )}
+            </div>
+            {/* Price dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                className={filterTriggerClass}
+                onClick={() => setOpenFilter(openFilter === 'price' ? null : 'price')}
+              >
+                <strong>price</strong> {priceSort === 'low-to-high' ? 'low to high' : 'high to low'} <Arrow isOpen={openFilter === 'price'} />
+              </button>
+              {openFilter === 'price' && (
+                <div className="absolute top-full left-0 mt-1 min-w-[160px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setPriceSort('low-to-high'); setOpenFilter(null); }}>low to high</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setPriceSort('high-to-low'); setOpenFilter(null); }}>high to low</button>
+                </div>
+              )}
+            </div>
+            {/* Status dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                className={filterTriggerClass}
+                onClick={() => setOpenFilter(openFilter === 'status' ? null : 'status')}
+              >
+                <strong>status</strong> {statusFilter === 'gifted' ? 'Gifted' : statusFilter === 'ungifted' ? 'Ungifted' : 'All'} <Arrow isOpen={openFilter === 'status'} />
+              </button>
+              {openFilter === 'status' && (
+                <div className="absolute top-full left-0 mt-1 min-w-[140px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setStatusFilter('all'); setOpenFilter(null); }}>All</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setStatusFilter('gifted'); setOpenFilter(null); }}>Gifted</button>
+                  <button type="button" className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent" onClick={() => { setStatusFilter('ungifted'); setOpenFilter(null); }}>Ungifted</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        <div className="gap-6 mt-[5.938vw]">
-          <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
-          <ProductPage data={data} />
-        </div>
+        {(categoryFilter === 'all' || categoryFilter === 'gifts') && (
+          <div className="gap-6 mt-[5.938vw]">
+            <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
+            <ProductPage data={data} priceSort={priceSort} statusFilter={statusFilter} />
+          </div>
+        )}
 
-        <div className="gap-6 mt-[6vw]">
-          <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">CASH FUNDS</h2>
-          <FundPage data={cashfundData} />
-        </div>
+        {(categoryFilter === 'all' || categoryFilter === 'cashfunds') && (
+          <div className="gap-6 mt-[6vw]">
+            <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">CASH FUNDS</h2>
+            <FundPage data={cashfundData} priceSort={priceSort} statusFilter={statusFilter} />
+          </div>
+        )}
       </div>
       <div className="py-[8.177vw] w-full flex justify-center items-center max-[1024px]:py-[50px]">
         <div className="py-10 lg:py-[3.438vw] xl:py-[3.438vw] 2xl:py-[3.438vw] bg-[#446184] flex items-center justify-between flex-row lg:w-[110.954vw] xl:w-[110.954vw] 2xl:w-[110.954vw] lg:min-h-[28.698vw] xl:min-h-[28.698vw] 2xl:min-h-[28.698vw] w-full max-[768px]:p-10 mt-0 gap-x-16 max-[1024px]:p-[20px] max-[1024px]:flex-wrap max-[1024px]:items-center">
@@ -656,9 +897,48 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = ({data}) => {
+const ProductPage = ({data, priceSort, statusFilter}) => {
+  if (!Array.isArray(data)) return null;
+
+  // Helper: determine if a product is gifted
+  const isProductGifted = (product) => {
+    // Prefer explicit backend flag when available
+    if (typeof product.isPurchased === 'boolean') {
+      return product.isPurchased;
+    }
+    const quantity = Number(product.quantity) || 1;
+    const purchasedQuantity = Number(product.purchasedQuantity) || 0;
+    const stillNeeds = Math.max(0, quantity - purchasedQuantity);
+    return stillNeeds === 0;
+  };
+
+  // Helper: get numeric amount for sorting
+  const getProductAmount = (product) => {
+    const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
+    if (priceObj && priceObj.amount) {
+      return Number(priceObj.amount) || 0;
+    }
+    return Number(product.amount) || 0;
+  };
+
+  let filteredData = [...data];
+
+  // Apply status filter
+  if (statusFilter === 'gifted') {
+    filteredData = filteredData.filter((product) => isProductGifted(product));
+  } else if (statusFilter === 'ungifted') {
+    filteredData = filteredData.filter((product) => !isProductGifted(product));
+  }
+
+  // Apply price sort
+  if (priceSort === 'low-to-high') {
+    filteredData.sort((a, b) => getProductAmount(a) - getProductAmount(b));
+  } else if (priceSort === 'high-to-low') {
+    filteredData.sort((a, b) => getProductAmount(b) - getProductAmount(a));
+  }
+
   // Calculate how many placeholder images to show
-  const actualGiftsCount = data.length;
+  const actualGiftsCount = filteredData.length;
   const placeholderCount = Math.max(0, 4 - actualGiftsCount);
 
   // Create array of placeholder elements
@@ -683,19 +963,20 @@ const ProductPage = ({data}) => {
   );
 
   return (
-    <div className="">
+    <div className="min-[1025px]:px-[5vw]">
       <div
         className={`${
-          data.length > 4
+          filteredData.length > 4
             ? 'flex gap-[2.917vw] mt-0 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-[2.917vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            : 'grid items-start gap-[3.281vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
         }}
       >
-        {data.length > 0
-          ? data.map((product) => {
+        {filteredData.length > 0
+          ? filteredData.map((product) => {
+            console.log('Product:', product);
               // Use priceV2 from Shopify, fallback to backend amount
               const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
               const price =
@@ -714,14 +995,6 @@ const ProductPage = ({data}) => {
               const stillNeeds = Math.max(0, quantity - purchasedQuantity);
               const isFullyGifted = stillNeeds === 0;
 
-              // Determine status
-              let status = 'addToCart';
-              if (isFullyGifted) {
-                status = 'purchased';
-              } else if (product.isGroupGift) {
-                status = 'groupGift';
-              }
-
               return (
                 <div
                   key={product.id || product.productId || Math.random()}
@@ -734,15 +1007,17 @@ const ProductPage = ({data}) => {
                   }`}
                 >
                   <div className="flex flex-col justify-between">
-                    <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                    <div className="h-[inherit] w-full mb-4 flex justify-center relative">
+                      <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
                       <img
                         src={
                           product.images?.edges?.[0]?.node?.url ||
                           '/assets/Images/placeholder.png'
                         }
                         alt={product.title || 'Product'}
-                        className="w-full h-full object-cover mb-4"
+                        className="w-full aspect-square object-cover mb-4"
                       />
+                      </Link>
 
                       {product.isGroupGift && (
                         <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
@@ -752,7 +1027,7 @@ const ProductPage = ({data}) => {
                         </div>
                       )}
                     </div>
-
+                    <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
                     <h2
                       className={`text-[22px] uppercase m-0 font-semibold ${
                         isFullyGifted
@@ -762,7 +1037,7 @@ const ProductPage = ({data}) => {
                     >
                       {product.title || 'No Name'}
                     </h2>
-
+                    </Link>
                     <div className="flex justify-between items-center mb-8">
                       <p className="text-2xl font-normal ">
                         {formatPrice(price?.amount || product.amount || 0)}
@@ -820,14 +1095,46 @@ const ProductPage = ({data}) => {
     </div>
   );
 };
-const FundPage = ({data}) => {
-  data.length === 0;
-
+const FundPage = ({data, priceSort, statusFilter}) => {
   // Defensive: handle missing or malformed data
   if (!Array.isArray(data)) return <div>No funds available.</div>;
 
+  // Helper: determine if a fund is gifted
+  const isFundGifted = (fund) => {
+    const totalAmount = Number(fund.amount) || 0;
+    const collectedAmount = Number(fund.collectedAmount) || 0;
+    const remainingAmount = Math.max(0, totalAmount - collectedAmount);
+    const isAnyAmount = fund.cashFund?.isAnyAmount || false;
+
+    // Prefer explicit backend flag when available
+    if (typeof fund.isPurchased === 'boolean') {
+      return fund.isPurchased;
+    }
+
+    // Fallback: fully funded non "any amount" funds are treated as gifted
+    return !isAnyAmount && remainingAmount === 0;
+  };
+
+  // Helper: numeric amount for sorting
+  const getFundAmount = (fund) => Number(fund.amount) || 0;
+
+  // Apply status filter
+  let filteredData = [...data];
+  if (statusFilter === 'gifted') {
+    filteredData = filteredData.filter((fund) => isFundGifted(fund));
+  } else if (statusFilter === 'ungifted') {
+    filteredData = filteredData.filter((fund) => !isFundGifted(fund));
+  }
+
+  // Apply price sort
+  if (priceSort === 'low-to-high') {
+    filteredData.sort((a, b) => getFundAmount(a) - getFundAmount(b));
+  } else if (priceSort === 'high-to-low') {
+    filteredData.sort((a, b) => getFundAmount(b) - getFundAmount(a));
+  }
+
   // Calculate how many placeholder images to show
-  const actualFundsCount = data.length;
+  const actualFundsCount = filteredData.length;
   const placeholderCount = Math.max(0, 4 - actualFundsCount);
 
   // Create array of placeholder elements
@@ -837,10 +1144,10 @@ const FundPage = ({data}) => {
       <div
         key={`placeholder-${index}`}
         className={`mb-4 flex items-center justify-center ${
-          data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
+          filteredData.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
         }`}
       >
-        <Link to="/dream-fund">
+        <Link to="/cash-funds">
           <img
             src="/assets/Images/add-cash-placeholder.png"
             alt="Add cash fund placeholder"
@@ -859,16 +1166,16 @@ const FundPage = ({data}) => {
     <div className="min-[1025px]:px-[5vw]">
       <div
         className={`${
-          data.length > 4
+          filteredData.length > 4
             ? 'flex gap-[3.281vw] pb-4 overflow-x-auto snap-x snap-mandatory'
-            : 'grid gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
+            : 'grid items-start gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
         }`}
         style={{
           scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
         }}
       >
-        {data.length > 0
-          ? data.map((fund) => {
+        {filteredData.length > 0
+          ? filteredData.map((fund) => {
               // Calculate if fund is fully gifted
               const totalAmount = Number(fund.amount) || 0;
               const collectedAmount = Number(fund.collectedAmount) || 0;
@@ -891,16 +1198,15 @@ const FundPage = ({data}) => {
                   }`}
                 >
                   <div className="flex flex-col justify-between">
-                    <div className="h-[380px] w-full mb-4 flex items-center justify-center relative">
+                    <div className="h-[inherit] w-full mb-4 flex justify-center relative">
                       <img
                         src={
                           fund.cashFund.image?.fileUrl ||
                           '/assets/Images/placeholder.png'
                         }
                         alt={fund.cashFund?.name || 'Cash Fund'}
-                        className="w-full h-full object-cover mb-4"
+                        className="w-full aspect-square object-cover mb-4"
                       />
-
                       <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
                         <h2 className="prata text-black text-sm text-center font-bold mt-1">
                           cash <br /> fund

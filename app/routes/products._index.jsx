@@ -195,8 +195,16 @@ const Products = () => {
     console.log('Collections with parentMetafield:', collections.filter(col => col.parentMetafield?.value === 'true'));
   }
 
+  const isExcludedFundsCollection = (col) => {
+    const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+    return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+  };
+
   const parentCollections = collections.filter(
-    (col) => col.parentMetafield?.value === 'true' && col.readyMadeMetafield?.value !== 'true',
+    (col) =>
+      col.parentMetafield?.value === 'true' &&
+      col.readyMadeMetafield?.value !== 'true' &&
+      !isExcludedFundsCollection(col),
   );
 
   // Get all products from all collections for search results (only if not searching)
@@ -283,8 +291,6 @@ const Products = () => {
   return (
     <section>
       <Header />
-
-      <div className="w-full h-[2px] bg-black"></div>
 
       <div className="w-full h-fit pt-[6.771vw]">
         <Heading

@@ -717,15 +717,16 @@ const BlogDetails = () => {
         <div className="w-[50%] h-full bg-[#446184] relative">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
             <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:tracking-[0.083vw] xl:tracking-[0.083vw] 2xl:tracking-[0.083vw] font-[800] mb-[1.771vw] uppercase">{metafields.category || 'WEDDING STORIES'}</p>
+            <h1 className='prata capitalize text-[46px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] font-normal text-center max-[1024px]:m-0 text-white'>{article.title}</h1>
             <Heading
-              text={article.title}
+              text=""
               classes={
                 'prata text-[46px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] font-normal text-center max-[1024px]:m-0 text-white'
               }
               image={lineImgWhiteHead}
               imageClasses={'max-[1024px]:max-w-[330px] lg:w-[16.875vw] xl:w-[16.875vw] 2xl:w-[16.875vw] brightness-0 invert-100'}
             />
-            <p className="ivyora font-[400] italic text-[32px] lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] text-white leading-relaxed lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] mx-auto mt-10">
+            <p className="ivyora font-[400] italic text-[32px] lg:tracking-[0.1vw] xl:tracking-[0.1vw] 2xl:tracking-[0.1vw] lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] text-white leading-relaxed lg:leading-[2.29vw] xl:leading-[2.29vw] 2xl:leading-[2.29vw] mx-auto mt-10">
               {metafields.first_para}
             </p>
           </div>
@@ -755,7 +756,7 @@ const BlogDetails = () => {
           {eventDetailsBlock?.heading && (
           <div className="h-[550px] bg-[#FAF9F6] relative min-h-[400px]">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
-              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-[600] uppercase">   
+              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-[500] uppercase">   
                 {eventDetailsBlock?.heading && (
                   (() => {
                     const heading = eventDetailsBlock.heading.trim();
@@ -784,7 +785,7 @@ const BlogDetails = () => {
               />
               {(eventDetailsBlock.items || []).map((item, idx) => (
                 <div key={idx} className="mb-7 last:mb-0">
-                  <p className="text-[20px] bastardogrotesk font-semibold uppercase">
+                  <p className="text-[20px] bastardogrotesk font-[500] uppercase">
                     {item.label}
                     {item.label.endsWith(':') ? '' : ':'}
                   </p>
@@ -857,7 +858,7 @@ const BlogDetails = () => {
           )}
 
           <div className="text-center mt-16">
-            <p className="text-[24px] font-semibold mx-auto mb-2 uppercase">
+            <p className="text-[24px] font-[500] mx-auto mb-2 uppercase">
               {metafields.couple_name || 'THEIR'} FAVOURITE GIFTS
             </p>
             <img
@@ -931,7 +932,7 @@ const BlogDetails = () => {
                   alt=""
                   className="w-[104px] h-[92px] mx-auto mb-10"
                 />
-                <h2 className="text-white text-[22px] font-semibold">
+                <h2 className="text-white text-[22px] font-[500]">
                   {createRegistryBlock.title}
                 </h2>
                 <p className="text-white text-[18px] my-10">

@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useRef} from 'react';
+import React, {useState, useRef} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import lineImghead from '/assets/Images/line.png';
@@ -16,10 +16,9 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
 import {Link, useLoaderData, useFetcher, useLocation, redirect, json} from '@remix-run/react';
-import {formatPrice} from '~/utils/priceFormatter';
+import {formatPrice, formatPriceForTemplate} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
-import AlertPortal from '~/components/AlertPortal';
 import BackToTop from '~/components/BackToTop';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
 
@@ -143,7 +142,9 @@ const ProductCard = React.memo(
     const previousFetcherData = React.useRef(null);
 
     const firstImage = product.image || '/assets/Images/placeholder.png';
-    const price = formatPrice(product.price);
+    // Display price with currency symbol, send plain numeric amount to backend
+    const displayPrice = formatPrice(product.price);
+    const numericAmount = formatPriceForTemplate(product.price);
     console.log('Rendering ProductCard:', {product});
     // Show feedback on fetcher.data change - only when we have meaningful data
     React.useEffect(() => {
@@ -163,10 +164,16 @@ const ProductCard = React.memo(
         });
 
         if (fetcher.data.success === true) {
-          onSuccess(`${product.title} has been added to your registry!`);
+          if (typeof onSuccess === 'function') {
+            onSuccess(`${product.title} has been added to your registry!`);
+          }
           hasShownFeedback.current = true;
         } else if (fetcher.data.error === true) {
-          onError('There was an error adding the cash fund.');
+          if (typeof onError === 'function') {
+            onError('There was an error adding the cash fund.');
+          } else {
+            console.error('There was an error adding the cash fund.');
+          }
           hasShownFeedback.current = true;
         }
 
@@ -199,7 +206,11 @@ const ProductCard = React.memo(
 
         // Check if registry exists
         if (!registryId) {
-          onError('Registry not found. Please create a registry first.');
+          if (typeof onError === 'function') {
+            onError('Registry not found. Please create a registry first.');
+          } else {
+            console.error('Registry not found. Please create a registry first.');
+          }
           return;
         }
 
@@ -209,7 +220,7 @@ const ProductCard = React.memo(
 
         const formData = new FormData();
         formData.append('name', product.title);
-        formData.append('amount', price);
+        formData.append('amount', numericAmount);
         formData.append('isAnyAmount', 'false');
         formData.append('isFixedAmount', 'true');
         formData.append('isAmountHide', 'false');
@@ -225,7 +236,7 @@ const ProductCard = React.memo(
         // Fallback: submit without image if image fetch fails
         const formData = new FormData();
         formData.append('name', product.title);
-        formData.append('amount', price);
+        formData.append('amount', numericAmount);
         formData.append('isAnyAmount', 'false');
         formData.append('isFixedAmount', 'true');
         formData.append('isAmountHide', 'false');
@@ -256,7 +267,7 @@ const ProductCard = React.memo(
             {product.title}
           </h3>
           </Link>
-          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{price}</p>
+          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw]">{displayPrice}</p>
         </div>
 
         {/* Expanding Overlay */}
@@ -275,19 +286,19 @@ const ProductCard = React.memo(
               {product.title}
             </h3>
             </Link>
-            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
+            <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{displayPrice}</p>
           </div>
 
           <div className="flex items-center justify-between mt-[2.813vw]">
             <div className="flex flex-col w-full items-center text-xs">
               <button
                 onClick={handleAddToRegistry}
-                disabled={fetcher.state === 'submitting'}
-                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 disabled:opacity-50"
+                disabled={fetcher.state !== 'idle'}
+                className={`uppercase w-full lg:h-[4.01vw] xl:h-[4.01vw] 2xl:h-[4.01vw] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-xs font-bold py-4 px-8 ${
+                  fetcher.state !== 'idle' ? 'bg-[#1F1D1B] cursor-wait' : 'bg-[#446184] cursor-pointer'
+                }`}
               >
-                {fetcher.state === 'submitting'
-                  ? 'Adding...'
-                  : 'Add to registry'}
+                {fetcher.state !== 'idle' ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>
@@ -300,9 +311,6 @@ const ProductCard = React.memo(
 const PorteTravel = () => {
   const {products, collections, registryId, user, recommendedProducts, searchQuery} = useLoaderData();
   const location = useLocation();
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
   const [checkedCategories, setCheckedCategories] = useState([]); // ['Honeymoon','Home','Date Night']
 
   // Build a mapping of category labels to collection IDs (by collection title, fuzzy includes)
@@ -351,27 +359,12 @@ const PorteTravel = () => {
     filteredProducts = porteTravelProducts.filter((product) => allowedIds.has(product.collectionId));
   }
 
-  // Alert handlers
-  const handleSuccess = useCallback((message) => {
-    setAlertMessage(message);
-    setAlertType('success');
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-      setAlertMessage('');
-    }, 3000);
-  }, []);
-
-  const handleError = useCallback((message) => {
-    setAlertMessage(message);
-    setAlertType('error');
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-      setAlertMessage('');
-    }, 3000);
-  }, []);
   const topRef = useRef(null);
+  const INITIAL_VISIBLE = 16;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = filteredProducts.length > INITIAL_VISIBLE;
+  const canLoadMore = visibleCount < filteredProducts.length;
 
   return (
     <section>
@@ -497,7 +490,7 @@ const PorteTravel = () => {
             setCheckedCategories={setCheckedCategories}
           /> */}
           <div className="w-full grid grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 max-[1024px]:grid-cols-4 max-[767px]:grid-cols-3 max-[550px]:grid-cols-2 gap-[2.083vw] pt-0 p-0 relative z-0 lg:w-[81.25vw] xl:w-[81.25vw] 2xl:w-[81.25vw] mx-auto">
-            {filteredProducts.map((product) => {
+            {visibleProducts.map((product) => {
               // Find the collection for this product
               const collection = collections.find(col => col.id === product.collectionId);
                   return (
@@ -506,8 +499,6 @@ const PorteTravel = () => {
                       product={product}
                       collection={collection}
                       registryId={registryId}
-                      onSuccess={handleSuccess}
-                      onError={handleError}
                       user={user}
                     />
                   );
@@ -517,58 +508,23 @@ const PorteTravel = () => {
 
         <div className="flex justify-center items-center">
           <div className="w-full flex flex-col items-center">
-            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">LOADING 12 of 427</p>
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
+              LOADING {visibleProducts.length} of {filteredProducts.length}
+            </p>
 
-            <WhiteThemeButton Text="View more" link="/quick-start-guide" />
-
-            <BackToTop topRef={topRef} />
-
+            {hasMore && canLoadMore && (
+              <WhiteThemeButton
+                Text="View more"
+                onClick={() => setVisibleCount((prev) => Math.min(prev + 16, filteredProducts.length))}
+              />
+            )}
+            {hasMore && <BackToTop topRef={topRef} />}
           </div>
         </div>
       </section>
 
       <WeThinkYouLove recommendedProducts={recommendedProducts} />
 
-      {/* Alert Component - Rendered outside app-scale via portal */}
-      {showAlert && (
-        <AlertPortal>
-          <div
-            className={`fixed top-4 right-4 ${
-              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-          >
-            <div className="flex items-center">
-              {alertType === 'success' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
-                </svg>
-              )}
-              {alertType === 'error' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
-              <span>{alertMessage}</span>
-            </div>
-          </div>
-        </AlertPortal>
-      )}
       <style jsx>{`
         @keyframes fadeInOut {
           0% {

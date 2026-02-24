@@ -11,10 +11,17 @@ const GiftDetail = ({
   isLoggedIn = false, // Show quantity counter only when logged in
 }) => {
   // Defensive: ensure productImages is an array and has at least one image
-  const safeProductImages =
+  const allProductImages =
     Array.isArray(productImages) && productImages.length > 0
       ? productImages
       : [{node: {url: '/fallback-image.jpg', altText: 'Fallback image'}}];
+  
+  // If there are more than 4 images, show only the most recent 4
+  const safeProductImages = allProductImages.length > 4 
+    ? allProductImages.slice(-4) 
+    : allProductImages;
+  
+  const hasExactlyFourImages = safeProductImages.length === 4;
   const [selectedImage, setSelectedImage] = useState(safeProductImages[0]); // Default to the first image
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
@@ -39,36 +46,62 @@ const GiftDetail = ({
       <div className="flex flex-col lg:flex-row gap-[3.438vw] w-full">
         {/* Left Section: Product Images */}
         <div className="lg:min-w-[42%] xl:min-w-[42%] 2xl:min-w-[42%] lg:w-[42%] xl:w-[42%] 2xl:w-[42%] w-1/2">
-          {/* Main Product Image */}
-          <div className="w-full bg-gray-50 rounded-none overflow-hidden mb-6">
-            <img
-              src={selectedImage?.node?.url || '/fallback-image.jpg'}
-              alt={selectedImage?.node?.altText || productTitle || 'Product image'}
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* Thumbnail Images */}
-          {safeProductImages.length > 1 && (
-            <div className="flex w-[36.08vw] gap-3">
+          {hasExactlyFourImages ? (
+            /* 2x2 Grid Layout for 4 Images */
+            <div className="grid grid-cols-2 gap-3 w-full">
               {safeProductImages.map((image, index) => (
                 <div
                   key={index}
-                  className={`cursor-pointer w-[125px] h-[125px] overflow-hidden border-b-2 transition-all ${
+                  className={`cursor-pointer w-full aspect-square overflow-hidden border-2 transition-all bg-gray-50 ${
                     selectedImage?.node?.url === image?.node?.url
-                      ? 'border-b-gray-800'
-                      : 'border-b-gray-200 hover:border-b-gray-400'
+                      ? 'border-gray-800'
+                      : 'border-gray-200 hover:border-gray-400'
                   }`}
                   onClick={() => setSelectedImage(image)}
                 >
                   <img
                     src={image?.node?.url || '/fallback-image.jpg'}
-                    alt={image?.node?.altText || `Thumbnail ${index + 1}`}
+                    alt={image?.node?.altText || `Product image ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
               ))}
             </div>
+          ) : (
+            /* Current Layout for Less Than 4 Images */
+            <>
+              {/* Main Product Image */}
+              <div className="w-full bg-gray-50 rounded-none overflow-hidden mb-6">
+                <img
+                  src={selectedImage?.node?.url || '/fallback-image.jpg'}
+                  alt={selectedImage?.node?.altText || productTitle || 'Product image'}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+
+              {/* Thumbnail Images */}
+              {safeProductImages.length > 1 && (
+                <div className="flex w-[36.08vw] gap-3">
+                  {safeProductImages.map((image, index) => (
+                    <div
+                      key={index}
+                      className={`cursor-pointer w-[125px] h-[125px] overflow-hidden border-b-2 transition-all ${
+                        selectedImage?.node?.url === image?.node?.url
+                          ? 'border-b-gray-800'
+                          : 'border-b-gray-200 hover:border-b-gray-400'
+                      }`}
+                      onClick={() => setSelectedImage(image)}
+                    >
+                      <img
+                        src={image?.node?.url || '/fallback-image.jpg'}
+                        alt={image?.node?.altText || `Thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 

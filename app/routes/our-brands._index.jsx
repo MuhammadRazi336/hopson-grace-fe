@@ -54,8 +54,6 @@ const OurBrands = () => {
     <section>
       <Header />
 
-      <div className='w-full h-[2px] bg-black'></div>
-
       <div className="w-full h-fit bg-[#FAF9F6] pt-[8.177vw]">
         <Heading
           text="our brands"

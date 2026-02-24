@@ -184,7 +184,7 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
               </div>
 
               <div className='w-[25%] max-[1024px]:w-full'>
-                <h4 className="text-[0.938vw] leading-[0.938vw] mb-[1.771vw] mt-[0] font-[800] uppercase text-white tracking-[0.08em] hidden lg:block">
+                <h4 className="text-[0.938vw] leading-[0.938vw] max-[1024px]:text-[14px] max-[1024px]:leading-[20px] font-[800] uppercase mb-[1.771vw] mt-[0] text-white tracking-[0.08em] lg:block max-[1024px]:mt-[20px]">
                   Follow Us
                 </h4>
                 <nav>
@@ -227,23 +227,25 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                 </nav>
 
                 <div>
-                <h3 className='prata lg:hidden max-[1024px]:visible max-[1024px]:mt-[44px] text-[16px] max-[1024px]:text-[16px] max-[1024px]:leading-[20px]'>Refer a friend for exclusive discounts & special offers</h3>
-                <p className='text-[12px] mb-[36px] leading-[36px] font-600 hidden max-[1024px]:block'>GET STARTED</p>
-                <h4 className="text-[0.938vw] leading-[1.25vw] mb-[1.615vw] mt-[2.76vw] max-[1024px]:mt-[0px] max-[1024px]:leading-[24px] max-[1024px]:text-[10px] max-[1024px]:mb-[4px] font-[800] uppercase text-white tracking-[0.08em]">
+                <h4 className="text-[14px] lg:text-lg font-[800] uppercase mb-[30px] text-white tracking-[0.08em]">
                   Stay in the Loop with Weekly Inspo
                 </h4>
                 <nav>
                   <ul className="text-white text-[16px] font-[500] leading-[36px] tracking-[0.08em]">
                     <li>
                       <div className="flex">
-                         {/* <input
+                        <input
                           type="email"
                           aria-label="Email address"
                           placeholder="hello@theregistry.com"
-                          className="w-[12.135vw] h-[2.917vw] bg-[#F5F2ED] px-[12px] m-0 border-0 text-[#948E8A] rounded-none font-['bastardogrotesk'] font-[400] text-[0.885vw] leading-[1.25vw] tracking-[0.03em] max-md:w-[217px] max-md:h-[44px] max-md:text-[12px] max-md:leading-[24px]"
-                         /> */}
-                         {/* Klaviyo embedded form (as on coming-soon) */}
-                         <div className="klaviyo-custom-class klaviyo-form-WV2nJt" />
+                          className="px-4 py-2 md:w-[250px] bg-[#F5F2ED] m-0 border-0 text-[#948E8A] rounded-none font-['bastardogrotesk'] font-[400] text-[17px] leading-[24px] tracking-[0.03em] w-full"
+                        />
+                        <button
+                          aria-label="Sign up for newsletter"
+                          className="py-3 bg-[#446184] text-[14px] font-bold uppercase rounded-none tracking-[0.08em] text-white w-[140px]"
+                        >
+                          Sign Up
+                        </button>
                       </div>
                     </li>
                   </ul>

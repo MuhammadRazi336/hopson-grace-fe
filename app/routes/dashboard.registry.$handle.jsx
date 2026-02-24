@@ -343,8 +343,8 @@ export default function Index() {
       <div className="mx-auto pt-[50px] lg:pt-[4.792vw] xl:pt-[4.792vw] 2xl:pt-[4.792vw]">
         <div className="flex xl:flex-nowrap flex-wrap flex-shrink-0 pb-16">
           <div className="w-full lg:w-9/12 xl:w-9/12 2xl:w-9/12 pl-[24.93vw] max-[1024px]:px-[20px] flex flex-col items-center gap-y-[1.771vw] pb-8">
-            <h2 className="mt-0 !pl-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
-              <span className="prata uppercase">My registry</span> details
+            <h2 className="mt-0 !pl-0 ivyora uppercase lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
+              <span className="prata">My registry</span> details
             </h2>
             <img
               src="/assets/Images/my-details-bottom-img.png"

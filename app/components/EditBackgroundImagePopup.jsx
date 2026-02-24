@@ -43,9 +43,9 @@ function getCroppedImg(imageSrc, crop, zoom, aspect, croppedAreaPixels) {
 //   '/assets/Images/couple-profile-bg.png', // Current dining table setting
 // ];
 const backgroundImages = [
-  '/assets/Images/back3.png',
-  '/assets/Images/product-image-new.png',
-  '/assets/Images/heart.png',
+  '/assets/Images/Background_Hands_Export.png',
+  '/assets/Images/Background_Birds_Export.png',
+  '/assets/Images/Background_Heart_Export.png',
 ];
 
 // Helper functions for localStorage
@@ -231,7 +231,7 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
   return (
     <ModalPortal>
       <div className="fixed inset-0 bg-[#000000b5] flex items-center justify-center z-50">
-        <div className="bg-[#F5F2ED] w-[68.25vw] h-[38vw] max-h-[80vh] max-w-[90vw] px-[6.12vw] py-[2.75vw] relative">
+        <div className="bg-[#ffffff] w-[68.25vw] h-[38vw] max-h-[80vh] max-w-[90vw] px-[6.12vw] py-[2.75vw] relative">
           {/* Header */}
           <div className="flex justify-between items-center mb-[0.833] max-[1024px]:mb-[10px]">
             <h2 className="text-2xl lg:text-[1vw] xl:text-[1vw] 2xl:text-[1vw] lg:leading-[1.5v] xl:leading-[1.5v] 2xl:leading-[1.5v] font-[500] bastardogrotesk m-0 max-[1024px]:text-[20px] max-[1024px]:leading-[20px]">ADD YOUR BACKGROUND IMAGE</h2>

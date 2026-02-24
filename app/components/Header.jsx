@@ -154,7 +154,6 @@ export function Header() {
               })
               .then(registryData => {
                 if (registryData) {
-                  console.log('Registry API response:', registryData);
                   if (registryData.code === 200 && registryData.data && registryData.data.length > 0) {
                     const registry = registryData.data[0];
                     setRegistryData(registry);
@@ -164,14 +163,12 @@ export function Header() {
                 setIsLoadingRegistry(false);
               })
               .catch(error => {
-                console.error('Error fetching registry data:', error);
                 setIsLoadingRegistry(false);
               });
 
             }
           }
         } catch (error) {
-          console.error('Error decoding token:', error);
         }
       }
     }
@@ -180,7 +177,6 @@ export function Header() {
   // Fetch unread count when user data is available
   useEffect(() => {
     if (userData?.id && user) {
-      console.log('User data loaded, fetching unread count...');
       fetchUnreadCount();
     }
   }, [userData?.id, user]);
@@ -188,14 +184,7 @@ export function Header() {
 
   // Socket connection and notification handling
   useEffect(() => {
-    console.log('Socket useEffect triggered:', {
-      userDataId: userData?.id,
-      hasUser: !!user,
-      apiBaseUrl
-    });
-
     if (userData?.id && user) {
-      console.log('Initializing socket connection to:', apiBaseUrl);
       
       // Initialize socket connection
       const socket = io(apiBaseUrl, {
@@ -209,33 +198,26 @@ export function Header() {
 
       // Listen for new notifications
       socket.on('notification', (notification) => {
-        console.log('New notification received:', notification);
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(prev => prev + 1);
-        console.log('Incremented unread count to:', unreadCount + 1);
       });
 
       // Listen for connection status
       socket.on('connect', () => {
-        console.log('Connected to notification server');
       });
 
       socket.on('disconnect', () => {
-        console.log('Disconnected from notification server');
       });
 
       socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
       });
 
       // Fetch existing notifications and unread count
-      console.log('Calling fetchNotifications...');
       fetchNotifications();
       fetchUnreadCount();
 
       // TEMPORARY: Create a test notification (remove this after testing)
       setTimeout(() => {
-        console.log('Creating test notification...');
         fetch(`${apiBaseUrl}/api/notifications/test`, {
           method: 'POST',
           headers: {
@@ -245,7 +227,6 @@ export function Header() {
         })
         .then(res => res.json())
         .then(data => {
-          console.log('Test notification created:', data);
           // Refresh notifications after creating test
           setTimeout(() => fetchNotifications(), 1000);
         })
@@ -254,26 +235,16 @@ export function Header() {
 
       // Cleanup on unmount
       return () => {
-        console.log('Cleaning up socket connection');
         socket.disconnect();
       };
-    } else {
-      console.log('Socket connection skipped - missing requirements');
     }
   }, [userData?.id, user, apiBaseUrl]);
 
   // Fetch notifications from API
   const fetchNotifications = async () => {
     if (!userData?.id || !user) {
-      console.log('Cannot fetch notifications - missing userData.id or user token:', {
-        userDataId: userData?.id,
-        hasUser: !!user
-      });
       return;
     }
-
-    console.log('Fetching notifications for user:', userData.id);
-    console.log('API URL:', `${apiBaseUrl}/api/notifications`);
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/notifications`, {
@@ -283,48 +254,29 @@ export function Header() {
         }
       });
 
-      console.log('Notifications API response status:', response.status);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Raw notifications response:', result);
         
         // Handle new API structure with data wrapper
         if (result.code === 200 && result.data && Array.isArray(result.data)) {
-          console.log('Setting notifications:', result.data);
           setNotifications(result.data);
           // Calculate unread count from notifications
           const unreadNotifications = result.data.filter(n => n.status === 'unread');
-          console.log('Unread notifications count from notifications API:', unreadNotifications.length);
           setUnreadCount(unreadNotifications.length);
         } else {
-          console.log('Notifications response structure unexpected:', result);
         }
       } else {
         const errorText = await response.text();
-        console.error('Notifications API error response:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        });
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
     }
   };
 
   // Fetch unread count from API
   const fetchUnreadCount = async () => {
     if (!userData?.id || !user) {
-      console.log('Cannot fetch unread count - missing userData.id or user token:', {
-        userDataId: userData?.id,
-        hasUser: !!user
-      });
       return;
     }
-
-    console.log('Fetching unread count for user:', userData.id);
-    console.log('API URL:', `${apiBaseUrl}/api/notifications/unread/count`);
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/notifications/unread/count`, {
@@ -334,13 +286,9 @@ export function Header() {
         }
       });
 
-      console.log('Unread count API response status:', response.status);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Unread count API response:', result);
         if (result.code === 200 && result.data) {
-          console.log('Setting unread count to:', result.data.count);
           setUnreadCount(result.data.count || 0);
         }
       } else {
@@ -1031,7 +979,7 @@ export function Header() {
                             <div
                               key={notification.id}
                               className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                notification.status === 'unread' ? 'bg-[#c522481e]' : ''
+                                notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
                               }`}
                               onClick={() => {
                                 if (notification.status === 'unread') {
@@ -1041,7 +989,7 @@ export function Header() {
                             >
                               <div className="flex items-start space-x-3">
                                 <div className={`w-2 h-2 rounded-full mt-2 ${
-                                  notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
+                                  notification.status === 'unread' ? 'bg-[#C52248]' : 'bg-gray-300'
                                 }`}></div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium text-gray-900">
@@ -1103,7 +1051,7 @@ export function Header() {
                       className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                   >
                     <span
-                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                         isDraft 
                           ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                           : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1127,7 +1075,7 @@ export function Header() {
                       className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                   >
                     <span
-                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                      className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                         isDraft 
                           ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                           : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1538,7 +1486,7 @@ export function Header() {
                           {unreadCount > 0 && (
                             <button
                               onClick={markAllAsRead}
-                              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                              className="text-sm text-[#C52248] hover:text-[#911b36] font-medium"
                             >
                               Mark all as read
                             </button>
@@ -1556,17 +1504,29 @@ export function Header() {
                               <div
                                 key={notification.id}
                                 className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${
-                                  notification.status === 'unread' ? 'bg-[#c522481e]' : ''
+                                  notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
                                 }`}
                                 onClick={() => {
                                   if (notification.status === 'unread') {
                                     markNotificationAsRead(notification.id);
                                   }
+                                  if (notification.type === "gift_purchased"){
+                                    navigate("/dashboard/gifttracker")
+                                  }
+                                  if (notification.type === "registry"){
+                                    navigate(`/couple/single/${notification.userId}`)
+                                  }
+                                  if (notification.type === "signup" || notification.type === "login"){
+                                    navigate(`/dashboard`)
+                                  }
+                                  if (notification.type === "product_discontinued" || notification.type === "product_new_added" || notification.type === "gift"){
+                                    navigate(`/dashboard/addgifts`)
+                                  }
                                 }}
                               >
                                 <div className="flex items-start space-x-3">
                                   <div className={`w-2 h-2 rounded-full mt-2 ${
-                                    notification.status === 'unread' ? 'bg-blue-600' : 'bg-gray-300'
+                                    notification.status === 'unread' ? 'bg-[#C52248]' : 'bg-gray-300'
                                   }`}></div>
                                   <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-gray-900">
@@ -1628,7 +1588,7 @@ export function Header() {
                         className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                     >
                       <span
-                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                           isDraft 
                             ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                             : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1652,7 +1612,7 @@ export function Header() {
                         className={`relative mx-auto inline-flex h-8 w-16 items-center rounded-full bg-white border-2 border-black transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 lg:h-[2vw] lg:w-[4vw]`}
                     >
                       <span
-                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors transition-transform duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
+                        className={`absolute left-[1.4px] top-[1.1px] h-6 w-6 rounded-full shadow-lg transform transition-colors duration-300 lg:h-[1.6vw] lg:w-[1.6vw] ${
                           isDraft 
                             ? 'bg-[var(--color-gray-300,#d1d5db)] translate-x-0' 
                             : 'bg-[#C52248] translate-x-8 lg:translate-x-[2vw]'
@@ -1717,58 +1677,58 @@ export function Header() {
               </div> */}
               
               {/* Desktop navigation - hidden on mobile */}
-              <div className="flex w-full shadow-md justify-center min-[1025px]:gap-x-[4.167vw] bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px] max-[1024px]:overflow-x-auto max-[1024px]:justify-start">
-              <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+              <div className="relative flex w-full shadow-md justify-center min-[1025px]:gap-x-[4.167vw] bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px] max-[1024px]:overflow-x-auto max-[1024px]:justify-start">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">MY DASHBOARD<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${registryData?.events?.[0]?.id && location.pathname === `/dashboard/registry/${registryData.events[0].id}` ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href={registryData?.events?.[0]?.id ? `/dashboard/registry/${registryData.events[0].id}` : '/dashboard/registry'}>
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${registryData?.events?.[0]?.id && location.pathname === `/dashboard/registry/${registryData.events[0].id}` ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href={registryData?.events?.[0]?.id ? `/dashboard/registry/${registryData.events[0].id}` : '/dashboard/registry'}>
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">MY DETAILS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${registryData?.events?.[0]?.id && location.pathname === `/dashboard/registry/${registryData.events[0].id}` ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/registry' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/registry">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/registry' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/registry">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer shadow-none p-0 min-w-0 !bg-transparent" data-value="MY REGISTRY HOMEPAGE">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">MY REGISTRY HOMEPAGE<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/registry' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">ADD OR EDIT GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/addgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dream-fund' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dream-fund">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/cash-fund' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/cash-funds">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD A CASH OR TRAVEL FUND">
                     <div className="z-20 text-inherit">
-                      <span className="relative inline-block leading-6">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dream-fund' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                      <span className="relative inline-block leading-6">ADD A CASH OR TRAVEL FUND<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/cash-funds' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/gifttracker' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/gifttracker">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/gifttracker' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/gifttracker">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="GIFTS + THANK YOU TRACKER">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">GIFTS + THANK YOU TRACKER<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/gifttracker' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
+                <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/shipgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/shipgifts">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="SHIP MY GIFTS">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">FULFILL + SHIP GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/shipgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
-                <a className={`invisible hidden w-0 text-center px-1 py-1 text-[16px] leading-[36px] lg:text-[0.833vw] xl:text-[0.833vw] 2xl:text-[0.833vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/support' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/support">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans text-base max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full bg-transparent shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
+                <a className={`invisible hidden w-0 text-center px-1 py-1 text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/support' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/support">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="SUPPORT">
                     <div className="z-20 text-inherit">
                       <span className="relative inline-block leading-6">SUPPORT<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/support' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
@@ -1865,7 +1825,7 @@ export function Header() {
                       FULFILL + SHIP GIFTS
                     </a>
                     <a 
-                      className={`hidden block px-4 py-3 rounded-lg transition-colors ${
+                      className={`block px-4 py-3 rounded-lg transition-colors ${
                         location.pathname === '/dashboard/support' 
                           ? 'bg-gray-100 text-black font-semibold' 
                           : 'text-gray-600 hover:bg-gray-50'
@@ -1885,7 +1845,7 @@ export function Header() {
       )}
 
       <div
-        className={`hidden max-[768px]:block bg-white fixed top-0 left-0 w-full h-full ease-in-out duration-[700ms] transition-all overflow-auto z-30 ${
+        className={`hidden max-[768px]:block bg-white fixed top-0 left-0 w-full h-full ease-in-out duration-[700ms] transition-all overflow-auto z-99 ${
           isMenuOpen ? 'left-0' : 'left-[-800px]'
         }`}
       >

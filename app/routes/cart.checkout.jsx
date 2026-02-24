@@ -1012,6 +1012,32 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
 
   return (
     <div className="pt-[80px]">
+      {showPopup && (
+        <ModalPortal>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#000000b0] bg-opacity-50">
+          <div
+            className={`rounded-lg shadow-lg px-8 py-16 max-w-xl w-full text-center ${
+              success ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
+            }`}
+          >
+            <h2 className="text-2xl font-bold mb-4">
+              {!success ? 'Sorry for the Inconvenience' : 'Payment Successful!'}
+            </h2>
+            <p className="mb-6">
+              {!success
+                ? error || 'There was an error processing your payment.'
+                : 'Thank you for your payment.'}
+            </p>
+            <button
+              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
+              onClick={() => setShowPopup(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+        </ModalPortal>
+      )}
       <CoupleProfileViewHeader />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>

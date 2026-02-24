@@ -9,7 +9,8 @@ const ProductCard = ({
   description,
   onAddToRegistry,
   productHandle,
-  isLoggedIn = false, // Show quantity counter only when logged in
+  isLoggedIn = false,
+  isAddingToRegistry = false,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
@@ -75,7 +76,7 @@ const ProductCard = ({
             {/* Quantity Controls */}
             <div className="flex w-full items-center text-xs gap-1.5">
               {/* Quantity Selector - Only show when logged in */}
-              {isLoggedIn && (
+              {/* {isLoggedIn && ( */}
                 <div className="flex items-center w-[45%] gap-2 justify-center">
                   <p className="text-[18px] font-semibold uppercase text-left mb-1">QTY</p>
                   {/* Quantity Selector */}
@@ -109,13 +110,14 @@ const ProductCard = ({
                     </button>
                   </div>
                 </div>
-              )}
+              {/* )} */}
               {/* Add to Registry Button */}
               <button
-                className="bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest"
+                className={`uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 tracking-widest ${isAddingToRegistry ? 'bg-[#1F1D1B] cursor-wait' : 'bg-[#446184] cursor-pointer'}`}
                 onClick={handleAddToRegistry}
+                disabled={isAddingToRegistry}
               >
-                ADD TO REGISTRY
+                {isAddingToRegistry ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>

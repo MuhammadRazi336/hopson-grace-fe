@@ -37,7 +37,7 @@ export default function FindCoupleForm() {
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
   };
 
   return (
@@ -48,7 +48,7 @@ export default function FindCoupleForm() {
       ) : (
         <>
           <div
-            className="flex justify-start items-center lg:h-[51.771vw] xl:h-[51.771vw] 2xl:h-[51.771vw] mb-16"
+            className="flex justify-start items-center lg:h-[51.771vw] xl:h-[51.771vw] 2xl:h-[51.771vw] mb-16 max-[1024px]:mb-[360px]"
             style={{
               backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
               backgroundSize: 'cover',
@@ -56,21 +56,21 @@ export default function FindCoupleForm() {
             }}
           >
             <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
-              <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184]">
+              <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184] relative max-[1024px]:top-[300px]">
                 <h1 className="mt-0 lg:text-[2.5vw] text-[24px] prata text-center lg:leading-[2.917vw] font-normal mb-5 text-white">
                 find a couple.
                 </h1>
                 <img
                   src="/assets/Images/white-bdr.png"
                   alt="couple"
-                  className="max-w-[315px] lg:max-w-[16.406vw] mb-4"
+                  className="w-[315px] lg:w-[16.406vw] max-w-full mb-4"
                 />
                 <p className="text-center tracking-[0.8px] lg:text-[22px] lg:leading-[1.354vw] text-white uppercase max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
                 Enter either person's <br/>first or last name
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
-                  <div className="flex gap-8 lg:gap-[1.458vw] mb-4 lg:mb-[2.448vw]">
+                  <div className="flex flex-wrap gap-1 lg:gap-[1.458vw] mb-2 lg:mb-[2.448vw]">
                     <div className="w-full">
                       <input
                         id="firstName"
@@ -120,7 +120,7 @@ export default function FindCoupleForm() {
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4"
+                      className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] max-[1024px]:max-w-full uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4"
                     >
                       Search
                     </button>
@@ -167,7 +167,7 @@ export function FindCoupleFormBanner() {
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
   };
 
   return (
@@ -265,7 +265,7 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}`);
+    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
   };
 
   return (

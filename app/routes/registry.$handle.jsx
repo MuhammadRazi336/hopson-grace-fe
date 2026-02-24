@@ -102,7 +102,17 @@ const Registry = () => {
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
   const fetcher = useFetcher();
-  
+
+  // Browser console: ready made registries only
+  useEffect(() => {
+    console.log('Ready made registries:', otherRegistries);
+  }, [otherRegistries]);
+
+  // Browser console: registry query result (collection with blog_link metafield, etc.)
+  useEffect(() => {
+    console.log('Registry query (collection):', collection);
+  }, [collection]);
+
   // Handle fetcher responses
   useEffect(() => {
     if (fetcher.data) {
@@ -337,7 +347,6 @@ const Registry = () => {
   return (
     <section>
         <Header/>
-        <div className="w-full h-[2px] bg-black"></div>
 
         <div className="w-full h-[500px] lg:h-[39.58vw] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">
@@ -353,7 +362,7 @@ const Registry = () => {
             <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw]">
               {collection.description}
             </p>
-            <Link to={`#`} className="text-lg tracking-widest font-bold font-bold uppercase mt-14 inline-block p-5 border-black border-2 px-10">
+            <Link to={`${collection.blogLinkMetafield?.value}`} className="text-lg tracking-widest font-bold uppercase mt-14 inline-block p-5 border-black border-2 px-10">
               READ ABOUT THEIR WEDDING
             </Link>
           </div>
@@ -375,7 +384,7 @@ const Registry = () => {
             setCheckedCollectionIds={setCheckedCollectionIds}
           />
                      <div 
-                       className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-36 pt-0 p-4 relative z-0"
+                       className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pt-0 p-4 relative z-0"
                        ref={productGridRef}
                      >
              {filteredProducts.slice(0, productsToShow).map((product, index) => {
@@ -702,7 +711,7 @@ function SidebarFilter({
               <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                   <input
                     type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B] checked:bg-[#000000]"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
                     checked={checkedCollectionIds.includes(col.id)}
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
@@ -730,6 +739,10 @@ const REGISTRY_QUERY = `#graphql
        altText
        width
        height
+     }
+     blogLinkMetafield: metafield(namespace: "custom", key: "blog_link") {
+       id
+       value
      }
      products(first: 250) {
        edges {

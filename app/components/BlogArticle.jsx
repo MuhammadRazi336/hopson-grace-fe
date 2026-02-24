@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function BlogArticle({article, processedContent}) {
   return (
-    <article className="prose prose-lg max-w-none prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-p:leading-relaxed prose-img:rounded-xl prose-a:text-blue-600 hover:prose-a:underline">
+    <article className="prose prose-lg blogs-article-content max-w-none prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-p:leading-relaxed prose-img:rounded-xl prose-a:text-blue-600 hover:prose-a:underline">
       <div 
         className="blog-content-custom"
         dangerouslySetInnerHTML={{ __html: processedContent }} 

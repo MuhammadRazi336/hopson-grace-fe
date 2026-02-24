@@ -11,7 +11,7 @@ import youll1 from '/assets/Images/youll-1.png';
 import youll2 from '/assets/Images/youll-2.png';
 import youll3 from '/assets/Images/youll-3.png';
 import { Navigation } from 'swiper/modules';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {useFetcher} from '@remix-run/react';
 import { extractShopifyId } from '~/utils/helpers.js';
 import { json } from '@shopify/remix-oxygen';
@@ -120,9 +120,7 @@ async function loadGiftCardData({context}) {
 const GiftCards = () => {
   const {collections, giftCards, registry, user, recommendedProducts} = useLoaderData();
   const fetcher = useFetcher();
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success');
+  const [addingGiftCardId, setAddingGiftCardId] = useState(null);
   
   console.log('Gift Cards Data:', giftCards);
   console.log('Collections Data:', collections);
@@ -131,6 +129,12 @@ const GiftCards = () => {
     console.log('First collection sample:', collections[0]);
     console.log('Collections with parentMetafield:', collections.filter(col => col.parentMetafield?.value === 'true'));
   }
+
+  useEffect(() => {
+    if (fetcher.state === 'idle') {
+      setAddingGiftCardId(null);
+    }
+  }, [fetcher.state]);
 
   const handleAddToRegistry = (giftCard, quantity) => {
     try {
@@ -143,25 +147,13 @@ const GiftCards = () => {
 
       // Check if registry exists and has an id
       if (!registry || !registry.data[0].id) {
-        setAlertMessage('Registry not found. Please try again.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Registry not found. Please try again.');
         return;
       }
 
       const firstVariant = giftCard?.variants?.edges?.[0]?.node;
       if (!firstVariant) {
-        setAlertMessage('Product variant not found.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Product variant not found.');
         return;
       }
 
@@ -173,6 +165,8 @@ const GiftCards = () => {
         quantity: quantity,
       };
 
+      setAddingGiftCardId(giftCard.id);
+
       fetcher.submit(
         {payload: JSON.stringify(payload)},
         {
@@ -180,25 +174,8 @@ const GiftCards = () => {
           encType: 'application/json',
         },
       );
-
-      // Show success alert
-      setAlertMessage(`${giftCard.title} has been added to your registry!`);
-      setAlertType('success');
-      setShowAlert(true);
-      
-      // Hide alert after 3 seconds
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
     } catch (error) {
-      setAlertMessage('Failed to add to registry. Please try again.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+      console.error('Failed to add to registry. Please try again.', error);
     }
   };
   
@@ -243,6 +220,7 @@ const GiftCards = () => {
                 registryId={registry?.data[0]?.id}
                 user={user}
                 onAddToRegistry={(quantity) => handleAddToRegistry(giftCard, quantity)}
+                isAdding={addingGiftCardId === giftCard.id && fetcher.state !== 'idle'}
               />
             );
           })}
@@ -258,46 +236,6 @@ const GiftCards = () => {
 
     <Footer />
     
-    {/* Alert Component - Rendered outside app-scale via portal */}
-    {showAlert && (
-      <AlertPortal>
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
-          </div>
-        </div>
-      </AlertPortal>
-    )}
     <style jsx>{`
       @keyframes fadeInOut {
         0% {
@@ -327,7 +265,7 @@ const GiftCards = () => {
 
 export default GiftCards
 
-const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry}) => {
+const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry, isAdding}) => {
   const [quantity, setQuantity] = useState(1);
 
   const incrementQuantity = () => {
@@ -407,9 +345,12 @@ const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry}) 
               {/* Add to Registry Button */}
               <button 
                 onClick={() => onAddToRegistry(quantity)}
-                className="bg-[#446184] text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[10.156vw] lg:h-[4.01vw]"
+                disabled={isAdding}
+                className={`${
+                  isAdding ? 'bg-[#1F1D1B] cursor-default' : 'bg-[#446184]'
+                } text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[10.156vw] lg:h-[4.01vw]`}
               >
-                ADD TO REGISTRY
+                {isAdding ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>

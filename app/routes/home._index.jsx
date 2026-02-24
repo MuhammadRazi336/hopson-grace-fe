@@ -58,23 +58,13 @@ export async function loader({ context }) {
     };
     
     // Log ALL collections with their metafield values for debugging
-    console.log('=== DEBUGGING ALL COLLECTIONS ===');
-    collections?.nodes?.forEach((collection, index) => {
+      collections?.nodes?.forEach((collection, index) => {
       const readyMadeRaw = collection.readyMadeMetafield?.value;
       const featuredRaw = collection.featuredMetafield?.value;
       const readyMadeNormalized = normalizeBool(readyMadeRaw);
       const featuredNormalized = normalizeBool(featuredRaw);
       
-      console.log(`Collection ${index + 1} (${collection.title}):`, {
-        readyMadeRaw: readyMadeRaw,
-        readyMadeNormalized: readyMadeNormalized,
-        readyMadeIsTrue: readyMadeNormalized === 'true',
-        featuredRaw: featuredRaw,
-        featuredNormalized: featuredNormalized,
-        featuredIsTrue: featuredNormalized === 'true',
-        readyMadeMetafield: collection.readyMadeMetafield,
-        featuredMetafield: collection.featuredMetafield
-      });
+
     });
     
     // Filter collections where: ready_made = true AND featured = true
@@ -88,17 +78,8 @@ export async function loader({ context }) {
       
       const matches = isReadyMade && isFeatured;
       
-      if (matches) {
-        console.log(`✓ MATCH: "${collection.title}" - ready_made: ${readyMadeNormalized}, featured: ${featuredNormalized}`);
-      }
-      
       return matches;
     });
-    
-    console.log('=== FILTERING RESULTS ===');
-    console.log('All collections:', collections?.nodes?.length || 0);
-    console.log('Featured ready-made collections (ready_made=true AND featured=true):', featuredReadyMadeCollections.length);
-    console.log('Featured ready-made collection titles:', featuredReadyMadeCollections.map(c => c.title));
     
     const realRegistries = featuredReadyMadeCollections;
 
@@ -115,21 +96,9 @@ export async function loader({ context }) {
       index === self.findIndex(b => b.title === brand.title)
     );
     
-    console.log('All collections:', collections?.nodes);
-    console.log('Real registries (parent collections):', realRegistries);
-    console.log('All brand collections (before filtering):', brandCollections?.nodes);
-    console.log('Filtered brands count:', filteredBrands.length);
-    console.log('Brands after deduplication:', brands.length);
-    console.log('Brand titles:', brands.map(brand => brand.title));
-    
     // Debug: Log each brand's metafield to see what we're getting
     brandCollections?.nodes?.forEach((collection, index) => {
-      console.log(`Brand ${index + 1}:`, {
-        title: collection.title,
-        featuredMetafield: collection.featuredMetafield?.value,
-        namespace: collection.featuredMetafield?.namespace,
-        key: collection.featuredMetafield?.key
-      });
+
     });
     
     // Fetch products for each featured ready-made collection directly
@@ -146,11 +115,8 @@ export async function loader({ context }) {
         
         if (collectionData.collection) {
           collectionsWithProducts.push(collectionData.collection);
-          console.log(`✓ Added collection "${collectionData.collection.title}" with products`);
         }
       }
-      
-      console.log('Total collections with products:', collectionsWithProducts.length);
       
       // Format data for CustomTab component
       if (collectionsWithProducts.length > 0) {
@@ -161,15 +127,11 @@ export async function loader({ context }) {
           parentCollection: parentCollection,
           subCollections: collectionsWithProducts
         };
-        console.log('Formatted featuredRegistryData with', collectionsWithProducts.length, 'collections');
-      } else {
-        console.log('No collections found with ready_made=true AND featured=true');
       }
     }
     
     return json({ realRegistries, featuredRegistryData, brands, user, bestsellerProducts: bestsellerProducts?.edges || [], blogs: blogs?.nodes || [] });
   } catch (error) {
-    console.error('Error loading real registries:', error);
     return json({ realRegistries: [], featuredRegistryData: null, brands: [], user: null, bestsellerProducts: [], blogs: [] });
   }
 }
@@ -186,11 +148,6 @@ const Home = () => {
   const handleCloseModal = () => {
     setShowPopup(false);
   };
-
-  if (brands && brands.length > 0) {
-    console.log('First brand sample:', brands[0]);
-    console.log('length of brands:', brands.length);
-  }
 
   // Handle scroll to show/hide back to top button
   useEffect(() => {
@@ -572,9 +529,37 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
   }
 `;
 
+// const BLOGS_QUERY = `#graphql
+// query GetAllBlogsAndArticlesForInspiration {
+//   blogs(first: 1, reverse: true) {
+//     nodes {
+//       title
+//       handle
+//       articles(first: 20) {
+//         nodes {
+//           id
+//           title
+//           handle
+//           publishedAt
+//           contentHtml
+//           image {
+//             url
+//           }
+//           categoryMetafield: metafield(namespace: "custom", key: "category") {
+//             value
+//           }
+//           venueMetafield: metafield(namespace: "custom", key: "venue") {
+//             value
+//           }
+//         }
+//       }
+//     }
+//   }
+// }`;
+
 const BLOGS_QUERY = `#graphql
-query GetAllBlogsAndArticlesForInspiration {
-  blogs(first: 1, reverse: true) {
+query GetAllBlogsAndArticles {
+  blogs(first: 10) {
     nodes {
       title
       handle
@@ -599,4 +584,3 @@ query GetAllBlogsAndArticlesForInspiration {
     }
   }
 }`;
-
