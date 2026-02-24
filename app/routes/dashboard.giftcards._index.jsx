@@ -280,10 +280,10 @@ const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry, i
   };
 
   return (
-    <div className="pt-0 relative z-0">
-      <div className="relative group h-[460px] lg:h-[31.313vw]">
+    <div className="pt-0 relative">
+      <div className="relative group">
         {/* Gift Card Image and Info */}
-        <div className="relative">
+        <div className="relative z-0">
           <img
             src={image}
             alt={title}
@@ -298,7 +298,7 @@ const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry, i
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute h-[460px] lg:h-[31.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
             <img
               src={image}
