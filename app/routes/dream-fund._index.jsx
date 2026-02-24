@@ -383,7 +383,7 @@ const DreamFund = () => {
         <p className="text-center text-[16px] max-[767px]:w-[90%] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
           {searchQuery
             ? 'Browse the search results below or use the filters to refine your search.'
-            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip thatâ€™s so you. Because life together should start with something unforgettable."}
+            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that’s so you. Because life together should start with something unforgettable."}
         </p>
       </div>
 
@@ -513,7 +513,22 @@ const DreamFund = () => {
         </div>
       </section>
 
-      <WeThinkYouLove recommendedProducts={recommendedProducts} />
+      <WeThinkYouLove
+        recommendedProducts={filteredProducts.slice(0, 8).map((p) => ({
+          node: {
+            id: p.id,
+            title: p.title,
+            handle: p.handle,
+            images: {edges: [{node: {url: p.image}}]},
+            priceRange: {
+              minVariantPrice: {
+                amount: String(p.price ?? '0'),
+                currencyCode: p.currency || 'USD',
+              },
+            },
+          },
+        }))}
+      />
 
       <style jsx>{`
         @keyframes fadeInOut {
