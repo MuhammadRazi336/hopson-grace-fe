@@ -478,7 +478,22 @@ const CashFund = () => {
         </div>
       </section>
 
-      <WeThinkYouLove recommendedProducts={recommendedProducts} />
+      <WeThinkYouLove
+        recommendedProducts={products.slice(0, 8).map((p) => ({
+          node: {
+            id: p.id,
+            title: p.title,
+            handle: p.handle,
+            images: {edges: [{node: {url: p.image}}]},
+            priceRange: {
+              minVariantPrice: {
+                amount: String(p.price ?? '0'),
+                currencyCode: p.currency || 'USD',
+              },
+            },
+          },
+        }))}
+      />
 
       <style jsx>{`
         @keyframes fadeInOut {
