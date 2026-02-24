@@ -659,8 +659,8 @@ const OnboardingClient = ({onStepChange}) => {
           <div className="text-center mb-[20px] lg:mb-[1.563vw] xl:mb-[1.563vw] 2xl:mb-[1.563vw] text-lg lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] w-[38.385vw] max-w-full max-[767px]:w-full max-[767px]:text-[14px] max-[767px]:leading-[22px] max-[767px]:mt-[10px]">
             From tracking gifts and checking messages to sending thank-you notes and setting up your home page, everything you need lives here. You'll land here every time you log in.
           </div>
-          <div className="uppercase font-semibold mb-2 text-center lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">READY?</div>
-          <div className="mb-6">
+          <div className="uppercase font-semibold mb-9 text-center lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">READY?</div>
+          <div className="mb-9">
             <label className="flex items-center justify-center gap-2 lg:gap-[0.833vw] xl:gap-[0.833vw] 2xl:gap-[0.833vw] cursor-pointer">
               <input
                 type="checkbox"
@@ -668,7 +668,7 @@ const OnboardingClient = ({onStepChange}) => {
                 onChange={(e) => setAgreeToTerms(e.target.checked)}
                 className="custom-checkbox mt-1 m-0"
               />
-              <span className="ivyora text-left lg:w-[22.396vw] xl:w-[22.396vw] 2xl:w-[22.396vw] font-normal text-[18px] lg:text-[0.781vw] xl:text-[0.781vw] 2xl:text-[0.781vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-base text-white">
+              <span className="ivyora text-left font-normal text-[18px] lg:text-[0.781vw] xl:text-[0.781vw] 2xl:text-[0.781vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-base text-white">
                 By creating your registry, you agree to our{' '}
                 <a
                   href="/terms-conditions"

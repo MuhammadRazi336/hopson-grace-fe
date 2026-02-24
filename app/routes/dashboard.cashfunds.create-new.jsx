@@ -323,8 +323,8 @@ function CreateNewCashFund() {
         </div>
       </div>
 
-    <div className="pt-[7.356vw] pb-[15.16vw] px-[9.18vw]">
-        <div className="pt-[9.63vw] pb-[5.143vw] px-[7.356vw] bg-[#446184]">
+    <div className="pt-[7.356vw] pb-[15.16vw] px-[9.18vw] w-9/10 mx-auto">
+        <div className="pt-[6.63vw] pb-[3.143vw] px-[4.356vw] bg-[#446184]">
           {/* <h2 className="mt-0 text-white ivyora lg:text-[2.083vw] text-[24px] prata text-center lg:leading-[1.875vw] font-normal mb-[1.667vw]">
             <span className="prata uppercase">NEW CASH</span> or{' '}
             <span className="prata uppercase">TRAVEL</span> fund
@@ -401,7 +401,7 @@ function CreateNewCashFund() {
                 </div>
 
                 {/* Details Section */}
-                <div className="space-y-6 lg:w-[44.14vw] xl:w-[44.14vw] 2xl:w-[44.14vw]">
+                <div className="space-y-6 w-auto">
                   <h2 className="text-white text-[16px] mb-[1.042vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] font-bold tracking-[2px]">
                     GIFT NAME
                   </h2>

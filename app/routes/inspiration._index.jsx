@@ -479,11 +479,11 @@ const Inspiration = () => {
                     <div className="w-full">
                       {article.image?.url ? (
                         <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
-                        <img src={article.image.url} alt="" className='w-full h-[390px] lg:h-[28.313vw] xl:h-[28.313vw] 2xl:h-[28.313vw] object-cover'/>
+                        <img src={article.image.url} alt="" className='w-full aspect-square object-cover'/>
                         </Link>
                       ) : (
                         <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
-                        <img src="/assets/Images/couple-logo.png" alt="" className='w-full h-[390px] lg:h-[28.313vw] xl:h-[28.313vw] 2xl:h-[28.313vw] object-contain'/>
+                        <img src="/assets/Images/couple-logo.png" alt="" className='w-full aspect-square object-contain'/>
                         </Link>
                       )}
                       <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>

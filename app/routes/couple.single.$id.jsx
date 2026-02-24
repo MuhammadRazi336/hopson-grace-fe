@@ -1658,7 +1658,7 @@ export default function CoupleProfile() {
         )}
       </div>
       <div className="pt-[8.073vw] pb-[8.542vw] w-full flex justify-center items-center">
-        <div className="py-[2.917vw] md:py-12 bg-[#446184] flex items-center justify-between flex-row lg:w-[81.354vw] w-full max-[768px]:p-10 mt-6 gap-x-8">
+        <div className="py-[2.917vw] md:py-20 bg-[#446184] flex items-center justify-around flex-row lg:w-[92.135vw] w-full max-[768px]:p-10 mt-6 gap-x-8">
           <div>
             <img
               src="/assets/Images/giftCard.png"
@@ -1675,10 +1675,10 @@ export default function CoupleProfile() {
               alt="couple"
               className="max-w-[315px] lg:max-w-[16.927vw] lg:w-[16.927vw] mb-[1.875vw] mt-4 mx-auto"
             />
-            <h5 className="text-white text-xl lg:text-[1.354vw] text-center font-[500]">
+            <h5 className="text-white text-xl lg:text-[26px] text-center font-[500]">
               CONTRIBUTE TO OUR JOURNEY!
             </h5>
-            <p className="text-sm lg:text-[1.354vw] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-7 font-normal text-center">
+            <p className="text-sm lg:text-[26px] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-10 font-normal text-center">
                Help us create our dream wedding, <br />
               honeymoon or life experience. We’re so grateful.
             </p>
@@ -1701,6 +1701,9 @@ export default function CoupleProfile() {
               >
                 OTHER
               </button>
+              {/* <Link to="/addGiftCard" className="text-black text-lg w-[340px] py-6 bg-white hover:bg-gray-100 transition-all ease-in-out cursor-pointer mx-auto block text-center font-bold tracking-widest">
+                PURCHASE
+              </Link> */}
             </div>
           </div>
         </div>
