@@ -13,6 +13,7 @@ import ButtonComponent from '~/components/Button'
 import lineImg4 from '/assets/Images/Vector 14.png';
 import {formatPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import ExploreMoreRegistriesSlider from '~/components/ExploreMoreRegistriesSlider'
 
 export async function loader({params, context}) {
   const {handle} = params;
@@ -542,34 +543,8 @@ const Registry = () => {
                  </div>
        </section>
 
-       <section className="bg-[#FAF9F6] py-12  container mx-auto">
-      <Heading
-        text="explore more registries"
-        classes={
-          'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
-        }
-        image={lineImghead}
-        imageClasses={'max-[1024px]:max-w-[330px] px-4 '}
-      />
+       <ExploreMoreRegistriesSlider otherRegistries={otherRegistries} className={'max-w-[1665px] mx-auto'} />
 
-             {/* Other registries grid */}
-       <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-y-16 gap-x-6 mt-16 mx-10">
-         {otherRegistries.map((registry) => (
-           <div key={registry.id} className="text-center">
-             <Link to={`/registry/${registry.handle}`}>
-               <img 
-                 src={registry.image?.url || '/assets/Images/placeholder.png'} 
-                 alt={registry.title} 
-                 className="w-full h-[500px] object-cover hover:opacity-90 transition-opacity"
-               />
-               <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                 {registry.title}
-               </h3>
-             </Link>
-           </div>
-         ))}
-       </div>
-    </section>
     <div className='mt-16'></div>
 
        {/* Alert Component - Rendered outside app-scale via portal */}

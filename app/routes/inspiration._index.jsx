@@ -148,7 +148,10 @@ const Inspiration = () => {
             <div className="flex justify-center items-center gap-8 lg:gap-16 px-4 pb-[10px] scale-80">
               {/* Real Weddings */}
               <button
-                onClick={() => { setClickedSection('wedding'); setArticlesToShow(12); }}
+                onClick={() => { 
+                  setClickedSection(prev => prev === 'wedding' ? null : 'wedding'); 
+                  setArticlesToShow(12); 
+                }}
                 className={`relative flex flex-col items-center gap-1 cursor-pointer`}
               >
                 <div className="h-[6.25vw] flex items-center justify-center">
@@ -166,7 +169,10 @@ const Inspiration = () => {
 
               {/* The Planning Edit */}
               <button
-                onClick={() => { setClickedSection('planning'); setArticlesToShow(12); }}
+                onClick={() => { 
+                  setClickedSection(prev => prev === 'planning' ? null : 'planning'); 
+                  setArticlesToShow(12); 
+                }}
                 className={`relative flex flex-col items-center gap-1 cursor-pointer`}
               >
                 <div className="h-[6.25vw] flex items-center justify-center">
@@ -184,7 +190,10 @@ const Inspiration = () => {
 
               {/* At Home */}
               <button
-                onClick={() => { setClickedSection('design'); setArticlesToShow(12); }}
+                onClick={() => { 
+                  setClickedSection(prev => prev === 'design' ? null : 'design'); 
+                  setArticlesToShow(12); 
+                }}
                 className={`relative flex flex-col items-center gap-1 cursor-pointer`}
               >
                 <div className="h-[6.25vw] flex items-center justify-center">
@@ -202,7 +211,10 @@ const Inspiration = () => {
 
               {/* Travel & Culture */}
               <button
-                onClick={() => { setClickedSection('taste'); setArticlesToShow(12); }}
+                onClick={() => { 
+                  setClickedSection(prev => prev === 'taste' ? null : 'taste'); 
+                  setArticlesToShow(12); 
+                }}
                 className={`relative flex flex-col items-center gap-1 cursor-pointer`}
               >
                 <div className="h-[6.25vw] flex items-center justify-center">
@@ -239,7 +251,7 @@ const Inspiration = () => {
           <SwiperSlide>
             <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/inspiration-carousel-img.jpg"
+                src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
@@ -258,6 +270,8 @@ const Inspiration = () => {
                   </Link>
                 </div>
               </div>
+              {/* Circular Icon with J - Right Side */}
+              
             </div>
           </SwiperSlide>
 
@@ -265,7 +279,7 @@ const Inspiration = () => {
           <SwiperSlide>
             <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/inspiration-carousel-img.jpg"
+                src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
@@ -284,6 +298,8 @@ const Inspiration = () => {
                   </Link>
                 </div>
               </div>
+              {/* Circular Icon with J - Right Side */}
+              
             </div>
           </SwiperSlide>
 
@@ -291,7 +307,7 @@ const Inspiration = () => {
           <SwiperSlide>
             <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/inspiration-carousel-img.jpg"
+                src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
@@ -310,6 +326,8 @@ const Inspiration = () => {
                   </Link>
                 </div>
               </div>
+              {/* Circular Icon with J - Right Side */}
+             
             </div>
           </SwiperSlide>
 
@@ -317,7 +335,7 @@ const Inspiration = () => {
           <SwiperSlide>
             <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/inspiration-carousel-img.jpg"
+                src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
@@ -336,6 +354,8 @@ const Inspiration = () => {
                   </Link>
                 </div>
               </div>
+              {/* Circular Icon with J - Right Side */}
+             
             </div>
           </SwiperSlide>
         </Swiper>
@@ -345,7 +365,10 @@ const Inspiration = () => {
         <div className="h-[10.729vw] max-[767px]:h-auto max-[767px]:py-3 max-[767px]:flex-wrap flex items-center justify-center z-50 bg-[#446184] w-full shadow-lg gap-8 lg:gap-16 px-4">
           <div
             className="relative cursor-pointer"
-            onClick={() => { setClickedSection('wedding'); setArticlesToShow(12); }}
+            onClick={() => { 
+              setClickedSection(prev => prev === 'wedding' ? null : 'wedding'); 
+              setArticlesToShow(12); 
+            }}
           >
             <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
               <img src="/assets/Images/real-weddings.png" alt="" className='w-[6.146vw] max-[767px]:w-[50px] h-[6.146vw] max-[767px]:h-[50px] object-contain' />
@@ -361,7 +384,10 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() => { setClickedSection('planning'); setArticlesToShow(12); }}
+            onClick={() => { 
+              setClickedSection(prev => prev === 'planning' ? null : 'planning'); 
+              setArticlesToShow(12); 
+            }}
           >
             <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
               <img src="/assets/Images/planning-edit.png" alt="" className='w-[4.688vw] max-[767px]:w-[40px] h-[4.688vw] max-[767px]:h-[40px] object-contain' />
@@ -377,7 +403,10 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() => { setClickedSection('design'); setArticlesToShow(12); }}
+            onClick={() => { 
+              setClickedSection(prev => prev === 'design' ? null : 'design'); 
+              setArticlesToShow(12); 
+            }}
           >
             <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
               <img src="/assets/Images/at-home.png" alt="" className='w-full h-full object-contain' />
@@ -393,7 +422,10 @@ const Inspiration = () => {
           </div>
           <div
             className="relative cursor-pointer"
-            onClick={() => { setClickedSection('taste'); setArticlesToShow(12); }}
+            onClick={() => { 
+              setClickedSection(prev => prev === 'taste' ? null : 'taste'); 
+              setArticlesToShow(12); 
+            }}
           >
             <div className="h-[6.25vw] max-[767px]:h-[50px] flex items-center justify-center">
               <img src="/assets/Images/travel-culture.png" alt="" className='w-[5.573vw] max-[767px]:w-[40px] h-[5.573vw] max-[767px]:h-[40px] object-contain' />
@@ -434,7 +466,7 @@ const Inspiration = () => {
         {/* Render filtered articles grid for any selected category. If none, show coming soon. */}
         {filteredArticles.length > 0 ? (
           <>
-            <div ref={articlesGridRef} className="grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-4 mt-16 px-[9.375vw]">
+            <div ref={articlesGridRef} className="grid grid-cols-1 gap-[24px] sm:grid-cols-2 lg:grid-cols-4 mt-16 px-[7.375vw]">
               {filteredArticles.slice(0, articlesToShow).map(article => {
                 const cleanTitle = article.title.replace(/<[^>]*>/g, '');
                 const maxTitleLength = 50;
@@ -446,13 +478,19 @@ const Inspiration = () => {
                   <div key={article.id} className="mb-[5.156vw]">
                     <div className="w-full">
                       {article.image?.url ? (
-                        <img src={article.image.url} alt="" className='w-full h-[390px] lg:h-[20.313vw] xl:h-[20.313vw] 2xl:h-[20.313vw] object-cover'/>
+                        <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
+                        <img src={article.image.url} alt="" className='w-full h-[390px] lg:h-[28.313vw] xl:h-[28.313vw] 2xl:h-[28.313vw] object-cover'/>
+                        </Link>
                       ) : (
-                        <img src="/assets/Images/couple-logo.png" alt="" className='w-[370px] h-[390px]'/>
+                        <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
+                        <img src="/assets/Images/couple-logo.png" alt="" className='w-full h-[390px] lg:h-[28.313vw] xl:h-[28.313vw] 2xl:h-[28.313vw] object-contain'/>
+                        </Link>
                       )}
-                      <h4 className="text-xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] font-semibold mt-[1.667vw] mb-[14px] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw]">
+                      <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
+                      <h4 className="text-xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] font-semibold mt-[1.667vw] mb-[14px] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw] text-ellipsis overflow-hidden whitespace-nowrap">
                         {displayedTitle}
                       </h4>
+                      </Link>
                       <p className="text-sm mt-0 mb-[1.042vw] ivyora italic lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.4vw] xl:leading-[1.4vw] 2xl:leading-[1.4vw] lg:tracking-[0.052vw] xl:tracking-[0.052vw] 2xl:tracking-[0.052vw] tracking-[1px] font-normal">
                         {article.contentHtml.replace(/<[^>]*>/g, '').slice(0, 80)}
                         ...

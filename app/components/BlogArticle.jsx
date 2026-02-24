@@ -42,7 +42,6 @@ export default function BlogArticle({article, processedContent}) {
           height: 400px;
           margin: 2rem 0;
           border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           display: block;
           width: 100%;
           object-fit: cover;

@@ -37,11 +37,11 @@ export default function FindCoupleForm() {
     const firstNameParam = urlParams.get('firstName');
     const fianceFirstNameParam = urlParams.get('fianceFirstName');
     
-    // Only scroll if there are search parameters and data exists
-    if ((firstNameParam || fianceFirstNameParam) && data && data.length > 0) {
+    // Scroll if there are search parameters regardless of whether data exists or not
+    if (firstNameParam || fianceFirstNameParam) {
       // Wait for the component to render before scrolling
       setTimeout(() => {
-        const registrySection = document.getElementById('registrySection');
+        const registrySection = document.querySelector('.registrySection');
         if (registrySection) {
           registrySection.scrollIntoView({ 
             behavior: 'smooth',
@@ -90,7 +90,7 @@ export default function FindCoupleForm() {
                   }
                   setValidationError('');
                 }}>
-                  <div className="flex gap-8 mb-4">
+                  <div className="flex gap-8 mb-4 max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
                     <div className="w-full">
                                              <input
                          id="firstName"
@@ -134,7 +134,7 @@ export default function FindCoupleForm() {
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4"
+                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
                     >
                       Search
                     </button>
@@ -144,7 +144,7 @@ export default function FindCoupleForm() {
             </div>
           </div>
 
-          <div className="py-24 text-center bg-[#FAF9F6] mb-16">
+          <div className="py-24 text-center bg-[#FAF9F6] mb-16 registrySection scroll-mt-[10px]">
             {/* <h1 className="text-3xl font-semibold mb-4">No couples found</h1>
             <p className="text-gray-600 mb-8">
               No couples match your search. Try different names or browse all couples below.
@@ -212,7 +212,7 @@ export default function FindCoupleForm() {
                   }
                   setValidationError('');
                 }}>
-                  <div className="flex gap-8 mb-4">
+                  <div className="flex gap-8 mb-4 max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
                     <div className="w-full">
                                              <input
                          id="firstName"
@@ -256,7 +256,7 @@ export default function FindCoupleForm() {
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4"
+                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
                     >
                       Search
                     </button>
@@ -303,11 +303,11 @@ function CoupleListing({data}) {
     const firstNameParam = urlParams.get('firstName');
     const fianceFirstNameParam = urlParams.get('fianceFirstName');
     
-    // Only scroll if there are search parameters (meaning user came from search)
-    if ((firstNameParam || fianceFirstNameParam) && data && data.length > 0) {
+    // Scroll if there are search parameters (meaning user came from search)
+    if ((firstNameParam || fianceFirstNameParam)) {
       // Wait for the component to render before scrolling
       setTimeout(() => {
-        const registrySection = document.getElementById('registrySection');
+        const registrySection = document.querySelector('.registrySection');
         if (registrySection) {
           registrySection.scrollIntoView({ 
             behavior: 'smooth',
@@ -353,7 +353,7 @@ function CoupleListing({data}) {
               </p>
 
               <form method="GET" className="w-full" onSubmit={handleSearch}>
-                <div className="flex gap-8 mb-4">
+                <div className="flex gap-8 mb-4 max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
                   <div className="w-full">
                                          <input
                        id="firstName"
@@ -395,7 +395,7 @@ function CoupleListing({data}) {
                 <div className="flex justify-center items-center">
                   <button
                     type="submit"
-                    className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4"
+                    className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
                   >
                     Search
                   </button>
@@ -405,7 +405,7 @@ function CoupleListing({data}) {
           </div>
         </div>
 
-        <h2 id="registrySection" className="scroll-mt-30 mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+        <h2 className="registrySection scroll-mt-[10px] mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
           {/* we found {data.filter(couple => couple.registry).length}  */}
           registries
         </h2>
