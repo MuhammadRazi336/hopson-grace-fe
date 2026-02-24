@@ -23,7 +23,7 @@ import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import BackToTop from '~/components/BackToTop';
-import WeThinkYouLove from '~/components/weThinkYouLove';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 export async function loader({request, context}) {
   try {
