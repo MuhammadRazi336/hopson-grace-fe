@@ -3,7 +3,6 @@ import {useFetcher, useLoaderData, useNavigate, Link, useLocation} from '@remix-
 import {json, redirect} from '@shopify/remix-oxygen';
 import Input from '~/components/Input';
 import { Footer } from '~/components/Footer';
-import AlertPortal from '~/components/AlertPortal';
 import Heading from '~/components/Heading';
 import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import lineImghead from '/assets/Images/line.png';
@@ -16,6 +15,7 @@ import {formatShopifyPrice, formatPrice} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import EditImagePopup from '~/components/EditImagePopup';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
+import { ToastContainer } from 'react-toastify';
 
 export async function loader(args) {
   const {context} = args;
@@ -115,9 +115,6 @@ function CreateNewCashFund() {
   const [hideFromGuests, setHideFromGuests] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(true);
   const [noteToFamily, setNoteToFamily] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success');
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [droppedFile, setDroppedFile] = useState(null);
@@ -207,24 +204,13 @@ function CreateNewCashFund() {
     if (fetcher.state === 'idle' && fetcher.data) {
       // Check for success response
       if (fetcher.data?.success === true || fetcher.data?.response) {
-        setAlertMessage('Cash fund has been created and added to your registry!');
-        setAlertType('success');
-        setShowAlert(true);
-        // Redirect to registry home page after showing success message for 2 seconds
-        const redirectTimer = setTimeout(() => {
-          navigate('/dashboard/registry');
-        }, 2000);
-        
-        // Cleanup timer on unmount
-        return () => clearTimeout(redirectTimer);
+        // On success, navigate to registry
+        navigate('/dashboard/registry');
       } else if (fetcher.data?.error || fetcher.data?.success === false) {
-        setAlertMessage(fetcher.data?.error || 'Failed to create cash fund. Please try again.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error(
+          fetcher.data?.error ||
+            'Failed to create cash fund. Please try again.',
+        );
       }
     }
   }, [fetcher.data, fetcher.state, navigate]);
@@ -232,25 +218,13 @@ function CreateNewCashFund() {
   const handleFormSubmit = (e) => {
     if (!agreedToTerms) {
       e.preventDefault();
-      setAlertMessage('You must agree to the terms and conditions.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+      console.error('You must agree to the terms and conditions.');
       return;
     }
     const isMissingRequiredFields = !cashFundName || !registry?.data[0]?.id || !totalGoal;
     if (isMissingRequiredFields) {
       e.preventDefault();
-      setAlertMessage('Please fill in all required fields.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+      console.error('Please fill in all required fields.');
       return;
     }
     // Build FormData so we can include photo from modal (cropped blob as File)
@@ -566,63 +540,19 @@ function CreateNewCashFund() {
               {/* Create Cash Fund Button */}
               <div className="mt-[1.875vw] flex justify-end">
                 <button
-                  className="bg-white font-bold text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer hover:bg-gray-100 text-black tracking-wide w-[360px] h-[77px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-black"
+                  className={`font-bold text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] w-[360px] h-[77px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-black px-6 ${
+                    fetcher.state === 'submitting'
+                      ? 'bg-[#1F1D1B] text-white cursor-default'
+                      : 'bg-[#F5F2ED] text-black hover:bg-[#E5E1DA] cursor-pointer'
+                  }`}
                   disabled={!agreedToTerms || fetcher.state === 'submitting'}
                   type="submit"
                 >
-                  {fetcher.state === 'submitting' ? 'Adding Cash Fund...' : 'ADD TO REGISTRY'}
+                  {fetcher.state === 'submitting' ? 'ADDED!' : 'ADD TO REGISTRY'}
                 </button>
               </div>
             </fetcher.Form>
 
-            {/* Alert Component - Rendered outside app-scale via portal */}
-            {showAlert && (
-              <AlertPortal>
-                <div
-                  className={`success-alert-popup fixed bottom-4 right-4 ${
-                    alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-                  } text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in-out`}
-                  style={{ 
-                    position: 'fixed', 
-                    bottom: '1rem',
-                    right: '1rem',
-                    zIndex: 9999,
-                    pointerEvents: 'auto',
-                    maxWidth: 'calc(100vw - 2rem)'
-                  }}
-                >
-                  <div className="flex items-center">
-                    {alertType === 'success' && (
-                      <svg
-                        className="w-5 h-5 mr-2"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path d="M5 13l4 4L19 7"></path>
-                      </svg>
-                    )}
-                    {alertType === 'error' && (
-                      <svg
-                        className="w-5 h-5 mr-2"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path d="M6 18L18 6M6 6l12 12"></path>
-                      </svg>
-                    )}
-                    <span>{alertMessage}</span>
-                  </div>
-                </div>
-              </AlertPortal>
-            )}
           </div>
         </div>
       </div>
@@ -640,7 +570,7 @@ function CreateNewCashFund() {
       />
       
       {/* Toast Container */}
-      <ToastContainer 
+      <ToastContainer
         position="bottom-right"
         autoClose={3000}
         hideProgressBar={false}

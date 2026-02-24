@@ -1,7 +1,7 @@
 import CustomSelect from '~/components/CustomSelect.jsx';
 import ButtonComponent from '~/components/Button.jsx';
 import RegistryProduct from '~/components/RegistryProduct.jsx';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useFetcher, useLoaderData, Link} from '@remix-run/react';
 import {defer, redirect} from '@shopify/remix-oxygen';
 import CategoryTile from '~/components/CategoryTile.jsx';
@@ -22,7 +22,6 @@ import product4 from '/assets/Images/product4.png';
 import {Navigation, Pagination} from 'swiper/modules';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
-import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
 
@@ -153,18 +152,13 @@ async function loadProductData({context, params, request}) {
 const GiftDetailHandle = () => {
   const fetcher = useFetcher();
   const {collections, product, registry, user, recommendedProducts, vendorProducts} = useLoaderData();
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success');
+  const [isAdding, setIsAdding] = useState(false);
 
   console.log('Product data:', product);
   console.log('Product variants:', product?.variants);
   console.log('Product priceRange:', product?.priceRange);
   console.log('Vendor products:', vendorProducts);
 
-  const handleTileClick = (title) => {
-    alert(`You clicked on ${title}`);
-  };
   const handleAddtoRegistry = ({id, price, quantity, isGroupPayment}) => {
     // Check if user is logged in
     if (!user || !user.user || !user.user.id) {
@@ -175,13 +169,7 @@ const GiftDetailHandle = () => {
     
     // Check if registry exists
     if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
-      setAlertMessage('No registry found. Please create a registry first.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+      console.error('No registry found. Please create a registry first.');
       return;
     }
     
@@ -193,6 +181,8 @@ const GiftDetailHandle = () => {
       quantity,
       isGroupPayment: isGroupPayment || false
     };
+    setIsAdding(true);
+
     fetcher.submit(
       {payload: JSON.stringify(payload)},
       {
@@ -200,55 +190,15 @@ const GiftDetailHandle = () => {
         encType: 'application/json',
       },
     );
-    setAlertMessage('Gift has been added to your registry!');
-    setAlertType('success');
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-      setAlertMessage('');
-    }, 3000);
   };
+
+  useEffect(() => {
+    if (fetcher.state === 'idle') {
+      setIsAdding(false);
+    }
+  }, [fetcher.state]);
   return (
     <>
-    {showAlert && (
-      <AlertPortal>
-        <div
-          className={`fixed top-4 right-4 ${
-            alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-          } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-        >
-          <div className="flex items-center">
-            {alertType === 'success' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M5 13l4 4L19 7"></path>
-              </svg>
-            )}
-            {alertType === 'error' && (
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            )}
-            <span>{alertMessage}</span>
-          </div>
-        </div>
-      </AlertPortal>
-    )}
     <div className="flex flex-col lg:flex-row mx-auto px-[9.167vw] pt-[7.031vw] gap-8">
           {/* Images Grid */}
           <div className=" grid grid-cols-1  gap-4 flex-1">
@@ -268,6 +218,7 @@ const GiftDetailHandle = () => {
           });
         }}
         isLoggedIn={user && user.user && user.user.id}
+        isAdding={isAdding}
       />
           </div>
 
@@ -323,7 +274,7 @@ const GiftDetailHandle = () => {
               <p className="mt-4 mb-2 font-semibold">Details:</p>
               <p>H 4.25&quot; | 4&quot; DIA</p>
             </div>
-          </div> */}
+        </div> */}
         </div>
 
         <section className="mt-[9.74vw] bg-[#446184] text-white ">
