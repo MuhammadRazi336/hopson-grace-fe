@@ -25,10 +25,9 @@ import BackToTop from '~/components/BackToTop';
 
 
 
-const weThinkYouLove = ({recommendedProducts}) => {
-
-    
+const WeThinkYouLove = ({recommendedProducts}) => {
     return ( 
+      <>
     <section className="bg-[#FAF9F6] py-[3.906vw] flex items-center pl-[5.833vw] mb-[9.01vw] gap-[5.521vw] justify-center max-[767px]:flex-col max-[767px]:py-[50px] max-[767px]:mb-[50px] max-[767px]:px-[20px]">
         <Heading
           text={<>we think <span className="ivyora">you'll love</span></>}
@@ -139,7 +138,8 @@ const weThinkYouLove = ({recommendedProducts}) => {
           </div>
         </div>
       </section>
+      </>
      );
 }
  
-export default weThinkYouLove;
+export default WeThinkYouLove;

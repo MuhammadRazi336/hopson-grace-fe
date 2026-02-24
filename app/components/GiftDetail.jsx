@@ -9,6 +9,7 @@ const GiftDetail = ({
   onRegistryPress,
   productBrand = 'HOPSON GRACE', // Default brand, can be passed as prop
   isLoggedIn = false, // Show quantity counter only when logged in
+  isAdding = false, // Loading state for Add to Registry button
 }) => {
   // Defensive: ensure productImages is an array and has at least one image
   const allProductImages =
@@ -160,9 +161,12 @@ const GiftDetail = ({
               {/* Add to Registry Button */}
               <button
                 onClick={handleRegistryPress}
-                className="bg-[#446184] text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6"
+                disabled={isAdding}
+                className={`text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6 ${
+                  isAdding ? 'bg-[#1F1D1B]' : 'bg-[#446184]'
+                }`}
               >
-                ADD TO REGISTRY
+                {isAdding ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
 
               <div className="flex items-center gap-3">
@@ -188,9 +192,12 @@ const GiftDetail = ({
             <div className="flex items-center w-full gap-6 lg:gap-[1.927vw] xl:gap-[1.927vw] 2xl:gap-[1.927vw]">
               <button
                 onClick={handleRegistryPress}
-                className="bg-[#446184] text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6"
+                disabled={isAdding}
+                className={`text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6 ${
+                  isAdding ? 'bg-[#1F1D1B]' : 'bg-[#446184]'
+                }`}
               >
-                ADD TO REGISTRY
+                {isAdding ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           )}

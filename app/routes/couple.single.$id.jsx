@@ -1951,7 +1951,7 @@ export default function CoupleProfile() {
         </button>
 
                 <h3 className="text-5xl font-[400] lg:text-[2.292vw] lg:leading-[3.125vw] prata text-center max-[768px]:text-2xl afterimg">
-                Ready to purchase your gift for the couple?
+                ready to purchase your gift for the couple?
                 </h3>
                 <div className="mb-10">
                   <div className="flex h-full items-center">
@@ -1961,7 +1961,7 @@ export default function CoupleProfile() {
                     >
                       <div className="text-center mt-6">
                         <Heading
-                          text="Enter your email to continute."
+                          text="Enter your email to continue."
                           classes="font-normal text-[22px] m-0"
                         />
                       </div>
