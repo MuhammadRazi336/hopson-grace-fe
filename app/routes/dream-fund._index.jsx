@@ -20,6 +20,7 @@ import {formatPrice, formatPriceForTemplate} from '~/utils/priceFormatter';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import BackToTop from '~/components/BackToTop';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 export async function loader({request, context}) {
   const user = context?.session?.get('@User');
@@ -512,112 +513,7 @@ const DreamFund = () => {
         </div>
       </section>
 
-      <section className="bg-[#FAF9F6] py-[3.906vw] flex items-center pl-[5.833vw] mb-[9.01vw] gap-[5.521vw] justify-center max-[767px]:flex-col max-[767px]:py-[50px] max-[767px]:mb-[50px] max-[767px]:px-[20px]">
-        <Heading
-          text={<>we think <span className="ivyora">you'll love</span></>}
-          classes={
-            'prata text-2xl lg:text-[2.083vw] xl:text-[2.083vw] 2xl:text-[2.083vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
-          }
-          image={headingBottomCurve}
-          imageClasses={'max-[1024px]:max-w-[330px] w-[14.271vw] h-[6px] object-right object-cover'}
-        />
-
-        <div className="relative items-start w-full max-w-[71.094vw] max-[767px]:max-w-[100%]">
-          <div className="w-full mx-auto">
-            <div className="swiper-button-prev-prod absolute top-[25%] max-[767px]:top-[75px] left-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
-              <img src={nextitem} alt="" className="rotate-90 w-[1.3vw] h-[1.3vw]" />
-            </div>
-
-            <Swiper
-              spaceBetween={35}
-              slidesPerView={3.5}
-              loop={true}
-              modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
-              }}
-              className=""
-              breakpoints={{
-                320: {
-                  spaceBetween: 10,
-                  slidesPerView: 1.5,
-                },
-                475: {
-                  spaceBetween: 15,
-                  slidesPerView: 2.5,
-                },
-                768: {
-                  spaceBetween: 20,
-                  slidesPerView: 3.5,
-                },
-                1024: {
-                  spaceBetween: 30,
-                  slidesPerView: 3.5,
-                },
-                1366: {
-                  spaceBetween: 30,
-                  slidesPerView: 3.5,
-                },
-                1600: {
-                  spaceBetween: 35,
-                  slidesPerView: 3.5,
-                },
-              }}
-            >
-              {/* First 6 cash funds from the current page */}
-              {visibleProducts.length > 0 ? (
-                visibleProducts.slice(0, 6).map((product) => {
-                  const firstImage = product.image || '/assets/Images/placeholder.png';
-                  const priceFormatted = formatPrice(product.price);
-                  return (
-                    <SwiperSlide key={`${product.id}-${product.collectionId}`} className="w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]">
-                      <div className="block cursor-pointer">
-                        <img
-                          src={firstImage}
-                          alt={product.title || 'Cash fund'}
-                          className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none cursor-pointer hover:opacity-80 transition-opacity"
-                        />
-                        <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors">
-                          {product.title}
-                        </h3>
-                        <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2">{priceFormatted}</p>
-                      </div>
-                    </SwiperSlide>
-                  );
-                })
-              ) : (
-                <>
-                  <SwiperSlide className="w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]">
-                    <img src={product1} alt="New Arrival" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none" />
-                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider">
-                      ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                    </h3>
-                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide className="w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]">
-                    <img src={product2} alt="Tableware" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none" />
-                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider">
-                      SMEG TOASTER, 2 SLICE
-                    </h3>
-                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide className="w-[18.75vw] min-w-[18.75vw] max-w-[18.75vw] max-[767px]:w-[unset] max-[767px]:min-w-[unset] max-[767px]:max-w-[unset]">
-                    <img src={product3} alt="Staub Cast Iron Q4" className="w-full h-[18.75vw] max-[767px]:h-[170px] object-cover rounded-none" />
-                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider">
-                      THE BARISTA TOUCH ESPRESSO MAKER
-                    </h3>
-                    <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm py-2">$95.00</p>
-                  </SwiperSlide>
-                </>
-              )}
-            </Swiper>
-            <div className="swiper-button-next-prod absolute top-[25%] max-[767px]:top-[75px] right-[2.083vw] cursor-pointer flex w-[5.781vw] h-[6.198vw] items-center justify-center bg-white z-10 swiper-button-lock">
-              <img src={nextitem} className="rotate-270 w-[1.3vw] h-[1.3vw]" alt="" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <WeThinkYouLove recommendedProducts={recommendedProducts} />
 
       <style jsx>{`
         @keyframes fadeInOut {

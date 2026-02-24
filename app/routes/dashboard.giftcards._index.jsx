@@ -22,6 +22,8 @@ import { useLoaderData, Link } from '@remix-run/react';
 import ExploreCategories from '~/components/ExploreCategories';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
+import AlertPortal from '~/components/AlertPortal';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 export async function loader(args) {
   const {request, context} = args;
@@ -230,121 +232,8 @@ const GiftCards = () => {
           <ExploreCategories collections={collections} />
         </div>
 
-    <section className="bg-[#FAF9F6] pt-[5.26vw] pb-8 mb-[100px]">
-        <Heading
-          text="we think you'll love"
-          classes={
-            'prata text-2xl lg:text-[2.083vw] lg:leading-[2.083vw] font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px] lg:w-[25.625vw]'}
-        />
+    <WeThinkYouLove recommendedProducts={recommendedProducts} />
 
-        <div className=" relative items-start mt-[105px] mb-10 max-[1024px]:my-10">
-          <div className="lg:max-w-[81.25vw] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 " />
-              <span className="-rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-            </div>
-
-            <Swiper
-              spaceBetween={15}
-              slidesPerView={3}
-              loop={true}
-              modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
-              }}
-              className="px-[178px]"
-              breakpoints={{
-                345: {
-                  spaceBetween: 10,
-                  centeredSlides: true,
-                },
-                475: {
-                  spaceBetween: 15,
-                  centeredSlides: true,
-                },
-                768: {
-                  spaceBetween: 20,
-                  centeredSlides: true,
-                },
-                1024: {
-                  spaceBetween: 30,
-                  centeredSlides: true,
-                },
-                1366: {
-                  spaceBetween: 39,
-                  centeredSlides: true,
-                },
-                1600: {
-                  spaceBetween: 66,
-                  centeredSlides: true,
-                },
-              }}
-            >
-              {/* Dynamic recommended products */}
-              {recommendedProducts && recommendedProducts.length > 0 ? (
-                recommendedProducts.map((product) => {
-                  const productNode = product.node;
-                  const firstImage = productNode.images?.edges?.[0]?.node;
-                  const price = productNode.priceRange?.minVariantPrice;
-                  
-                  return (
-                    <SwiperSlide key={productNode.id}>
-                      <Link to={`/dashboard/addgifts/${productNode.handle}`} className="block cursor-pointer hover:no-underline pointer-events-auto">
-                        <img 
-                          src={firstImage?.url || '/assets/Images/placeholder.png'} 
-                          alt={productNode.title || 'Product'} 
-                          className="w-full rounded-none cursor-pointer hover:opacity-80 transition-opacity pointer-events-none" 
-                        />
-                        <h3 className="mt-2.5 uppercase lg:mt-[1.25vw] lg:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
-                          {productNode.title}
-                        </h3>
-                        <p className="lg:text-[1.25vw] text-sm py-2 pointer-events-none">{formatShopifyPrice(price)}</p>
-                      </Link>
-                    </SwiperSlide>
-                  );
-                })
-              ) : (
-                // Fallback to static slides if no recommended products
-                <>
-                  <SwiperSlide>
-                    <img src={youll1} alt="New Arrival" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
-                      ARKE GLASS BOTTLE FOR CARBONATOR PRO
-                    </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={youll2} alt="Tableware" className="w-full" />
-                    <h3 className="mt-2.5  lg:mt-[30px] uppercase lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
-                      SMEG TOASTER, 2 SLICE
-                    </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
-                  </SwiperSlide>
-                  <SwiperSlide>
-                    <img src={youll3} alt="Staub Cast Iron Q4" className="w-full" />
-                    <h3 className="mt-2.5  uppercase lg:mt-[30px] lg:text-[1.146vw] mb-[0.677vw] text-sm font-medium tracking-wider">
-                      THE BARISTA TOUCH ESPRESSO MAKER
-                    </h3>
-                    <p className="lg:text-2xl text-sm">$95.00</p>
-                  </SwiperSlide>
-                </>
-              )}
-            </Swiper>
-            <div className="swiper-button-next-prod absolute top-0 right-[0] max-[1601px]:right-0 cursor-pointer  uppercase flex w-[139px] max-[1601px]:w-[90px] items-center  max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-              <img src={nextitem} className="" alt="" />
-            </div>
-          </div>
-        </div>
-      </section>
     <Footer />
     
     <style jsx>{`
