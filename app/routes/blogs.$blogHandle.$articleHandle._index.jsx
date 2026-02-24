@@ -746,17 +746,17 @@ const BlogDetails = () => {
 
       <div className="w-full flex flex-row px-[9.375vw] py-[6.927vw] gap-[6.979vw]">
         {/* Full Content Display */}
-        <div className="w-[72%]">
+        <div className="w-[73.3%]">
           <BlogArticle article={article} processedContent={article.contentHtml} />
         </div>
 
-        <div className="w-[28%]">
+        <div className="w-[26.7%]">
 
           {/* Event details block: driven solely by event.details metafield (namespace "event", key "details") */}
           {eventDetailsBlock?.heading && (
-          <div className="h-[550px] bg-[#FAF9F6] relative min-h-[400px]">
+          <div className="bg-[#FAF9F6] relative px-16 py-12">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
-              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-[500] uppercase">   
+              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-medium tracking-[8%] uppercase">   
                 {eventDetailsBlock?.heading && (
                   (() => {
                     const heading = eventDetailsBlock.heading.trim();
@@ -784,13 +784,13 @@ const BlogDetails = () => {
                 className="w-[100px] h-[4px] mx-auto mb-10"
               />
               {(eventDetailsBlock.items || []).map((item, idx) => (
-                <div key={idx} className="mb-7 last:mb-0">
-                  <p className="text-[20px] bastardogrotesk font-[500] uppercase">
+                <div key={idx} className="mb-14 last:mb-0">
+                  <p className="text-[20px] bastardogrotesk font-semibold uppercase tracking-[8%] mb-2">
                     {item.label}
                     {item.label.endsWith(':') ? '' : ':'}
                   </p>
                   {item.value ? (
-                    <p className="text-[20px] font-normal">{item.value}</p>
+                    <p className="text-[20px] font-normal tracking-[8%]">{item.value}</p>
                   ) : null}
                 </div>
               ))}
@@ -858,13 +858,13 @@ const BlogDetails = () => {
           )}
 
           <div className="text-center mt-16">
-            <p className="text-[24px] font-[500] mx-auto mb-2 uppercase">
+            <p className="text-[24px] font-semibold mx-auto mb-2 uppercase mt-28 w-[90%]">
               {metafields.couple_name || 'THEIR'} FAVOURITE GIFTS
             </p>
             <img
               src={BlackLine}
               alt=""
-              className="w-[100px] h-[4px] mx-auto mb-10"
+              className="w-[100px] h-[4px] mx-auto mb-20"
             />
              <div className="flex flex-col">
                {products.slice(0, 3).map((product, index) => (
@@ -882,7 +882,7 @@ const BlogDetails = () => {
                
 
           {richTextBlock.title && richTextBlock.content && metafields.category !== 'The Planning Edit' && (
-          <div className="h-[370px] w-full bg-[#FAF9F6] relative mx-auto">
+          <div className="h-[370px] w-full bg-[#FAF9F6] relative mx-auto mt-14">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
               <p className="text-[20px] font-bold uppercase">
                 {richTextBlock?.title && (
@@ -1132,7 +1132,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
   return (
     <>
       <p className="text-[72px] text-center prata">{index + 1}.</p>
-      <div className="p-3 bg-white mx-auto relative group h-[460px]">
+      <div className="p-3 bg-white mx-auto relative group h-[460px] mb-20 last:mb-10">
         {/* Product Image and Info */}
         <div className="relative">
           {product.images?.edges?.[0]?.node?.url && (
@@ -1146,7 +1146,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
               className="w-[320px] h-[320px] object-cover rounded mb-2 mx-auto"
             />
           )}
-          <p className="font-semibold text-[22px]">
+          <p className="font-semibold text-[22px] pt-8 w-[90%] mx-auto ">
             {product.title || `Product ${index + 1}`}
           </p>
           <p className="text-[24px]">

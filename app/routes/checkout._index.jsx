@@ -226,6 +226,7 @@ export default function Checkout() {
           description="We’ve got answers."
           buttontext={'PHONE, EMAIL OR LIVE CHAT'}
           buttontype={'Color'}
+          buttonLink={'/contact-us'}
         />
       </section>
       <Footer />

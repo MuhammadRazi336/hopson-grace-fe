@@ -305,18 +305,18 @@ const Message = () => {
               <button
                 type="button"
                 onClick={handlePreview}
-                className="text-[#223247] border-b border-[#223247] cursor-pointer font-bold text-lg mx-auto mt-5 block"
+                className="text-[#ffffff] border-b border-[#ffffff] uppercase cursor-pointer font-bold text-lg mx-auto mt-5 block"
               >
-                Save and Preview
+                SAVE AND PREVIEW
               </button>
             ) : (
               <div className="flex justify-center gap-x-4 mt-5">
                 <button
                   type="button"
                   onClick={() => setShowPreview(false)}
-                  className="text-[#223247] border-b border-[#223247] cursor-pointer font-bold text-lg"
+                  className="text-[#ffffff] uppercase border-b border-[#ffffff] cursor-pointer font-bold text-lg"
                 >
-                  Edit Message
+                  BACK TO EDIT 
                 </button>
               </div>
             )}

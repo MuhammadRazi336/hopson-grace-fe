@@ -2,7 +2,7 @@ import React from 'react'
 import { Footer } from '~/components/Footer'
 import { Header } from '~/components/Header'
 import PreviewRegistry from '~/components/PreviewRegistry'
-import GiftCardBg from '/assets/Images/giftCardBg.png';
+import GiftCardBg from '/assets/Images/HeroAddGift.png';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
 import Heading from '~/components/Heading';
@@ -181,27 +181,28 @@ const GiftCards = () => {
   
   return (
     <>
-    <div className="pt-[100px] relative p-4">
-        <h2 className="mt-0 prata lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-            gift cards
-        </h2>
-        <img
-          src="/assets/Images/profile-view-page-bdr.png"
-          alt="Couple"
-          className="max-w-[630px] mt-5 h-auto mx-auto"
+    <div className='flex items-center bg-[#F5F2ED] justify-center flex-col-reverse lg:flex-row'>
+      <div className="relative py-10 lg:p-4 w-full lg:w-[31%]">
+          <h2 className="mt-0 prata lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
+              gift cards
+          </h2>
+          <img
+            src="/assets/Images/profile-view-page-bdr.png"
+            alt="Couple"
+            className="w-[100px] mt-2 lg:w-[220px] lg:mt-5 h-auto mx-auto"
+          />
+
+          {/* <PreviewRegistry /> */}
+      </div>
+
+      <section className='w-full lg:w-[69%]'>
+      <img
+          src={GiftCardBg}
+          alt=""
+          className="w-full aspect-square lg:h-[650px] object-cover"
         />
-
-        {/* <PreviewRegistry /> */}
+      </section>
     </div>
-
-    <section className='my-16'>
-    <img
-        src={GiftCardBg}
-        alt=""
-        className="w-full h-[520px] lg:h-[520px] object-cover"
-      />
-    </section>
-
     {/* Gift Cards Grid Section */}
     {giftCards.length > 0 && (
       <section className="w-[81.25vw] mx-auto py-12">        

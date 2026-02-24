@@ -48,7 +48,7 @@ export default function FindCoupleForm() {
       ) : (
         <>
           <div
-            className="flex justify-start items-center lg:h-[51.771vw] xl:h-[51.771vw] 2xl:h-[51.771vw] mb-16 max-[1024px]:mb-[360px]"
+            className="flex justify-start items-center lg:h-[51.771vw] xl:h-[51.771vw] 2xl:h-[51.771vw] mb-16 max-[1024px]:py-20"
             style={{
               backgroundImage: " url('/assets/Images/couple-banner2.jpg')",
               backgroundSize: 'cover',
@@ -70,7 +70,7 @@ export default function FindCoupleForm() {
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
-                  <div className="flex flex-wrap gap-1 lg:gap-[1.458vw] mb-2 lg:mb-[2.448vw]">
+                  <div className="flex gap-8 lg:gap-[1.458vw] mb-4 lg:mb-[2.448vw] max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px] ">
                     <div className="w-full">
                       <input
                         id="firstName"
@@ -120,7 +120,7 @@ export default function FindCoupleForm() {
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] max-[1024px]:max-w-full uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4"
+                      className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
                     >
                       Search
                     </button>

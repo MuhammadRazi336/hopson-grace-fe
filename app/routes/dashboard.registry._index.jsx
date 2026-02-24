@@ -572,20 +572,7 @@ const index = () => {
 
         <div className="w-[300px] flex flex-col gap-y-4 max-[1024px]:w-full">
         
-<Link to={`/couple/single/${registryData?.userId}`}>
-          <div className="w-[260px] min-h-[100px] bg-[#F5F2ED] z-10 max-[1024px]:w-full">
-            <div className="container mx-auto pt-5 flex items-center justify-center flex-col">
-              <img
-                src="/assets/Images/share-icon.png"
-                alt="preview"
-                className="w-10 mx-auto filter brightness-0 lg:w-[1.875vw] xl:w-[1.875vw] 2xl:w-[1.875vw] mb-[1.146vw]"
-              />
-              <h2 className="text-black text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
-                PREVIEW PAGE
-              </h2>
-            </div>
-          </div>
-          </Link>
+
 
           <div>
             <RegistryStatusCard
@@ -594,6 +581,21 @@ const index = () => {
               token={user?.accessToken}
             />
           </div>
+<Link to={`/couple/single/${registryData?.userId}`}>
+          <div className="w-[260px] min-h-[100px] bg-[#F5F2ED] z-10 max-[1024px]:w-full">
+            <div className="container mx-auto py-5 flex items-center justify-center flex-col">
+              <img
+                src="/assets/Images/share-icon-2.png"
+                alt="preview"
+                className="w-10 mx-auto lg:w-[1.875vw] xl:w-[1.875vw] 2xl:w-[1.875vw] mb-[1.146vw]"
+              />
+              <h2 className="text-black text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
+                PREVIEW PAGE
+              </h2>
+            </div>
+          </div>
+          </Link>
+
         </div>
       </div>
 
