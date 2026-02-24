@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, useMemo} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -11,6 +11,7 @@ import Marquee from '~/components/Marquee';
 import ButtonComponent from '~/components/Button';
 import lineImg4 from '/assets/Images/Vector 14.png';
 import {formatPrice} from '~/utils/priceFormatter';
+import BackToTop from '~/components/BackToTop';
 
 export async function loader({params, context}) {
   const {handle} = params;
@@ -80,14 +81,49 @@ const Brand = () => {
   const {collection, registry, brands, user} = useLoaderData();
   const [quantities, setQuantities] = useState({});
   const fetcher = useFetcher();
+  const topRef = useRef(null);
 
-  // Calculate displayed products count and total
-  const displayedProductsCount = collection?.products?.edges?.length || 0;
-  // For now, show the displayed count. In a real scenario, you'd need to get total from API
-  // or implement proper pagination with total count
-  const totalProductsCount = collection?.products?.pageInfo?.hasNextPage 
-    ? `${displayedProductsCount}+` // Show + if there are more pages
-    : displayedProductsCount;
+  // All brand products
+  const productsEdges = collection?.products?.edges || [];
+
+  // Sidebar categories: unique collections that these products belong to (excluding this brand collection itself)
+  const sidebarCategories = useMemo(() => {
+    const map = new Map();
+    productsEdges.forEach((edge) => {
+      const product = edge.node;
+      const colEdges = product.collections?.edges || [];
+      colEdges.forEach(({node}) => {
+        if (!node || node.id === collection.id) return;
+        if (!map.has(node.id)) {
+          map.set(node.id, node.title);
+        }
+      });
+    });
+    return Array.from(map, ([id, title]) => ({id, title}));
+  }, [productsEdges, collection.id]);
+
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
+
+  // Filter products by selected sidebar categories (collections)
+  const filteredProducts = useMemo(() => {
+    if (!selectedCategoryIds.length) return productsEdges;
+    return productsEdges.filter((edge) => {
+      const product = edge.node;
+      const colEdges = product.collections?.edges || [];
+      return colEdges.some(
+        ({node}) => node && selectedCategoryIds.includes(node.id),
+      );
+    });
+  }, [productsEdges, selectedCategoryIds]);
+
+  // Pagination for brand products
+  const INITIAL_VISIBLE = 15;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const totalProductsCount = filteredProducts.length;
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const displayedProductsCount = visibleProducts.length;
+  const hasMore = totalProductsCount > INITIAL_VISIBLE;
+  const canLoadMore = visibleCount < totalProductsCount;
 
   const handleAddToRegistry = async (product, selectedQuantity) => {
     try {
@@ -155,7 +191,7 @@ const Brand = () => {
   return (
     <section>
       <Header />
-      <div className="w-full h-[2px] bg-black"></div>
+      <div ref={topRef} />
 
       <div className="w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">
@@ -184,9 +220,18 @@ const Brand = () => {
 
       <section className="px-[8.802vw] mx-auto">
         <div className="flex flex-col md:flex-row gap-12 pt-[6.302vw]">
-          <SidebarFilter />
+          <SidebarFilter
+            categories={sidebarCategories}
+            selectedCategoryIds={selectedCategoryIds}
+            onToggleCategory={(id) => {
+              setVisibleCount(INITIAL_VISIBLE);
+              setSelectedCategoryIds((prev) =>
+                prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+              );
+            }}
+          />
           <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
-            {collection.products?.edges?.map((edge) => {
+            {visibleProducts.map((edge) => {
               const product = edge.node;
               const firstImage =
                 product.images?.edges?.[0]?.node?.url ||
@@ -317,11 +362,18 @@ const Brand = () => {
               LOADING {displayedProductsCount} of {totalProductsCount}
             </p>
 
-            <WhiteThemeButton Text="View more" link="/quick-start-guide" />
+            {hasMore && canLoadMore && (
+              <WhiteThemeButton
+                Text="View more"
+                onClick={() =>
+                  setVisibleCount((prev) =>
+                    Math.min(prev + INITIAL_VISIBLE, totalProductsCount),
+                  )
+                }
+              />
+            )}
 
-            <button className="border-b-2 mx-auto cursor-pointer mb-0 font-bold bg-white text-black uppercase px-0 mt-0 lg:text-[0.938vw] lg:leading-[0.938vw] text-sm">
-              Back to Top
-            </button>
+            {hasMore && <BackToTop topRef={topRef} />}
           </div>
         </div>
       </section>
@@ -377,7 +429,7 @@ const Brand = () => {
 
 export default Brand;
 
-function SidebarFilter() {
+function SidebarFilter({categories, selectedCategoryIds, onToggleCategory}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
@@ -417,42 +469,23 @@ function SidebarFilter() {
         </h2>
         {openSections.categories && (
           <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                HONEYMOON
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                HOME
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                DATE NIGHTS
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                LOREM IPSUM
-              </label>
-            </li>
-            <li>
-              <label className='flex items-center'>
-                <input type="checkbox" className="mr-2 lg:mr-[0.885vw] lg:w-[1.25vw] lg:h-[1.25vw]" />
-                LOREM IPSUM
-              </label>
-            </li>
+            {categories && categories.length > 0 ? (
+              categories.map((cat) => (
+                <li key={cat.id}>
+                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                    <input
+                      type="checkbox"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                      checked={selectedCategoryIds.includes(cat.id)}
+                      onChange={() => onToggleCategory(cat.id)}
+                    />
+                    {cat.title}
+                  </label>
+                </li>
+              ))
+            ) : (
+              <li className="text-xs text-gray-500">No categories available</li>
+            )}
           </ul>
         )}
       </div>
@@ -509,6 +542,14 @@ const BRAND_QUERY = `#graphql
                   altText
                   width
                   height
+                }
+              }
+            }
+            collections(first: 10) {
+              edges {
+                node {
+                  id
+                  title
                 }
               }
             }

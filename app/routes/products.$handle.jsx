@@ -29,7 +29,7 @@ import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
-import AlertPortal from '~/components/AlertPortal';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 const tabsData = [
   {
@@ -405,9 +405,7 @@ export default function ProductCollection() {
   const [availability, setAvailability] = useState('');
   const [priceSort, setPriceSort] = useState('');
   const [dateSort, setDateSort] = useState('');
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success'); // 'success' or 'error'
+  const [addingProductId, setAddingProductId] = useState(null);
 
   const {products, collections, registry, userData, selectedCollection, handle, recommendedProducts} = useLoaderData();
   const fetcher = useFetcher();
@@ -454,7 +452,8 @@ export default function ProductCollection() {
       const subIds = subs.map((s) => s.id);
       setSelectedSwiperCollectionId(selectedCollection.id);
       setSelectedSubCollections(subs);
-      setCheckedCollectionIds(subIds);
+      // Do not pre-select any Product Type checkboxes
+      setCheckedCollectionIds([]);
       setShopAllChecked(true);
     } else {
       const parent = collections.find((col) => {
@@ -466,7 +465,8 @@ export default function ProductCollection() {
         const subs = getSubCollectionsForParent(parent);
         setSelectedSwiperCollectionId(parent.id);
         setSelectedSubCollections(subs);
-        setCheckedCollectionIds([selectedCollection.id]);
+        // Do not pre-select any Product Type checkboxes
+        setCheckedCollectionIds([]);
         setShopAllChecked(false);
       }
     }
@@ -569,7 +569,7 @@ export default function ProductCollection() {
     return getProductsForCheckedCollections(checkedCollectionIds);
   }, [shopAllChecked, selectedSwiperCollectionId, selectedSubCollections, checkedCollectionIds, checkedStyles, collections]);
 
-  const handleAddtoRegistry = (product) => {
+  const handleAddtoRegistry = (product, quantity = 1, isGroupGift = false) => {
     try {
       // Check if user is logged in by looking for token in localStorage
       const token = localStorage.getItem('@token') || localStorage.getItem('@Token');
@@ -582,25 +582,13 @@ export default function ProductCollection() {
 
       // Check if registry exists and has an id
       if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
-        setAlertMessage('Registry not found. Please create a registry first.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Registry not found. Please create a registry first.');
         return;
       }
 
       const firstVariant = product?.variants?.edges?.[0]?.node;
       if (!firstVariant) {
-        setAlertMessage('Product variant not found.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Product variant not found.');
         return;
       }
 
@@ -609,8 +597,11 @@ export default function ProductCollection() {
         amount: Number(firstVariant.priceV2.amount),
         registryId: Number(registry.data[0].id),
         productTypeId: 1,
-        quantity: 1,
+        quantity: quantity || 1,
+        isGroupPayment: !!isGroupGift,
       };
+
+      setAddingProductId(product.id);
 
       fetcher.submit(
         {payload: JSON.stringify(payload)},
@@ -620,26 +611,16 @@ export default function ProductCollection() {
         },
       );
 
-      // Show success alert
-      setAlertMessage(`${product.title} has been added to your registry!`);
-      setAlertType('success');
-      setShowAlert(true);
-
-      // Hide alert after 3 seconds
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
     } catch (error) {
-      setAlertMessage('Failed to add to registry. Please try again.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+      console.error('Failed to add to registry. Please try again.', error);
     }
   };
+
+  useEffect(() => {
+    if (fetcher.state === 'idle') {
+      setAddingProductId(null);
+    }
+  }, [fetcher.state]);
 
   // Filter the products based on selected filters
   const filteredProducts = products
@@ -891,7 +872,12 @@ export default function ProductCollection() {
                       price={firstVariant.priceV2.amount}
                       description={product.description}
                       productHandle={product.handle}
-                      onAddToRegistry={() => handleAddtoRegistry(product)}
+                      onAddToRegistry={(quantity, isGroupGift) =>
+                        handleAddtoRegistry(product, quantity, isGroupGift)
+                      }
+                      isAddingToRegistry={
+                        addingProductId === product.id && fetcher.state !== 'idle'
+                      }
                       onGroupGiftTagChange={(isGroupGift) =>
                         console.log(`Group Gift tag changed: ${isGroupGift}`)
                       }
@@ -1077,46 +1063,6 @@ export default function ProductCollection() {
           <ExploreCategories collections={collections} />
         </div>
 
-      {/* Alert Component - Rendered outside app-scale via portal */}
-      {showAlert && (
-        <AlertPortal>
-          <div
-            className={`fixed top-4 right-4 ${
-              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-          >
-            <div className="flex items-center">
-              {alertType === 'success' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M5 13l4 4L19 7"></path>
-                </svg>
-              )}
-              {alertType === 'error' && (
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              )}
-              <span>{alertMessage}</span>
-            </div>
-          </div>
-        </AlertPortal>
-      )}
       <style jsx>{`
         @keyframes fadeInOut {
           0% {
