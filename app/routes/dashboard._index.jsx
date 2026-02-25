@@ -324,7 +324,7 @@ const index = () => {
       showIcon: true,
       icon: '/assets/Images/BESPOKETRAVEL.png',
       buttonText: 'ADD FUNDS',
-      link: '/dashboard/cashfunds',
+      link: '/cash-funds',
     },
     {
       id: 'gift-balance',

@@ -473,7 +473,7 @@ const CashFund = () => {
                 onClick={() => setVisibleCount((prev) => Math.min(prev + 16, filteredProducts.length))}
               />
             )}
-            {hasMore && <BackToTop topRef={topRef} />}
+            <BackToTop topRef={topRef} />
           </div>
         </div>
       </section>

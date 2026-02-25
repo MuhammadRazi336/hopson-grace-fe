@@ -11,7 +11,7 @@ import youll1 from '/assets/Images/youll-1.png';
 import youll2 from '/assets/Images/youll-2.png';
 import youll3 from '/assets/Images/youll-3.png';
 import { Navigation } from 'swiper/modules';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {useFetcher} from '@remix-run/react';
 import { extractShopifyId } from '~/utils/helpers.js';
 import { json } from '@shopify/remix-oxygen';
@@ -24,6 +24,7 @@ import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
+import BackToTop from '~/components/BackToTop';
 
 export async function loader(args) {
   const {request, context} = args;
@@ -120,6 +121,7 @@ async function loadGiftCardData({context}) {
 const GiftCards = () => {
   const {collections, giftCards, registry, user, recommendedProducts} = useLoaderData();
   const fetcher = useFetcher();
+  const topRef = useRef(null);
   const [addingGiftCardId, setAddingGiftCardId] = useState(null);
   
   console.log('Gift Cards Data:', giftCards);
@@ -181,7 +183,7 @@ const GiftCards = () => {
   
   return (
     <>
-    <div className='flex items-center bg-[#F5F2ED] justify-center flex-col-reverse lg:flex-row'>
+    <div ref={topRef} className='flex items-center bg-[#F5F2ED] justify-center flex-col-reverse lg:flex-row'>
       <div className="relative py-10 lg:p-4 w-full lg:w-[31%]">
           <h2 className="mt-0 prata lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
               gift cards
@@ -234,6 +236,7 @@ const GiftCards = () => {
         </div>
 
     <WeThinkYouLove recommendedProducts={recommendedProducts} />
+    <BackToTop topRef={topRef} className="mb-0" />
 
     <Footer />
     

@@ -742,11 +742,11 @@ function SidebarFilter({
         </div>
       </Link>
       {/* Show PreviewRegistry only after a parent collection is selected */}
-      {selectedSwiperCollectionId && (
+      {/* {selectedSwiperCollectionId && (
         <div className="mt-6">
           <PreviewRegistry useAbsolutePosition={false} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

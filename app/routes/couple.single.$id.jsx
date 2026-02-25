@@ -30,6 +30,10 @@ query {
 
 export async function loader({params, context}) {
   try {
+    const sessionUser = context?.session?.get?.('@User');
+    const isLoggedIn = Boolean(
+      sessionUser?.accessToken || sessionUser?.token || sessionUser?.user?.id,
+    );
     const coupleId = params.id;
     console.log('Loader: Starting with coupleId:', coupleId);
 
@@ -182,6 +186,7 @@ export async function loader({params, context}) {
       apiBaseUrl,
       hasProducts,
       coupleId, // Add coupleId for reference
+      isLoggedIn,
     });
   } catch (error) {
     console.error('Loader: Error occurred:', error);
@@ -382,6 +387,7 @@ export default function CoupleProfile() {
     apiBaseUrl = 'https://dev-hopsongrace.codup.io',
     hasProducts = false,
     coupleId = null,
+    isLoggedIn = false,
   } = loaderData || {};
 
   // Safety check: If we don't have a registry ID, show an error
@@ -1503,10 +1509,6 @@ export default function CoupleProfile() {
           we are looking <span className="font-italic">so forward</span> to
           celebrating with you
         </h2>
-
-        <p className="w-[58.073vw] max-w-[100%] text-[16px] tracking-[0.5px] lg:text-[1.875vw] lg:leading-[2.604vw] mx-auto mt-5 mb-[7.552vw] leading-relaxed">
-            'Thank you for being part of our special day!'
-        </p>
         </>
         }
       </div>
@@ -1651,7 +1653,9 @@ export default function CoupleProfile() {
                 No Products Found
               </h3>
               <p className="text-[#1F1D1B] mb-6">
-              Add gifts to get your registry started.
+                {isLoggedIn
+                  ? 'Add gifts to get your registry started.'
+                  : 'IT\'S QUIET HERE FOR NOW'}
               </p>
             </div>
           </div>
