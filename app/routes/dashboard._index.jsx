@@ -8,6 +8,7 @@ import {json, redirect} from '@shopify/remix-oxygen';
 import FooterBottom from '~/components/FooterBottom';
 import NotificationCard from '~/components/NotificationCard';
 import { Footer } from '~/components/Footer';
+import {syncCustomerBalancesToMetafields} from '~/utils/shopify-customer-balances.server';
 
 export async function loader(args) {
   const {context, request} = args;
@@ -91,8 +92,18 @@ export async function loader(args) {
       }
       throw apiError;
     }
-
+  
     const finalRegistry = {...registry, ...detailResponse.data};
+    try {
+      await syncCustomerBalancesToMetafields(context, {
+        registryId: finalRegistry?.id,
+        giftBalance: finalRegistry?.giftBalance,
+        cashFundBalance: finalRegistry?.registryFundBalance,
+        email: user?.user?.email,
+      });
+    } catch (shopifySyncError) {
+      console.warn('Shopify balance metafield sync failed:', shopifySyncError?.message);
+    }
 
     return json(
       {
@@ -108,7 +119,6 @@ export async function loader(args) {
     );
     
   } catch (e) {
-    console.error('Loader error:', e);
     // Check if it's a session expiration error
     if (e.isSessionExpired || e.status === 401 || e.status === 403) {
       const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
@@ -193,11 +203,9 @@ const index = () => {
           setNotifications(result.data);
           const unreadNotifications = result.data.filter(n => n.status === 'unread');
           setUnreadCount(unreadNotifications.length);
-          console.log(`Notifications refreshed. Unread count: ${unreadNotifications.length}`);
         }
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -214,7 +222,6 @@ const index = () => {
     if (!user?.user?.id) return;
 
     const interval = setInterval(() => {
-      console.log('Polling for new notifications...');
       fetchNotifications();
     }, 30000); // Check every 30 seconds
 
@@ -225,7 +232,6 @@ const index = () => {
   // Handle notification card click
   const handleNotificationView = () => {
     // Refresh notifications when user clicks view
-    console.log('View notifications clicked - refreshing notifications...');
     fetchNotifications(true); // Pass true to indicate this is a refresh
     // You can navigate to a notifications page or show a modal here
   };

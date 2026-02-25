@@ -23,6 +23,7 @@ import 'swiper/css/pagination';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balances.server';
 
 export async function loader({context}) {
   try {
@@ -94,6 +95,7 @@ export async function action({request, context}) {
   const formData = await request.formData();
   
   try {
+    const registryId = Number(formData.get('registryId'));
     console.log('Making API call to registryProducts/cash-fund');
     const response = await context.ClientPost(
       formData,
@@ -106,6 +108,13 @@ export async function action({request, context}) {
         },
       }
     );
+    if (Number.isFinite(registryId) && registryId > 0) {
+      try {
+        await syncRegistryBalancesByRegistryId(context, {registryId});
+      } catch (syncError) {
+        console.warn('Shopify customer balance sync failed:', syncError?.message);
+      }
+    }
     console.log('API response:', response);
     return {response, success: true};
   } catch (e) {

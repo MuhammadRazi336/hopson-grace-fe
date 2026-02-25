@@ -1,5 +1,6 @@
 import {json} from '@shopify/remix-oxygen';
 import {getPayPalAccessToken, capturePayPalOrder} from '~/lib/paypal';
+import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balances.server';
 
 // API base for order persistence (same as API_BASE_URL)
 const getApiBase = (context) =>
@@ -87,6 +88,14 @@ export async function action({request, context}) {
 
       const data = await res.json();
       if (data?.data?.checkoutNumber) {
+        try {
+          await syncRegistryBalancesByRegistryId(context, {
+            registryId: Number(registryId),
+          });
+        } catch (syncError) {
+          console.warn('Shopify customer balance sync failed:', syncError?.message);
+        }
+
         return json({
           data: {
             checkoutNumber: data.data.checkoutNumber,

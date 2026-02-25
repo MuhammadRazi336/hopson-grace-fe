@@ -16,6 +16,7 @@ import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import EditImagePopup from '~/components/EditImagePopup';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
 import { ToastContainer } from 'react-toastify';
+import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balances.server';
 
 export async function loader(args) {
   const {context} = args;
@@ -86,6 +87,7 @@ export async function action({request, context}) {
   const formData = await request.formData();
   
   try {
+    const registryId = Number(formData.get('registryId'));
     const response = await context.ClientPost(
       formData,
       'registryProducts/cash-fund',
@@ -97,6 +99,13 @@ export async function action({request, context}) {
         },
       }
     );
+    if (Number.isFinite(registryId) && registryId > 0) {
+      try {
+        await syncRegistryBalancesByRegistryId(context, {registryId});
+      } catch (syncError) {
+        console.warn('Shopify customer balance sync failed:', syncError?.message);
+      }
+    }
     return json({response, success: true});
   } catch (e) {
     return json({error: e.message || 'Failed to create cash fund', success: false});
