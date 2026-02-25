@@ -4,6 +4,7 @@ import {defer} from '@shopify/remix-oxygen';
 import Input from '~/components/Input';
 import { Footer } from '~/components/Footer';
 import AlertPortal from '~/components/AlertPortal';
+import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balances.server';
 
 export async function loader(args) {
   const {context, params} = args;
@@ -59,6 +60,7 @@ export async function action({request, context}) {
   const formData = await request.formData();
   
   try {
+    const registryId = Number(formData.get('registryId'));
     const response = await context.ClientPost(
       formData,
       'registryProducts/cash-fund',
@@ -70,6 +72,13 @@ export async function action({request, context}) {
         },
       }
     );
+    if (Number.isFinite(registryId) && registryId > 0) {
+      try {
+        await syncRegistryBalancesByRegistryId(context, {registryId});
+      } catch (syncError) {
+        console.warn('Shopify customer balance sync failed:', syncError?.message);
+      }
+    }
     return defer({response});
   } catch (e) {
     return defer({e});

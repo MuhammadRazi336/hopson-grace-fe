@@ -1,5 +1,6 @@
 import {json} from '@shopify/remix-oxygen';
 import {getPayPalAccessToken, capturePayPalOrder} from '~/lib/paypal';
+import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balances.server';
 
 // Action for step 2: Guest checkout — capture PayPal on server, then forward to API for order persistence
 export async function action({request, context}) {
@@ -112,6 +113,14 @@ export async function action({request, context}) {
     }
 
     if (guestCheckoutResponse?.data?.checkoutNumber) {
+      try {
+        await syncRegistryBalancesByRegistryId(context, {
+          registryId: Number(registryId),
+        });
+      } catch (syncError) {
+        console.warn('Shopify customer balance sync failed:', syncError?.message);
+      }
+
       // Clear session data after successful checkout
       context.session.set('paypalOrderId', '');
       context.session.set('lineItems', '');
