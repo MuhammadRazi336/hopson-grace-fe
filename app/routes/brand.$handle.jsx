@@ -212,7 +212,7 @@ const Brand = () => {
         <div className="w-[50%] h-full flex items-center justify-center">
           <img
             src={collection.brandImageMetafield?.reference?.image?.url || collection.image?.url || '/assets/Images/dreamFunds.png'}
-            className="mx-auto object-contain object-center"
+            className="mx-auto object-center object-cover h-full w-full"
             alt={collection.brandImageMetafield?.reference?.image?.altText || collection.image?.altText || collection.title}
           />
         </div>
@@ -373,7 +373,7 @@ const Brand = () => {
               />
             )}
 
-            {hasMore && <BackToTop topRef={topRef} />}
+            <BackToTop topRef={topRef} />
           </div>
         </div>
       </section>

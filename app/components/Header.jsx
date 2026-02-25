@@ -425,40 +425,6 @@ export function Header() {
     return 'U'; // Fallback
   };
 
-  // Check if event has image
-  const hasEventImage = () => {
-    if (!registryData || !registryData.events || registryData.events.length === 0) {
-      return false;
-    }
-    const event = registryData.events[0];
-    // Check if image exists and has fileUrl property
-    if (event.image && event.image.fileUrl) {
-      return true;
-    }
-    // Fallback for different image structures
-    if (event.image && typeof event.image === 'string') {
-      return true;
-    }
-    return false;
-  };
-
-  // Get event image URL
-  const getEventImage = () => {
-    if (!registryData || !registryData.events || registryData.events.length === 0) {
-      return null;
-    }
-    const event = registryData.events[0];
-    // Check if image exists and has fileUrl property
-    if (event.image && event.image.fileUrl) {
-      return event.image.fileUrl;
-    }
-    // Fallback for different image structures
-    if (event.image && typeof event.image === 'string') {
-      return event.image;
-    }
-    return null;
-  };
-
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
@@ -878,19 +844,11 @@ export function Header() {
                         : 'bg-[#F5F2ED] border-black'
                     }`}
                   >
-                    {hasEventImage() ? (
-                      <img
-                        src={getEventImage()}
-                        alt="Event"
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    ) : (
-                      <img
-                        src={loginReplacementGif}
-                        alt="Profile"
-                        className="w-full h-full object-cover rounded-full"
-                      />
-                    )}
+                    <img
+                      src={loginReplacementGif}
+                      alt="Profile"
+                      className="w-full h-full object-cover rounded-full"
+                    />
                   </button>
 
                   {/* User Dropdown Menu */}
@@ -1404,19 +1362,11 @@ export function Header() {
                           : 'bg-[#F5F2ED] border-black'
                       }`}
                     >
-                      {hasEventImage() ? (
-                        <img
-                          src={getEventImage()}
-                          alt="Event"
-                          className="w-full h-full object-cover rounded-full"
-                        />
-                      ) : (
-                        <img
-                          src={loginReplacementGif}
-                          alt="Profile"
-                          className="w-full h-full object-cover rounded-full"
-                        />
-                      )}
+                      <img
+                        src={loginReplacementGif}
+                        alt="Profile"
+                        className="w-full h-full object-cover rounded-full"
+                      />
                     </button>
 
                     {/* User Dropdown Menu */}
@@ -1521,6 +1471,15 @@ export function Header() {
                                   }
                                   if (notification.type === "product_discontinued" || notification.type === "product_new_added" || notification.type === "gift"){
                                     navigate(`/dashboard/addgifts`)
+                                  }
+                                  if (notification.type === "event"){
+                                    const eventId = registryData?.events?.[0]?.id;
+                                    const registryId = registryData?.id;
+                                    if (eventId) {
+                                      navigate(
+                                        `/dashboard/registry/${eventId}${registryId ? `?registryId=${registryId}` : ''}`,
+                                      );
+                                    }
                                   }
                                 }}
                               >

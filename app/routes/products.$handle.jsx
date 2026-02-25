@@ -915,22 +915,20 @@ export default function ProductCollection() {
                 />
               )}
 
-            {productsToShow > 12 && (
-              <button
-                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
-                onClick={() => {
-                  setProductsToShow(12);
-                  if (productGridRef.current) {
-                    productGridRef.current.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                    });
-                  }
-                }}
-              >
-                Back to Top
-              </button>
-            )}
+            <button
+              className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+              onClick={() => {
+                setProductsToShow(12);
+                if (productGridRef.current) {
+                  productGridRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                }
+              }}
+            >
+              Back to Top
+            </button>
           </div>
         </div>
       </section>

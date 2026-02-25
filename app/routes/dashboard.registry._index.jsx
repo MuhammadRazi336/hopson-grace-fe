@@ -949,9 +949,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
     (_, index) => (
       <div
         key={`placeholder-${index}`}
-        className={`mb-4 flex items-center justify-center ${
-          data.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
-        }`}
+        className="mb-4 flex items-center justify-center w-full"
       >
         <Link to="/dashboard/addgifts">
           <img
@@ -966,16 +964,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
 
   return (
     <div className="min-[1025px]:px-[5vw]">
-      <div
-        className={`${
-          filteredData.length > 4
-            ? 'flex gap-[2.917vw] mt-0 overflow-x-auto snap-x snap-mandatory'
-            : 'grid items-start gap-[3.281vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
-        }`}
-        style={{
-          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
-        }}
-      >
+      <div className="grid items-start gap-[3.281vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden">
         {filteredData.length > 0
           ? filteredData.map((product) => {
             console.log('Product:', product);
@@ -1002,11 +991,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
                   key={product.id || product.productId || Math.random()}
                   className={`${
                     isFullyGifted ? 'overlay-gifted' : ''
-                  } flex flex-col justify-between ${
-                    data.length > 4
-                      ? 'snap-start min-w-[360px] max-w-[360px]'
-                      : 'w-full'
-                  }`}
+                  } flex flex-col justify-between w-full`}
                 >
                   <div className="flex flex-col justify-between">
                     <div className="h-[inherit] w-full mb-4 flex justify-center relative">
@@ -1031,7 +1016,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
                     </div>
                     <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
                     <h2
-                      className={`text-[22px] uppercase m-0 font-semibold ${
+                      className={`text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw] ${
                         isFullyGifted
                           ? 'cursor-not-allowed opacity-50'
                           : 'cursor-pointer'
@@ -1041,7 +1026,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
                     </h2>
                     </Link>
                     <div className="flex justify-between items-center mb-8">
-                      <p className="text-2xl font-normal ">
+                      <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">
                         {formatPrice(price?.amount || product.amount || 0)}
                       </p>
                     </div>
@@ -1145,9 +1130,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
     (_, index) => (
       <div
         key={`placeholder-${index}`}
-        className={`mb-4 flex items-center justify-center ${
-          filteredData.length > 4 ? 'snap-start min-w-[360px] max-w-[360px]' : 'w-full'
-        }`}
+        className="mb-4 flex items-center justify-center w-full"
       >
         <Link to="/cash-funds">
           <img
@@ -1166,16 +1149,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
 
   return (
     <div className="min-[1025px]:px-[5vw]">
-      <div
-        className={`${
-          filteredData.length > 4
-            ? 'flex gap-[3.281vw] pb-4 overflow-x-auto snap-x snap-mandatory'
-            : 'grid items-start gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden'
-        }`}
-        style={{
-          scrollSnapType: data.length > 4 ? 'x mandatory' : undefined,
-        }}
-      >
+      <div className="grid items-start gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden">
         {filteredData.length > 0
           ? filteredData.map((fund) => {
               // Calculate if fund is fully gifted
@@ -1193,11 +1167,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
                   key={fund.productId || Math.random()}
                   className={`${
                     isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
-                  } flex flex-col justify-between ${
-                    data.length > 4
-                      ? 'snap-start min-w-[360px] max-w-[360px]'
-                      : 'w-full'
-                  }`}
+                  } flex flex-col justify-between w-full`}
                 >
                   <div className="flex flex-col justify-between">
                     <div className="h-[inherit] w-full mb-4 flex justify-center relative">
@@ -1217,7 +1187,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
                     </div>
 
                     <h2
-                      className={`text-[22px] uppercase m-0 font-semibold ${
+                      className={`text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw] ${
                         isFullyGifted && !isAnyAmount
                           ? 'cursor-not-allowed opacity-50'
                           : 'cursor-pointer'
@@ -1228,7 +1198,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
 
                     <div className="flex justify-between items-center">
                       {!isAnyAmount && (
-                        <p className="text-2xl font-normal ">${totalAmount.toFixed(2)}</p>
+                        <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">${totalAmount.toFixed(2)}</p>
                       )}
                     </div>
 

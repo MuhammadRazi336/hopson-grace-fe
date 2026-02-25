@@ -93,9 +93,18 @@ async function loadCollectionData({context}) {
     context.storefront.query(COLLECTION_QUERY),
     // Add other queries here, so that they are loaded in parallel
   ]);
-  const filteredCollections = collections.nodes.filter(collection => 
-    collection.readyMadeMetafield?.value !== 'true' && 
-    collection.parentMetafield?.value === 'true'
+  const isExcludedFundsCollection = (collection) => {
+    const title = String(collection?.title || '')
+      .toUpperCase()
+      .trim();
+    return title === 'CASH FUNDS' || title === 'TRAVEL FUNDS';
+  };
+
+  const filteredCollections = collections.nodes.filter(
+    (collection) =>
+      collection.readyMadeMetafield?.value !== 'true' &&
+      collection.parentMetafield?.value === 'true' &&
+      !isExcludedFundsCollection(collection),
   );
   return {
     collections: filteredCollections,
@@ -292,11 +301,10 @@ const GiftDetailHandle = () => {
               <h5 className="text-[40px] max-[1024px]:text-[32px] lg:leading-[42px] xl:leading-[42px] 2xl:leading-[42px] prata my-[1.042vw] text-center">
                 {product?.vendor || 'Hopson Grace'}
               </h5>
-              <p className="text-[14px] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] uppercase mb-2">Toronto</p>
-              <p className="text-[18px] max-[1024px]:text-[16px] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] text-center mb-0">
+              <p className="text-[18px] font-[400] max-[1024px]:text-[16px] lg:leading-[28px] xl:leading-[28px] 2xl:leading-[28px] text-center mb-0">
                 {product?.description ? 
                   product.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : 
-                  'Discover the craftsmanship and quality that defines our brand. Each product is carefully selected to bring beauty and functionality to your home.'
+                  'Lorem ipsum dolor sit amet. Ab nesciunt officia qui labore unde 33 veniam reprehenderit ut impedit perspiciatis in magnam accusantium est ratione dignissimos qui dolor internos. Sit laboriosam rerum est minima provident eos doloremque omnis.'
                 }
               </p>
               <Link to={`/brand/${product?.vendor?.toLowerCase().replace(/\s+/g, '-') || 'hopson-grace'}`}>
