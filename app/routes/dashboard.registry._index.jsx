@@ -11,6 +11,7 @@ import RegistryStatusCard from '~/components/RegistryStatusCard';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import { Footer } from '~/components/Footer';
 import {formatPrice} from '~/utils/priceFormatter';
+import BackToTop from '~/components/BackToTop';
 
 // Collections with products per node (same approach as addgifts: parent -> sub -> products -> parentCollectionId)
 const REGISTRY_COLLECTION_QUERY = `#graphql
@@ -841,19 +842,15 @@ const index = () => {
             </div>
           </div>
         </div>
-        {(categoryFilter === 'all' || categoryFilter === 'gifts') && (
-          <div className="gap-6 mt-[5.938vw]">
-            <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">GIFTS</h2>
-            <ProductPage data={data} priceSort={priceSort} statusFilter={statusFilter} />
-          </div>
-        )}
-
-        {(categoryFilter === 'all' || categoryFilter === 'cashfunds') && (
-          <div className="gap-6 mt-[6vw]">
-            <h2 className="text-[20px] leading-[36px] lg:text-[1.563vw] xl:text-[1.563vw] 2xl:text-[1.563vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold text-center mb-[3.385vw]">CASH FUNDS</h2>
-            <FundPage data={cashfundData} priceSort={priceSort} statusFilter={statusFilter} />
-          </div>
-        )}
+        <div className="mt-[5.938vw]">
+          <ProductPage
+            data={data}
+            cashfundData={cashfundData}
+            categoryFilter={categoryFilter}
+            priceSort={priceSort}
+            statusFilter={statusFilter}
+          />
+        </div>
       </div>
       <div className="py-[8.177vw] w-full flex justify-center items-center max-[1024px]:py-[50px]">
         <div className="py-10 lg:py-[3.438vw] xl:py-[5.438vw] 2xl:py-[5.438vw] bg-[#446184] flex items-center justify-center flex-row lg:w-[110.954vw] xl:w-[110.954vw] 2xl:w-[110.954vw] lg:min-h-[28.698vw] xl:min-h-[28.698vw] 2xl:min-h-[28.698vw] w-full max-[768px]:p-10 mt-0 gap-x-64 max-[1024px]:p-[20px] max-[1024px]:flex-wrap max-[1024px]:items-center">
@@ -899,12 +896,24 @@ const index = () => {
 };
 
 export default index;
-const ProductPage = ({data, priceSort, statusFilter}) => {
-  if (!Array.isArray(data)) return null;
+const ProductPage = ({
+  data,
+  cashfundData,
+  categoryFilter,
+  priceSort,
+  statusFilter,
+}) => {
+  const safeGifts = Array.isArray(data) ? data : [];
+  const safeFunds = Array.isArray(cashfundData) ? cashfundData : [];
+  const [itemsToShow, setItemsToShow] = useState(12);
+  const topRef = useRef(null);
 
-  // Helper: determine if a product is gifted
+  useEffect(() => {
+    setItemsToShow(12);
+  }, [categoryFilter, priceSort, statusFilter]);
+
+  // Helper: determine if a gift product is gifted
   const isProductGifted = (product) => {
-    // Prefer explicit backend flag when available
     if (typeof product.isPurchased === 'boolean') {
       return product.isPurchased;
     }
@@ -914,7 +923,7 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
     return stillNeeds === 0;
   };
 
-  // Helper: get numeric amount for sorting
+  // Helper: get numeric gift amount for sorting
   const getProductAmount = (product) => {
     const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
     if (priceObj && priceObj.amount) {
@@ -923,27 +932,65 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
     return Number(product.amount) || 0;
   };
 
-  let filteredData = [...data];
+  // Helper: determine if a fund is gifted
+  const isFundGifted = (fund) => {
+    const totalAmount = Number(fund.amount) || 0;
+    const collectedAmount = Number(fund.collectedAmount) || 0;
+    const remainingAmount = Math.max(0, totalAmount - collectedAmount);
+    const isAnyAmount = fund.cashFund?.isAnyAmount || false;
+
+    if (typeof fund.isPurchased === 'boolean') {
+      return fund.isPurchased;
+    }
+
+    return !isAnyAmount && remainingAmount === 0;
+  };
+
+  // Helper: numeric fund amount for sorting
+  const getFundAmount = (fund) => Number(fund.amount) || 0;
+
+  let filteredGifts = [...safeGifts];
+  let filteredFunds = [...safeFunds];
 
   // Apply status filter
   if (statusFilter === 'gifted') {
-    filteredData = filteredData.filter((product) => isProductGifted(product));
+    filteredGifts = filteredGifts.filter((product) => isProductGifted(product));
+    filteredFunds = filteredFunds.filter((fund) => isFundGifted(fund));
   } else if (statusFilter === 'ungifted') {
-    filteredData = filteredData.filter((product) => !isProductGifted(product));
+    filteredGifts = filteredGifts.filter((product) => !isProductGifted(product));
+    filteredFunds = filteredFunds.filter((fund) => !isFundGifted(fund));
   }
 
   // Apply price sort
   if (priceSort === 'low-to-high') {
-    filteredData.sort((a, b) => getProductAmount(a) - getProductAmount(b));
+    filteredGifts.sort((a, b) => getProductAmount(a) - getProductAmount(b));
+    filteredFunds.sort((a, b) => getFundAmount(a) - getFundAmount(b));
   } else if (priceSort === 'high-to-low') {
-    filteredData.sort((a, b) => getProductAmount(b) - getProductAmount(a));
+    filteredGifts.sort((a, b) => getProductAmount(b) - getProductAmount(a));
+    filteredFunds.sort((a, b) => getFundAmount(b) - getFundAmount(a));
   }
 
-  // Calculate how many placeholder images to show
-  const actualGiftsCount = filteredData.length;
-  const placeholderCount = Math.max(0, 4 - actualGiftsCount);
+  // Build one combined list for one unified grid
+  const items = [];
+  if (categoryFilter === 'all' || categoryFilter === 'gifts') {
+    filteredGifts.forEach((gift) => items.push({type: 'gift', item: gift}));
+  }
+  if (categoryFilter === 'all' || categoryFilter === 'cashfunds') {
+    filteredFunds.forEach((fund) => items.push({type: 'cashfund', item: fund}));
+  }
 
-  // Create array of placeholder elements
+  // Keep sorting consistent after combining
+  items.sort((a, b) => {
+    const amountA =
+      a.type === 'gift' ? getProductAmount(a.item) : getFundAmount(a.item);
+    const amountB =
+      b.type === 'gift' ? getProductAmount(b.item) : getFundAmount(b.item);
+    return priceSort === 'high-to-low' ? amountB - amountA : amountA - amountB;
+  });
+
+  const visibleItems = items.slice(0, itemsToShow);
+  const placeholderCount = Math.max(0, 4 - visibleItems.length);
+
   const placeholderElements = Array.from(
     {length: placeholderCount},
     (_, index) => (
@@ -951,11 +998,15 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
         key={`placeholder-${index}`}
         className="mb-4 flex items-center justify-center w-full"
       >
-        <Link to="/dashboard/addgifts">
+        <Link to={categoryFilter === 'cashfunds' ? '/cash-funds' : '/dashboard/addgifts'}>
           <img
-            src="/assets/Images/add-gift-placeholder.png"
+            src={
+              categoryFilter === 'cashfunds'
+                ? '/assets/Images/add-cash-placeholder.png'
+                : '/assets/Images/add-gift-placeholder.png'
+            }
             alt="Add gift placeholder"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
           />
         </Link>
       </div>
@@ -964,10 +1015,13 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
 
   return (
     <div className="min-[1025px]:px-[5vw]">
+      <div ref={topRef} className="scroll-mt-[92px]"></div>
       <div className="grid items-start gap-[3.281vw] mt-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden">
-        {filteredData.length > 0
-          ? filteredData.map((product) => {
-            console.log('Product:', product);
+        {visibleItems.length > 0
+          ? visibleItems.map(({type, item}) => {
+              if (type === 'gift') {
+                const product = item;
+                console.log('Product:', product);
               // Use priceV2 from Shopify, fallback to backend amount
               const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
               const price =
@@ -1073,98 +1127,18 @@ const ProductPage = ({data, priceSort, statusFilter}) => {
                   </div> */}
                 </div>
               );
-            })
-          : null}
+              }
 
-        {/* Render placeholder elements */}
-        {placeholderElements}
-      </div>
-    </div>
-  );
-};
-const FundPage = ({data, priceSort, statusFilter}) => {
-  // Defensive: handle missing or malformed data
-  if (!Array.isArray(data)) return <div>No funds available.</div>;
-
-  // Helper: determine if a fund is gifted
-  const isFundGifted = (fund) => {
-    const totalAmount = Number(fund.amount) || 0;
-    const collectedAmount = Number(fund.collectedAmount) || 0;
-    const remainingAmount = Math.max(0, totalAmount - collectedAmount);
-    const isAnyAmount = fund.cashFund?.isAnyAmount || false;
-
-    // Prefer explicit backend flag when available
-    if (typeof fund.isPurchased === 'boolean') {
-      return fund.isPurchased;
-    }
-
-    // Fallback: fully funded non "any amount" funds are treated as gifted
-    return !isAnyAmount && remainingAmount === 0;
-  };
-
-  // Helper: numeric amount for sorting
-  const getFundAmount = (fund) => Number(fund.amount) || 0;
-
-  // Apply status filter
-  let filteredData = [...data];
-  if (statusFilter === 'gifted') {
-    filteredData = filteredData.filter((fund) => isFundGifted(fund));
-  } else if (statusFilter === 'ungifted') {
-    filteredData = filteredData.filter((fund) => !isFundGifted(fund));
-  }
-
-  // Apply price sort
-  if (priceSort === 'low-to-high') {
-    filteredData.sort((a, b) => getFundAmount(a) - getFundAmount(b));
-  } else if (priceSort === 'high-to-low') {
-    filteredData.sort((a, b) => getFundAmount(b) - getFundAmount(a));
-  }
-
-  // Calculate how many placeholder images to show
-  const actualFundsCount = filteredData.length;
-  const placeholderCount = Math.max(0, 4 - actualFundsCount);
-
-  // Create array of placeholder elements
-  const placeholderElements = Array.from(
-    {length: placeholderCount},
-    (_, index) => (
-      <div
-        key={`placeholder-${index}`}
-        className="mb-4 flex items-center justify-center w-full"
-      >
-        <Link to="/cash-funds">
-          <img
-            src="/assets/Images/add-cash-placeholder.png"
-            alt="Add cash fund placeholder"
-            className="w-full h-full object-cover"
-          />
-        </Link>
-      </div>
-    ),
-  );
-
-  const handleViewContributors = (fundName) => {
-    // ...
-  };
-
-  return (
-    <div className="min-[1025px]:px-[5vw]">
-      <div className="grid items-start gap-[3.281vw] pb-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-x-hidden">
-        {filteredData.length > 0
-          ? filteredData.map((fund) => {
-              // Calculate if fund is fully gifted
+              const fund = item;
               const totalAmount = Number(fund.amount) || 0;
               const collectedAmount = Number(fund.collectedAmount) || 0;
-              const remainingAmount = Math.max(
-                0,
-                totalAmount - collectedAmount,
-              );
-              const isFullyGifted = remainingAmount === 0;
+              const remainingAmount = Math.max(0, totalAmount - collectedAmount);
               const isAnyAmount = fund.cashFund?.isAnyAmount || false;
+              const isFullyGifted = remainingAmount === 0;
 
               return (
                 <div
-                  key={fund.productId || Math.random()}
+                  key={`cash-${fund.productId || fund.id || totalAmount}`}
                   className={`${
                     isFullyGifted && !isAnyAmount ? 'overlay-gifted' : ''
                   } flex flex-col justify-between w-full`}
@@ -1173,7 +1147,7 @@ const FundPage = ({data, priceSort, statusFilter}) => {
                     <div className="h-[inherit] w-full mb-4 flex justify-center relative">
                       <img
                         src={
-                          fund.cashFund.image?.fileUrl ||
+                          fund.cashFund?.image?.fileUrl ||
                           '/assets/Images/placeholder.png'
                         }
                         alt={fund.cashFund?.name || 'Cash Fund'}
@@ -1198,7 +1172,9 @@ const FundPage = ({data, priceSort, statusFilter}) => {
 
                     <div className="flex justify-between items-center">
                       {!isAnyAmount && (
-                        <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">${totalAmount.toFixed(2)}</p>
+                        <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">
+                          ${totalAmount.toFixed(2)}
+                        </p>
                       )}
                     </div>
 
@@ -1231,16 +1207,6 @@ const FundPage = ({data, priceSort, statusFilter}) => {
                       </div>
                     )}
                   </div>
-
-                  {/* <div className="mt-4 flex flex-col justify-end">
-                    <div className="text-center">
-                      <Link to="/dashboard/shipgifts">
-                        <button className="bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white">
-                          View Contributors
-                        </button>
-                      </Link>
-                    </div>
-                  </div> */}
                 </div>
               );
             })
@@ -1249,6 +1215,30 @@ const FundPage = ({data, priceSort, statusFilter}) => {
         {/* Render placeholder elements */}
         {placeholderElements}
       </div>
+
+      {items.length > 12 && (
+        <div className="flex justify-center items-center mt-[80px]">
+          <div className="w-full flex flex-col items-center">
+            <p className="text-center text-[18px] font-semibold mb-10">
+              LOADING {Math.min(itemsToShow, items.length)} of {items.length}
+            </p>
+
+            {itemsToShow < items.length && (
+              <button
+                type="button"
+                className="w-[360px] h-[77px] text-[18px] border-3 border-black bg-white font-bold uppercase tracking-[0.08em] cursor-pointer max-[1024px]:w-full max-[1024px]:h-[56px] max-[1024px]:text-[14px]"
+                onClick={() =>
+                  setItemsToShow((prev) => Math.min(prev + 12, items.length))
+                }
+              >
+                VIEW MORE
+              </button>
+            )}
+
+            <BackToTop topRef={topRef} className="mb-0 mt-7" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

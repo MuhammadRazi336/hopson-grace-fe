@@ -1649,9 +1649,11 @@ export default function CoupleProfile() {
                 alt="No Products"
                 className="w-36 h-36 mx-auto mb-6 opacity-50"
               />
-              <h3 className="text-[22px] font-semibold text-[#1F1D1B] mb-4">
-                No Products Found
-              </h3>
+              {isLoggedIn && (
+                <h3 className="text-[22px] font-semibold text-[#1F1D1B] mb-4">
+                  No Products Found
+                </h3>
+              )}
               <p className="text-[#1F1D1B] mb-6">
                 {isLoggedIn
                   ? 'Add gifts to get your registry started.'
