@@ -64,7 +64,7 @@ export default function CheckoutFlow() {
             onClick={() => setShowPreview(true)}
             className=" text-[#223247] border-b border-[#223247 ] cursor-pointer font-bold text-lg  mx-auto mt-5 block"
           >
-            Save and Preview
+            SAVE AND PREVIEW
           </button>
 
           <div className="flex items-center gap-x-12 mt-8 justify-center">
