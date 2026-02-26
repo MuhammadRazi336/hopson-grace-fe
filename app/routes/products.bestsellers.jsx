@@ -30,6 +30,153 @@ import GiftCardBg from '/assets/Images/bestsellers-banner.jpg';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
+import BackToTop from '~/components/BackToTop';
+
+const isExcludedFundsCollection = (col) => {
+  const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+  return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+};
+
+const isParentForSidebar = (col) =>
+  col.parentMetafield?.value === 'true' &&
+  col.readyMadeMetafield?.value !== 'true' &&
+  !isExcludedFundsCollection(col);
+
+function SidebarFilter({
+  collections,
+  checkedCollectionIds,
+  setCheckedCollectionIds,
+  shopAllChecked,
+  setShopAllChecked,
+}) {
+  const [openSections, setOpenSections] = useState({
+    categories: true,
+    styles: true,
+  });
+
+  const parentCollections = collections.filter(isParentForSidebar);
+  const subCollections = collections.filter(
+    (col) =>
+      col.parentMetafield?.value === 'false' &&
+      col.readyMadeMetafield?.value !== 'true',
+  );
+
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  const handleSidebarCheckbox = (colId) => {
+    setShopAllChecked(false);
+    if (checkedCollectionIds.includes(colId)) {
+      setCheckedCollectionIds((prev) => prev.filter((id) => id !== colId));
+      return;
+    }
+    setCheckedCollectionIds((prev) => [...prev, colId]);
+  };
+
+  return (
+    <div className="w-full lg:w-[19.031vw] xl:w-[19.031vw] 2xl:w-[19.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6]">
+      <div className="mb-6">
+        <h2
+          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+          onClick={() => toggleSection('categories')}
+        >
+          Product Categories
+          <span className="text-lg relative -top-[3px]">
+            {openSections.categories ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-[0.833vw] h-[0.833vw]"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.categories && (
+          <ul className="space-y-2 text-sm">
+            {parentCollections.map((col) => (
+              <li key={col.id} className="mb-[1.69vw]">
+                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                  <input
+                    type="checkbox"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div>
+        <h2
+          className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+          onClick={() => toggleSection('styles')}
+        >
+          Shop by Style
+          <span className="text-lg relative -top-[3px]">
+            {openSections.styles ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-[0.833vw] h-[0.833vw]"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.styles && (
+          <ul className="space-y-2 text-sm">
+            <li className="mb-[1.69vw]">
+              <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                <input
+                  type="checkbox"
+                  className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                  checked={shopAllChecked}
+                  onChange={() => {
+                    setShopAllChecked((prev) => !prev);
+                    setCheckedCollectionIds([]);
+                  }}
+                />
+                Shop All
+              </label>
+            </li>
+            {subCollections.map((col) => (
+              <li key={col.id} className="mb-[1.69vw]">
+                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                  <input
+                    type="checkbox"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
 
 const tabsData = [
   {
@@ -118,7 +265,7 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
-        products(first: 10){
+        products(first: 250){
           edges {
             node {
               id
@@ -249,13 +396,68 @@ const Bestsellers = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
+  const [shopAllChecked, setShopAllChecked] = useState(false);
   const [productsToShow, setProductsToShow] = useState(12);
+  const topRef = useRef(null);
   const productGridRef = useRef(null);
 
-  // Reset products to show when bestsellerProducts change
+  const getSubCollectionIdsForParent = (parentCollection) => {
+    if (parentCollection.subCollectionMetafield?.references?.edges) {
+      return parentCollection.subCollectionMetafield.references.edges.map(
+        (edge) => edge.node.id,
+      );
+    }
+    if (parentCollection.subMetafield?.value) {
+      try {
+        return JSON.parse(parentCollection.subMetafield.value);
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
+  const getProductCollectionIdsMap = () => {
+    const map = new Map();
+    (collections || []).forEach((collection) => {
+      (collection.products?.edges || []).forEach((edge) => {
+        const productId = edge?.node?.id;
+        if (!productId) return;
+        if (!map.has(productId)) map.set(productId, []);
+        map.get(productId).push(collection.id);
+      });
+    });
+    return map;
+  };
+
+  const productCollectionIdsMap = getProductCollectionIdsMap();
+
+  const filteredProducts = bestsellerProducts.filter((product) => {
+    if (shopAllChecked || checkedCollectionIds.length === 0) return true;
+
+    const productId = product?.node?.id;
+    const productCollectionIds = productCollectionIdsMap.get(productId) || [];
+
+    return checkedCollectionIds.some((checkedId) => {
+      const checkedCollection = collections.find((col) => col.id === checkedId);
+      if (!checkedCollection) return false;
+
+      const isParent = checkedCollection.parentMetafield?.value === 'true';
+      if (!isParent) return productCollectionIds.includes(checkedId);
+
+      const subCollectionIds = getSubCollectionIdsForParent(checkedCollection);
+      return (
+        productCollectionIds.includes(checkedId) ||
+        subCollectionIds.some((subId) => productCollectionIds.includes(subId))
+      );
+    });
+  });
+
+  // Reset products to show when products/filter changes
   useEffect(() => {
     setProductsToShow(12);
-  }, [bestsellerProducts]);
+  }, [bestsellerProducts, checkedCollectionIds, shopAllChecked]);
 
   const handleAddToRegistry = (product, quantity) => {
     try {
@@ -323,17 +525,11 @@ const Bestsellers = () => {
   };
 
   const handleViewMore = () => {
-    setProductsToShow(prev => prev + 12);
+    setProductsToShow((prev) => Math.min(prev + 12, filteredProducts.length));
   };
 
-  const handleBackToTop = () => {
-    if (productGridRef.current) {
-      productGridRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const displayedProducts = bestsellerProducts.slice(0, productsToShow);
-  const hasMoreProducts = bestsellerProducts.length > productsToShow;
+  const displayedProducts = filteredProducts.slice(0, productsToShow);
+  const hasMoreProducts = filteredProducts.length > productsToShow;
 
   return (
     <>
@@ -359,53 +555,65 @@ const Bestsellers = () => {
       </section>
 
       {/* Products Grid Section */}
-      {displayedProducts.length > 0 && (
+      {bestsellerProducts.length > 0 && (
         <section className="w-[81.25vw] mx-auto py-12" ref={productGridRef}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12">
-            {displayedProducts.map((product, index) => {
-              console.log(product);
-              const price = product.node.variants?.edges?.[0]?.node?.priceV2?.amount;
-              const image = product.node.images?.edges?.[0]?.node?.url;
-              
-              return (
-                <RegistryProduct
-                  key={product.node.id || index}
-                  id={product.node.id}
-                  image={image}
-                  productName={product.node.title}
-                  price={price}
-                  productHandle={product.node.handle}
-                  registryId={registry?.id}
-                  onAddToRegistry={(quantity) => handleAddToRegistry(product.node, quantity)}
-                />
-              );
-            })}
+          <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]"></div>
+          <div className="flex flex-col gap-[2.99vw] md:flex-row pt-10">
+            <SidebarFilter
+              collections={collections}
+              checkedCollectionIds={checkedCollectionIds}
+              setCheckedCollectionIds={setCheckedCollectionIds}
+              shopAllChecked={shopAllChecked}
+              setShopAllChecked={setShopAllChecked}
+            />
+            <div className="flex flex-col lg:w-[75.52vw] xl:w-[75.52vw] 2xl:w-[75.52vw]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12">
+                {displayedProducts.length > 0 ? (
+                  displayedProducts.map((product, index) => {
+                    console.log(product);
+                    const price = product.node.variants?.edges?.[0]?.node?.priceV2?.amount;
+                    const image = product.node.images?.edges?.[0]?.node?.url;
+                    
+                    return (
+                      <RegistryProduct
+                        key={product.node.id || index}
+                        id={product.node.id}
+                        image={image}
+                        productName={product.node.title}
+                        price={price}
+                        productHandle={product.node.handle}
+                        registryId={registry?.id}
+                        onAddToRegistry={(quantity) => handleAddToRegistry(product.node, quantity)}
+                      />
+                    );
+                  })
+                ) : (
+                  <div className="col-span-4 text-center text-gray-500">
+                    No products found for selected filters.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* View More and Back to Top Section */}
           <div className="flex flex-col items-center mt-12 space-y-4">
             {/* Loading indicator */}
             <p className="text-gray-600 text-sm">
-              LOADING {displayedProducts.length} of {bestsellerProducts.length} PRODUCTS
+              LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
+              {filteredProducts.length}
             </p>
             
             {/* View More Button */}
-            {hasMoreProducts && (
+            {filteredProducts.length > 12 && hasMoreProducts && (
               <WhiteThemeButton
-                text="VIEW MORE"
+                Text="VIEW MORE"
                 onClick={handleViewMore}
-                className="button-cs text-[#1F1D1B] bastardogrotesk lg:text-[0.938vw] lg:leading-[0.938vw] text-[18px] leading-[18px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none"
+                buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
               />
             )}
             
-            {/* Back to Top Button */}
-            {displayedProducts.length > 12 && (
-              <WhiteThemeButton
-                text="BACK TO TOP"
-                onClick={handleBackToTop}
-                className="button-cs text-[#1F1D1B] bastardogrotesk lg:text-[0.938vw] lg:leading-[0.938vw] text-[18px] leading-[18px] lg:w-[18.75vw] lg:h-[4.01vw] border-3 border-[#1F1D1B] cursor-pointer max-[1024px]:py-4 bg-transparent rounded-none"
-              />
-            )}
+            <BackToTop topRef={topRef} className={'mb-0 mt-7'} />
           </div>
         </section>
       )}

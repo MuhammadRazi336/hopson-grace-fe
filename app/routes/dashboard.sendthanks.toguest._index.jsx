@@ -707,7 +707,7 @@ const ThankYou = () => {
             <button
               type="button"
               onClick={handlePreview}
-              className="text-[#223247] border-b border-[#223247] cursor-pointer font-bold text-lg mx-auto mt-5 block"
+              className="text-[#ffffff] border-b border-[#ffffff] cursor-pointer font-bold text-lg mx-auto mt-5 block"
             >
               Save and Preview
             </button>
@@ -716,7 +716,7 @@ const ThankYou = () => {
               <button
                 type="button"
                 onClick={() => setShowPreview(false)}
-                className="text-[#223247] border-b border-[#223247] cursor-pointer font-bold text-lg"
+                className="text-[#ffffff] border-b border-[#ffffff] cursor-pointer font-bold text-lg"
               >
                 BACK TO EDIT VIEW
               </button>
