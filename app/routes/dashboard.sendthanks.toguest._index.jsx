@@ -709,7 +709,7 @@ const ThankYou = () => {
               onClick={handlePreview}
               className="text-[#ffffff] border-b border-[#ffffff] cursor-pointer font-bold text-lg mx-auto mt-5 block"
             >
-              Save and Preview
+              SAVE AND PREVIEW
             </button>
           ) : (
             <div className="flex justify-center gap-x-4 mt-5">
@@ -718,7 +718,7 @@ const ThankYou = () => {
                 onClick={() => setShowPreview(false)}
                 className="text-[#ffffff] border-b border-[#ffffff] cursor-pointer font-bold text-lg"
               >
-                BACK TO EDIT VIEW
+                BACK TO EDIT
               </button>
             </div>
           )}
