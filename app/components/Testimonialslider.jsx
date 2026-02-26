@@ -3,10 +3,12 @@ import 'swiper/swiper-bundle.css';
 
 import {Navigation, Pagination} from 'swiper/modules';
 import {Link} from '@remix-run/react';
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 
-const Testimonialslider = ({ blogs = [] }) => {
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1920);
+const Testimonialslider = ({blogs = []}) => {
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 1920,
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -31,31 +33,35 @@ const Testimonialslider = ({ blogs = [] }) => {
     if (windowWidth < 1600) return 40;
     return vwToPx(5); // 5vw for screens 1600px and above
   };
-  
+
   // Helper function to get first two sentences
   const getFirstTwoSentences = (text) => {
     if (!text) return '';
-    
+
     // Split by sentence endings (. ! ?) but keep the punctuation
     const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-    
-    if (sentences.length <= 2) {
+
+    if (sentences.length <= 3) {
       return text;
     }
-    
+
     // Take first two sentences and add ellipsis
     return sentences.slice(0, 2).join(' ').trim() + '';
   };
 
   // Flatten all articles from all blogs with proper error handling
-  const allArticles = blogs?.flatMap(blog => 
-    blog?.articles?.nodes?.map(article => ({
-      ...article,
-      blogHandle: blog.handle,
-      category: (article?.categoryMetafield?.value || '').toLowerCase().trim(),
-      venue: article?.venueMetafield?.value || '',
-    })) || []
-  ) || [];
+  const allArticles =
+    blogs?.flatMap(
+      (blog) =>
+        blog?.articles?.nodes?.map((article) => ({
+          ...article,
+          blogHandle: blog.handle,
+          category: (article?.categoryMetafield?.value || '')
+            .toLowerCase()
+            .trim(),
+          venue: article?.venueMetafield?.value || '',
+        })) || [],
+    ) || [];
 
   return (
     <div className="testimonialSlider pt-[38px] pb-5 lg:pt-20 lg:pb-0">
@@ -87,48 +93,60 @@ const Testimonialslider = ({ blogs = [] }) => {
           },
         }}
       >
-        {allArticles.length > 0 ? allArticles.slice(0, 4).map((article, index) => {
-          const cleanTitle = article?.title?.replace(/<[^>]*>/g, '') || 'Untitled Article';
-          const cleanContent = article?.contentHtml?.replace(/<[^>]*>/g, '') || '';
-          const excerpt = getFirstTwoSentences(cleanContent);
-          
-          return (
-            <SwiperSlide key={article.id} className='!lg:w-[83.96vw] xl:w-[83.96vw] 2xl:w-[83.96vw]'>
-              <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[450px]">
-                <img
-                  src={article.image?.url || "/assets/Images/couple-logo.png"}
-                  alt={article.image?.altText || cleanTitle}
-                  className="max[1024px]:w-full h-full relative object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] rounded-none"
-                />
-                <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
-                  <p className="text-xl lg:text-[1.56vw] xl:text-[1.56vw] 2xl:text-[1.56vw] lg:leading-[2.86vw] xl:leading-[2.86vw] 2xl:leading-[2.86vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal max-[1024px]:line-clamp-15">
-                    {excerpt}
-                  </p>
-                  <Link to={`/blogs/${article.blogHandle || 'blog'}/${article.handle || 'article'}`}>
-                    <h3 className="lg:text-[1.17vw] xl:text-[1.17vw] 2xl:text-[1.17vw] lg:leading-[1.17vw] xl:leading-[1.17vw] 2xl:leading-[1.17vw] text-[16px] flex items-center gap-2 text-white font-normal mt-[2vw]">
-                      <span className="border-white border-b-2 pb-[3px] max-[1024px]:hidden">READ ON</span>
-                      <img
-                        src="/assets/Images/arrow.png"
-                        className=" -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:hidden max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
-                        alt="next"
-                        
-                      />
-                    </h3>
-                  </Link>
-                  <div className="flex flex-col items-end absolute bottom-[3vw] right-[3vw]">
-                    <h3 className="font-bold mt-[3.385vw] lg:text-[0.938vw] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto">
-                      {cleanTitle}
-                    </h3>
-                    <h4 className="text-right ivyora text-xl lg:text-[1.875vw] lg:leading-[2.5vw] font-normal m-0 max-[1024px]:hidden">
-                      {article.venue || 'Venue TBD'}
-                    </h4>
+        {allArticles.length > 0 ? (
+          allArticles.slice(0, 4).map((article, index) => {
+            const cleanTitle =
+              article?.title?.replace(/<[^>]*>/g, '') || 'Untitled Article';
+            const cleanContent =
+              article?.contentHtml?.replace(/<[^>]*>/g, '') || '';
+            const excerpt = getFirstTwoSentences(cleanContent);
+
+            return (
+              <SwiperSlide
+                key={article.id}
+                className="!lg:w-[83.96vw] xl:w-[83.96vw] 2xl:w-[83.96vw]"
+              >
+                <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[450px]">
+                  <img
+                    src={article.image?.url || '/assets/Images/couple-logo.png'}
+                    alt={article.image?.altText || cleanTitle}
+                    className="max[1024px]:w-full h-full relative object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] rounded-none"
+                  />
+                  <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[50px] absolute lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
+                    <p className="text-xl lg:text-[1.56vw] xl:text-[1.56vw] 2xl:text-[1.56vw] lg:leading-[2.86vw] xl:leading-[2.86vw] 2xl:leading-[2.86vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
+                      {excerpt}
+                    </p>
+                    <Link
+                      to={`/blogs/${article.blogHandle || 'blog'}/${
+                        article.handle || 'article'
+                      }`}
+                    >
+                      <h3 className="lg:text-[1.17vw] xl:text-[1.17vw] 2xl:text-[1.17vw] lg:leading-[1.17vw] xl:leading-[1.17vw] 2xl:leading-[1.17vw] text-[16px] flex items-center gap-2 text-white font-normal mt-[2vw]">
+                        <span className="border-white border-b-2 pb-[3px] max-[1024px]:hidden">
+                          READ ON
+                        </span>
+                        <img
+                          src="/assets/Images/arrow.png"
+                          className=" -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:hidden max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
+                          alt="next"
+                        />
+                      </h3>
+                    </Link>
+                    <div className="flex flex-col items-end absolute bottom-[3vw] right-[3vw]">
+                      <h3 className="font-bold uppercase my-[2vw] lg:text-[18px] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto">
+                        {cleanTitle}
+                      </h3>
+                      <h4 className="text-right lowercase ivyora text-xl lg:text-[1.875vw] lg:leading-[2.5vw] font-normal m-0 max-[1024px]:hidden">
+                        {article.venue || 'Venue TBD'}
+                      </h4>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </SwiperSlide>
-          );
-        }) : (
-          <SwiperSlide className='lg:w-[80.96vw] xl:w-[80.96vw] 2xl:w-[80.96vw]'>
+              </SwiperSlide>
+            );
+          })
+        ) : (
+          <SwiperSlide className="lg:w-[80.96vw] xl:w-[80.96vw] 2xl:w-[80.96vw]">
             <div className="flex p-0 max-[1024px]:p-0 bg-white registrytagwhite relative max-[1024px]:h-[700px]">
               <img
                 src="/assets/Images/couple-logo.png"
@@ -137,7 +155,8 @@ const Testimonialslider = ({ blogs = [] }) => {
               />
               <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[3vw] absolute lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
                 <p className="text-xl lg:text-[1.1vw] lg:leading-[1.9vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
-                  We're working on bringing you amazing blog content. Check back soon for inspiring stories and helpful tips!
+                  We're working on bringing you amazing blog content. Check back
+                  soon for inspiring stories and helpful tips!
                 </p>
                 <div className="flex flex-col items-end">
                   <h3 className="font-bold mt-[3.385vw] lg:text-[0.938vw] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto">

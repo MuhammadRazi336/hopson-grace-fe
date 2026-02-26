@@ -92,9 +92,10 @@ export async function loader({ context }) {
     });
 
     // Remove duplicates by title (keep first occurrence)
-    const brands = filteredBrands.filter((brand, index, self) => 
-      index === self.findIndex(b => b.title === brand.title)
-    );
+    const brands =
+      brandCollections?.nodes?.filter(
+        (collection) => collection.metafield?.value === 'true',
+      ) || [];
     
     // Debug: Log each brand's metafield to see what we're getting
     brandCollections?.nodes?.forEach((collection, index) => {
