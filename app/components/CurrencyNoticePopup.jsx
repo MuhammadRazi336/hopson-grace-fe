@@ -1,5 +1,6 @@
 import ModalPortal from './ModalPortal';
 import reglogo from '/assets/Images/reglogo.png';
+import regLogoLine from '/assets/Images/currencyLine.png';
 
 const CurrencyNoticePopup = ({onClose}) => {
   return (
@@ -9,11 +10,16 @@ const CurrencyNoticePopup = ({onClose}) => {
         role="dialog"
         aria-modal="true"
       >
-        <div className="w-full max-w-[840px] bg-[#446184] text-white text-center py-10 px-6 md:py-12 md:px-10">
+        <div className="relative w-full max-w-[840px] bg-[#446184] text-white text-center px-6 pt-16 pb-10 md:px-10 md:pt-20 md:pb-12">
           <img
             src={reglogo}
             alt="logo"
-            className="w-[82px] md:w-[110px] mx-auto mb-5"
+            className="absolute left-1/2 -translate-x-1/2 -top-[41px] md:-top-[55px] w-[82px] md:w-[110px]"
+          />
+          <img
+            src={regLogoLine}
+            alt="logo line"
+            className="absolute left-1/2 -translate-x-1/2 top-[42px] w-[120px] h-[3px]"
           />
 
           <h2 className="prata text-[34px] leading-[42px] md:text-[44px] md:leading-[52px] font-normal mb-4">
