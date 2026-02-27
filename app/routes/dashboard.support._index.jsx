@@ -62,7 +62,7 @@ const Support = () => {
               />
               <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
                 We're available at: <br />
-                1-866-531-8616 (TOLL FREE)  or 1-437-564-8656 (LOCAL) <br />
+                1-866-531-8616 (TOLL FREE)  or 437-564-8656 (LOCAL) <br />
                 10–6pm (Mon–Sat) | 12–5pm (Sun)
               </p>
             </div>

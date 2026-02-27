@@ -80,7 +80,7 @@ const ContactUs = () => {
                 />
                 <p className="text-sm lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-0 text-center text-white">
                   <strong>1-866-531-8616 </strong> (Toll Free within North America) 
-                <br /> <strong>1-437-564-8656 </strong> (Local Toronto Area)
+                <br /> <strong>437-564-8656 </strong> (Local Toronto Area)
                 </p>
                 <h3 className="text-[20px] mt-10 text-white lg:text-[1.146vw] lg:leading-[1.875vw] 3xl:w-full  text-center">
                   EMAIL

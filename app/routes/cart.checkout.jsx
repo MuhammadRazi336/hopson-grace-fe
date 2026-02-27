@@ -101,7 +101,7 @@ export async function loader({context, request}) {
       email,
       apiBaseUrl:
         'https://dev-hopsongrace.codup.io',
-      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
     });
   } catch {
     return json({
@@ -113,7 +113,7 @@ export async function loader({context, request}) {
       registryId: '',
       email: '',
       apiBaseUrl: 'https://dev-hopsongrace.codup.io',
-      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH',
+      paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
     });
   }
 }
@@ -272,7 +272,7 @@ export async function action({request, context}) {
 
     // Step 1: Create PayPal order (server-side only; credentials never sent to browser)
     const clientId =
-      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID || 'AYCtXi-gPXhpiK5Z6p9IEBplxxkF66C0iDhUlVIBW9iQKzjbzl5jMfgaUhKhZ9ozWKrTz9PGKBe60yGH';
+      context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID;
     const clientSecret =
       context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
 
