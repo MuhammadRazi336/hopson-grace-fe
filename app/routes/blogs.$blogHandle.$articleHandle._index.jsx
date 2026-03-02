@@ -30,22 +30,20 @@ import 'swiper/css/navigation';
 import BlogArticle from '~/components/BlogArticle';
 
 const BLOGS_QUERY = `#graphql
-query GetAllBlogsAndArticlesForInspiration {
-  blogs(first: 1, reverse: true) {
-    nodes {
-      title
-      handle
-      articles(first: 20) {
-        nodes {
-          id
-          title
-          handle
-          publishedAt
-          contentHtml
-          image {
-            url
-            altText
-          }
+query GetBlogArticlesForMoreStories($blogHandle: String!) {
+  blog(handle: $blogHandle) {
+    title
+    handle
+    articles(first: 20, reverse: true) {
+      nodes {
+        id
+        title
+        handle
+        publishedAt
+        contentHtml
+        image {
+          url
+          altText
         }
       }
     }
@@ -583,10 +581,12 @@ export async function loader({context, params}) {
   }
 
 
-  const {blogs} = await context.storefront.query(BLOGS_QUERY);
+  const {blog: selectedBlog} = await context.storefront.query(BLOGS_QUERY, {
+    variables: {blogHandle},
+  });
 
   // Ensure blogs data is properly structured
-  const safeBlogs = blogs?.nodes?.map(blog => ({
+  const safeBlogs = (selectedBlog ? [selectedBlog] : []).map(blog => ({
     ...blog,
     articles: {
       ...blog.articles,
