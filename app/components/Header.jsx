@@ -1097,13 +1097,6 @@ export function Header() {
                     isProductSubMenuOpen ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
                   }`}>
                     <NavLink
-                      to="/products/new-arrivals"
-                      onClick={() => setIsMenuOpenBottom(false)}
-                      className="block text-black hover:text-gray-600 py-2 text-base"
-                    >
-                      NEW ARRIVALS
-                    </NavLink>
-                    <NavLink
                       to="/products/bestsellers"
                       onClick={() => setIsMenuOpenBottom(false)}
                       className="block text-black hover:text-gray-600 py-2 text-base"
@@ -1124,6 +1117,13 @@ export function Header() {
                         </NavLink>
                       ))
                     ) : null}
+                    <NavLink
+                      to="/products/new-arrivals"
+                      onClick={() => setIsMenuOpenBottom(false)}
+                      className="block text-black hover:text-gray-600 py-2 text-base"
+                    >
+                      NEW ARRIVALS
+                    </NavLink>
                     <NavLink
                       to="/dashboard/giftcards"
                       onClick={() => setIsMenuOpenBottom(false)}

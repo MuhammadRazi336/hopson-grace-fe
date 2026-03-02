@@ -478,6 +478,12 @@ const STYLE_OPTIONS = [
   { id: 'shopAll', label: 'Shop All' },
 ];
 
+const SPECIAL_PRODUCT_TYPE_IDS = {
+  BESTSELLERS: '__BESTSELLERS__',
+  NEW_ARRIVALS: '__NEW_ARRIVALS__',
+  GIFT_CARDS: '__GIFT_CARDS__',
+};
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
@@ -568,6 +574,21 @@ function SidebarFilter({
             </h2>
             {openSections.categories && (
               <ul className="space-y-2 text-sm">
+                <li className="mb-[1.69vw]">
+                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                    <input
+                      type="checkbox"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                      checked={checkedCollectionIds.includes(
+                        SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS,
+                      )}
+                      onChange={() =>
+                        handleSidebarCheckbox(SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS)
+                      }
+                    />
+                    BESTSELLERS
+                  </label>
+                </li>
                 {parentCollection.map((col) => (
                   <li key={col.id} className="mb-[1.69vw]">
                     <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
@@ -581,6 +602,36 @@ function SidebarFilter({
                     </label>
                   </li>
                 ))}
+                <li className="mb-[1.69vw]">
+                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                    <input
+                      type="checkbox"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                      checked={checkedCollectionIds.includes(
+                        SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS,
+                      )}
+                      onChange={() =>
+                        handleSidebarCheckbox(SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS)
+                      }
+                    />
+                    NEW ARRIVALS
+                  </label>
+                </li>
+                <li className="mb-[1.69vw]">
+                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                    <input
+                      type="checkbox"
+                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                      checked={checkedCollectionIds.includes(
+                        SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS,
+                      )}
+                      onChange={() =>
+                        handleSidebarCheckbox(SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS)
+                      }
+                    />
+                    GIFT CARDS
+                  </label>
+                </li>
               </ul>
             )}
           </div>
@@ -839,6 +890,9 @@ export default function AddGifts() {
   // Filter products based on selected collections, Product Type, and Style (metafield)
   const filteredProducts = (() => {
     let list = products;
+    const effectiveCheckedCollectionIds = checkedCollectionIds.filter(
+      (id) => !Object.values(SPECIAL_PRODUCT_TYPE_IDS).includes(id),
+    );
 
     // When a parent collection is selected: show only that parent's products, filtered by Product Type (sub-collection) checkboxes
     if (selectedSwiperCollectionId) {
@@ -846,14 +900,14 @@ export default function AddGifts() {
         (product) =>
           product.parentCollectionId === selectedSwiperCollectionId,
       );
-      if (checkedCollectionIds.length > 0) {
+      if (effectiveCheckedCollectionIds.length > 0) {
         list = list.filter((product) => {
-          if (checkedCollectionIds.includes(product.collectionId))
+          if (effectiveCheckedCollectionIds.includes(product.collectionId))
             return true;
           if (
             product.collectionIds &&
             product.collectionIds.some((id) =>
-              checkedCollectionIds.includes(id),
+              effectiveCheckedCollectionIds.includes(id),
             )
           ) {
             return true;
@@ -879,15 +933,16 @@ export default function AddGifts() {
     // No parent selected: use Product Categories (parent checkboxes), then apply Style filter (Modern/Classic/Eclectic/Shop All)
     if (shopAllChecked) {
       list = products;
-    } else if (checkedCollectionIds.length > 0) {
+    } else if (effectiveCheckedCollectionIds.length > 0) {
       list = products.filter((product) => {
-        if (checkedCollectionIds.includes(product.collectionId)) return true;
-        if (checkedCollectionIds.includes(product.parentCollectionId))
+        if (effectiveCheckedCollectionIds.includes(product.collectionId))
+          return true;
+        if (effectiveCheckedCollectionIds.includes(product.parentCollectionId))
           return true;
         if (
           product.collectionIds &&
           product.collectionIds.some((id) =>
-            checkedCollectionIds.includes(id),
+            effectiveCheckedCollectionIds.includes(id),
           )
         ) {
           return true;

@@ -718,7 +718,7 @@ const ThankYou = () => {
                 onClick={() => setShowPreview(false)}
                 className="text-[#ffffff] border-b border-[#ffffff] cursor-pointer font-bold text-lg"
               >
-                BACK TO EDIT
+                BACK TO EDIT VIEW
               </button>
             </div>
           )}

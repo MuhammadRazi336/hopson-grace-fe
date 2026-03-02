@@ -188,13 +188,6 @@ const Products = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
   
-  console.log('Products page collections:', collections);
-  console.log('Collections count:', collections?.length || 0);
-  if (collections && collections.length > 0) {
-    console.log('First collection sample:', collections[0]);
-    console.log('Collections with parentMetafield:', collections.filter(col => col.parentMetafield?.value === 'true'));
-  }
-
   const isExcludedFundsCollection = (col) => {
     const t = (col.title && String(col.title).toUpperCase().trim()) || '';
     return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
@@ -366,14 +359,6 @@ const Products = () => {
         <>
           <div className="lg:px-[9.583vw] w-[94%] lg:mx-auto px-16 pb-[12.448vw]">
             <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 lg:gap-x-[35px] lg:gap-y-[3.958vw] gap-y-16 gap-x-[24px] mt-[4.167vw]">
-              <Link to="/products/new-arrivals">
-                <div className="flex flex-col items-center justify-center cursor-pointer">
-                  <img src={newArrivals} alt="" className="w-full aspect-square object-cover" />
-                  <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
-                    NEW ARRIVALS
-                  </h3>
-                </div>
-              </Link>
               <Link to="/products/bestsellers">
                 <div className="flex flex-col items-center justify-center cursor-pointer">
                   <img src={bestSellers} alt="" className="w-full aspect-square object-cover" />
@@ -381,14 +366,6 @@ const Products = () => {
                     BESTSELLERS
                   </h3>
                 </div>
-              </Link>
-              <Link to="/dashboard/giftcards">
-              <div className="flex flex-col items-center justify-center">
-                <img src={giftCards} alt="" className="w-full aspect-square object-cover bg-[#446184]" />
-                <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
-                  GIFT CARDS
-                </h3>
-              </div>
               </Link>
               {parentCollections.map((col) => (
                 <Link to={`/products/${col.handle}`} key={col.id} className="flex flex-col items-center justify-center cursor-pointer">
@@ -404,6 +381,22 @@ const Products = () => {
                   </h3>
                 </Link>
               ))}
+              <Link to="/products/new-arrivals">
+                <div className="flex flex-col items-center justify-center cursor-pointer">
+                  <img src={newArrivals} alt="" className="w-full aspect-square object-cover" />
+                  <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
+                    NEW ARRIVALS
+                  </h3>
+                </div>
+              </Link>
+              <Link to="/dashboard/giftcards">
+                <div className="flex flex-col items-center justify-center">
+                  <img src={giftCards} alt="" className="w-full aspect-square object-cover bg-[#446184]" />
+                  <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
+                    GIFT CARDS
+                  </h3>
+                </div>
+              </Link>
             </div>
       </div>
 
