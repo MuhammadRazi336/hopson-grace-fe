@@ -73,7 +73,7 @@ const NavBarLinks = (mobileClasses) => {
                         to="/products/new-arrivals"
                         className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                       >
-                        NEW ARRIVALS
+                        NEW IN
                       </NavLink>
                     </li>
                     <li>

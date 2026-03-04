@@ -581,24 +581,6 @@ export default function SearchResults() {
   return (
     <section>
       <Header />
-
-      <div className="w-full h-fit pt-[100px]">
-        <Heading
-          text={`search results for "${searchQuery}"`}
-          classes={
-            'prata text-[48px] font-normal text-center max-[1024px]:m-0'
-          }
-          image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
-        />
-        <p className="text-center my-5 text-lg">
-          Found {totalResults} result{totalResults !== 1 ? 's' : ''} matching "{searchQuery}"
-        </p>
-        <p className="max-w-xl mx-auto text-center my-5 font-normal leading-relaxed">
-          Browse the search results below categorized by type.
-        </p>
-      </div>
-
       {/* Blogs Section */}
       {blogs.length > 0 && (
         <section className="container mx-auto py-16">
@@ -649,11 +631,21 @@ export default function SearchResults() {
 
       {/* No Results */}
       {totalResults === 0 && (
-        <section className="container mx-auto py-16 text-center">
-          <h3 className="text-2xl font-semibold mb-4">No results found</h3>
-          <p className="text-gray-600 mb-8">
-            No products, cash funds, collections, or blogs match your search for "{searchQuery}". Try different keywords.
-          </p>
+        <section className="text-center py-16 px-6 mt-12">
+          <div className="max-w-md mx-auto">
+            <img
+              src="/assets/Images/NoProduct.png"
+              alt="No Products"
+              className="w-36 h-36 mx-auto mb-6 opacity-50"
+            />
+            <h3 className="text-[22px] font-semibold text-[#1F1D1B] mb-4">
+              No Results Found
+            </h3>
+            <p className="text-[#1F1D1B] mb-6">
+              No products, cash funds, collections, or blogs match your search
+              for "{searchQuery}". Try different keywords.
+            </p>
+          </div>
         </section>
       )}
 

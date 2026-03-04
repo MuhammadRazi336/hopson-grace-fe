@@ -215,7 +215,7 @@ export default function AddGiftsLanding() {
                   <SwiperSlide>
                     <img src={product1} alt="New Arrival" className="w-full" />
                     <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
-                      New Arrival
+                      New In
                     </h3>
                   </SwiperSlide>
                   <SwiperSlide>

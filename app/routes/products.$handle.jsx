@@ -759,8 +759,8 @@ export default function ProductCollection() {
                       className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto"
                     />
                   </h3>
-                  <div className="relative flex-1">
-                    <div className="z-10 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
+                  <div className="relative flex-1 min-w-0">
+                    <div className="z-20 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] flex">
                       <img src={nextitem} alt="" className="rotate-90 size-6" />
                     </div>
                     <Swiper
@@ -789,7 +789,7 @@ export default function ProductCollection() {
                             setCheckedCollectionIds([subCol.id]);
                             setShopAllChecked(false);
                           }}
-                          className="cursor-pointer group min-w-[13.542vw] max-w-[13.542vw]"
+                          className="cursor-pointer group min-w-[14.542vw] max-w-[17.542vw]"
                         >
                           <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
                             <img
@@ -804,7 +804,7 @@ export default function ProductCollection() {
                         </SwiperSlide>
                       ))}
                     </Swiper>
-                    <div className="swiper-button-next-sub absolute right-[50px] cursor-pointer uppercase items-center bg-white z-10 top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
+                    <div className="swiper-button-next-sub absolute right-[35px] cursor-pointer uppercase items-center bg-white z-20 top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] flex">
                       <img src={nextitem} className="size-6 rotate-270" alt="" />
                     </div>
                   </div>
