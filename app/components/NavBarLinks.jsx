@@ -67,15 +67,7 @@ const NavBarLinks = (mobileClasses) => {
               <div className="flex mx-auto">
                 <div className="mr-[90px]">
                   <ul className="">
-                    {/* Static items - keep these as is */}
-                    <li>
-                      <NavLink
-                        to="/products/new-arrivals"
-                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
-                      >
-                        NEW IN
-                      </NavLink>
-                    </li>
+                    {/* Static items */}
                     <li>
                       <NavLink
                         to="/products/bestsellers"
@@ -102,6 +94,15 @@ const NavBarLinks = (mobileClasses) => {
                     ) : (
                       <li className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-gray-500">No collections available</li>
                     )}
+
+                    <li>
+                      <NavLink
+                        to="/products/new-arrivals"
+                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
+                      >
+                        NEW IN
+                      </NavLink>
+                    </li>
                     
                     <li>
                       <NavLink
