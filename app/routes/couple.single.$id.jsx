@@ -1674,7 +1674,7 @@ export default function CoupleProfile() {
           </div>
           <div className="flex flex-col items-center justify-center pr-[10.417vw]">
             <h3 className="text-2xl text-white lg:text-[2.292vw] 3xl:w-full prata max-w-[410px] text-center">
-              gift any amount
+              add a gift card
             </h3>
             <img
               src="/assets/Images/white-bdr.png"
@@ -1685,32 +1685,17 @@ export default function CoupleProfile() {
               CONTRIBUTE TO OUR JOURNEY!
             </h5>
             <p className="text-sm lg:text-[26px] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-10 font-normal text-center">
-               Help us create our dream wedding, <br />
-              honeymoon or life experience. We’re so grateful.
+              Help us create our dream wedding, honeymoon or life experience.
+              We&apos;re so grateful.
             </p>
-            <div className="flex flex-row items-center justify-center gap-x-[1.557vw]">
+            <Link to="/dashboard/giftcards">
               <button
                 type="button"
-                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
+                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[12vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
-                $100.00
+                ADD GIFT CARDS
               </button>
-              <button
-                type="button"
-                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
-              >
-                $200.00
-              </button>
-              <button
-                type="button"
-                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[8.057vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
-              >
-                OTHER
-              </button>
-              {/* <Link to="/addGiftCard" className="text-black text-lg w-[340px] py-6 bg-white hover:bg-gray-100 transition-all ease-in-out cursor-pointer mx-auto block text-center font-bold tracking-widest">
-                PURCHASE
-              </Link> */}
-            </div>
+            </Link>
           </div>
         </div>
       </div>
@@ -1720,12 +1705,6 @@ export default function CoupleProfile() {
           className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
           onClick={onClose}
         />
-      )}
-      {console.log(
-        'Rendering SideCart with cartItems:',
-        cartItems,
-        'sideCartOpen:',
-        sideCartOpen,
       )}
       {hasProducts && registryId && (
         <SideCart

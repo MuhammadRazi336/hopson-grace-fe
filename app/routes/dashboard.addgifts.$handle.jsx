@@ -287,7 +287,7 @@ const GiftDetailHandle = () => {
         </div>
 
         <section className="mt-[9.74vw] bg-[#446184] text-white ">
-          <div className="mx-auto flex flex-col lg:flex-row gap-24 py-[5.7vw] px-[7.5vw] max-[1024px]:gap-8 max-[1024px]:px-4 max-[1024px]:py-10">
+          <div className="mx-auto flex flex-col lg:flex-row lg:items-center gap-24 py-[5.7vw] px-[7.5vw] max-[1024px]:gap-8 max-[1024px]:px-4 max-[1024px]:py-10">
             {/* Left Text Section */}
             <div className="lg:w-4/12 w-full flex items-center flex-col gap-2">
               <p className="text-[22px] max-[1024px]:text-[14px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] tracking-wider uppercase pb-1">
@@ -399,7 +399,7 @@ const GiftDetailHandle = () => {
                             <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                               CLASSIC TUMBLER, SET OF 6
                             </h3>
-                            <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$80.00</p>
+                            <p className="lg:text-[1.25vw] text-white xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$80.00</p>
                           </Link>
                         </SwiperSlide>
                         <SwiperSlide>
@@ -412,7 +412,7 @@ const GiftDetailHandle = () => {
                             <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                               FARMHOUSE BOWL 11"
                             </h3>
-                            <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
+                            <p className="lg:text-[1.25vw] text-white xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$95.00</p>
                           </Link>
                         </SwiperSlide>
                         <SwiperSlide>
@@ -425,7 +425,7 @@ const GiftDetailHandle = () => {
                             <h3 className="mt-2.5 lg:mt-[0.885vw] text-white uppercase lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] text-sm font-medium tracking-wider hover:text-gray-600 transition-colors">
                               RAW HONEY
                             </h3>
-                            <p className="lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>
+                            <p className="lg:text-[1.25vw] text-white xl:text-[1.25vw] 2xl:text-[1.25vw] text-sm pt-[6px]">$430.00</p>
                           </Link>
                         </SwiperSlide>
                       </>

@@ -357,7 +357,7 @@ function SidebarFilter() {
             <li>
               <label>
                 <input type="checkbox" className="mr-2" />
-                New Arrivals
+                New In
               </label>
             </li>
             <li>

@@ -79,7 +79,7 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
                   <ul className="text-[16px]">
                     <li>
                       <NavLink to="/products/new-arrivals" className="block mb-4 text-black hover:bg-gray-200">
-                        NEW ARRIVALS
+                        NEW IN
                       </NavLink>
                     </li>
                     <li>

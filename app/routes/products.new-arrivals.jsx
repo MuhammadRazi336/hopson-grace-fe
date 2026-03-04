@@ -40,6 +40,8 @@ const isParentForSidebar = (col) =>
   col.readyMadeMetafield?.value !== 'true' &&
   !isExcludedFundsCollection(col);
 
+const STYLE_ORDER = ['MODERN', 'ECLECTIC', 'CLASSIC'];
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
@@ -53,11 +55,14 @@ function SidebarFilter({
   });
 
   const parentCollections = collections.filter(isParentForSidebar);
-  const subCollections = collections.filter(
-    (col) =>
-      col.parentMetafield?.value === 'false' &&
-      col.readyMadeMetafield?.value !== 'true',
-  );
+  const subCollections = STYLE_ORDER.map((styleTitle) =>
+    collections.find(
+      (col) =>
+        col.parentMetafield?.value === 'false' &&
+        col.readyMadeMetafield?.value !== 'true' &&
+        String(col.title || '').toUpperCase().trim() === styleTitle,
+    ),
+  ).filter(Boolean);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
@@ -523,7 +528,7 @@ const NewArrivals = () => {
       <section className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative gap-[8.698vw] w-full overflow-hidden mb-16">
         <div className="relative p-4 w-[30%]">
           <h2 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata">
-            new arrivals
+            new in
           </h2>
           <img
             src="/assets/Images/gifts-bottom-line.png"

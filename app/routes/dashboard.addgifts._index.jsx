@@ -614,7 +614,7 @@ function SidebarFilter({
                         handleSidebarCheckbox(SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS)
                       }
                     />
-                    NEW ARRIVALS
+                    NEW IN
                   </label>
                 </li>
                 <li className="mb-[1.69vw]">
@@ -1258,8 +1258,8 @@ export default function AddGifts() {
                           />
                         </h3>
 
-                        <div className="relative">
-                          <div className="z-10 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer text-white uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px]">
+                        <div className="relative flex-1 min-w-0">
+                          <div className="z-20 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer text-white uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] flex">
                             <img
                               src={nextitem}
                               alt=""
@@ -1310,7 +1310,7 @@ export default function AddGifts() {
                                 onClick={() => {
                                   setCheckedCollectionIds([subCol.id]);
                                 }}
-                                className="cursor-pointer group min-w-[13.542vw] max-w-[13.542vw]"
+                                className="cursor-pointer group"
                               >
                                 <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
                                   <img
@@ -1329,7 +1329,7 @@ export default function AddGifts() {
                             ))}
                           </Swiper>
 
-                          <div className="swiper-button-next-sub absolute right-[50px] cursor-pointer uppercase items-center bg-white z-10 top-[43%] translate-y-[-50%] px-8 py-10 justify-center text-white max-[1024px]:w-[33px]">
+                          <div className="swiper-button-next-sub absolute right-[35px] cursor-pointer uppercase items-center bg-white z-20 top-[43%] translate-y-[-50%] px-8 py-10 justify-center text-white max-[1024px]:w-[33px] flex">
                             <img
                               src={nextitem}
                               className="size-6 rotate-270"

@@ -385,13 +385,15 @@ const Products = () => {
                 <div className="flex flex-col items-center justify-center cursor-pointer">
                   <img src={newArrivals} alt="" className="w-full aspect-square object-cover" />
                   <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
-                    NEW ARRIVALS
+                    NEW IN
                   </h3>
                 </div>
               </Link>
               <Link to="/dashboard/giftcards">
                 <div className="flex flex-col items-center justify-center">
-                  <img src={giftCards} alt="" className="w-full aspect-square object-cover bg-[#446184]" />
+                  <div className="w-full aspect-square bg-[#446184] flex items-center justify-center p-4">
+                    <img src={giftCards} alt="" className="w-full h-full object-contain" />
+                  </div>
                   <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">
                     GIFT CARDS
                   </h3>

@@ -42,6 +42,8 @@ const isParentForSidebar = (col) =>
   col.readyMadeMetafield?.value !== 'true' &&
   !isExcludedFundsCollection(col);
 
+const STYLE_ORDER = ['MODERN', 'ECLECTIC', 'CLASSIC'];
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
@@ -55,11 +57,14 @@ function SidebarFilter({
   });
 
   const parentCollections = collections.filter(isParentForSidebar);
-  const subCollections = collections.filter(
-    (col) =>
-      col.parentMetafield?.value === 'false' &&
-      col.readyMadeMetafield?.value !== 'true',
-  );
+  const subCollections = STYLE_ORDER.map((styleTitle) =>
+    collections.find(
+      (col) =>
+        col.parentMetafield?.value === 'false' &&
+        col.readyMadeMetafield?.value !== 'true' &&
+        String(col.title || '').toUpperCase().trim() === styleTitle,
+    ),
+  ).filter(Boolean);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({

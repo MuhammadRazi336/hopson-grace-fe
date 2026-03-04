@@ -1122,7 +1122,7 @@ export function Header() {
                       onClick={() => setIsMenuOpenBottom(false)}
                       className="block text-black hover:text-gray-600 py-2 text-base"
                     >
-                      NEW ARRIVALS
+                      NEW IN
                     </NavLink>
                     <NavLink
                       to="/dashboard/giftcards"

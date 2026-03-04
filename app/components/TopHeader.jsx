@@ -28,6 +28,7 @@ const TopHeader = () => {
   const handleOpenCurrencyPopup = () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('@CurrencyNoticeShown', 'true');
+      localStorage.setItem('@CurrencyNoticeShown', 'true');
     }
     setShowCurrencyPopup(true);
   };
@@ -35,21 +36,18 @@ const TopHeader = () => {
     setShowCurrencyPopup(false);
   };
 
-  // Auto-show currency popup after 60 seconds of browsing (once per session)
+  // Auto-show currency popup only once after login/register
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
+    if (!isLoggedIn) return undefined;
 
-    const alreadyShown =
-      sessionStorage.getItem('@CurrencyNoticeShown') === 'true';
+    const alreadyShown = localStorage.getItem('@CurrencyNoticeShown') === 'true';
     if (alreadyShown) return undefined;
 
-    const timer = window.setTimeout(() => {
-      setShowCurrencyPopup(true);
-      sessionStorage.setItem('@CurrencyNoticeShown', 'true');
-    }, 60000);
-
-    return () => window.clearTimeout(timer);
-  }, []);
+    setShowCurrencyPopup(true);
+    localStorage.setItem('@CurrencyNoticeShown', 'true');
+    return undefined;
+  }, [isLoggedIn]);
   return (
     <div className="bg-[#1F1D1B] h-[3.333vw] max-[1024px]:h-[36px] max-[1024px]:py-[5px] max-[1024px]:px-[0px] max-[1024px]:mb-0 mb-[2.813vw] flex items-center justify-center text-white py-[15px] text-center text-sm min[767px]:text-[20px] tracking-[3.6px]">
       <div className="px-[2.083vw] text-[1.042vw] max-[1024px]:text-[9px] max-[1024px]:leading-[36px] w-full flex items-center">
@@ -97,7 +95,7 @@ const TopHeader = () => {
           <button
             type="button"
             onClick={handleOpenCurrencyPopup}
-            className="inline-flex items-center whitespace-nowrap gap-1 bg-transparent border-0 text-white cursor-pointer p-0"
+            className="inline-flex items-center gap-[-4px] whitespace-nowrap bg-transparent border-0 text-white cursor-pointer p-0"
           >
             CAD{' '}
             <img
