@@ -24,7 +24,7 @@ import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
-import BackToTop from '~/components/BackToTop';
+import WhiteThemeButton from '~/components/WhiteThemeButton';
 
 export async function loader(args) {
   const {request, context} = args;
@@ -122,7 +122,9 @@ const GiftCards = () => {
   const {collections, giftCards, registry, user, recommendedProducts} = useLoaderData();
   const fetcher = useFetcher();
   const topRef = useRef(null);
+  const productGridRef = useRef(null);
   const [addingGiftCardId, setAddingGiftCardId] = useState(null);
+  const [productsToShow, setProductsToShow] = useState(12);
   
   console.log('Gift Cards Data:', giftCards);
   console.log('Collections Data:', collections);
@@ -137,6 +139,9 @@ const GiftCards = () => {
       setAddingGiftCardId(null);
     }
   }, [fetcher.state]);
+
+  const displayedGiftCards = giftCards.slice(0, productsToShow);
+  const hasMoreGiftCards = giftCards.length > productsToShow;
 
   const handleAddToRegistry = (giftCard, quantity) => {
     try {
@@ -183,33 +188,32 @@ const GiftCards = () => {
   
   return (
     <>
-    <div ref={topRef} className='flex items-center bg-[#F5F2ED] justify-center flex-col-reverse lg:flex-row'>
-      <div className="relative py-10 lg:p-4 w-full lg:w-[31%]">
-          <h2 className="mt-0 prata lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
-              gift cards
-          </h2>
-          <img
-            src="/assets/Images/profile-view-page-bdr.png"
-            alt="Couple"
-            className="w-[100px] mt-2 lg:w-[220px] lg:mt-5 h-auto mx-auto"
-          />
-
-          {/* <PreviewRegistry /> */}
+    <section
+      ref={topRef}
+      className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative gap-[8.698vw] w-full overflow-hidden"
+    >
+      <div className="relative p-4 w-[30%]">
+        <h2 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata">
+          gift cards
+        </h2>
+        <img
+          src="/assets/Images/gifts-bottom-line.png"
+          alt="Gift cards"
+          className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto object-contain"
+        />
       </div>
 
-      <section className='w-full lg:w-[69%]'>
       <img
-          src={GiftCardBg}
-          alt=""
-          className="w-full aspect-square lg:h-[650px] object-cover"
-        />
-      </section>
-    </div>
+        src={GiftCardBg}
+        alt=""
+        className="w-[70%] h-full object-cover"
+      />
+    </section>
     {/* Gift Cards Grid Section */}
     {giftCards.length > 0 && (
-      <section className="w-[81.25vw] mx-auto py-12">        
+      <section className="w-[81.25vw] mx-auto py-12" ref={productGridRef}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12">
-          {giftCards.map((giftCard, index) => {
+          {displayedGiftCards.map((giftCard, index) => {
             const price = giftCard.variants?.edges?.[0]?.node?.priceV2;
             const image = giftCard.images?.edges?.[0]?.node?.url;
             
@@ -217,6 +221,7 @@ const GiftCards = () => {
               <GiftCard
                 key={giftCard.id || index}
                 id={giftCard.id}
+                handle={giftCard.handle}
                 image={image}
                 title={giftCard.title}
                 price={price}
@@ -228,6 +233,40 @@ const GiftCards = () => {
             );
           })}
         </div>
+
+        <div className="flex justify-center items-center">
+          <div className="w-full xl:w-1/4 "> </div>
+          <div className="w-full xl:w-3/4 flex flex-col items-center">
+            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">
+              LOADING {Math.min(productsToShow, giftCards.length)} of {giftCards.length}
+            </p>
+
+            {giftCards.length > 12 && hasMoreGiftCards && (
+              <WhiteThemeButton
+                Text="View more"
+                link="#"
+                onClick={() =>
+                  setProductsToShow((prev) => Math.min(prev + 12, giftCards.length))
+                }
+              />
+            )}
+
+            <button
+              className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+              onClick={() => {
+                setProductsToShow(12);
+                if (productGridRef.current) {
+                  productGridRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
+                }
+              }}
+            >
+              Back to Top
+            </button>
+          </div>
+        </div>
       </section>
     )}
 
@@ -236,7 +275,6 @@ const GiftCards = () => {
         </div>
 
     <WeThinkYouLove recommendedProducts={recommendedProducts} />
-    <BackToTop topRef={topRef} className="mb-0" />
 
     <Footer />
     
@@ -269,7 +307,7 @@ const GiftCards = () => {
 
 export default GiftCards
 
-const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry, isAdding}) => {
+const GiftCard = ({id, handle, image, title, price, registryId, user, onAddToRegistry, isAdding}) => {
   const [quantity, setQuantity] = useState(1);
 
   const incrementQuantity = () => {
@@ -282,19 +320,36 @@ const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry, i
     }
   };
 
+  const productDetailUrl = handle ? `/dashboard/addgifts/${handle}` : null;
+
   return (
     <div className="pt-0 relative">
       <div className="relative group">
         {/* Gift Card Image and Info */}
         <div className="relative z-0">
-          <img
-            src={image}
-            alt={title}
-            className="w-full h-[300px] lg:h-[18.75vw] object-contain bg-[#446184]"
-          />
-          <h3 className="text-[18px] font-semibold uppercase mt-3">
-            {title}
-          </h3>
+          {productDetailUrl ? (
+            <Link to={productDetailUrl} className="block cursor-pointer">
+              <img
+                src={image}
+                alt={title}
+                className="w-full h-[300px] lg:h-[18.75vw] object-contain bg-[#446184]"
+              />
+              <h3 className="text-[18px] font-semibold uppercase mt-3">
+                {title}
+              </h3>
+            </Link>
+          ) : (
+            <>
+              <img
+                src={image}
+                alt={title}
+                className="w-full h-[300px] lg:h-[18.75vw] object-contain bg-[#446184]"
+              />
+              <h3 className="text-[18px] font-semibold uppercase mt-3">
+                {title}
+              </h3>
+            </>
+          )}
           <p className="text-sm mt-1">
             {price ? `$${parseFloat(price.amount).toFixed(2)}` : 'Price not available'}
           </p>
@@ -303,17 +358,35 @@ const GiftCard = ({id, image, title, price, registryId, user, onAddToRegistry, i
         {/* Expanding Overlay */}
         <div className="absolute h-[460px] lg:h-[31.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
-            <img
-              src={image}
-              alt={title}
-              className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-contain mb-[20px] bg-[#446184]"
-            />
-            <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
-              GIFT CARD
-            </h4>
-            <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
-              {title}
-            </h3>
+            {productDetailUrl ? (
+              <Link to={productDetailUrl} className="block cursor-pointer">
+                <img
+                  src={image}
+                  alt={title}
+                  className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-contain mb-[20px] bg-[#446184]"
+                />
+                <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
+                  GIFT CARD
+                </h4>
+                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
+                  {title}
+                </h3>
+              </Link>
+            ) : (
+              <>
+                <img
+                  src={image}
+                  alt={title}
+                  className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-contain mb-[20px] bg-[#446184]"
+                />
+                <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
+                  GIFT CARD
+                </h4>
+                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
+                  {title}
+                </h3>
+              </>
+            )}
             <p className="text-[20px] lg:text-[1.25vw] leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
               {price ? `$${parseFloat(price.amount).toFixed(2)}` : 'Price not available'}
             </p>
