@@ -296,6 +296,11 @@ function CoupleListing({data}) {
   const [validationError, setValidationError] = useState('');
   const navigate = useNavigate();
 
+  // Only show couples whose registry is published
+  const publishedCouples = (data || []).filter(
+    (couple) => couple.registry && couple.registry.status === 'published',
+  );
+
   // Scroll to registry section when component mounts and there are search params
   useEffect(() => {
     // Check if URL contains search parameters to determine if we should scroll
@@ -418,9 +423,7 @@ function CoupleListing({data}) {
 
         <div className="">
           {console.log(data)}
-          {data
-            .filter(couple => couple.registry) // Only show couples with registries
-            .map((couple) => (
+          {publishedCouples.map((couple) => (
             <div key={couple.id} className="flex justify-center items-center flex-col gap-y-4 pb-4">
               {couple.event && couple.event.image && couple.event.image.fileUrl ? (
                 <>
@@ -446,17 +449,11 @@ function CoupleListing({data}) {
                   year: 'numeric',
                 }) : 'Date not available'}
               </p>
-              {couple.registry && couple.registry.status === "published" ? 
               <Link to={`/couple/single/${couple.id}`}>
                 <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center">
                   View Registry
                 </button>
               </Link>
-              :
-              <p className="text-center text-lg font-semibold  underline">
-                NOTIFY ME WHEN REGISTRY IS LIVE
-              </p>
-              }
             </div>
           ))}
         </div>

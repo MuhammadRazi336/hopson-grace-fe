@@ -587,6 +587,7 @@ function SidebarFilter({
   setCheckedCollectionIds,
   selectedSwiperCollectionId,
   selectedSubCollections,
+  selectedHeroCollection,
   shopAllChecked,
   setShopAllChecked,
   registry,
@@ -734,49 +735,52 @@ function SidebarFilter({
           </div>
         )}
 
-        {/* When a parent collection is selected: Product Type (sub-collections) + Style (hardcoded) */}
+        {/* When a parent collection is selected: optionally Product Type + Style */}
         {selectedSwiperCollectionId && (
           <>
-            <div className="mb-[3.438vw]">
-              <h2
-                className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-                onClick={() => toggleSection('productType')}
-              >
-                Product Type
-                <span className="text-lg relative -top-[3px]">
-                  {openSections.productType ? (
-                    <img
-                      src="/assets/Images/next.png"
-                      alt="minus"
-                      className="w-[0.833vw] h-[0.833vw] rotate-180"
-                    />
-                  ) : (
-                    <img
-                      src="/assets/Images/next.png"
-                      alt="plus"
-                      className="w-[0.833vw] h-[0.833vw]"
-                    />
-                  )}
-                </span>
-              </h2>
-              {openSections.productType && (
-                <ul className="space-y-2 text-sm">
-                  {(selectedSubCollections || []).map((col) => (
-                    <li key={col.id} className="mb-[1.69vw]">
-                      <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                        <input
-                          type="checkbox"
-                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                          checked={checkedCollectionIds.includes(col.id)}
-                          onChange={() => handleSidebarCheckbox(col.id)}
-                        />
-                        {col.title}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            {/* Hide Product Type when a specific sub-collection is selected in the hero */}
+            {!selectedHeroCollection && (
+              <div className="mb-[3.438vw]">
+                <h2
+                  className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+                  onClick={() => toggleSection('productType')}
+                >
+                  Product Type
+                  <span className="text-lg relative -top-[3px]">
+                    {openSections.productType ? (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="minus"
+                        className="w-[0.833vw] h-[0.833vw] rotate-180"
+                      />
+                    ) : (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="plus"
+                        className="w-[0.833vw] h-[0.833vw]"
+                      />
+                    )}
+                  </span>
+                </h2>
+                {openSections.productType && (
+                  <ul className="space-y-2 text-sm">
+                    {(selectedSubCollections || []).map((col) => (
+                      <li key={col.id} className="mb-[1.69vw]">
+                        <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                          <input
+                            type="checkbox"
+                            className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                            checked={checkedCollectionIds.includes(col.id)}
+                            onChange={() => handleSidebarCheckbox(col.id)}
+                          />
+                          {col.title}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
             <div>
               <h2
                 className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
@@ -970,6 +974,7 @@ export default function AddGifts() {
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] =
     useState(null);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
+  const [selectedHeroCollection, setSelectedHeroCollection] = useState(null);
   const [shopAllChecked, setShopAllChecked] = useState(false);
   const [checkedStyles, setCheckedStyles] = useState(() =>
     STYLE_OPTIONS.reduce((acc, o) => ({ ...acc, [o.id]: false }), {}),
@@ -1403,10 +1408,34 @@ export default function AddGifts() {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 /> */}
 
-                {/* Sub-collections carousel */}
-                {selectedSubCollections &&
-                  selectedSubCollections.length > 0 && (
-                    <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative">
+                {/* Hero section: parent vs selected sub-collection */}
+                {selectedSubCollections && selectedSubCollections.length > 0 && (
+                  <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative gap-[8.698vw] w-full overflow-hidden">
+                    {/* If a sub-collection is selected for hero, match Bestsellers hero style */}
+                    {selectedHeroCollection ? (
+                      <>
+                        <div className="relative p-4 w-[30%]">
+                          <h2 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata">
+                            {selectedHeroCollection.title?.toLowerCase() ||
+                              'collection'}
+                          </h2>
+                          <img
+                            src="/assets/Images/gifts-bottom-line.png"
+                            alt="collection divider"
+                            className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto object-contain"
+                          />
+                        </div>
+                        <img
+                          src={
+                            selectedHeroCollection.image?.url ||
+                            '/assets/Images/placeholder.png'
+                          }
+                          alt={selectedHeroCollection.title}
+                          className="w-[70%] h-full object-cover"
+                        />
+                      </>
+                    ) : (
+                      // Default: parent collection title on left, sub-collections swiper on right
                       <div className="flex items-center gap-[8.698vw] w-full">
                         <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px]">
                           {collections
@@ -1432,7 +1461,7 @@ export default function AddGifts() {
 
                           <Swiper
                             spaceBetween={18}
-                            slidesPerView={5} // Shows 3 full + a portion of 4th
+                            slidesPerView={5}
                             loop={false}
                             modules={[Navigation]}
                             navigation={{
@@ -1472,6 +1501,7 @@ export default function AddGifts() {
                                 key={subCol.id}
                                 onClick={() => {
                                   setCheckedCollectionIds([subCol.id]);
+                                  setSelectedHeroCollection(subCol);
                                 }}
                                 className="cursor-pointer group"
                               >
@@ -1501,8 +1531,9 @@ export default function AddGifts() {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1517,6 +1548,7 @@ export default function AddGifts() {
             setCheckedCollectionIds={setCheckedCollectionIds}
             selectedSwiperCollectionId={selectedSwiperCollectionId}
             selectedSubCollections={selectedSubCollections}
+            selectedHeroCollection={selectedHeroCollection}
             shopAllChecked={shopAllChecked}
             setShopAllChecked={setShopAllChecked}
             registry={registry}

@@ -756,7 +756,7 @@ const ThankYou = () => {
                 handleSubmit(e);
               }}
               disabled={fetcher.state === 'submitting'}
-              className="py-5 px-8 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white whitespace-nowrap text-center disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+              className="py-3 px-8 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white whitespace-nowrap text-center disabled:opacity-50 disabled:cursor-not-allowed border border-black"
             >
               {fetcher.state === 'submitting' ? 'Sending...' : 'SEND!'}
             </button>

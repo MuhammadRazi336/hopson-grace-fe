@@ -26,9 +26,8 @@ import {Footer} from '~/components/Footer';
 import {Navigation} from 'swiper/modules';
 import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
-import GiftCardBg from '/assets/Images/giftCardBg.png';
+import NewInBg from '/assets/Images/newin.png';
 import AlertPortal from '~/components/AlertPortal';
-import BackToTop from '~/components/BackToTop';
 
 const isExcludedFundsCollection = (col) => {
   const t = (col.title && String(col.title).toUpperCase().trim()) || '';
@@ -537,7 +536,7 @@ const NewArrivals = () => {
           />
         </div>
 
-        <img src={GiftCardBg} alt="" className="w-[70%] h-full object-cover" />
+        <img src={NewInBg} alt="" className="w-[70%] h-full object-cover" />
       </section>
 
       {/* Products Grid Section */}
@@ -582,24 +581,33 @@ const NewArrivals = () => {
             </div>
           </div>
 
-          {/* View More and Back to Top Section */}
-          <div className="flex flex-col items-center mt-12 space-y-4">
-            {/* Loading indicator */}
-            <p className="text-gray-600 text-sm">
-              LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
-              {filteredProducts.length}
-            </p>
-            
-            {/* View More Button */}
-            {filteredProducts.length > 12 && hasMoreProducts && (
-              <WhiteThemeButton
-                Text="VIEW MORE"
-                onClick={handleViewMore}
-                buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
-              />
-            )}
-            
-            <BackToTop topRef={topRef} className={'mb-0 mt-7'} />
+          <div className="flex justify-center items-center">
+            <div className="w-full xl:w-1/4 "> </div>
+            <div className="w-full xl:w-3/4 flex flex-col items-center">
+              <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">
+                LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
+                {filteredProducts.length}
+              </p>
+
+              {filteredProducts.length > 12 && hasMoreProducts && (
+                <WhiteThemeButton Text="View more" link="#" onClick={handleViewMore} />
+              )}
+
+              <button
+                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
+                onClick={() => {
+                  setProductsToShow(12);
+                  if (productGridRef.current) {
+                    productGridRef.current.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    });
+                  }
+                }}
+              >
+                Back to Top
+              </button>
+            </div>
           </div>
         </section>
       )}

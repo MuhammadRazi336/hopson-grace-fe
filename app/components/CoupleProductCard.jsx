@@ -21,6 +21,7 @@ const CoupleProductCard = ({
   const [contributionAmount, setContributionAmount] = useState('');
   const [error, setError] = useState('');
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const handleInputChange = (e) => {
     const value = parseFloat(e.target.value);
@@ -59,7 +60,7 @@ const CoupleProductCard = ({
       onContribute(amount);
       setContributionAmount(''); // Reset input
     } else if (status === 'addToCart') {
-      onAddToCart();
+      onAddToCart(selectedQuantity);
     }
   };
 
@@ -142,6 +143,29 @@ const CoupleProductCard = ({
   // Calculate if the product is fully gifted
   const stillNeeds = status === 'purchased' ? 0 : Math.max(0, quantity - purchasedQuantity);
   const isFullyGifted = stillNeeds === 0;
+
+  // Keep selector synced with still-needs limits
+  React.useEffect(() => {
+    if (stillNeeds <= 0) {
+      setSelectedQuantity(1);
+      return;
+    }
+    if (selectedQuantity > stillNeeds) {
+      setSelectedQuantity(stillNeeds);
+    }
+  }, [stillNeeds, selectedQuantity]);
+
+  const incrementSelectedQuantity = () => {
+    if (selectedQuantity < stillNeeds) {
+      setSelectedQuantity((prev) => prev + 1);
+    }
+  };
+
+  const decrementSelectedQuantity = () => {
+    if (selectedQuantity > 1) {
+      setSelectedQuantity((prev) => prev - 1);
+    }
+  };
 
   //AWS Image URL Cleanup
   const cleanUrl = getCleanImageUrl(image);
@@ -234,6 +258,40 @@ const CoupleProductCard = ({
             </p>
           </div>
         )}
+      {(!isGroupGift && !isCashFund && !isFullyGifted && status !== 'purchased') && (
+        <div className="mt-2 flex items-center gap-4">
+          <p className="text-sm ivyora lg:text-[1.042vw] text-[#1F1D1B] italic">
+            QTY
+          </p>
+          <div className="flex flex-col items-center justify-center">
+            <button
+              onClick={incrementSelectedQuantity}
+              disabled={selectedQuantity >= stillNeeds}
+              className="w-6 h-6 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <img
+                src="/assets/Images/arrowDown.png"
+                alt="increase quantity"
+                className="w-3 h-3 rotate-180"
+              />
+            </button>
+            <span className="text-sm lg:text-[0.938vw] leading-[1] text-[#1F1D1B]">
+              {selectedQuantity}
+            </span>
+            <button
+              onClick={decrementSelectedQuantity}
+              disabled={selectedQuantity <= 1}
+              className="w-6 h-6 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <img
+                src="/assets/Images/arrowDown.png"
+                alt="decrease quantity"
+                className="w-3 h-3"
+              />
+            </button>
+          </div>
+        </div>
+      )}
       <div className="mt-4 flex flex-col justify-end">{renderButton()}</div>
     </div>
   );

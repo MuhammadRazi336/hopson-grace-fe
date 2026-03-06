@@ -344,6 +344,17 @@ export default function SearchResults() {
   // Cash funds are now already filtered products from the loader
   const allCashFundProducts = cashFunds || [];
 
+  // Flatten product edges and combine gifts + cash funds into one list
+  const giftProducts = (products || []).map((edge) => ({
+    ...edge.node,
+    _isCashFund: false,
+  }));
+  const cashFundItems = allCashFundProducts.map((product) => ({
+    ...product,
+    _isCashFund: true,
+  }));
+  const combinedResults = [...giftProducts, ...cashFundItems];
+
   const handleAddtoRegistry = (product) => {
     try {
       // Check if user is logged in by looking for token in localStorage
@@ -576,54 +587,24 @@ export default function SearchResults() {
     );
   }
 
-  const totalResults = products.length + collections.length + allCashFundProducts.length + blogs.length;
+  const totalResults = combinedResults.length;
 
   return (
     <section>
       <Header />
-      {/* Blogs Section */}
-      {blogs.length > 0 && (
+      {/* Combined gifts + cash funds grid */}
+      {totalResults > 0 && (
         <section className="container mx-auto py-16">
-          <h2 className="text-3xl font-semibold mb-8 text-center">Blogs & Articles</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogs.map((blog) => (
-              <BlogCard key={blog.id} blog={blog} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Collections Section */}
-      {collections.length > 0 && (
-        <section className="container mx-auto py-16">
-          <h2 className="text-3xl font-semibold mb-8 text-center">Collections</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {collections.map((collection) => (
-              <CollectionCard key={collection.id} collection={collection} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Gifts Section */}
-      {products.length > 0 && (
-        <section className="container mx-auto py-16">
-          <h2 className="text-3xl font-semibold mb-8 text-center">Gifts</h2>
+          <h2 className="text-3xl font-semibold mb-8 text-center">
+            {totalResults} search results found for "{searchQuery}"
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((edge) => (
-              <ProductCard key={edge.node.id} product={edge.node} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Cash Funds Section */}
-      {allCashFundProducts.length > 0 && (
-        <section className="container mx-auto py-16">
-          <h2 className="text-3xl font-semibold mb-8 text-center">Cash Funds</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {allCashFundProducts.map((product) => (
-              <ProductCard key={product.id} product={product} isCashFund={true} />
+            {combinedResults.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                isCashFund={product._isCashFund}
+              />
             ))}
           </div>
         </section>
