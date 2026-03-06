@@ -639,12 +639,8 @@ export default function SearchResults() {
               className="w-36 h-36 mx-auto mb-6 opacity-50"
             />
             <h3 className="text-[22px] font-semibold text-[#1F1D1B] mb-4">
-              No Results Found
+              0 Results Found
             </h3>
-            <p className="text-[#1F1D1B] mb-6">
-              No products, cash funds, collections, or blogs match your search
-              for "{searchQuery}". Try different keywords.
-            </p>
           </div>
         </section>
       )}

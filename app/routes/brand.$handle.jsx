@@ -13,6 +13,13 @@ import lineImg4 from '/assets/Images/Vector 14.png';
 import {formatPrice} from '~/utils/priceFormatter';
 import BackToTop from '~/components/BackToTop';
 
+const STYLE_OPTIONS = [
+  {id: 'modern', label: 'Modern'},
+  {id: 'classic', label: 'Classic'},
+  {id: 'eclectic', label: 'Eclectic'},
+  {id: 'shopAll', label: 'Shop All'},
+];
+
 export async function loader({params, context}) {
   const {handle} = params;
 
@@ -103,18 +110,56 @@ const Brand = () => {
   }, [productsEdges, collection.id]);
 
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
+  const [checkedStyles, setCheckedStyles] = useState(() =>
+    STYLE_OPTIONS.reduce((acc, option) => ({...acc, [option.id]: false}), {}),
+  );
+
+  const handleStyleCheckbox = (id) => {
+    setVisibleCount(INITIAL_VISIBLE);
+    setCheckedStyles((prev) => {
+      if (id === 'shopAll') {
+        const nextShopAll = !prev.shopAll;
+        return {
+          modern: false,
+          classic: false,
+          eclectic: false,
+          shopAll: nextShopAll,
+        };
+      }
+
+      const next = {...prev, [id]: !prev[id], shopAll: false};
+      return next;
+    });
+  };
 
   // Filter products by selected sidebar categories (collections)
   const filteredProducts = useMemo(() => {
-    if (!selectedCategoryIds.length) return productsEdges;
-    return productsEdges.filter((edge) => {
-      const product = edge.node;
-      const colEdges = product.collections?.edges || [];
-      return colEdges.some(
-        ({node}) => node && selectedCategoryIds.includes(node.id),
-      );
-    });
-  }, [productsEdges, selectedCategoryIds]);
+    let list = productsEdges;
+
+    if (selectedCategoryIds.length) {
+      list = list.filter((edge) => {
+        const product = edge.node;
+        const colEdges = product.collections?.edges || [];
+        return colEdges.some(
+          ({node}) => node && selectedCategoryIds.includes(node.id),
+        );
+      });
+    }
+
+    const selectedStyleIds = STYLE_OPTIONS.filter(
+      (option) => option.id !== 'shopAll' && checkedStyles[option.id],
+    ).map((option) => option.id);
+
+    if (!checkedStyles.shopAll && selectedStyleIds.length > 0) {
+      list = list.filter((edge) => {
+        const styleValue = edge.node?.styleMetafield?.value || '';
+        const normalizedStyle = String(styleValue).trim().toLowerCase();
+        return selectedStyleIds.includes(normalizedStyle);
+      });
+    }
+
+    return list;
+  }, [productsEdges, selectedCategoryIds, checkedStyles]);
 
   // Pagination for brand products
   const INITIAL_VISIBLE = 15;
@@ -229,6 +274,8 @@ const Brand = () => {
                 prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
               );
             }}
+            checkedStyles={checkedStyles}
+            onStyleCheckbox={handleStyleCheckbox}
           />
           <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
             {visibleProducts.map((edge) => {
@@ -429,7 +476,13 @@ const Brand = () => {
 
 export default Brand;
 
-function SidebarFilter({categories, selectedCategoryIds, onToggleCategory}) {
+function SidebarFilter({
+  categories,
+  selectedCategoryIds,
+  onToggleCategory,
+  checkedStyles,
+  onStyleCheckbox,
+}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
     brands: true,
@@ -486,6 +539,47 @@ function SidebarFilter({categories, selectedCategoryIds, onToggleCategory}) {
             ) : (
               <li className="text-xs text-gray-500">No categories available</li>
             )}
+          </ul>
+        )}
+      </div>
+
+      <div>
+        <h2
+          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+          onClick={() => toggleSection('styles')}
+        >
+          Shop by Style
+          <span className="text-lg relative -top-[3px]">
+            {openSections.styles ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-[0.833vw] h-[0.833vw] rotate-180"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-[0.833vw] h-[0.833vw]"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.styles && (
+          <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
+            {STYLE_OPTIONS.map((style) => (
+              <li key={style.id}>
+                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                  <input
+                    type="checkbox"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                    checked={checkedStyles[style.id]}
+                    onChange={() => onStyleCheckbox(style.id)}
+                  />
+                  {style.label}
+                </label>
+              </li>
+            ))}
           </ul>
         )}
       </div>
@@ -552,6 +646,10 @@ const BRAND_QUERY = `#graphql
                   title
                 }
               }
+            }
+            styleMetafield: metafield(namespace: "custom", key: "style") {
+              id
+              value
             }
             variants(first: 1) {
               edges {

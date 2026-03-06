@@ -51,8 +51,7 @@ export async function createAppLoadContext(request, env, executionContext) {
       ...hydrogenContext.env,
       API_BASE_URL:
         env.API_BASE_URL ||
-        process.env.API_BASE_URL ||
-        'https://dev-hopsongrace.codup.io',
+        process.env.API_BASE_URL,
     },
   };
 }

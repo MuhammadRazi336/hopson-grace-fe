@@ -10,6 +10,9 @@ import {extractShopifyId} from '~/utils/helpers.js';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
+import newArrivals from '/assets/Images/newArrivals.png';
+import bestSellers from '/assets/Images/bestSellers.png';
+import giftCards from '/assets/Images/giftCard.png';
 import product3 from '/assets/Images/gift-img-collection-1.png';
 import product2 from '/assets/Images/gift-img-collection-2.png';
 import product1 from '/assets/Images/gift-img-collection-3.png';
@@ -358,16 +361,25 @@ export async function loader({request, context}) {
 
     // Log deduplication results
 
-    // Fetch bestseller and recommended products in parallel
+    // Fetch bestseller, new-arrivals and recommended products in parallel
     let bestsellerProducts = [];
+    let specialBestsellerProducts = [];
+    let specialNewArrivalProducts = [];
+    let specialGiftCardProducts = [];
     let recommendedProducts = [];
 
     try {
-      const [bestsellerResult, recommendedResult] = await Promise.all([
+      const [bestsellerResult, newArrivalsResult, recommendedResult] = await Promise.all([
         context.storefront.query(BESTSELLER_PRODUCTS_QUERY).catch((error) => {
           console.error('Error fetching bestseller products:', error);
           return {products: {edges: []}};
         }),
+        context.storefront
+          .query(NEW_ARRIVALS_PRODUCTS_QUERY)
+          .catch((error) => {
+            console.error('Error fetching new arrivals products:', error);
+            return {products: {edges: []}};
+          }),
         context.storefront
           .query(RECOMMENDED_PRODUCTS_QUERY, {
             variables: {first: 8},
@@ -391,10 +403,85 @@ export async function loader({request, context}) {
           },
         })) || [];
 
+      specialBestsellerProducts =
+        bestsellerResult?.products?.edges?.map((edge) => ({
+          id: edge.node.id,
+          title: edge.node.title,
+          handle: edge.node.handle,
+          description: edge.node.description,
+          image: edge.node.images?.edges?.[0]?.node?.url || null,
+          price:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.amount ||
+            edge.node.priceRange?.minVariantPrice?.amount ||
+            '0',
+          currency:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+            edge.node.priceRange?.minVariantPrice?.currencyCode ||
+            'USD',
+          availableForSale:
+            edge.node.variants?.edges?.[0]?.node?.availableForSale || false,
+          createdAt: edge.node.createdAt || null,
+          style: null,
+          collectionId: SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS,
+          parentCollectionId: null,
+          parentCollectionTitle: 'BESTSELLERS',
+        })) || [];
+
+      specialNewArrivalProducts =
+        newArrivalsResult?.products?.edges?.map((edge) => ({
+          id: edge.node.id,
+          title: edge.node.title,
+          handle: edge.node.handle,
+          description: edge.node.description,
+          image: edge.node.images?.edges?.[0]?.node?.url || null,
+          price:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.amount ||
+            edge.node.priceRange?.minVariantPrice?.amount ||
+            '0',
+          currency:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+            edge.node.priceRange?.minVariantPrice?.currencyCode ||
+            'USD',
+          availableForSale:
+            edge.node.variants?.edges?.[0]?.node?.availableForSale || false,
+          createdAt: edge.node.createdAt || null,
+          style: null,
+          collectionId: SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS,
+          parentCollectionId: null,
+          parentCollectionTitle: 'NEW IN',
+        })) || [];
+
+      specialGiftCardProducts = (collections || [])
+        .filter((collection) => collection.giftCardMetafield?.value === 'true')
+        .flatMap(
+          (collection) =>
+            collection.products?.edges?.map((edge) => ({
+              id: edge.node.id,
+              title: edge.node.title,
+              handle: edge.node.handle,
+              description: edge.node.description,
+              image: edge.node.images?.edges?.[0]?.node?.url || null,
+              price: edge.node.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+              currency:
+                edge.node.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+                'USD',
+              availableForSale:
+                edge.node.variants?.edges?.[0]?.node?.availableForSale || false,
+              createdAt: edge.node.createdAt || null,
+              style: null,
+              collectionId: SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS,
+              parentCollectionId: null,
+              parentCollectionTitle: collection.title || 'GIFT CARDS',
+            })) || [],
+        );
+
       recommendedProducts = recommendedResult?.products?.edges || [];
     } catch (error) {
       console.error('Error fetching products:', error);
       bestsellerProducts = [];
+      specialBestsellerProducts = [];
+      specialNewArrivalProducts = [];
+      specialGiftCardProducts = [];
       recommendedProducts = [];
     }
 
@@ -406,6 +493,11 @@ export async function loader({request, context}) {
       userData,
       readyMadeRegistries: featuredRegistryData,
       bestsellerProducts,
+      specialProducts: {
+        bestsellers: specialBestsellerProducts,
+        newArrivals: specialNewArrivalProducts,
+        giftCards: specialGiftCardProducts,
+      },
       recommendedProducts,
     };
 
@@ -421,6 +513,11 @@ export async function loader({request, context}) {
       userData: null,
       readyMadeRegistries: null,
       bestsellerProducts: [],
+      specialProducts: {
+        bestsellers: [],
+        newArrivals: [],
+        giftCards: [],
+      },
       recommendedProducts: [],
       error: error.message,
     });
@@ -820,6 +917,7 @@ export default function AddGifts() {
     userData,
     readyMadeRegistries,
     bestsellerProducts,
+    specialProducts,
     recommendedProducts,
   } = loaderData;
 
@@ -893,6 +991,9 @@ export default function AddGifts() {
     const effectiveCheckedCollectionIds = checkedCollectionIds.filter(
       (id) => !Object.values(SPECIAL_PRODUCT_TYPE_IDS).includes(id),
     );
+    const selectedSpecialTypeIds = checkedCollectionIds.filter((id) =>
+      Object.values(SPECIAL_PRODUCT_TYPE_IDS).includes(id),
+    );
 
     // When a parent collection is selected: show only that parent's products, filtered by Product Type (sub-collection) checkboxes
     if (selectedSwiperCollectionId) {
@@ -931,6 +1032,21 @@ export default function AddGifts() {
     }
 
     // No parent selected: use Product Categories (parent checkboxes), then apply Style filter (Modern/Classic/Eclectic/Shop All)
+    if (selectedSpecialTypeIds.length > 0) {
+      const specialBuckets = {
+        [SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS]: specialProducts?.bestsellers || [],
+        [SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS]: specialProducts?.newArrivals || [],
+        [SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS]: specialProducts?.giftCards || [],
+      };
+      const mergedSpecialProducts = selectedSpecialTypeIds.flatMap(
+        (id) => specialBuckets[id] || [],
+      );
+      const dedupedSpecialProducts = Array.from(
+        new Map(mergedSpecialProducts.map((product) => [product.id, product])).values(),
+      );
+      return dedupedSpecialProducts;
+    }
+
     if (shopAllChecked) {
       list = products;
     } else if (effectiveCheckedCollectionIds.length > 0) {
@@ -1147,6 +1263,21 @@ export default function AddGifts() {
                     },
                   }}
                 >
+                  <SwiperSlide
+                    key="special-bestsellers"
+                    onClick={() => navigate('/products/bestsellers')}
+                    style={{cursor: 'pointer'}}
+                  >
+                    <img
+                      src={bestSellers}
+                      alt="BESTSELLERS"
+                      className="w-full h-[440px] max-[1024px]:h-[32vw] max-[475px]:h-[44vw] object-cover"
+                    />
+                    <h3 className="mt-[1.927vw] text-center uppercase text-[1.25vw] leading-[1.667vw] text-sm font-medium tracking-wider">
+                      BESTSELLERS
+                    </h3>
+                  </SwiperSlide>
+
                   {/* Dynamic slides from Shopify collections */}
                   {collections
                     .filter((col) => isParentForSlides(col))
@@ -1202,6 +1333,38 @@ export default function AddGifts() {
                         </h3>
                       </SwiperSlide>
                     ))}
+
+                  <SwiperSlide
+                    key="special-new-in"
+                    onClick={() => navigate('/products/new-arrivals')}
+                    style={{cursor: 'pointer'}}
+                  >
+                    <img
+                      src={newArrivals}
+                      alt="NEW IN"
+                      className="w-full h-[440px] max-[1024px]:h-[32vw] max-[475px]:h-[44vw] object-cover"
+                    />
+                    <h3 className="mt-[1.927vw] text-center uppercase text-[1.25vw] leading-[1.667vw] text-sm font-medium tracking-wider">
+                      NEW IN
+                    </h3>
+                  </SwiperSlide>
+
+                  <SwiperSlide
+                    key="special-gift-cards"
+                    onClick={() => navigate('/dashboard/giftcards')}
+                    style={{cursor: 'pointer'}}
+                  >
+                    <div className="w-full h-[440px] max-[1024px]:h-[32vw] max-[475px]:h-[44vw] bg-[#446184] flex items-center justify-center p-4">
+                      <img
+                        src={giftCards}
+                        alt="GIFT CARDS"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <h3 className="mt-[1.927vw] text-center uppercase text-[1.25vw] leading-[1.667vw] text-sm font-medium tracking-wider">
+                      GIFT CARDS
+                    </h3>
+                  </SwiperSlide>
                 </Swiper>
                 <div className="swiper-button-next-prod absolute right-[1%] max-[1601px]:-right-[0%] cursor-pointer uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[38%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px] max-[1024px]:h-[33px] max-[1024px]:p-0 flex">
                   <img
@@ -1854,6 +2017,10 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
+        giftCardMetafield: metafield(namespace: "custom", key: "giftcard") {
+          id
+          value
+        }
         products(first: 10){
           edges {
             node {
@@ -1933,6 +2100,48 @@ const BESTSELLER_PRODUCTS_QUERY = `#graphql
           title
           handle
           description
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                availableForSale
+                priceV2 {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
+
+const NEW_ARRIVALS_PRODUCTS_QUERY = `#graphql
+  query getNewArrivalsProducts {
+    products(first: 250, query: "tag:new-arrival", sortKey: CREATED_AT, reverse: true) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          createdAt
           priceRange {
             minVariantPrice {
               amount
