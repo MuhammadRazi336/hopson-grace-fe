@@ -7,7 +7,7 @@ export function createClient() {
     }
 
     const apiBase =
-      context?.env?.API_BASE_URL || process.env.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+      context?.env?.API_BASE_URL || process.env.API_BASE_URL;
     const endPoint = `${String(apiBase).replace(/\/$/, '')}/api/${route}`;
     const options = {
       method,

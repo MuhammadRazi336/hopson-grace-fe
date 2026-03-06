@@ -1243,7 +1243,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
       const isReadyMade = readyMadeValue === 'true' || readyMadeValue === true;
       
       // Debug logging to help identify issues
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'development' || context.env.NODE_ENV === 'development') {
         console.log('Collection:', collection.title, {
           parentMetafield: collection?.parentMetafield,
           metafield: collection?.metafield,
@@ -1261,7 +1261,7 @@ const Step6 = ({collections, onCollectionsSelect}) => {
 
   // Debug: Log filtered results
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' || context.env.NODE_ENV === 'development') {
       console.log('Total collections received:', collections?.nodes?.length || 0);
       console.log('Parent collections filtered:', parentCollections.length);
       console.log('Parent collection titles:', parentCollections.map(c => c.title));

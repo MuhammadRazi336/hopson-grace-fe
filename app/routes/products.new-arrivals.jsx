@@ -40,7 +40,7 @@ const isParentForSidebar = (col) =>
   col.readyMadeMetafield?.value !== 'true' &&
   !isExcludedFundsCollection(col);
 
-const STYLE_ORDER = ['MODERN', 'ECLECTIC', 'CLASSIC'];
+const STYLE_ORDER = ['MODERN', 'CLASSIC', 'ECLECTIC'];
 
 function SidebarFilter({
   collections,
@@ -147,6 +147,19 @@ function SidebarFilter({
         </h2>
         {openSections.styles && (
           <ul className="space-y-2 text-sm">
+            {subCollections.map((col) => (
+              <li key={col.id} className="mb-[1.69vw]">
+                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                  <input
+                    type="checkbox"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
             <li className="mb-[1.69vw]">
               <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                 <input
@@ -161,19 +174,6 @@ function SidebarFilter({
                 Shop All
               </label>
             </li>
-            {subCollections.map((col) => (
-              <li key={col.id} className="mb-[1.69vw]">
-                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                  <input
-                    type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                    checked={checkedCollectionIds.includes(col.id)}
-                    onChange={() => handleSidebarCheckbox(col.id)}
-                  />
-                  {col.title}
-                </label>
-              </li>
-            ))}
           </ul>
         )}
       </div>

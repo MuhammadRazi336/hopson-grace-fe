@@ -40,7 +40,7 @@ export async function loader({context, request}) {
     if (email && registryId) {
       try {
         // Ensure apiBaseUrl is set and encode email for URL
-        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+        const baseUrl = apiBaseUrl;
         const encodedEmail = encodeURIComponent(email);
         const response = await fetch(
           `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
@@ -100,7 +100,7 @@ export async function loader({context, request}) {
       registryId,
       email,
       apiBaseUrl:
-        'https://dev-hopsongrace.codup.io',
+        context.env.API_BASE_URL || process.env.API_BASE_URL,
       paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
     });
   } catch {
@@ -112,7 +112,7 @@ export async function loader({context, request}) {
       registryApi: {},
       registryId: '',
       email: '',
-      apiBaseUrl: 'https://dev-hopsongrace.codup.io',
+      apiBaseUrl: context.env.API_BASE_URL || process.env.API_BASE_URL,
       paypalClientId: context.env.PUBLIC_PAYPAL_CLIENT_ID || process.env.PUBLIC_PAYPAL_CLIENT_ID,
     });
   }
@@ -150,7 +150,7 @@ export async function action({request, context}) {
     let apiCartItems = [];
     try {
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const baseUrl = apiBaseUrl;
       const encodedEmail = encodeURIComponent(email);
       const response = await fetch(
         `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
@@ -342,7 +342,7 @@ export async function action({request, context}) {
     return json(
       {
         error: error.message || 'An error occurred during checkout',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        details: process.env.NODE_ENV === 'development' || context.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
       {status: 500},
     );
