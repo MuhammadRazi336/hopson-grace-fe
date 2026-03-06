@@ -30,6 +30,8 @@ import GiftCardBg from '/assets/Images/bestsellers-banner.jpg';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
+import BackToTop from '~/components/BackToTop';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 const isExcludedFundsCollection = (col) => {
   const t = (col.title && String(col.title).toUpperCase().trim()) || '';
@@ -560,9 +562,9 @@ const Bestsellers = () => {
 
       {/* Products Grid Section */}
       {bestsellerProducts.length > 0 && (
-        <section className="w-[81.25vw] mx-auto py-12" ref={productGridRef}>
+        <section className="px-[8.594vw] mx-auto" ref={productGridRef}>
           <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]"></div>
-          <div className="flex flex-col gap-[2.99vw] md:flex-row pt-10">
+          <div className="flex flex-col md:flex-row gap-[3.75vw] w-full mx-auto pt-[5vw]">
             <SidebarFilter
               collections={collections}
               checkedCollectionIds={checkedCollectionIds}
@@ -570,8 +572,8 @@ const Bestsellers = () => {
               shopAllChecked={shopAllChecked}
               setShopAllChecked={setShopAllChecked}
             />
-            <div className="flex flex-col lg:w-[75.52vw] xl:w-[75.52vw] 2xl:w-[75.52vw]">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12">
+            <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]">
+              {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12"> */}
                 {displayedProducts.length > 0 ? (
                   displayedProducts.map((product, index) => {
                     console.log(product);
@@ -596,7 +598,7 @@ const Bestsellers = () => {
                     No products found for selected filters.
                   </div>
                 )}
-              </div>
+              {/* </div> */}
             </div>
           </div>
 
@@ -645,7 +647,7 @@ const Bestsellers = () => {
           </div>
         </AlertPortal>
       )}
-      <WeThinkYoullLove recommendedProducts={recommendedProducts || []} productLinkPrefix="/products/bestsellers" />
+      <WeThinkYouLove recommendedProducts={recommendedProducts || []} productLinkPrefix="/products/bestsellers" />
       <Footer />
     </>
   );

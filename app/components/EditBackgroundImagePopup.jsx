@@ -141,20 +141,24 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
       if (!cropperSize.width || !cropperSize.height) return;
       
       // Calculate the crop area dimensions based on banner aspect ratio (3:1)
-      // For banner images, the crop area is wider than tall
       const cropWidth = cropperSize.width;
       const cropHeight = cropWidth / bannerAspectRatio;
       
-      // Calculate minimum zoom to cover the crop area (not the container)
-      // The image needs to cover both width and height of the crop area
+      // Calculate minimum zoom to cover the crop area
       const widthRatio = cropWidth / mediaSize.width;
       const heightRatio = cropHeight / mediaSize.height;
       const requiredMinZoom = Math.max(widthRatio, heightRatio, 1);
       
       setMinZoom(requiredMinZoom);
-      setZoom((z) => (z < requiredMinZoom ? requiredMinZoom : z));
-      // center the crop
-      setCrop({ x: 50, y: 50 });
+      // Increase zoom slightly to allow image to move toward bottom-right
+      const adjustedZoom = requiredMinZoom * 1.3; // 30% more zoom to create room for repositioning
+      setZoom(adjustedZoom);
+      
+      // Position the image to bottom-right using crop coordinates
+      // Higher values move viewport toward bottom-right corner
+      const offsetX = -50; // Move viewport 90% from left (far right)
+      const offsetY = -10; // Move viewport 90% from top (far bottom)
+      setCrop({ x: offsetX, y: offsetY });
     } catch (err) {
       console.error('Error computing min zoom:', err);
     }

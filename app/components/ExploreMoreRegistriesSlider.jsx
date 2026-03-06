@@ -37,7 +37,7 @@ const ExploreMoreRegistriesSlider = ({ otherRegistries, className }) => {
                 spaceBetween: 20,
               },
               1024: {
-                slidesPerView: 3,
+                slidesPerView: 4,
                 spaceBetween: 24,
               },
             }}

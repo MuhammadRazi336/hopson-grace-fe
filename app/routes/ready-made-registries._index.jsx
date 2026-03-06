@@ -137,7 +137,7 @@ const ReadyMade = () => {
           <div className='flex items-center justify-start mt-3'>
             <Link to={`/registry/${subCollection.handle}`}> <p
               className='font-bold lg:text-[0.938vw] lg:leading-[1.458vw] uppercase flex items-center gap-[0.7vw]'>View
-            Registry <img src={readMoreIcon} className='w-[0.833vw] h-[0.833vw]' alt="" /></p>
+            Registry <img src={readMoreIcon} className='w-[0.833vw] h-[0.833vw] relative -top-[2px]' alt="" /></p>
             </Link>
           </div>
         </div>

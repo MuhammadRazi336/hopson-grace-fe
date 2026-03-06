@@ -497,9 +497,9 @@ const Inspiration = () => {
                       </p>
                       <div className="flex items-center justify-start">
                         <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
-                          <p className="font-bold flex items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase gap-2">
+                          <p className="font-bold flex items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase gap-2 ">
                             Read More
-                            <img src={readMoreIcon} alt="" className='w-[16px] h-[16px] lg:w-[0.833vw] lg:h-[0.833vw] xl:w-[0.833vw] xl:h-[0.833vw] 2xl:w-[0.833vw] 2xl:h-[0.833vw]' />
+                            <img src={readMoreIcon} alt="" className='w-[16px] h-[16px] lg:w-[0.833vw] lg:h-[0.833vw] xl:w-[0.833vw] xl:h-[0.833vw] 2xl:w-[0.833vw] 2xl:h-[0.833vw] relative -top-[2px]' />
                           </p>
                     </Link>
             </div>

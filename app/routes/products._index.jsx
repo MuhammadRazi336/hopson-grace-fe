@@ -400,7 +400,16 @@ const Products = () => {
                 </div>
               </Link>
             </div>
+      <div className='flex items-center justify-center'>
+          <Link to="/dashboard/addgifts">
+                    <ButtonComponent
+                      text={"Shop All"}
+                      className={"button-cs w-[224px] h-[44px] text-[#1F1D1B] lg:w-[18.75vw] lg:h-[4.01vw] cursor-pointer max-[1024px]:border-2 border-3 border-[#1F1D1B] py-[5px] max-[1024px]:py-[2px] bg-transparent rounded-none mt-2 lg:mt-[4.271vw] hover:bg-gray-100"}
+                    />
+                  </Link>
       </div>
+      </div>
+
 
       <BestsellersSection
         bestsellerProducts={bestsellerProducts}
