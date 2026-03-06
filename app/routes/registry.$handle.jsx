@@ -543,7 +543,7 @@ const Registry = () => {
                  </div>
        </section>
 
-       <ExploreMoreRegistriesSlider otherRegistries={otherRegistries} className={'max-w-[1665px] mx-auto'} />
+       <ExploreMoreRegistriesSlider otherRegistries={otherRegistries} className={''} />
 
     <div className='mt-16'></div>
 

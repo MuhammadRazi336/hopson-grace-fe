@@ -21,14 +21,14 @@ export async function loader({request, context}) {
 }
 
 export default function FindCoupleForm() {
-  const [firstName, setFirstName] = useState('');
-  const [fianceFirstName, setFianceFirstName] = useState('');
+  const [searchParams] = useSearchParams();
+  const [firstName, setFirstName] = useState(searchParams.get('firstName') || '');
+  const [fianceFirstName, setFianceFirstName] = useState(searchParams.get('fianceFirstName') || '');
   const [validationError, setValidationError] = useState('');
   const {data} = useLoaderData();
-  const [searchParams] = useSearchParams();
   
   // Check if we have search parameters (from header search)
-  const hasSearchParams = searchParams.get('firstName') || searchParams.get('fianceFirstName');
+  const hasSearchParams = firstName || fianceFirstName;
   
   // Scroll to registry section when data is available and URL has search params
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function FindCoupleForm() {
             }}
           >
             <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
-              <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
+              <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184] relative max-[1024px]:top-[300px]">
                 <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
                   find a couple.
                 </h1>
@@ -82,7 +82,7 @@ export default function FindCoupleForm() {
                   Enter either person's <br/>first or last name
                 </p>
 
-                <form method="GET" className="w-full" onSubmit={(e) => {
+                <form method="GET" action="/couple/listing" className="w-full" onSubmit={(e) => {
                   if (!firstName.trim() && !fianceFirstName.trim()) {
                     e.preventDefault();
                     setValidationError('Please fill in at least one name field before searching.');
@@ -90,7 +90,7 @@ export default function FindCoupleForm() {
                   }
                   setValidationError('');
                 }}>
-                  <div className="flex gap-8 mb-4 max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
+                  <div className="flex gap-8 lg:gap-4 mb-4 lg:mb-[2.448vw] max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
                     <div className="w-full">
                                              <input
                          id="firstName"
@@ -111,7 +111,7 @@ export default function FindCoupleForm() {
                      <div className="w-full">
                        <input
                          id="fianceFirstName"
-                         name="lastName"
+                         name="fianceFirstName"
                          type="text"
                          placeholder="Fiance First Name*"
                          value={fianceFirstName}
@@ -134,7 +134,7 @@ export default function FindCoupleForm() {
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
+                      className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
                     >
                       Search
                     </button>
@@ -204,7 +204,7 @@ export default function FindCoupleForm() {
                   Enter either person's <br/>first or last name
                 </p>
 
-                <form method="GET" className="w-full" onSubmit={(e) => {
+                <form method="GET" action="/couple/listing" className="w-full" onSubmit={(e) => {
                   if (!firstName.trim() && !fianceFirstName.trim()) {
                     e.preventDefault();
                     setValidationError('Please fill in at least one name field before searching.');
@@ -212,7 +212,7 @@ export default function FindCoupleForm() {
                   }
                   setValidationError('');
                 }}>
-                  <div className="flex gap-8 mb-4 max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
+                  <div className="flex gap-8 lg:gap-4 mb-4 lg:mb-[2.448vw] max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
                     <div className="w-full">
                                              <input
                          id="firstName"
@@ -233,7 +233,7 @@ export default function FindCoupleForm() {
                      <div className="w-full">
                        <input
                          id="fianceFirstName"
-                         name="lastName"
+                         name="fianceFirstName"
                          type="text"
                          placeholder="Fiance First Name*"
                          value={fianceFirstName}
@@ -256,7 +256,7 @@ export default function FindCoupleForm() {
                   <div className="flex justify-center items-center">
                     <button
                       type="submit"
-                      className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
+                      className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
                     >
                       Search
                     </button>
@@ -291,8 +291,9 @@ export default function FindCoupleForm() {
 }
 
 function CoupleListing({data}) {
-  const [firstName, setFirstName] = useState('');
-  const [fianceFirstName, setFianceFirstName] = useState('');
+  const [searchParams] = useSearchParams();
+  const [firstName, setFirstName] = useState(searchParams.get('firstName') || '');
+  const [fianceFirstName, setFianceFirstName] = useState(searchParams.get('fianceFirstName') || '');
   const [validationError, setValidationError] = useState('');
   const navigate = useNavigate();
 
@@ -358,7 +359,7 @@ function CoupleListing({data}) {
               </p>
 
               <form method="GET" className="w-full" onSubmit={handleSearch}>
-                <div className="flex gap-8 mb-4 max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
+                <div className="flex gap-8 lg:gap-4 mb-4 lg:mb-[2.448vw] max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px]">
                   <div className="w-full">
                                          <input
                        id="firstName"
@@ -366,7 +367,7 @@ function CoupleListing({data}) {
                        type="text"
                        placeholder="First Name*"
                        value={firstName}
-                       className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                       className="w-full border lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] outline-none bg-white border-[#B9B4AE] rounded-none px-3"
                        onChange={(e) => {
                          const value = e.target.value;
                          const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -382,7 +383,7 @@ function CoupleListing({data}) {
                        type="text"
                        placeholder="Fiance First Name*"
                        value={fianceFirstName}
-                       className="w-full border outline-none bg-white border-[#B9B4AE] font-semibold rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
+                       className="w-full border lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] outline-none bg-white border-[#B9B4AE] rounded-none px-3"
                        onChange={(e) => {
                          const value = e.target.value;
                          const capitalized = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -400,7 +401,7 @@ function CoupleListing({data}) {
                 <div className="flex justify-center items-center">
                   <button
                     type="submit"
-                    className="bg-white w-full max-w-[320px] py-4 mx-auto text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
+                    className="bg-white tracking-[0.8px] w-full max-w-[320px] h-[50px] lg:h-[4.063vw] lg:max-w-[16.667vw] uppercase text-[18px] leading-[18px] py-0 mx-auto font-[500] text-black px-4 max-[1024px]:w-full max-[1024px]:max-w-full max-[768px]:max-w-none max-[768px]:px-0"
                   >
                     Search
                   </button>

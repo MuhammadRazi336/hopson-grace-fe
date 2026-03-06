@@ -630,6 +630,34 @@ export default function CoupleProfile() {
     }
   }, [selectedGiftData, selectedImageIndex]);
 
+  // Handle body scroll lock when popup is open
+  useEffect(() => {
+    const appClipElement = document.getElementById('app-clip');
+    const appScaleElement = document.getElementById('app-scale');
+    
+    if (isPopupOpen && appClipElement) {
+      // Disable vertical scroll when popup is open
+      appClipElement.style.overflowY = 'hidden';
+      appScaleElement.style.position = 'fixed';
+      appScaleElement.style.top = '0';
+    } else if (appClipElement) {
+      // Restore vertical scroll when popup is closed
+      appClipElement.style.overflowY = 'auto';
+      appScaleElement.style.position = 'static';
+      appScaleElement.style.top = '0';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      const appClipElement = document.getElementById('app-clip');
+      if (appClipElement) {
+        appClipElement.style.overflowY = 'auto';
+        appScaleElement.style.position = 'static';
+        appScaleElement.style.top = '0';
+      }
+    };
+  }, [isPopupOpen]);
+
   const closePopup = () => {
     setIsPopupOpen(false);
     setSelectedGiftData(null);
@@ -1887,7 +1915,7 @@ export default function CoupleProfile() {
 
       {isPopupOpen && selectedGiftData && hasProducts && registryId && (
         <div
-          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-auto"
+          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-auto scale-[1.5]"
           onClick={closePopup}
         >
           <div
