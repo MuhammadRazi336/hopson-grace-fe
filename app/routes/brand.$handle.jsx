@@ -93,7 +93,8 @@ const Brand = () => {
   // All brand products
   const productsEdges = collection?.products?.edges || [];
 
-  // Sidebar categories: unique collections that these products belong to (excluding this brand collection and any collection whose brand metafield is true)
+  // Sidebar categories: unique parent collections that these products belong to
+  // (excluding this brand collection itself, any brand collections, and only parent collections)
   const sidebarCategories = useMemo(() => {
     const map = new Map();
     productsEdges.forEach((edge) => {
@@ -101,7 +102,9 @@ const Brand = () => {
       const colEdges = product.collections?.edges || [];
       colEdges.forEach(({node}) => {
         if (!node || node.id === collection.id) return;
-        // Exclude parent collections that are brands (metafield custom.brand === 'true')
+        // Only consider parent collections
+        if (node.parentMetafield?.value !== 'true') return;
+        // Exclude collections that are brands (metafield custom.brand === 'true')
         if (node.brandMetafield?.value === 'true') return;
         if (!map.has(node.id)) {
           map.set(node.id, node.title);
@@ -646,6 +649,10 @@ const BRAND_QUERY = `#graphql
                 node {
                   id
                   title
+                  parentMetafield: metafield(namespace: "parent", key: "collection") {
+                    id
+                    value
+                  }
                   brandMetafield: metafield(namespace: "custom", key: "brand") {
                     id
                     value

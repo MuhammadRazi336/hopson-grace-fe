@@ -161,6 +161,7 @@ function SidebarFilter({
   selectedCollectionId,
   selectedSwiperCollectionId,
   selectedSubCollections,
+  selectedHeroCollection,
   shopAllChecked,
   setShopAllChecked,
   checkedStyles,
@@ -261,46 +262,50 @@ function SidebarFilter({
       {/* When a parent collection is selected: Product Type (sub-collections) + Style (hardcoded) */}
       {selectedSwiperCollectionId && (
         <>
-          <div className="mb-6">
-            <h2
-              className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
-              onClick={() => toggleSection('productType')}
-            >
-              Product Type
-              <span className="text-lg relative -top-[3px]">
-                {openSections.productType ? (
-                  <img
-                    src="/assets/Images/next.png"
-                    alt="minus"
-                    className="w-[0.833vw] h-[0.833vw] rotate-180"
-                  />
-                ) : (
-                  <img
-                    src="/assets/Images/next.png"
-                    alt="plus"
-                    className="w-[0.833vw] h-[0.833vw]"
-                  />
+          {/* Hide Product Type when a specific sub-collection is selected in the hero */}
+          {!selectedHeroCollection && (
+            <div className="mb-6">
+              <h2
+                className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+                onClick={() => toggleSection('productType')}
+              >
+                Product Type
+                <span className="text-lg relative -top-[3px]">
+                  {openSections.productType ? (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="minus"
+                      className="w-[0.833vw] h-[0.833vw] rotate-180"
+                    />
+                  ) : (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="plus"
+                      className="w-[0.833vw] h-[0.833vw]"
+                    />
+                  )}
+                </span>
+              </h2>
+              {openSections.productType &&
+                (selectedSubCollections || []).length > 0 && (
+                  <ul className="space-y-2 text-sm">
+                    {(selectedSubCollections || []).map((col) => (
+                      <li key={col.id} className="mb-[1.69vw]">
+                        <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                          <input
+                            type="checkbox"
+                            className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                            checked={checkedCollectionIds.includes(col.id)}
+                            onChange={() => handleSidebarCheckbox(col.id)}
+                          />
+                          {col.title}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-              </span>
-            </h2>
-            {openSections.productType && (selectedSubCollections || []).length > 0 && (
-              <ul className="space-y-2 text-sm">
-                {(selectedSubCollections || []).map((col) => (
-                  <li key={col.id} className="mb-[1.69vw]">
-                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                      <input
-                        type="checkbox"
-                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                        checked={checkedCollectionIds.includes(col.id)}
-                        onChange={() => handleSidebarCheckbox(col.id)}
-                      />
-                      {col.title}
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+            </div>
+          )}
           <div>
             <h2
               className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
@@ -422,6 +427,7 @@ export default function ProductCollection() {
   const topRef = useRef(null);
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
+  const [selectedHeroCollection, setSelectedHeroCollection] = useState(null);
   const [shopAllChecked, setShopAllChecked] = useState(false);
   const [checkedStyles, setCheckedStyles] = useState(() =>
     STYLE_OPTIONS.reduce((acc, o) => ({ ...acc, [o.id]: false }), {}),
@@ -728,6 +734,7 @@ export default function ProductCollection() {
                         setSelectedSubCollections(subCollections);
                         setSelectedSwiperCollectionId(col.id);
                         setShopAllChecked(true);
+                        setSelectedHeroCollection(null);
                       }}
                       style={{ cursor: 'pointer' }}
                       className="lg:w-[33.33%] xl:w-[33.33%] 2xl:w-[33.33%]"
@@ -751,66 +758,92 @@ export default function ProductCollection() {
 
             {/* Selected collection: sub-collections carousel (like add gifts) */}
             {selectedSwiperCollectionId && selectedSubCollections?.length > 0 && (
-              <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] min-h-[27.083vw] pl-[7.396vw] pr-[7.396vw] py-[2vw] relative">
-                <div className="flex items-center gap-[8.698vw] w-full">
-                  <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px] shrink-0">
-                    {collections.find((col) => col.id === selectedSwiperCollectionId)?.title?.toLowerCase() || 'collection'}
-                    <img
-                      src={giftBottomCurve}
-                      alt=""
-                      className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto"
-                    />
-                  </h3>
-                  <div className="relative flex-1 min-w-0">
-                    <div className="z-20 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] flex">
-                      <img src={nextitem} alt="" className="rotate-90 size-6" />
+              <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative gap-[8.698vw] w-full overflow-hidden">
+                {/* If a sub-collection is selected for hero, show its name and large image (like add gifts) */}
+                {selectedHeroCollection ? (
+                  <>
+                    <div className="relative p-4 w-[30%]">
+                      <h2 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata">
+                        {selectedHeroCollection.title?.toLowerCase() || 'collection'}
+                      </h2>
+                      <img
+                        src="/assets/Images/gifts-bottom-line.png"
+                        alt="collection divider"
+                        className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto object-contain"
+                      />
                     </div>
-                    <Swiper
-                      spaceBetween={18}
-                      slidesPerView={5}
-                      loop={false}
-                      modules={[Navigation]}
-                      navigation={{
-                        nextEl: '.swiper-button-next-sub',
-                        prevEl: '.swiper-button-prev-sub',
-                      }}
-                      className="relative w-full"
-                      breakpoints={{
-                        345: { slidesPerView: 1.25, spaceBetween: 10 },
-                        475: { slidesPerView: 2.25, spaceBetween: 15 },
-                        768: { slidesPerView: 2.25, spaceBetween: 18 },
-                        1024: { slidesPerView: 3, spaceBetween: 18 },
-                        1025: { slidesPerView: 4, spaceBetween: 18 },
-                        1365: { slidesPerView: 5, spaceBetween: 18 },
-                      }}
-                    >
-                      {selectedSubCollections.map((subCol) => (
-                        <SwiperSlide
-                          key={subCol.id}
-                          onClick={() => {
-                            setCheckedCollectionIds([subCol.id]);
-                            setShopAllChecked(false);
-                          }}
-                          className="cursor-pointer group min-w-[14.542vw] max-w-[17.542vw]"
-                        >
-                          <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
-                            <img
-                              src={subCol.image?.url || '/assets/Images/placeholder.png'}
-                              alt={subCol.title}
-                              className="w-full h-[180px] lg:h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                          <h4 className="mt-3 text-center uppercase text-xs lg:text-sm font-medium tracking-wider text-black">
-                            {subCol.title}
-                          </h4>
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                    <div className="swiper-button-next-sub absolute right-[35px] cursor-pointer uppercase items-center bg-white z-20 top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] flex">
-                      <img src={nextitem} className="size-6 rotate-270" alt="" />
+                    <img
+                      src={
+                        selectedHeroCollection.image?.url ||
+                        '/assets/Images/placeholder.png'
+                      }
+                      alt={selectedHeroCollection.title}
+                      className="w-[70%] h-full object-cover"
+                    />
+                  </>
+                ) : (
+                  // Default: parent collection title on left, sub-collections swiper on right
+                  <div className="flex items-center gap-[8.698vw] w-full">
+                    <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px] shrink-0">
+                      {collections.find((col) => col.id === selectedSwiperCollectionId)?.title?.toLowerCase() || 'collection'}
+                      <img
+                        src={giftBottomCurve}
+                        alt=""
+                        className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto"
+                      />
+                    </h3>
+                    <div className="relative flex-1 min-w-0">
+                      <div className="z-20 mb-8 swiper-button-prev-sub absolute left-[35px] cursor-pointer uppercase items-center bg-white top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] flex">
+                        <img src={nextitem} alt="" className="rotate-90 size-6" />
+                      </div>
+                      <Swiper
+                        spaceBetween={18}
+                        slidesPerView={5}
+                        loop={false}
+                        modules={[Navigation]}
+                        navigation={{
+                          nextEl: '.swiper-button-next-sub',
+                          prevEl: '.swiper-button-prev-sub',
+                        }}
+                        className="relative w-full"
+                        breakpoints={{
+                          345: {slidesPerView: 1.25, spaceBetween: 10},
+                          475: {slidesPerView: 2.25, spaceBetween: 15},
+                          768: {slidesPerView: 2.25, spaceBetween: 18},
+                          1024: {slidesPerView: 3, spaceBetween: 18},
+                          1025: {slidesPerView: 4, spaceBetween: 18},
+                          1365: {slidesPerView: 5, spaceBetween: 18},
+                        }}
+                      >
+                        {selectedSubCollections.map((subCol) => (
+                          <SwiperSlide
+                            key={subCol.id}
+                            onClick={() => {
+                              setCheckedCollectionIds([subCol.id]);
+                              setShopAllChecked(false);
+                              setSelectedHeroCollection(subCol);
+                            }}
+                            className="cursor-pointer group min-w-[14.542vw] max-w-[17.542vw]"
+                          >
+                            <div className="relative overflow-hidden bg-white rounded-sm shadow-sm">
+                              <img
+                                src={subCol.image?.url || '/assets/Images/placeholder.png'}
+                                alt={subCol.title}
+                                className="w-full h-[180px] lg:h-[200px] object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </div>
+                            <h4 className="mt-3 text-center uppercase text-xs lg:text-sm font-medium tracking-wider text-black">
+                              {subCol.title}
+                            </h4>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                      <div className="swiper-button-next-sub absolute right-[35px] cursor-pointer uppercase items-center bg-white z-20 top-[43%] translate-y-[-50%] px-8 py-10 justify-center max-[1024px]:w-[33px] flex">
+                        <img src={nextitem} className="size-6 rotate-270" alt="" />
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -836,6 +869,7 @@ export default function ProductCollection() {
             selectedCollectionId={selectedCollection?.id}
             selectedSwiperCollectionId={selectedSwiperCollectionId}
             selectedSubCollections={selectedSubCollections}
+            selectedHeroCollection={selectedHeroCollection}
             shopAllChecked={shopAllChecked}
             setShopAllChecked={setShopAllChecked}
             checkedStyles={checkedStyles}

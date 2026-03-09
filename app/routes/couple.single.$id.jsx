@@ -425,6 +425,7 @@ export default function CoupleProfile() {
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'gifted' | 'ungifted'
   const [categoryFilter, setCategoryFilter] = useState('all'); // 'all' | 'gifts' | 'cashfunds'
   const [openFilter, setOpenFilter] = useState(null); // null | 'category' | 'price' | 'status'
+  const [onlyGiftCards, setOnlyGiftCards] = useState(false); // when true, show only gift card products
   const filterRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -1338,6 +1339,13 @@ export default function CoupleProfile() {
               return false;
             }
 
+            // When triggered from "give the gift of choice", only show gift card products
+            if (onlyGiftCards) {
+              const title = (product.title || '').toLowerCase();
+              if (product.isCashFund) return false;
+              if (!title.includes('gift card')) return false;
+            }
+
             // Status filter: gifted vs ungifted
             if (statusFilter === 'gifted') {
               return product.isCashFund
@@ -1494,6 +1502,22 @@ export default function CoupleProfile() {
       />
     </svg>
   );
+
+  const scrollToTopAndShowGiftCards = () => {
+    // Set filters to show only gift card products
+    setCategoryFilter('gifts');
+    setStatusFilter('all');
+    setPriceSort('low-to-high');
+    setOnlyGiftCards(true);
+    setOpenFilter(null);
+
+    if (typeof window !== 'undefined') {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+  };
   return (
     <>
       {showAlert && (
@@ -1651,6 +1675,7 @@ export default function CoupleProfile() {
                       className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
                       onClick={() => {
                         setCategoryFilter('all');
+                        setOnlyGiftCards(false);
                         setOpenFilter(null);
                       }}
                     >
@@ -1661,6 +1686,7 @@ export default function CoupleProfile() {
                       className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
                       onClick={() => {
                         setCategoryFilter('gifts');
+                        setOnlyGiftCards(false);
                         setOpenFilter(null);
                       }}
                     >
@@ -1671,6 +1697,7 @@ export default function CoupleProfile() {
                       className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
                       onClick={() => {
                         setCategoryFilter('cashfunds');
+                        setOnlyGiftCards(false);
                         setOpenFilter(null);
                       }}
                     >
@@ -1870,14 +1897,13 @@ export default function CoupleProfile() {
             <p className="text-sm lg:text-[26px] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-10 font-normal text-center">
               A Registry gift card helps the couple choose exactly what they need, when they are ready.
             </p>
-            <Link to="/dashboard/giftcards">
-              <button
-                type="button"
-                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[12vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
-              >
-                PURCHASE
-              </button>
-            </Link>
+            <button
+              type="button"
+              onClick={scrollToTopAndShowGiftCards}
+              className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[12vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
+            >
+              PURCHASE
+            </button>
           </div>
         </div>
       </div>
