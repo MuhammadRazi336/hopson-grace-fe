@@ -190,6 +190,58 @@ const BLOGS_QUERY = `#graphql
   }
 `;
 
+const BRAND_SEARCH_QUERY = `#graphql
+  query getSearchBrands {
+    collections(first: 250) {
+      nodes {
+        id
+        title
+        handle
+        description
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        metafield(namespace: "custom", key: "brand") {
+          id
+          value
+        }
+      }
+    }
+  }
+`;
+
+const READY_MADE_SEARCH_QUERY = `#graphql
+  query getReadyMadeRegistriesForSearch {
+    collections(first: 250) {
+      nodes {
+        id
+        title
+        handle
+        description
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
+        parentCollectionMetafield: metafield(namespace: "parent", key: "collection") {
+          id
+          value
+        }
+      }
+    }
+  }
+`;
+
 export async function loader({ request, context }) {
   const url = new URL(request.url);
   const searchQuery = url.searchParams.get('q');
@@ -210,12 +262,15 @@ export async function loader({ request, context }) {
   }
 
   if (!searchQuery) {
-    return defer({ 
-      products: [], 
-      collections: [], 
-      cashFunds: [], 
-      searchQuery: null, 
-      registry: registry
+    return defer({
+      products: [],
+      collections: [],
+      cashFunds: [],
+      blogs: [],
+      brands: [],
+      readyMadeRegistries: [],
+      searchQuery: null,
+      registry: registry,
     });
   }
 
@@ -225,11 +280,20 @@ export async function loader({ request, context }) {
     const productQuery = `title:*${escaped}* OR product_type:*${escaped}* OR vendor:*${escaped}* OR tag:*${escaped}*`;
 
     // Fetch all data types
-    const [{ products }, { collections }, { collections: allCollections }, { blogs }] = await Promise.all([
+    const [
+      {products},
+      {collections},
+      {collections: allCollections},
+      {blogs},
+      {collections: brandCollectionsData},
+      {collections: readyCollectionsData},
+    ] = await Promise.all([
       context.storefront.query(PRODUCTS_QUERY, { variables: { query: productQuery } }),
       context.storefront.query(COLLECTIONS_QUERY),
       context.storefront.query(CASH_FUND_QUERY),
       context.storefront.query(BLOGS_QUERY),
+      context.storefront.query(BRAND_SEARCH_QUERY),
+      context.storefront.query(READY_MADE_SEARCH_QUERY),
     ]);
 
     // Filter products (fallback refinement to ensure inclusive match)
@@ -286,34 +350,65 @@ export async function loader({ request, context }) {
     );
 
     // Filter blogs and articles
-    const filteredBlogs = blogs?.nodes?.flatMap(blog => 
-      blog.articles?.nodes?.filter(article => 
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.contentHtml?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        blog.title.toLowerCase().includes(searchQuery.toLowerCase())
-      ).map(article => ({
-        ...article,
-        blogTitle: blog.title,
-        blogHandle: blog.handle
-      })) || []
-    ) || [];
+    const filteredBlogs =
+      blogs?.nodes?.flatMap((blog) =>
+        blog.articles?.nodes
+          ?.filter((article) =>
+            article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            article.contentHtml?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            blog.title.toLowerCase().includes(searchQuery.toLowerCase()),
+          )
+          .map((article) => ({
+            ...article,
+            blogTitle: blog.title,
+            blogHandle: blog.handle,
+          })) || [],
+      ) || [];
 
-    return defer({ 
-      products: filteredProducts, 
-      collections: filteredCollections, 
-      cashFunds: filteredCashFundProducts, 
+    // Brands (collections with brand metafield = true) that match the search
+    const brandCollections = brandCollectionsData?.nodes || [];
+    const filteredBrands =
+      brandCollections.filter((collection) => {
+        if (collection.metafield?.value !== 'true') return false;
+        const title = (collection.title || '').toLowerCase();
+        const description = (collection.description || '').toLowerCase();
+        return title.includes(term) || description.includes(term);
+      }) || [];
+
+    // Ready-made registries (child collections where ready_made is true and not a parent collection)
+    const readyCollections = readyCollectionsData?.nodes || [];
+    const filteredReadyMadeRegistries =
+      readyCollections.filter((collection) => {
+        const isReady = collection.readyMadeMetafield?.value === 'true';
+        const isParent = collection.parentCollectionMetafield?.value === 'true';
+        if (!isReady || isParent) return false;
+
+        const title = (collection.title || '').toLowerCase();
+        const description = (collection.description || '').toLowerCase();
+        return title.includes(term) || description.includes(term);
+      }) || [];
+
+    return defer({
+      products: filteredProducts,
+      collections: filteredCollections,
+      cashFunds: filteredCashFundProducts,
       blogs: filteredBlogs,
-      searchQuery, 
-      registry: registry
+      brands: filteredBrands,
+      readyMadeRegistries: filteredReadyMadeRegistries,
+      searchQuery,
+      registry: registry,
     });
   } catch (error) {
     console.error("Error loading search results:", error);
-    return defer({ 
-      products: [], 
-      collections: [], 
-      cashFunds: [], 
-      searchQuery, 
-      registry: registry
+    return defer({
+      products: [],
+      collections: [],
+      cashFunds: [],
+      blogs: [],
+      brands: [],
+      readyMadeRegistries: [],
+      searchQuery,
+      registry: registry,
     });
   }
 }
@@ -334,7 +429,16 @@ export async function action({ request, context }) {
 }
 
 export default function SearchResults() {
-  const { products, collections, cashFunds, blogs, searchQuery, registry } = useLoaderData();
+  const {
+    products,
+    collections,
+    cashFunds,
+    blogs,
+    brands,
+    readyMadeRegistries,
+    searchQuery,
+    registry,
+  } = useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const [showAlert, setShowAlert] = useState(false);
@@ -354,6 +458,16 @@ export default function SearchResults() {
     _isCashFund: true,
   }));
   const combinedResults = [...giftProducts, ...cashFundItems];
+
+  // Combine products, brands, and ready-made registries into a single grid
+  const allResults = [
+    ...combinedResults.map((p) => ({_kind: 'product', data: p})),
+    ...(brands || []).map((b) => ({_kind: 'brand', data: b})),
+    ...(readyMadeRegistries || []).map((r) => ({
+      _kind: 'readyRegistry',
+      data: r,
+    })),
+  ];
 
   const handleAddtoRegistry = (product) => {
     try {
@@ -574,6 +688,64 @@ export default function SearchResults() {
     );
   };
 
+  const BrandCard = ({ brand }) => (
+    <Link
+      to={`/brand/${brand.handle}`}
+      className="group cursor-pointer hover:opacity-80 transition-opacity"
+    >
+      <div className="relative overflow-hidden">
+        <img
+          src={brand.image?.url || '/assets/Images/placeholder.png'}
+          alt={brand.title}
+          className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      <div className="mt-4">
+        <h3 className="text-lg font-semibold uppercase mb-2">
+          {brand.title}
+        </h3>
+        <p className="text-sm text-gray-600">
+          {brand.description || 'Browse this brand'}
+        </p>
+      </div>
+    </Link>
+  );
+
+  const ReadyMadeRegistryCard = ({ registry }) => {
+    const desc = registry.description || 'Browse this registry';
+    const truncated =
+      desc.length > 120 ? `${desc.substring(0, 120)}...` : desc;
+
+    return (
+      <div className="flex flex-col h-full border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+        <Link to={`/registry/${registry.handle}`}>
+          <img
+            src={registry.image?.url || '/assets/Images/placeholder.png'}
+            alt={registry.title}
+            className="w-full h-64 object-cover"
+          />
+        </Link>
+        <div className="p-6 flex-1 flex flex-col">
+          <Link to={`/registry/${registry.handle}`}>
+            <h3 className="text-lg font-semibold mb-3 uppercase">
+              {registry.title}
+            </h3>
+          </Link>
+          <p className="text-sm text-gray-600 mb-4 flex-1">
+            {truncated}
+          </p>
+          <div className="mt-auto">
+            <Link to={`/registry/${registry.handle}`}>
+              <button className="w-full py-2 px-4 bg-[#1F1D1B] hover:bg-black uppercase font-bold text-white text-sm">
+                View Registry
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (!searchQuery) {
     return (
       <section>
@@ -587,25 +759,46 @@ export default function SearchResults() {
     );
   }
 
-  const totalResults = combinedResults.length;
+  const totalResults = allResults.length;
 
   return (
     <section>
       <Header />
-      {/* Combined gifts + cash funds grid */}
+      {/* Combined grid: gifts, cash funds, brands, ready-made registries */}
       {totalResults > 0 && (
         <section className="container mx-auto py-16">
           <h2 className="text-3xl font-semibold mb-8 text-center">
             {totalResults} search results found for "{searchQuery}"
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {combinedResults.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isCashFund={product._isCashFund}
-              />
-            ))}
+            {allResults.map((item) => {
+              if (item._kind === 'product') {
+                const product = item.data;
+                return (
+                  <ProductCard
+                    key={`product-${product.id}`}
+                    product={product}
+                    isCashFund={product._isCashFund}
+                  />
+                );
+              }
+
+              if (item._kind === 'brand') {
+                return (
+                  <BrandCard
+                    key={`brand-${item.data.id}`}
+                    brand={item.data}
+                  />
+                );
+              }
+
+              return (
+                <ReadyMadeRegistryCard
+                  key={`registry-${item.data.id}`}
+                  registry={item.data}
+                />
+              );
+            })}
           </div>
         </section>
       )}

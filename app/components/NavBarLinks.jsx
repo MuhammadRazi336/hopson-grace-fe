@@ -107,14 +107,14 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/dashboard/giftcards"
-                        className="block mb-[26px] text-black"
+                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                       >
                         GIFT CARDS
                       </NavLink>
                     </li>
                     <li className='flex items-center gap-2'>
                       <NavLink
-                        to="/products"
+                        to="/dashboard/addgifts"
                         className="mb-[26px] text-black font-semibold underline flex items-center gap-2"
                       >
                         SHOP ALL

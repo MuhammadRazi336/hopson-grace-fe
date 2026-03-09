@@ -1860,26 +1860,22 @@ export default function CoupleProfile() {
           </div>
           <div className="flex flex-col items-center justify-center pr-[10.417vw]">
             <h3 className="text-2xl text-white lg:text-[2.292vw] 3xl:w-full prata max-w-[410px] text-center">
-              add a gift card
+              give the gift of choice
             </h3>
             <img
               src="/assets/Images/white-bdr.png"
               alt="couple"
               className="max-w-[315px] lg:max-w-[16.927vw] lg:w-[16.927vw] mb-[1.875vw] mt-4 mx-auto"
             />
-            <h5 className="text-white text-xl lg:text-[26px] text-center font-[500]">
-              CONTRIBUTE TO OUR JOURNEY!
-            </h5>
             <p className="text-sm lg:text-[26px] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-10 font-normal text-center">
-              Help us create our dream wedding, honeymoon or life experience.
-              We&apos;re so grateful.
+              A Registry gift card helps the couple choose exactly what they need, when they are ready.
             </p>
             <Link to="/dashboard/giftcards">
               <button
                 type="button"
                 className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[12vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
               >
-                ADD GIFT CARDS
+                PURCHASE
               </button>
             </Link>
           </div>

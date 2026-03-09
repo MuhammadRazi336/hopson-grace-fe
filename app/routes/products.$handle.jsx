@@ -30,6 +30,7 @@ import ExploreCategories from '~/components/ExploreCategories';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
+import BackToTop from '~/components/BackToTop';
 
 const tabsData = [
   {
@@ -418,6 +419,7 @@ export default function ProductCollection() {
   const initialPreferencesApplied = useRef(false);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
+  const topRef = useRef(null);
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] = useState(null);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
   const [shopAllChecked, setShopAllChecked] = useState(false);
@@ -661,7 +663,7 @@ export default function ProductCollection() {
   return (
     <>
       <Header />
-
+      <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]" />
       <section className="">
         <div className=" relative items-start mt-[0] mb-0 max-[1024px]:my-10">
           <div className=" ">
@@ -897,7 +899,7 @@ export default function ProductCollection() {
         <div className="flex justify-center items-center">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
               LOADING {Math.min(productsToShow, displayedProducts.length)} of{' '}
               {displayedProducts.length}
             </p>
@@ -906,7 +908,6 @@ export default function ProductCollection() {
               productsToShow < displayedProducts.length && (
                 <WhiteThemeButton
                   Text="View more"
-                  link="#"
                   onClick={() =>
                     setProductsToShow((prev) =>
                       Math.min(prev + 12, displayedProducts.length),
@@ -915,20 +916,7 @@ export default function ProductCollection() {
                 />
               )}
 
-            <button
-              className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
-              onClick={() => {
-                setProductsToShow(12);
-                if (productGridRef.current) {
-                  productGridRef.current.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start',
-                  });
-                }
-              }}
-            >
-              Back to Top
-            </button>
+            <BackToTop topRef={topRef} />
           </div>
         </div>
       </section>
