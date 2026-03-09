@@ -20,9 +20,9 @@ const ShipGifts = () => {
       </div>
 
       <div className="mb-16 max-[1024px]:mb-[4vw]"></div>
-      <section className="mx-auto mb-10 px-[3.906vw] max-[1024px]:px-[40px]">
-        <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-center">
-          <div className="lg:w-[40%] w-full lg:h-[92.813vw] xl:h-[92.813vw] 2xl:h-[92.813vw] relative xl:-right-8 lg:-right-8 2xl:-right-8">
+      <section className="mx-auto mb-10 px-[7.906vw] max-[1024px]:px-[40px]">
+        <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-center justify-center">
+          <div className="lg:w-[35%] w-full lg:h-[82.813vw] xl:h-[82.813vw] 2xl:h-[82.813vw] relative z-10 xl:-right-8 lg:-right-8 2xl:-right-8">
             <img className="w-[10.417vw] h-[7.813vw] object-contain absolute top-[3.385vw] left-[-3.5vw]" src="/assets/Images/imglogo.png" alt="image icon" />
             <img
               src="/assets/Images/fullshipgifts.jpg"
@@ -30,7 +30,7 @@ const ShipGifts = () => {
               className="h-full object-cover object-center"
             />
           </div>
-          <div className="bg-[#446184] xl:-left-8 lg:-left-8 2xl:-left-8  left-0 py-[4.688vw] relative flex items-center justify-center flex-col lg:w-[60%] w-full max-[768px]:p-10">
+          <div className="bg-[#446184] lg:h-[92.813vw] xl:h-[92.813vw] 2xl:h-[92.813vw] xl:-left-8 lg:-left-8 2xl:-left-8  left-0 py-[4.688vw] relative flex items-center justify-center flex-col lg:w-[50%] w-full max-[768px]:p-10">
             <div className="flex flex-col items-center justify-center">
               <h2 className="prata font-normal text-2xl text-white lg:text-[3.75vw] xl:text-[3.75vw] 2xl:text-[3.75vw] 3xl:w-full mb-[1.042vw] max-w-[410px] text-center">
               1.

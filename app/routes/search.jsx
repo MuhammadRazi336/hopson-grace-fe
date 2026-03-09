@@ -549,51 +549,66 @@ export default function SearchResults() {
     const price = formatPrice(firstVariant?.priceV2?.amount);
     
     return (
-      <div className="relative group h-[460px]">
+      <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw px-5">
+      <div className="relative group mb-[4.844vw]">
         {/* Product Image and Info */}
-        <div className="p-4 z-10 relative">
-          <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
+        <div className="z-10 relative">
+          <Link to={`/dashboard/addgifts/${product.handle}`} >
             <img
               src={firstImage}
               alt={product.title}
-              className="w-full h-[300px] object-cover cursor-pointer hover:opacity-80 transition-opacity"
+              className="w-full h-[23.43vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
             />
-            <h3 className="text-sm font-semibold uppercase mt-3 cursor-pointer hover:text-gray-600 transition-colors">
+            <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
               {product.title}
             </h3>
-            <p className="text-sm mt-1">{price}</p>
+            <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">{price}</p>
           </Link>
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute inset-0 z-40 bg-[#FAF9F6] py-4 px-12 flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 group-hover:scale-y-115 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute lg:h-[33.5vw] xl:h-[33.5vw] 2xl:h-[35.3vw] lg:min-h-[20vw] xl:min-h-[20vw] 2xl:min-h-[20vw] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center scale-[1.13]">
           <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
             <div>
               <img
                 src={firstImage}
                 alt={product.title}
-                className="w-full h-[220px] mx-auto object-cover mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+                className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
               />
-              <h4 className="text-xs font-medium uppercase text-left mb-1">
+              <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
                 {isCashFund ? (product.collectionTitle || 'CASH FUND') : 'GIFT'}
               </h4>
-              <h3 className="text-sm font-bold uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
+              <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
                 {product.title}
               </h3>
-              <p className="text-sm mt-2 text-left">{price}</p>
+              <p className="text-2xl mt-2 text-left">{price}</p>
             </div>
           </Link>
 
           <div className="flex items-center justify-between mt-4">
             <div className="flex flex-col w-full items-center text-xs">
               <button
-                className="bg-[#446184] w-full block text-white text-xs font-bold py-4 px-8"
+                className={`bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest
+                  ${
+                            fetcher.state === 'submitting'
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
+                          }
+                  `}
                 onClick={() => handleAddtoRegistry(product)}
               >
-                ADD TO REGISTRY
+                {fetcher.state === 'submitting' ? (
+                            <div className="flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Adding...
+                            </div>
+                          ) : (
+                            'ADD TO REGISTRY'
+                          )}
               </button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     );
@@ -697,7 +712,7 @@ export default function SearchResults() {
         <img
           src={brand.image?.url || '/assets/Images/placeholder.png'}
           alt={brand.title}
-          className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-[23.43vw] object-contain max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
         />
       </div>
       <div className="mt-4">
@@ -770,7 +785,7 @@ export default function SearchResults() {
           <h2 className="text-3xl font-semibold mb-8 text-center">
             {totalResults} search results found for "{searchQuery}"
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]">
             {allResults.map((item) => {
               if (item._kind === 'product') {
                 const product = item.data;

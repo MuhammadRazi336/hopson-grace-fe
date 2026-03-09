@@ -708,6 +708,7 @@ const FAQ = () => {
           </div>
         </div>
 
+      </div>
         <div className="w-full py-[9.375vw]">
           <ImageAndText
             direction={'right'}
@@ -715,16 +716,19 @@ const FAQ = () => {
             lineimg={lineImg3}
             title=" questions?"
             description="We've got answers."
-            showLiveChat={true}
+            showLiveChat={false}
             liveChatProps={{
               buttonText: 'PHONE, EMAIL OR LIVE CHAT',
               showTitle: false,
               showDescription: false,
               className: 'bg-[#446184] text-white hover:bg-[#3a4f6b]',
             }}
+            buttontext={'Contact Us'}
+            buttontype={'link'}
+            buttonLink={'/contact-us'}
+            buttonClassName={`text-black uppercase font-[500] tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[20.677vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[200px] max-[1024px]:h-[40px]`}
           />
         </div>
-      </div>
 
       <Footer />
     </section>
