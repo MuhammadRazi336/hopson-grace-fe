@@ -25,6 +25,7 @@ import {formatShopifyPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
 import WhiteThemeButton from '~/components/WhiteThemeButton';
+import BackToTop from '~/components/BackToTop';
 
 export async function loader(args) {
   const {request, context} = args;
@@ -235,36 +236,24 @@ const GiftCards = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="w-full xl:w-1/4 "> </div>
-          <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">
-              LOADING {Math.min(productsToShow, giftCards.length)} of {giftCards.length}
+          <div className="w-full flex flex-col items-center">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
+              LOADING {Math.min(productsToShow, giftCards.length)} of{' '}
+              {giftCards.length}
             </p>
 
             {giftCards.length > 12 && hasMoreGiftCards && (
               <WhiteThemeButton
                 Text="View more"
-                link="#"
                 onClick={() =>
-                  setProductsToShow((prev) => Math.min(prev + 12, giftCards.length))
+                  setProductsToShow((prev) =>
+                    Math.min(prev + 12, giftCards.length),
+                  )
                 }
               />
             )}
 
-            <button
-              className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
-              onClick={() => {
-                setProductsToShow(12);
-                if (productGridRef.current) {
-                  productGridRef.current.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start',
-                  });
-                }
-              }}
-            >
-              Back to Top
-            </button>
+            <BackToTop topRef={topRef} />
           </div>
         </div>
       </section>
