@@ -292,45 +292,46 @@ const Brand = () => {
               const price = formatPrice(firstVariant?.priceV2?.amount);
 
               return (
-                <div key={product.id} className="relative group h-[25vw]">
+                <div key={product.id} className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
+                  <div className="relative group mb-[4.844vw]">
                   {/* Product Image and Info */}
-                  <div className="p-4 z-10 relative">
+                  <div className="z-10 relative">
                     <Link to={`/dashboard/addgifts/${product.handle}`}>
                       <img
                         src={firstImage}
                         alt={product.title}
-                        className="w-full h-[300px] object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                        className="w-full h-[23.43vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
                       />
-                      <h3 className="text-sm font-[500] lg:text-[1.146vw] uppercase mt-3 cursor-pointer hover:text-gray-600 transition-colors">
+                      <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
                         {product.title}
                       </h3>
-                      <p className="text-sm mt-1">{price}</p>
+                      <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">{price}</p>
                     </Link>
                   </div>
 
                   {/* Expanding Overlay */}
-                  <div className="absolute inset-0 z-40 bg-[#FAF9F6] lg:h-[35.313vw] px-[2.24vw] py-[2vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+                  <div className="absolute lg:h-[33.5vw] xl:h-[33.5vw] 2xl:h-[37.3vw] lg:min-h-[20vw] xl:min-h-[20vw] 2xl:min-h-[20vw] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center scale-[1.13]">
                     <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
                       <div>
                         <img
                           src={firstImage}
                           alt={product.title}
-                          className="w-full h-[220px] mx-auto object-cover mb-0 cursor-pointer hover:opacity-80 transition-opacity"
+                          className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
                         />
-                        <h4 className="text-xs font-[400] lg:text-[0.833vw] lg:leading-[0.833vw] uppercase lg:mt-[1.25vw] lg:mb-[0.521vw] text-left mb-1">
+                        <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
                           {collection.title || 'BRAND NAME'}
                         </h4>
-                        <h3 className="text-sm lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-2 font-[500] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
+                        <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
                           {product.title}
                         </h3>
-                        <p className="text-sm mt-2 lg:mt-[0.677vw] lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{price}</p>
+                        <p className="text-2xl mt-2 text-left">{price}</p>
                       </div>
                     </Link>
 
-                    <div className="flex items-center justify-between mt-[3.906vw]">
+                    <div className="flex items-center justify-between mt-[2.3vw]">
                       {/* Quantity Controls */}
-                      <div className="flex items-center justify-around w-full mb-4">
-                        <p className="text-xs font-bold uppercase text-left mb-1">
+                      <div className="flex w-full items-center text-xs gap-1.5">
+                        <p className="text-[18px] font-semibold uppercase text-left mb-1">
                           QTY
                         </p>
                         {/* Quantity Selector */}
@@ -342,18 +343,18 @@ const Brand = () => {
                                 [product.id]: (prev[product.id] || 1) + 1,
                               }))
                             }
-                            className="flex items-center justify-center bg-white transition-colors"
+                            className="flex items-center justify-center bg-white transition-color"
                           >
                             <img
                               src="/assets/Images/arrowDown.png"
-                              className="w-3 h-3 rotate-180"
+                              className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw] rotate-180"
                               alt=""
                             />
                           </button>
 
                           <input
                             value={quantities[product.id] || 1}
-                            className="w-16 h-8 text-center border-none outline-none text-sm"
+                            className="w-16 lg:text-[1.458vw] lg:leading-[1.25vw] lg:h-[1.563vw] relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-sm"
                             readOnly
                           />
 
@@ -371,7 +372,7 @@ const Brand = () => {
                           >
                             <img
                               src="/assets/Images/arrowDown.png"
-                              className="w-3 h-3"
+                              className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw]"
                               alt=""
                             />
                           </button>
@@ -386,20 +387,24 @@ const Brand = () => {
                             )
                           }
                           disabled={fetcher.state === 'submitting'}
-                          className={`text-white text-xs lg:text-[0.729vw] cursor-pointer lg:h-[4.01vw] lg:w-[10.156vw] font-bold py-[5px] px-[5px] ${
+                          className={`bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest ${
                             fetcher.state === 'submitting'
-                              ? 'bg-[#1F1D1B] cursor-not-allowed'
+                              ? 'bg-gray-400 cursor-not-allowed'
                               : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
                           }`}
                         >
                           {fetcher.state === 'submitting' ? (
-                            'ADDED!'
+                            <div className="flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Adding...
+                            </div>
                           ) : (
                             'ADD TO REGISTRY'
                           )}
                         </button>
                       </div>
                     </div>
+                  </div>
                   </div>
                 </div>
               );
@@ -526,10 +531,10 @@ function SidebarFilter({
           </span>
         </h2>
         {openSections.categories && (
-          <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
+          <ul className="space-y-2 text-sm">
             {categories && categories.length > 0 ? (
               categories.map((cat) => (
-                <li key={cat.id}>
+                <li key={cat.id} className="mb-[1.69vw]">
                   <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
@@ -571,9 +576,9 @@ function SidebarFilter({
           </span>
         </h2>
         {openSections.styles && (
-          <ul className="space-y-2 text-sm lg:text-[0.833vw] lg:leading-[0.938vw]">
+          <ul className="space-y-2 text-sm">
             {STYLE_OPTIONS.map((style) => (
-              <li key={style.id}>
+              <li key={style.id} className="mb-[1.69vw]">
                 <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                   <input
                     type="checkbox"

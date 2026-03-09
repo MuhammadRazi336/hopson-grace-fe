@@ -196,7 +196,16 @@ const CoupleProductCard = ({
             <img
               src={finalImageUrl}
               alt={name}
-              className="w-full h-full object-cover mb-4"
+              className="w-full h-full object-cover mb-4 cursor-pointer"
+              onClick={() => {
+            if (isCashFund || isGroupGift) {
+              if (isAnyAmount || maxContribution - contributedAmount > 0) {
+                onTitleClick(name);
+              }
+            } else if (!isFullyGifted) {
+              onTitleClick(name);
+            }
+          }}
             />
 
             {isGroupGift && (

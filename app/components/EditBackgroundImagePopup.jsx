@@ -47,6 +47,11 @@ const backgroundImages = [
   '/assets/Images/Background_Birds_Export.png',
   '/assets/Images/Background_Heart_Export.png',
 ];
+const TempDisplayBackgroundImages = [
+  '/assets/Images/hand.png',
+  '/assets/Images/birds.png',
+  '/assets/Images/hearts.png',
+];
 
 // Helper functions for localStorage
 const getStoredBackgroundImages = () => {
@@ -314,11 +319,11 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
             <div className="w-1/3 lg:w-[32vw] xl:w-[32vw] 2xl:w-[32vw] max-[1024px]:w-full">
               <div className="grid grid-cols-4 gap-[1.354vw] max-h-full items-start max-[1024px]:flex max-[1024px]:flex-wrap">
                 {/* Predefined background images */}
-                {backgroundImages.map((img, index) => (
+                {TempDisplayBackgroundImages.map((img, index) => (
                   <div 
                     key={`predefined-${index}`} 
                     className="cursor-pointer w-[5.885vw] h-[5.885vw] max-[1024px]:w-[60px] max-[1024px]:h-[60px]"
-                    onClick={() => handleThumbnailClick(img)}
+                    onClick={() => handleThumbnailClick(backgroundImages[index])}
                   >
                     <img
                       src={img}

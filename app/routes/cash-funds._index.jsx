@@ -274,17 +274,21 @@ const ProductCard = React.memo(
         {/* Expanding Overlay */}
         <div className="absolute w-[116%] left-[-8%] lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
           <div>
+            <Link to={`/dashboard/addgifts/${product.handle}`}>
             <img
               src={firstImage}
               alt={product.title}
               className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
             />
+            </Link>
             <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {collection.title || 'BRAND NAME'}
             </h4>
+            <Link to={`/dashboard/addgifts/${product.handle}`}>
             <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
+            </Link>
             <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{displayPrice}</p>
           </div>
 
