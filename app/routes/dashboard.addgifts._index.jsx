@@ -1697,7 +1697,7 @@ export default function AddGifts() {
         <div className="flex justify-center items-center mt-[150px]">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-[18px] font-semibold mb-10">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
               LOADING {Math.min(productsToShow, sortedProducts.length)} of{' '}
               {sortedProducts.length}
             </p>
@@ -1705,9 +1705,7 @@ export default function AddGifts() {
             {sortedProducts.length > 12 &&
               productsToShow < sortedProducts.length && (
                 <WhiteThemeButton
-                  Text="VIEW MORE"
-                  buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
-                  link="#"
+                  Text="View more"
                   onClick={() =>
                     setProductsToShow((prev) =>
                       Math.min(prev + 12, filteredProducts.length),
@@ -1716,22 +1714,7 @@ export default function AddGifts() {
                 />
               )}
 
-            {/* {productsToShow <= 12 && ( */}
-            {/* <button
-                className="border-b mx-auto cursor-pointer uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]"
-                onClick={() => {
-                  setProductsToShow(12);
-                  if (productGridRef.current) {
-                    productGridRef.current.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                    });
-                  }
-                }}
-              >
-                Back to Top
-              </button> */}
-            <BackToTop topRef={topRef} className={'mb-0'} />
+            <BackToTop topRef={topRef} />
           </div>
         </div>
       </section>

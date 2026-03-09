@@ -28,6 +28,7 @@ import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
 import NewInBg from '/assets/Images/newin.png';
 import AlertPortal from '~/components/AlertPortal';
+import BackToTop from '~/components/BackToTop';
 
 const isExcludedFundsCollection = (col) => {
   const t = (col.title && String(col.title).toUpperCase().trim()) || '';
@@ -584,29 +585,19 @@ const NewArrivals = () => {
           <div className="flex justify-center items-center">
             <div className="w-full xl:w-1/4 "> </div>
             <div className="w-full xl:w-3/4 flex flex-col items-center">
-              <p className="text-center text-[18px] leading-[18px] my-[2.083vw] font-[500] tracking-[0.8px] lg:text-[0.938vw] lg:leading-[0.938vw]">
+              <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
                 LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
                 {filteredProducts.length}
               </p>
 
               {filteredProducts.length > 12 && hasMoreProducts && (
-                <WhiteThemeButton Text="View more" link="#" onClick={handleViewMore} />
+                <WhiteThemeButton
+                  Text="View more"
+                  onClick={handleViewMore}
+                />
               )}
 
-              <button
-                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
-                onClick={() => {
-                  setProductsToShow(12);
-                  if (productGridRef.current) {
-                    productGridRef.current.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                    });
-                  }
-                }}
-              >
-                Back to Top
-              </button>
+              <BackToTop topRef={topRef} />
             </div>
           </div>
         </section>
