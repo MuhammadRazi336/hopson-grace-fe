@@ -427,6 +427,7 @@ export default function CoupleProfile() {
   const [openFilter, setOpenFilter] = useState(null); // null | 'category' | 'price' | 'status'
   const [onlyGiftCards, setOnlyGiftCards] = useState(false); // when true, show only gift card products
   const filterRef = useRef(null);
+  const topRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
@@ -1511,10 +1512,10 @@ export default function CoupleProfile() {
     setOnlyGiftCards(true);
     setOpenFilter(null);
 
-    if (typeof window !== 'undefined') {
-      window.scrollTo({
-        top: 0,
+    if (topRef.current) {
+      topRef.current.scrollIntoView({
         behavior: 'smooth',
+        block: 'start',
       });
     }
   };
@@ -1642,7 +1643,10 @@ export default function CoupleProfile() {
         }
       </div>
 
-      <div className="w-[92.135vw] max-w-[100%] mx-auto bg-[#FAF9F6] py-[5.469vw] px-[5.99vw]">
+      <div
+        ref={topRef}
+        className="w-[92.135vw] max-w-[100%] mx-auto bg-[#FAF9F6] py-[5.469vw] px-[5.99vw] lg:scroll-mt-[92px] scroll-mt-[60px]"
+      >
         <h2 className="mt-0 lg:text-[2.5vw] lg:leading-[1.875vw] text-[24px] prata text-center font-normal mb-5">
           our registry selections
         </h2>

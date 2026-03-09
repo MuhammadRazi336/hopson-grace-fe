@@ -93,8 +93,8 @@ const Brand = () => {
   // All brand products
   const productsEdges = collection?.products?.edges || [];
 
-  // Sidebar categories: unique parent collections that these products belong to
-  // (excluding this brand collection itself, any brand collections, and only parent collections)
+  // Sidebar categories: unique sub-collections that these products belong to
+  // (excluding this brand collection itself and any brand collections)
   const sidebarCategories = useMemo(() => {
     const map = new Map();
     productsEdges.forEach((edge) => {
@@ -102,8 +102,8 @@ const Brand = () => {
       const colEdges = product.collections?.edges || [];
       colEdges.forEach(({node}) => {
         if (!node || node.id === collection.id) return;
-        // Only consider parent collections
-        if (node.parentMetafield?.value !== 'true') return;
+        // Only consider sub-collections (children of parent collections)
+        if (node.parentMetafield?.value !== 'false') return;
         // Exclude collections that are brands (metafield custom.brand === 'true')
         if (node.brandMetafield?.value === 'true') return;
         if (!map.has(node.id)) {

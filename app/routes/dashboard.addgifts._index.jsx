@@ -49,11 +49,15 @@ export async function loader({request, context}) {
     const {products} = productsData;
     const {collections} = collectionsData;
 
-    // Fetch registry and userData in parallel
-    const [registry, userData] = await Promise.all([
-      context.ClientGet(`registries/by-userId/${user.user.id}`, context),
-      context?.ClientGet(`users/${user?.user?.id}`, context),
-    ]);
+    // Fetch registry and userData in parallel only when user is logged in
+    let registry = null;
+    let userData = null;
+    if (user && user.user && user.user.id) {
+      [registry, userData] = await Promise.all([
+        context.ClientGet(`registries/by-userId/${user.user.id}`, context),
+        context?.ClientGet(`users/${user?.user?.id}`, context),
+      ]);
+    }
 
     // Fetch ready-made registries using the same pattern as home index
     let featuredRegistryData = null;
@@ -879,20 +883,22 @@ function SidebarFilter({
           </div>
         )}
       </div>
-      <Link to={`/couple/single/${registry?.data?.[0]?.userId}`}>
-        <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
-          <div className="w-full mx-auto flex justify-center items-center gap-6 h-full">
-            <img
-              src="/assets/Images/share-icon.png"
-              alt="preview"
-              className="w-[36px] filter brightness-100"
-            />
-            <h2 className="text-white text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
-              PREVIEW PAGE
-            </h2>
+      {registry?.data?.[0]?.userId && (
+        <Link to={`/couple/single/${registry.data[0].userId}`}>
+          <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
+            <div className="w-full mx-auto flex justify-center items-center gap-6 h-full">
+              <img
+                src="/assets/Images/share-icon.png"
+                alt="preview"
+                className="w-[36px] filter brightness-100"
+              />
+              <h2 className="text-white text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
+                PREVIEW PAGE
+              </h2>
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      )}
       {/* Show PreviewRegistry only after a parent collection is selected */}
       {/* {selectedSwiperCollectionId && (
         <div className="mt-6">
@@ -1123,8 +1129,14 @@ export default function AddGifts() {
 
   const handleAddtoRegistry = (product, quantity = 1, isGroupGift = false) => {
     try {
+      // If user is not logged in, send them to the login page
+      if (!user || !user.user || !user.user.id) {
+        navigate('/login');
+        return;
+      }
+
       // Check if registry exists and has an id
-      if (!registry || !registry.data[0].id) {
+      if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);

@@ -455,8 +455,7 @@ const ThankYou = () => {
     to: '',
     email: '',
     subject: `Thank's from ${user?.user?.firstName} & ${user?.user?.fianceFirstName}`,
-    message:
-      'Thank you for your generosity and for celebrating this milestone moment with us. It means so much!',
+    message: '',
   });
 
   // Initialize and update 'to' (name) and 'email' fields when guest data is available
@@ -677,7 +676,7 @@ const ThankYou = () => {
                         <div className="w-full">
                           <textarea
                             name="message"
-                            placeholder="Your Message here...*"
+                            placeholder="Your message here..."
                             maxLength={maxLength}
                             rows={7}
                             value={formData.message}
