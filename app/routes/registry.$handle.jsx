@@ -398,6 +398,23 @@ const Registry = () => {
                const firstImage = productNode.images?.edges?.[0]?.node?.url || productNode.images?.edges?.[0]?.node?.src || '/assets/Images/placeholder.png';
                const firstVariant = productNode.variants?.edges?.[0]?.node;
                const price = formatPrice(firstVariant?.priceV2?.amount || product.price || productNode.price);
+
+               // Derive brand name: among this product's collections, find a collection marked as a brand
+               let brandName = productNode.vendor || '';
+               if (!brandName && Array.isArray(collections)) {
+                 for (const col of collections) {
+                   const isBrand = col.brandMetafield?.value === 'true';
+                   if (!isBrand) continue;
+                   const hasProduct =
+                     col.products?.edges?.some(
+                       (edge) => edge?.node?.id === productNode.id,
+                     ) || false;
+                   if (hasProduct) {
+                     brandName = col.title || '';
+                     break;
+                   }
+                 }
+               }
                
                return (
                  <div key={productId} className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
@@ -427,7 +444,7 @@ const Registry = () => {
                        </Link>
                        <Link to={`/dashboard/addgifts/${productNode.handle}`}>
                        <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-                         {'Brand name'}
+                         {brandName || 'BRAND NAME'}
                        </h4>
                        </Link>
                        <Link to={`/dashboard/addgifts/${productNode.handle}`}>
@@ -842,6 +859,10 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
+          id
+          value
+        }
         products(first: 10){
           edges {
             node {
@@ -877,4 +898,3 @@ const COLLECTION_QUERY = `#graphql
       }
     }
   }`;
-  
