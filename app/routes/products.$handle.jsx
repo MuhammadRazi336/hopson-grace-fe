@@ -897,6 +897,23 @@ export default function ProductCollection() {
                   const firstImage =
                     product?.images?.edges?.[0]?.node?.url ||
                     'assets/Images/placeholder.jpg';
+
+              // Derive brand name: among this product's collections, find a collection marked as a brand
+              let brandName = '';
+              if (Array.isArray(collections)) {
+                for (const col of collections) {
+                  const isBrand = col.brandMetafield?.value === 'true';
+                  if (!isBrand) continue;
+                  const hasProduct =
+                    col.products?.edges?.some(
+                      (edge) => edge?.node?.id === product.id,
+                    ) || false;
+                  if (hasProduct) {
+                    brandName = col.title || '';
+                    break;
+                  }
+                }
+              }
                   return (
                     <RegistryProduct
                       key={product.id}
@@ -915,6 +932,7 @@ export default function ProductCollection() {
                       onGroupGiftTagChange={(isGroupGift) =>
                         console.log(`Group Gift tag changed: ${isGroupGift}`)
                       }
+                  brandName={brandName || 'BRAND NAME'}
                     />
                   );
                 });
@@ -1048,6 +1066,10 @@ const COLLECTION_QUERY = `#graphql
           value
         }
         subMetafield: metafield(namespace: "sub", key: "collection") {
+          id
+          value
+        }
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
           id
           value
         }

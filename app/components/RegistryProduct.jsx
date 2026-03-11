@@ -11,6 +11,7 @@ const ProductCard = ({
   productHandle,
   isLoggedIn = false,
   isAddingToRegistry = false,
+  brandName = 'BRAND NAME',
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
@@ -62,7 +63,7 @@ const ProductCard = ({
               />
             </Link>
             <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-              {'BRAND NAME'}
+              {brandName}
             </h4>
             <Link to={`/dashboard/addgifts/${productHandle}`}>
               <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">

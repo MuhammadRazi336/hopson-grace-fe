@@ -1682,6 +1682,24 @@ export default function AddGifts() {
                   .map((product) => {
                     const firstImage =
                       product.image || '/assets/Images/placeholder.jpg';
+
+                    // Derive brand name: among this product's collections, find a collection marked as a brand
+                    let brandName = '';
+                    if (Array.isArray(collections)) {
+                      for (const col of collections) {
+                        const isBrand = col.brandMetafield?.value === 'true';
+                        if (!isBrand) continue;
+                        const hasProduct =
+                          col.products?.edges?.some(
+                            (edge) => edge?.node?.id === product.id,
+                          ) || false;
+                        if (hasProduct) {
+                          brandName = col.title || '';
+                          break;
+                        }
+                      }
+                    }
+
                     return (
                       <RegistryProduct
                         key={product.id}
@@ -1696,6 +1714,7 @@ export default function AddGifts() {
                         }
                         isLoggedIn={user && user.user && user.user.id}
                         isAddingToRegistry={addingProductId === product.id}
+                        brandName={brandName || 'BRAND NAME'}
                       />
                     );
                   });
@@ -2045,6 +2064,10 @@ const COLLECTION_QUERY = `#graphql
           value
         }
         giftCardMetafield: metafield(namespace: "custom", key: "giftcard") {
+          id
+          value
+        }
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
           id
           value
         }

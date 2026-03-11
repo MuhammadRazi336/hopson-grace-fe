@@ -208,9 +208,9 @@ const ViewGifts = () => {
                   }`}
                       >
                         <img
-                          src="/assets/Images/greeting-flower-checkout.png"
+                          src="/assets/Images/couple-header-logo.png"
                           alt="checkout-bg-1"
-                          className="w-[15%] xl:w-auto h-auto mx-auto xl:mb-6 md:mb-4 lg:mb-4 mb-1"
+                          className="w-[96px] h-auto mx-auto xl:mb-6 md:mb-4 lg:mb-4 mb-1"
                         />
 
                         <PreviewForm />
