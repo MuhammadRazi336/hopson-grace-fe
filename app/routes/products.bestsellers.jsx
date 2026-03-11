@@ -271,6 +271,10 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
+          id
+          value
+        }
         products(first: 250){
           edges {
             node {
@@ -577,9 +581,27 @@ const Bestsellers = () => {
                 {displayedProducts.length > 0 ? (
                   displayedProducts.map((product, index) => {
                     console.log(product);
-                    const price = product.node.variants?.edges?.[0]?.node?.priceV2?.amount;
+                    const price =
+                      product.node.variants?.edges?.[0]?.node?.priceV2?.amount;
                     const image = product.node.images?.edges?.[0]?.node?.url;
-                    
+
+                    // Derive brand name: among this product's collections, find a collection marked as a brand
+                    let brandName = '';
+                    if (Array.isArray(collections)) {
+                      for (const col of collections) {
+                        const isBrand = col.brandMetafield?.value === 'true';
+                        if (!isBrand) continue;
+                        const hasProduct =
+                          col.products?.edges?.some(
+                            (edge) => edge?.node?.id === product.node.id,
+                          ) || false;
+                        if (hasProduct) {
+                          brandName = col.title || '';
+                          break;
+                        }
+                      }
+                    }
+
                     return (
                       <RegistryProduct
                         key={product.node.id || index}
@@ -589,7 +611,10 @@ const Bestsellers = () => {
                         price={price}
                         productHandle={product.node.handle}
                         registryId={registry?.id}
-                        onAddToRegistry={(quantity) => handleAddToRegistry(product.node, quantity)}
+                        onAddToRegistry={(quantity) =>
+                          handleAddToRegistry(product.node, quantity)
+                        }
+                        brandName={brandName || 'BRAND NAME'}
                       />
                     );
                   })

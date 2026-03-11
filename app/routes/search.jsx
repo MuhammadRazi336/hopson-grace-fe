@@ -68,6 +68,10 @@ const COLLECTIONS_QUERY = `#graphql
           id
           value
         }
+        metafield(namespace: "custom", key: "brand") {
+          id
+          value
+        }
         products(first: 10){
           edges {
             node {
@@ -547,6 +551,23 @@ export default function SearchResults() {
                       '/assets/Images/placeholder.png';
     const firstVariant = product.variants?.edges?.[0]?.node;
     const price = formatPrice(firstVariant?.priceV2?.amount);
+
+    // Derive brand name: among this product's collections, find a collection marked as a brand
+    let brandName = '';
+    if (Array.isArray(collections)) {
+      for (const col of collections) {
+        const isBrand = col.metafield?.value === 'true';
+        if (!isBrand) continue;
+        const hasProduct =
+          col.products?.edges?.some(
+            (edge) => edge?.node?.id === product.id,
+          ) || false;
+        if (hasProduct) {
+          brandName = col.title || '';
+          break;
+        }
+      }
+    }
     
     return (
       <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw px-5">
@@ -576,7 +597,9 @@ export default function SearchResults() {
                 className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
               />
               <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-                {isCashFund ? (product.collectionTitle || 'CASH FUND') : 'GIFT'}
+                {isCashFund
+                  ? product.collectionTitle || 'CASH FUND'
+                  : brandName || 'GIFT'}
               </h4>
               <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
                 {product.title}
@@ -716,7 +739,7 @@ export default function SearchResults() {
         />
       </div>
       <div className="mt-4">
-        <h3 className="text-lg font-semibold uppercase mb-2">
+        <h3 className="text-lg uppercase mb-2">
           {brand.title}
         </h3>
         <p className="text-sm text-gray-600">
