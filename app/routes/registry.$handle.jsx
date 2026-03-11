@@ -877,3 +877,4 @@ const COLLECTION_QUERY = `#graphql
       }
     }
   }`;
+  
