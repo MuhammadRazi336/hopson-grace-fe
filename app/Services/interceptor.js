@@ -1,9 +1,13 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: process.env.API_BASE_URL + '/api/', // Set your API URL here
+  baseURL: 'https://dev-hopsongrace.codup.io/api/' || 'https://theregistry.ca/api/', // Set your API URL here
+  // baseURL: 'http://localhost:3040/api/', // Set your API URL here
+
+  // https://dev-hopsongrace.codup.io/api/
   timeout: 20000,
 });
+
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   (config, token) => {
