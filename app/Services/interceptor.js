@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://dev-hopsongrace.codup.io/api/', // Set your API URL here
+  baseURL: process.env.API_BASE_URL, // Set your API URL here
   // baseURL: 'http://localhost:3040/api/', // Set your API URL here
 
   // https://dev-hopsongrace.codup.io/api/
