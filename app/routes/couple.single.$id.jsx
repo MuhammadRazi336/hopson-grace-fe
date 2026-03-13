@@ -420,9 +420,14 @@ export default function CoupleProfile() {
   const eventCity = safeResponse?.data?.[0]?.events?.[0]?.city || '';
   const eventProvince = safeResponse?.data?.[0]?.events?.[0]?.province || '';
 
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [availability, setAvailability] = useState('');
-  const [priceSort, setPriceSort] = useState('');
+  // Filters for "our registry selections" (aligned with dashboard.registry._index)
+  const [priceSort, setPriceSort] = useState('low-to-high'); // 'low-to-high' | 'high-to-low'
+  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'gifted' | 'ungifted'
+  const [categoryFilter, setCategoryFilter] = useState('all'); // 'all' | 'gifts' | 'cashfunds'
+  const [openFilter, setOpenFilter] = useState(null); // null | 'category' | 'price' | 'status'
+  const [onlyGiftCards, setOnlyGiftCards] = useState(false); // when true, show only gift card products
+  const filterRef = useRef(null);
+  const topRef = useRef(null);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
@@ -626,6 +631,34 @@ export default function CoupleProfile() {
       }
     }
   }, [selectedGiftData, selectedImageIndex]);
+
+  // Handle body scroll lock when popup is open
+  useEffect(() => {
+    const appClipElement = document.getElementById('app-clip');
+    const appScaleElement = document.getElementById('app-scale');
+    
+    if (isPopupOpen && appClipElement) {
+      // Disable vertical scroll when popup is open
+      appClipElement.style.overflowY = 'hidden';
+      appScaleElement.style.position = 'fixed';
+      appScaleElement.style.top = '0';
+    } else if (appClipElement) {
+      // Restore vertical scroll when popup is closed
+      appClipElement.style.overflowY = 'auto';
+      appScaleElement.style.position = 'static';
+      appScaleElement.style.top = '0';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      const appClipElement = document.getElementById('app-clip');
+      if (appClipElement) {
+        appClipElement.style.overflowY = 'auto';
+        appScaleElement.style.position = 'static';
+        appScaleElement.style.top = '0';
+      }
+    };
+  }, [isPopupOpen]);
 
   const closePopup = () => {
     setIsPopupOpen(false);
@@ -1258,43 +1291,94 @@ export default function CoupleProfile() {
     fetchCartItems();
   };
 
-  // Filter products
+  // Helpers to determine gifted status and amounts (similar to dashboard.registry._index)
+  const isProductGifted = (product) => {
+    if (typeof product.isPurchased === 'boolean') {
+      return product.isPurchased;
+    }
+    const quantity = Number(product.quantity) || 1;
+    const purchasedQuantity = Number(product.purchasedQuantity) || 0;
+    const stillNeeds = Math.max(0, quantity - purchasedQuantity);
+    return stillNeeds === 0;
+  };
+
+  const isFundGifted = (fund) => {
+    const totalAmount = Number(fund.amount) || 0;
+    const collectedAmount = Number(fund.collectedAmount) || 0;
+    const remainingAmount = Math.max(0, totalAmount - collectedAmount);
+    const isAnyAmount = fund.cashFund?.isAnyAmount || false;
+
+    if (typeof fund.isPurchased === 'boolean') {
+      return fund.isPurchased;
+    }
+
+    return !isAnyAmount && remainingAmount === 0;
+  };
+
+  const getProductAmount = (product) => {
+    const priceObj = product.variants?.edges?.[0]?.node?.priceV2;
+    if (priceObj && priceObj.amount) {
+      return Number(priceObj.amount) || 0;
+    }
+    return Number(product.amount) || 0;
+  };
+
+  const getFundAmount = (fund) => Number(fund.amount) || 0;
+
+  // Filter products for "our registry selections"
   const filteredData =
     safeData && safeData.length > 0 && hasProducts && registryId
       ? safeData
           .filter((product) => {
-            // Safety check: Ensure product exists and has required properties
-            if (!product || !product.id) {
+            if (!product || !product.id) return false;
+
+            // Category filter: gifts vs cash funds
+            if (categoryFilter === 'gifts' && product.isCashFund) {
+              return false;
+            }
+            if (categoryFilter === 'cashfunds' && !product.isCashFund) {
               return false;
             }
 
-            if (selectedCategory) {
-              const collectionTitles =
-                product.collections?.nodes?.map((c) => c.title) || [];
-              if (!collectionTitles.includes(selectedCategory)) return false;
+            // When triggered from "give the gift of choice", only show gift card products
+            if (onlyGiftCards) {
+              const title = (product.title || '').toLowerCase();
+              if (product.isCashFund) return false;
+              if (!title.includes('gift card')) return false;
             }
 
-            if (availability) {
-              if (product.isCashFund) {
-                return availability === 'in-stock';
-              }
-              const isAvailable = product.availableForSale ?? true;
-              const isPurchased = product.status === 'purchased';
-              if (availability === 'in-stock') {
-                return isAvailable && !isPurchased;
-              }
-              if (availability === 'out-of-stock') {
-                return !isAvailable || isPurchased;
-              }
+            // Status filter: gifted vs ungifted
+            if (statusFilter === 'gifted') {
+              return product.isCashFund
+                ? isFundGifted(product)
+                : isProductGifted(product);
             }
+            if (statusFilter === 'ungifted') {
+              return !(product.isCashFund
+                ? isFundGifted(product)
+                : isProductGifted(product));
+            }
+
             return true;
           })
           .sort((a, b) => {
             if (priceSort === 'low-to-high') {
-              return (a.amount ?? 0) - (b.amount ?? 0);
+              const aAmount = a.isCashFund
+                ? getFundAmount(a)
+                : getProductAmount(a);
+              const bAmount = b.isCashFund
+                ? getFundAmount(b)
+                : getProductAmount(b);
+              return aAmount - bAmount;
             }
             if (priceSort === 'high-to-low') {
-              return (b.amount ?? 0) - (a.amount ?? 0);
+              const aAmount = a.isCashFund
+                ? getFundAmount(a)
+                : getProductAmount(a);
+              const bAmount = b.isCashFund
+                ? getFundAmount(b)
+                : getProductAmount(b);
+              return bAmount - aAmount;
             }
             return 0;
           })
@@ -1378,17 +1462,63 @@ export default function CoupleProfile() {
     handleAddToCart(product.id);
   };
 
-  const childCollections = safeCollections.filter((collection) => {
-    // Safety check: Ensure collection exists and has required properties
-    if (!collection || !collection.metafield) {
-      return false;
-    }
-    return collection.metafield?.value === 'true';
-  });
+  // Category label for filters
+  const categoryLabel =
+    categoryFilter === 'all'
+      ? 'All'
+      : categoryFilter === 'gifts'
+      ? 'Gifts'
+      : categoryFilter === 'cashfunds'
+      ? 'Cash Funds'
+      : 'All';
 
-  // Only process child collections if we have products and registry
-  const validChildCollections =
-    hasProducts && registryId ? childCollections : [];
+  // Close open filter dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setOpenFilter(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filterTriggerClass =
+    'text-[18px] uppercase flex gap-[10px] items-center lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.938vw] xl:leading-[1.938vw] 2xl:leading-[1.938vw] cursor-pointer border-0 bg-transparent p-0 font-inherit';
+
+  const Arrow = ({isOpen}) => (
+    <svg
+      width="13"
+      height="11"
+      viewBox="0 0 13 11"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`shrink-0 transition-transform ${
+        isOpen ? 'rotate-180' : ''
+      }`}
+    >
+      <path
+        d="M7.06524 10.5C6.68034 11.1667 5.71809 11.1667 5.33319 10.5L0.13704 1.5C-0.24786 0.833333 0.233266 0 1.00307 0L11.3954 0C12.1652 0 12.6463 0.833333 12.2614 1.5L7.06524 10.5Z"
+        fill="black"
+      />
+    </svg>
+  );
+
+  const scrollToTopAndShowGiftCards = () => {
+    // Set filters to show only gift card products
+    setCategoryFilter('gifts');
+    setStatusFilter('all');
+    setPriceSort('low-to-high');
+    setOnlyGiftCards(true);
+    setOpenFilter(null);
+
+    if (topRef.current) {
+      topRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  };
   return (
     <>
       {showAlert && (
@@ -1513,7 +1643,10 @@ export default function CoupleProfile() {
         }
       </div>
 
-      <div className="w-[92.135vw] max-w-[100%] mx-auto bg-[#FAF9F6] py-[5.469vw] px-[5.99vw]">
+      <div
+        ref={topRef}
+        className="w-[92.135vw] max-w-[100%] mx-auto bg-[#FAF9F6] py-[5.469vw] px-[5.99vw] lg:scroll-mt-[92px] scroll-mt-[60px]"
+      >
         <h2 className="mt-0 lg:text-[2.5vw] lg:leading-[1.875vw] text-[24px] prata text-center font-normal mb-5">
           our registry selections
         </h2>
@@ -1523,69 +1656,151 @@ export default function CoupleProfile() {
           className="max-w-[33.021vw] h-auto mx-auto"
         />
 
-        {/* Only show filters if there are products and collections */}
-        {hasProducts && validChildCollections.length > 0 && registryId && (
-          <div className="filters">
-            <div className="filter-item flex gap-x-12 mt-[5.052vw] justify-center">
-              <div
-                className="relative"
-                onClick={() => {
-                  const nextCategory =
-                    selectedCategory === ''
-                      ? validChildCollections[0]?.title || ''
-                      : selectedCategory ===
-                        validChildCollections[validChildCollections.length - 1]
-                          ?.title
-                      ? ''
-                      : validChildCollections[
-                          validChildCollections.findIndex(
-                            (c) => c.title === selectedCategory,
-                          ) + 1
-                        ]?.title || '';
-                  setSelectedCategory(nextCategory);
-                }}
-              >
-                <h3 className="text-[18px] leading-[18px] uppercase cursor-pointer">
-                  <strong>Categories: </strong> {selectedCategory || 'All'}
-                </h3>
+        {/* Filters (match dashboard.registry "your registry selections") */}
+        {hasProducts && registryId && (
+          <div className="filters" ref={filterRef}>
+            <div className="filter-item flex gap-x-[5.208vw] mt-[5.052vw] justify-center max-[1024px]:flex-wrap max-[1024px]:gap-[20px] items-start">
+              {/* Categories dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  className={filterTriggerClass}
+                  onClick={() =>
+                    setOpenFilter(openFilter === 'category' ? null : 'category')
+                  }
+                >
+                  <strong>Categories</strong> {categoryLabel}{' '}
+                  <Arrow isOpen={openFilter === 'category'} />
+                </button>
+                {openFilter === 'category' && (
+                  <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setCategoryFilter('all');
+                        setOnlyGiftCards(false);
+                        setOpenFilter(null);
+                      }}
+                    >
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setCategoryFilter('gifts');
+                        setOnlyGiftCards(false);
+                        setOpenFilter(null);
+                      }}
+                    >
+                      Gifts
+                    </button>
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setCategoryFilter('cashfunds');
+                        setOnlyGiftCards(false);
+                        setOpenFilter(null);
+                      }}
+                    >
+                      Cash Funds
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <div
-                className="relative text-[18px] leading-[18px]"
-                onClick={() => {
-                  const options = ['', 'low-to-high', 'high-to-low'];
-                  const currentIndex = options.indexOf(priceSort);
-                  const nextIndex = (currentIndex + 1) % options.length;
-                  setPriceSort(options[nextIndex]);
-                }}
-              >
-                <h3 className="text-[18px] leading-[18px] uppercase cursor-pointer">
-                  <strong>price: </strong>{' '}
-                  {priceSort === 'low-to-high'
-                    ? 'low to high'
-                    : priceSort === 'high-to-low'
-                    ? 'high to low'
-                    : 'All'}
-                </h3>
+              {/* Price dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  className={filterTriggerClass}
+                  onClick={() =>
+                    setOpenFilter(openFilter === 'price' ? null : 'price')
+                  }
+                >
+                  <strong>price</strong>{' '}
+                  {priceSort === 'low-to-high' ? 'low to high' : 'high to low'}{' '}
+                  <Arrow isOpen={openFilter === 'price'} />
+                </button>
+                {openFilter === 'price' && (
+                  <div className="absolute top-full left-0 mt-1 min-w-[160px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setPriceSort('low-to-high');
+                        setOpenFilter(null);
+                      }}
+                    >
+                      low to high
+                    </button>
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setPriceSort('high-to-low');
+                        setOpenFilter(null);
+                      }}
+                    >
+                      high to low
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <div
-                className="relative"
-                onClick={() => {
-                  const options = ['', 'in-stock', 'out-of-stock'];
-                  const currentIndex = options.indexOf(availability);
-                  const nextIndex = (currentIndex + 1) % options.length;
-                  setAvailability(options[nextIndex]);
-                }}
-              >
-                <h3 className="text-[18px] leading-[18px] uppercase cursor-pointer">
-                  <strong>status: </strong>{' '}
-                  {availability === 'in-stock'
-                    ? 'Available'
-                    : availability === 'out-of-stock'
-                    ? 'Purchased'
-                    : 'All'}
-                </h3>
+              {/* Status dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  className={filterTriggerClass}
+                  onClick={() =>
+                    setOpenFilter(openFilter === 'status' ? null : 'status')
+                  }
+                >
+                  <strong>status</strong>{' '}
+                  {statusFilter === 'gifted'
+                    ? 'Gifted'
+                    : statusFilter === 'ungifted'
+                    ? 'Ungifted'
+                    : 'All'}{' '}
+                  <Arrow isOpen={openFilter === 'status'} />
+                </button>
+                {openFilter === 'status' && (
+                  <div className="absolute top-full left-0 mt-1 min-w-[140px] bg-[#FAF9F6] border border-[#1F1D1B] rounded shadow-lg z-50 py-1">
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setStatusFilter('all');
+                        setOpenFilter(null);
+                      }}
+                    >
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setStatusFilter('gifted');
+                        setOpenFilter(null);
+                      }}
+                    >
+                      Gifted
+                    </button>
+                    <button
+                      type="button"
+                      className="block w-full text-left px-4 py-2 uppercase text-[18px] lg:text-[0.938vw] hover:bg-[#eee] border-0 bg-transparent"
+                      onClick={() => {
+                        setStatusFilter('ungifted');
+                        setOpenFilter(null);
+                      }}
+                    >
+                      Ungifted
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1630,7 +1845,9 @@ export default function CoupleProfile() {
                     maxContribution={Number(product.amount) || 0}
                     purchasedQuantity={Number(product.purchasedQuantity) || 0}
                     isAnyAmount={product.cashFund?.isAnyAmount || false}
-                    onAddToCart={() => handleAddToCart(product.id)}
+                    onAddToCart={(selectedQuantity) =>
+                      handleAddToCart(product.id, selectedQuantity)
+                    }
                     onContribute={(amount) =>
                       handleContribute(product.id, amount)
                     }
@@ -1674,28 +1891,23 @@ export default function CoupleProfile() {
           </div>
           <div className="flex flex-col items-center justify-center pr-[10.417vw]">
             <h3 className="text-2xl text-white lg:text-[2.292vw] 3xl:w-full prata max-w-[410px] text-center">
-              add a gift card
+              give the gift of choice
             </h3>
             <img
               src="/assets/Images/white-bdr.png"
               alt="couple"
               className="max-w-[315px] lg:max-w-[16.927vw] lg:w-[16.927vw] mb-[1.875vw] mt-4 mx-auto"
             />
-            <h5 className="text-white text-xl lg:text-[26px] text-center font-[500]">
-              CONTRIBUTE TO OUR JOURNEY!
-            </h5>
             <p className="text-sm lg:text-[26px] lg:leading-[1.667vw] text-white lg:max-w-[31.615vw] max-w-[488px] mt-4 mb-10 font-normal text-center">
-              Help us create our dream wedding, honeymoon or life experience.
-              We&apos;re so grateful.
+              A Registry gift card helps the couple choose exactly what they need, when they are ready.
             </p>
-            <Link to="/dashboard/giftcards">
-              <button
-                type="button"
-                className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[12vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
-              >
-                ADD GIFT CARDS
-              </button>
-            </Link>
+            <button
+              type="button"
+              onClick={scrollToTopAndShowGiftCards}
+              className="text-black text-[18px] leading-[18px] font-bold py-4 lg:h-[3.779vw] lg:w-[12vw] px-4 bg-[#F5F2ED] rounded-none cursor-pointer mx-auto block"
+            >
+              PURCHASE
+            </button>
           </div>
         </div>
       </div>
@@ -1729,7 +1941,7 @@ export default function CoupleProfile() {
 
       {isPopupOpen && selectedGiftData && hasProducts && registryId && (
         <div
-          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-auto"
+          className="fixed inset-0  bg-[#00000073]  flex items-center justify-center z-50 p-4 overflow-auto scale-[1.5]"
           onClick={closePopup}
         >
           <div

@@ -14,6 +14,7 @@ import lineImg4 from '/assets/Images/Vector 14.png';
 import {formatPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
 import ExploreMoreRegistriesSlider from '~/components/ExploreMoreRegistriesSlider'
+import BackToTop from '~/components/BackToTop'
 
 export async function loader({params, context}) {
   const {handle} = params;
@@ -102,6 +103,7 @@ const Registry = () => {
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
+  const topRef = useRef(null);
   const fetcher = useFetcher();
 
   // Browser console: ready made registries only
@@ -348,6 +350,7 @@ const Registry = () => {
   return (
     <section>
         <Header/>
+        <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]" />
 
         <div className="w-full h-[500px] lg:h-[39.58vw] flex flex-row items-center justify-center">
         <div className="w-[50%] h-full bg-[#F5F2ED] relative">
@@ -395,6 +398,23 @@ const Registry = () => {
                const firstImage = productNode.images?.edges?.[0]?.node?.url || productNode.images?.edges?.[0]?.node?.src || '/assets/Images/placeholder.png';
                const firstVariant = productNode.variants?.edges?.[0]?.node;
                const price = formatPrice(firstVariant?.priceV2?.amount || product.price || productNode.price);
+
+               // Derive brand name: among this product's collections, find a collection marked as a brand
+               let brandName = productNode.vendor || '';
+               if (!brandName && Array.isArray(collections)) {
+                 for (const col of collections) {
+                   const isBrand = col.brandMetafield?.value === 'true';
+                   if (!isBrand) continue;
+                   const hasProduct =
+                     col.products?.edges?.some(
+                       (edge) => edge?.node?.id === productNode.id,
+                     ) || false;
+                   if (hasProduct) {
+                     brandName = col.title || '';
+                     break;
+                   }
+                 }
+               }
                
                return (
                  <div key={productId} className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
@@ -422,9 +442,9 @@ const Registry = () => {
                          className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
                        />
                        </Link>
-                        <Link to={`/dashboard/addgifts/${productNode.handle}`}>
+                       <Link to={`/dashboard/addgifts/${productNode.handle}`}>
                        <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-                         {product.parentCollectionTitle || collection.title || 'REGISTRY NAME'}
+                         {brandName || 'BRAND NAME'}
                        </h4>
                        </Link>
                        <Link to={`/dashboard/addgifts/${productNode.handle}`}>
@@ -502,9 +522,8 @@ const Registry = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="w-full xl:w-1/4"> </div>
-          <div className="w-full xl:w-3/4 flex flex-col items-center mt-36">
-            <p className="text-center text-[18px] font-semibold mb-10">
+          <div className="w-full flex flex-col items-center">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
               LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
               {filteredProducts.length}
             </p>
@@ -512,9 +531,7 @@ const Registry = () => {
             {filteredProducts.length > 12 &&
               productsToShow < filteredProducts.length && (
                 <WhiteThemeButton
-                  Text="VIEW MORE"
-                  buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
-                  link="#"
+                  Text="View more"
                   onClick={() =>
                     setProductsToShow((prev) =>
                       Math.min(prev + 12, filteredProducts.length),
@@ -523,27 +540,12 @@ const Registry = () => {
                 />
               )}
 
-            {productsToShow > 12 && (
-              <button
-                className="border-b mx-auto cursor-pointer mb-20 font-bold bg-white text-black px-6 mt-3 text-sm hover:bg-gray-100"
-                onClick={() => {
-                  setProductsToShow(12);
-                  if (productGridRef.current) {
-                    productGridRef.current.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                    });
-                  }
-                }}
-              >
-              Back to Top
-            </button>
-            )}
+            <BackToTop topRef={topRef} />
           </div>
-                 </div>
+        </div>
        </section>
 
-       <ExploreMoreRegistriesSlider otherRegistries={otherRegistries} className={'max-w-[1665px] mx-auto'} />
+       <ExploreMoreRegistriesSlider otherRegistries={otherRegistries} className={''} />
 
     <div className='mt-16'></div>
 
@@ -631,11 +633,21 @@ function SidebarFilter({
   });
 
   // Get parent collections for Product Categories (exactly like dashboard addgifts)
-  const parentCollection = collections.filter(
-    (col) =>
+  // Exclude Cash Funds and Travel Funds collections from the sidebar
+  const parentCollection = collections.filter((col) => {
+    const isParent =
       col.parentMetafield?.value === 'true' &&
-      col.readyMadeMetafield?.value !== 'true',
-  );
+      col.readyMadeMetafield?.value !== 'true';
+
+    if (!isParent) return false;
+
+    const title = (col.title || '').toLowerCase().trim();
+    if (title === 'cash funds' || title === 'travel funds') {
+      return false;
+    }
+
+    return true;
+  });
   
 
   const toggleSection = (section) => {
@@ -726,6 +738,7 @@ const REGISTRY_QUERY = `#graphql
            title
            handle
            description
+           vendor
            images(first: 10) {
              edges {
                node {
@@ -846,6 +859,10 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
+          id
+          value
+        }
         products(first: 10){
           edges {
             node {
@@ -853,6 +870,7 @@ const COLLECTION_QUERY = `#graphql
               title
               handle
               description
+              vendor
               createdAt
               images(first: 10) {
                 edges {

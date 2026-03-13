@@ -263,17 +263,21 @@ const ProductCard = React.memo(
         {/* Expanding Overlay */}
         <div className="absolute w-[116%] left-[-8%] lg:h-[37.5vw] lg:min-h-[490px] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto">
           <div>
+            <Link to={`/dashboard/addgifts/${product.handle}`}>
             <img
               src={firstImage}
               alt={product.title}
               className="w-full rounded-none h-[15.625vw] mx-auto object-cover"
             />
+            </Link>
             <h4 className="text-xs font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
               {collection.title || 'BRAND NAME'}
             </h4>
+            <Link to={`/dashboard/addgifts/${product.handle}`}>
             <h3 className="text-sm font-[500] lg:text-[1.146vw] lg:leading-[1.146vw] line-clamp-1 uppercase text-left leading-snug">
               {product.title}
             </h3>
+            </Link>
             <p className="text-sm mt-2 lg:text-[1.25vw] lg:leading-[1.25vw] text-left">{displayPrice}</p>
           </div>
 
@@ -383,7 +387,7 @@ const DreamFund = () => {
         <p className="text-center text-[16px] max-[767px]:w-[90%] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] font-normal w-[80%] lg:w-[57.604vw] xl:w-[57.604vw] 2xl:w-[57.604vw] mx-auto">
           {searchQuery
             ? 'Browse the search results below or use the filters to refine your search.'
-            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that’s so you. Because life together should start with something unforgettable."}
+            : "From once-in-a-lifetime adventures to future home dreams, our Cash & Travel Funds let you register for the big stuff. Choose a pre-made fund, create your own, or work with Porte Travel to create a custom trip that's so you. Because life together should start with something unforgettable."}
         </p>
       </div>
 

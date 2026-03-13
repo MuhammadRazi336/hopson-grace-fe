@@ -455,8 +455,7 @@ const ThankYou = () => {
     to: '',
     email: '',
     subject: `Thank's from ${user?.user?.firstName} & ${user?.user?.fianceFirstName}`,
-    message:
-      'Thank you for your generosity and for celebrating this milestone moment with us. It means so much!',
+    message: '',
   });
 
   // Initialize and update 'to' (name) and 'email' fields when guest data is available
@@ -677,7 +676,7 @@ const ThankYou = () => {
                         <div className="w-full">
                           <textarea
                             name="message"
-                            placeholder="Your Message here...*"
+                            placeholder="Your message here..."
                             maxLength={maxLength}
                             rows={7}
                             value={formData.message}
@@ -756,7 +755,7 @@ const ThankYou = () => {
                 handleSubmit(e);
               }}
               disabled={fetcher.state === 'submitting'}
-              className="py-5 px-8 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white whitespace-nowrap text-center disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+              className="py-3 px-8 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white whitespace-nowrap text-center disabled:opacity-50 disabled:cursor-not-allowed border border-black"
             >
               {fetcher.state === 'submitting' ? 'Sending...' : 'SEND!'}
             </button>

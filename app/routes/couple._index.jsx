@@ -70,7 +70,7 @@ export default function FindCoupleForm() {
                 </p>
 
                 <form method="GET" className="w-full" onSubmit={handleSearch}>
-                  <div className="flex gap-8 lg:gap-[1.458vw] mb-4 lg:mb-[2.448vw] max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px] ">
+                  <div className="flex gap-8 lg:gap-4 mb-4 lg:mb-[2.448vw] max-[1024px]:flex-col max-[1024px]:gap-0 max-[1024px]:mb-[5px] ">
                     <div className="w-full">
                       <input
                         id="firstName"

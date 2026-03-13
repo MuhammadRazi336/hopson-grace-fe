@@ -755,7 +755,7 @@ const BlogDetails = () => {
           {/* Event details block: driven solely by event.details metafield (namespace "event", key "details") */}
           {eventDetailsBlock?.heading && (
           <div className="bg-[#FAF9F6] relative px-16 py-12">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
+            <div className="text-center w-full px-10">
               <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-medium tracking-[8%] uppercase">   
                 {eventDetailsBlock?.heading && (
                   (() => {
@@ -962,9 +962,9 @@ const BlogDetails = () => {
         />
 
         <div className="relative items-start mt-16">
-          <div className="lg:w-[77.969vw] max-w-[85%] mx-auto">
+          <div className="lg:w-[100vw] max-w-[85%] mx-auto">
             <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-180 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
+              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
               <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
                 more
               </span>
@@ -979,7 +979,7 @@ const BlogDetails = () => {
                 nextEl: '.swiper-button-next-prod',
                 prevEl: '.swiper-button-prev-prod',
               }}
-              className="px-[50px]"
+              className=""
               breakpoints={{
                 345: {
                   spaceBetween: 10,
@@ -1020,9 +1020,9 @@ const BlogDetails = () => {
                     <SwiperSlide key={article.id}>
                       <div className="w-full">
                         {article.image?.url ? (
-                          <img src={article.image.url} alt={article.image.altText || article.title || 'Blog image'} className='w-[372px] h-[388px] object-cover'/>
+                          <img src={article.image.url} alt={article.image.altText || article.title || 'Blog image'} className='w-full h-[388px] object-cover aspect-square'/>
                         ) : (
-                          <img src="/assets/Images/couple-logo.png" alt="Default blog image" className='w-[372px] h-[388px] object-cover'/>
+                          <img src="/assets/Images/couple-logo.png" alt="Default blog image" className='w-full h-[388px] object-contain aspect-square'/>
                         )}
                         <h4 className="text-xl lg:text-[22px] lg:leading-[1.458vw] font-semibold mt-3">
                           {article.title}
@@ -1035,7 +1035,7 @@ const BlogDetails = () => {
                           <Link to={`/blogs/${blog.handle}/${article.handle}`}>
                             <p className="font-bold flex items-center justify-center lg:text-[18px] uppercase gap-2">
                               Read More
-                              <img src={readMoreIcon} className='w-[16px] h-[16px] pl-0.5' alt="" />
+                              <img src={readMoreIcon} className='w-[16px] h-[16px] pl-0.5 relative -top-[2px]' alt="" />
                             </p>
                           </Link>
                         </div>
@@ -1049,7 +1049,7 @@ const BlogDetails = () => {
               <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
                 more
               </span>
-              <img src={nextitem} className="lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
+              <img src={nextitem} className="-rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
             </div>
           </div>
         </div>

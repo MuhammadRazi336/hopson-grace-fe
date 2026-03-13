@@ -47,6 +47,11 @@ const backgroundImages = [
   '/assets/Images/Background_Birds_Export.png',
   '/assets/Images/Background_Heart_Export.png',
 ];
+const TempDisplayBackgroundImages = [
+  '/assets/Images/hand.png',
+  '/assets/Images/birds.png',
+  '/assets/Images/hearts.png',
+];
 
 // Helper functions for localStorage
 const getStoredBackgroundImages = () => {
@@ -141,20 +146,24 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
       if (!cropperSize.width || !cropperSize.height) return;
       
       // Calculate the crop area dimensions based on banner aspect ratio (3:1)
-      // For banner images, the crop area is wider than tall
       const cropWidth = cropperSize.width;
       const cropHeight = cropWidth / bannerAspectRatio;
       
-      // Calculate minimum zoom to cover the crop area (not the container)
-      // The image needs to cover both width and height of the crop area
+      // Calculate minimum zoom to cover the crop area
       const widthRatio = cropWidth / mediaSize.width;
       const heightRatio = cropHeight / mediaSize.height;
       const requiredMinZoom = Math.max(widthRatio, heightRatio, 1);
       
       setMinZoom(requiredMinZoom);
-      setZoom((z) => (z < requiredMinZoom ? requiredMinZoom : z));
-      // center the crop
-      setCrop({ x: 50, y: 50 });
+      // Increase zoom slightly to allow image to move toward bottom-right
+      const adjustedZoom = requiredMinZoom * 1.3; // 30% more zoom to create room for repositioning
+      setZoom(adjustedZoom);
+      
+      // Position the image to bottom-right using crop coordinates
+      // Higher values move viewport toward bottom-right corner
+      const offsetX = -50; // Move viewport 90% from left (far right)
+      const offsetY = -10; // Move viewport 90% from top (far bottom)
+      setCrop({ x: offsetX, y: offsetY });
     } catch (err) {
       console.error('Error computing min zoom:', err);
     }
@@ -310,11 +319,11 @@ export default function EditBackgroundImagePopup({ isOpen, onClose, onSave }) {
             <div className="w-1/3 lg:w-[32vw] xl:w-[32vw] 2xl:w-[32vw] max-[1024px]:w-full">
               <div className="grid grid-cols-4 gap-[1.354vw] max-h-full items-start max-[1024px]:flex max-[1024px]:flex-wrap">
                 {/* Predefined background images */}
-                {backgroundImages.map((img, index) => (
+                {TempDisplayBackgroundImages.map((img, index) => (
                   <div 
                     key={`predefined-${index}`} 
                     className="cursor-pointer w-[5.885vw] h-[5.885vw] max-[1024px]:w-[60px] max-[1024px]:h-[60px]"
-                    onClick={() => handleThumbnailClick(img)}
+                    onClick={() => handleThumbnailClick(backgroundImages[index])}
                   >
                     <img
                       src={img}

@@ -1636,7 +1636,7 @@ export function Header() {
               </div> */}
               
               {/* Desktop navigation - hidden on mobile */}
-              <div className="relative flex w-full shadow-md justify-center min-[1025px]:gap-x-[4.167vw] bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px] max-[1024px]:overflow-x-auto max-[1024px]:justify-start">
+              <div className="relative z-[5] flex w-full shadow-[0_4px_6px_2px_#FAF9F6] justify-center min-[1025px]:gap-x-[4.167vw] bg-[#F5F2ED] lg:px-[5.125vw] xl:px-[5.125vw] 2xl:px-[5.125vw] min-h-[70px] max-[1024px]:overflow-x-auto max-[1024px]:justify-start">
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard">
                   <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer shadow-none p-0 min-w-0 !bg-transparent" data-value="MY DETAILS">
                     <div className="z-20 text-inherit">
