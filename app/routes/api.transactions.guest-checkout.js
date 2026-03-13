@@ -4,7 +4,7 @@ import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balance
 
 // API base for order persistence (same as API_BASE_URL)
 const getApiBase = (context) =>
-  (context?.env?.API_BASE_URL || process.env.API_BASE_URL || 'https://dev-hopsongrace.codup.io').replace(/\/$/, '');
+  (context?.env?.API_BASE_URL || process.env.API_BASE_URL).replace(/\/$/, '');
 
 /**
  * POST /api/transactions/guest-checkout

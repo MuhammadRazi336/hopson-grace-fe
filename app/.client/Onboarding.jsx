@@ -44,7 +44,7 @@ import electic from '/assets/Images/electic.jpg';
 import {STATES_BY_COUNTRY} from '~/constants/StatesByCountry';
 
 const OnboardingClient = ({onStepChange}) => {
-  const {user, collections, context} = useLoaderData();
+  const {user, collections} = useLoaderData();
   const navigate = useNavigate();
   const [step, setStep] = useState(STEPS_CONSTANTS.EVENT_DATE_INFO);
   const [eventTypes, setEventTypes] = useState([]);
@@ -738,7 +738,6 @@ const OnboardingClient = ({onStepChange}) => {
         return (
           <Step7
             selectedCollections={selectedCollections}
-            storefront={context.storefront}
             onSubCollectionsSelect={setSelectedSubCollections}
           />
         );

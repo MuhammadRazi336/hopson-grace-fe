@@ -10,6 +10,9 @@ import {extractShopifyId} from '~/utils/helpers.js';
 import PreviewRegistry from '~/components/PreviewRegistry';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import nextitem from '/assets/Images/next.png';
+import newArrivals from '/assets/Images/newArrivals.png';
+import bestSellers from '/assets/Images/bestSellers.png';
+import giftCards from '/assets/Images/giftCard.png';
 import product3 from '/assets/Images/gift-img-collection-1.png';
 import product2 from '/assets/Images/gift-img-collection-2.png';
 import product1 from '/assets/Images/gift-img-collection-3.png';
@@ -46,11 +49,15 @@ export async function loader({request, context}) {
     const {products} = productsData;
     const {collections} = collectionsData;
 
-    // Fetch registry and userData in parallel
-    const [registry, userData] = await Promise.all([
-      context.ClientGet(`registries/by-userId/${user.user.id}`, context),
-      context?.ClientGet(`users/${user?.user?.id}`, context),
-    ]);
+    // Fetch registry and userData in parallel only when user is logged in
+    let registry = null;
+    let userData = null;
+    if (user && user.user && user.user.id) {
+      [registry, userData] = await Promise.all([
+        context.ClientGet(`registries/by-userId/${user.user.id}`, context),
+        context?.ClientGet(`users/${user?.user?.id}`, context),
+      ]);
+    }
 
     // Fetch ready-made registries using the same pattern as home index
     let featuredRegistryData = null;
@@ -358,16 +365,25 @@ export async function loader({request, context}) {
 
     // Log deduplication results
 
-    // Fetch bestseller and recommended products in parallel
+    // Fetch bestseller, new-arrivals and recommended products in parallel
     let bestsellerProducts = [];
+    let specialBestsellerProducts = [];
+    let specialNewArrivalProducts = [];
+    let specialGiftCardProducts = [];
     let recommendedProducts = [];
 
     try {
-      const [bestsellerResult, recommendedResult] = await Promise.all([
+      const [bestsellerResult, newArrivalsResult, recommendedResult] = await Promise.all([
         context.storefront.query(BESTSELLER_PRODUCTS_QUERY).catch((error) => {
           console.error('Error fetching bestseller products:', error);
           return {products: {edges: []}};
         }),
+        context.storefront
+          .query(NEW_ARRIVALS_PRODUCTS_QUERY)
+          .catch((error) => {
+            console.error('Error fetching new arrivals products:', error);
+            return {products: {edges: []}};
+          }),
         context.storefront
           .query(RECOMMENDED_PRODUCTS_QUERY, {
             variables: {first: 8},
@@ -391,10 +407,85 @@ export async function loader({request, context}) {
           },
         })) || [];
 
+      specialBestsellerProducts =
+        bestsellerResult?.products?.edges?.map((edge) => ({
+          id: edge.node.id,
+          title: edge.node.title,
+          handle: edge.node.handle,
+          description: edge.node.description,
+          image: edge.node.images?.edges?.[0]?.node?.url || null,
+          price:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.amount ||
+            edge.node.priceRange?.minVariantPrice?.amount ||
+            '0',
+          currency:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+            edge.node.priceRange?.minVariantPrice?.currencyCode ||
+            'USD',
+          availableForSale:
+            edge.node.variants?.edges?.[0]?.node?.availableForSale || false,
+          createdAt: edge.node.createdAt || null,
+          style: null,
+          collectionId: SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS,
+          parentCollectionId: null,
+          parentCollectionTitle: 'BESTSELLERS',
+        })) || [];
+
+      specialNewArrivalProducts =
+        newArrivalsResult?.products?.edges?.map((edge) => ({
+          id: edge.node.id,
+          title: edge.node.title,
+          handle: edge.node.handle,
+          description: edge.node.description,
+          image: edge.node.images?.edges?.[0]?.node?.url || null,
+          price:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.amount ||
+            edge.node.priceRange?.minVariantPrice?.amount ||
+            '0',
+          currency:
+            edge.node.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+            edge.node.priceRange?.minVariantPrice?.currencyCode ||
+            'USD',
+          availableForSale:
+            edge.node.variants?.edges?.[0]?.node?.availableForSale || false,
+          createdAt: edge.node.createdAt || null,
+          style: null,
+          collectionId: SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS,
+          parentCollectionId: null,
+          parentCollectionTitle: 'NEW IN',
+        })) || [];
+
+      specialGiftCardProducts = (collections || [])
+        .filter((collection) => collection.giftCardMetafield?.value === 'true')
+        .flatMap(
+          (collection) =>
+            collection.products?.edges?.map((edge) => ({
+              id: edge.node.id,
+              title: edge.node.title,
+              handle: edge.node.handle,
+              description: edge.node.description,
+              image: edge.node.images?.edges?.[0]?.node?.url || null,
+              price: edge.node.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
+              currency:
+                edge.node.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+                'USD',
+              availableForSale:
+                edge.node.variants?.edges?.[0]?.node?.availableForSale || false,
+              createdAt: edge.node.createdAt || null,
+              style: null,
+              collectionId: SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS,
+              parentCollectionId: null,
+              parentCollectionTitle: collection.title || 'GIFT CARDS',
+            })) || [],
+        );
+
       recommendedProducts = recommendedResult?.products?.edges || [];
     } catch (error) {
       console.error('Error fetching products:', error);
       bestsellerProducts = [];
+      specialBestsellerProducts = [];
+      specialNewArrivalProducts = [];
+      specialGiftCardProducts = [];
       recommendedProducts = [];
     }
 
@@ -406,6 +497,11 @@ export async function loader({request, context}) {
       userData,
       readyMadeRegistries: featuredRegistryData,
       bestsellerProducts,
+      specialProducts: {
+        bestsellers: specialBestsellerProducts,
+        newArrivals: specialNewArrivalProducts,
+        giftCards: specialGiftCardProducts,
+      },
       recommendedProducts,
     };
 
@@ -421,6 +517,11 @@ export async function loader({request, context}) {
       userData: null,
       readyMadeRegistries: null,
       bestsellerProducts: [],
+      specialProducts: {
+        bestsellers: [],
+        newArrivals: [],
+        giftCards: [],
+      },
       recommendedProducts: [],
       error: error.message,
     });
@@ -490,6 +591,7 @@ function SidebarFilter({
   setCheckedCollectionIds,
   selectedSwiperCollectionId,
   selectedSubCollections,
+  selectedHeroCollection,
   shopAllChecked,
   setShopAllChecked,
   registry,
@@ -637,49 +739,52 @@ function SidebarFilter({
           </div>
         )}
 
-        {/* When a parent collection is selected: Product Type (sub-collections) + Style (hardcoded) */}
+        {/* When a parent collection is selected: optionally Product Type + Style */}
         {selectedSwiperCollectionId && (
           <>
-            <div className="mb-[3.438vw]">
-              <h2
-                className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-                onClick={() => toggleSection('productType')}
-              >
-                Product Type
-                <span className="text-lg relative -top-[3px]">
-                  {openSections.productType ? (
-                    <img
-                      src="/assets/Images/next.png"
-                      alt="minus"
-                      className="w-[0.833vw] h-[0.833vw] rotate-180"
-                    />
-                  ) : (
-                    <img
-                      src="/assets/Images/next.png"
-                      alt="plus"
-                      className="w-[0.833vw] h-[0.833vw]"
-                    />
-                  )}
-                </span>
-              </h2>
-              {openSections.productType && (
-                <ul className="space-y-2 text-sm">
-                  {(selectedSubCollections || []).map((col) => (
-                    <li key={col.id} className="mb-[1.69vw]">
-                      <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                        <input
-                          type="checkbox"
-                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                          checked={checkedCollectionIds.includes(col.id)}
-                          onChange={() => handleSidebarCheckbox(col.id)}
-                        />
-                        {col.title}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            {/* Hide Product Type when a specific sub-collection is selected in the hero */}
+            {!selectedHeroCollection && (
+              <div className="mb-[3.438vw]">
+                <h2
+                  className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+                  onClick={() => toggleSection('productType')}
+                >
+                  Product Type
+                  <span className="text-lg relative -top-[3px]">
+                    {openSections.productType ? (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="minus"
+                        className="w-[0.833vw] h-[0.833vw] rotate-180"
+                      />
+                    ) : (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="plus"
+                        className="w-[0.833vw] h-[0.833vw]"
+                      />
+                    )}
+                  </span>
+                </h2>
+                {openSections.productType && (
+                  <ul className="space-y-2 text-sm">
+                    {(selectedSubCollections || []).map((col) => (
+                      <li key={col.id} className="mb-[1.69vw]">
+                        <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                          <input
+                            type="checkbox"
+                            className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                            checked={checkedCollectionIds.includes(col.id)}
+                            onChange={() => handleSidebarCheckbox(col.id)}
+                          />
+                          {col.title}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
             <div>
               <h2
                 className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
@@ -778,20 +883,22 @@ function SidebarFilter({
           </div>
         )}
       </div>
-      <Link to={`/couple/single/${registry?.data?.[0]?.userId}`}>
-        <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
-          <div className="w-full mx-auto flex justify-center items-center gap-6 h-full">
-            <img
-              src="/assets/Images/share-icon.png"
-              alt="preview"
-              className="w-[36px] filter brightness-100"
-            />
-            <h2 className="text-white text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
-              PREVIEW PAGE
-            </h2>
+      {registry?.data?.[0]?.userId && (
+        <Link to={`/couple/single/${registry.data[0].userId}`}>
+          <div className="bg-[#446184] z-10 max-[1024px]:w-full mt-4 py-6">
+            <div className="w-full mx-auto flex justify-center items-center gap-6 h-full">
+              <img
+                src="/assets/Images/share-icon.png"
+                alt="preview"
+                className="w-[36px] filter brightness-100"
+              />
+              <h2 className="text-white text-sm text-center font-bold m-0 lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw]">
+                PREVIEW PAGE
+              </h2>
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      )}
       {/* Show PreviewRegistry only after a parent collection is selected */}
       {/* {selectedSwiperCollectionId && (
         <div className="mt-6">
@@ -820,6 +927,7 @@ export default function AddGifts() {
     userData,
     readyMadeRegistries,
     bestsellerProducts,
+    specialProducts,
     recommendedProducts,
   } = loaderData;
 
@@ -872,6 +980,7 @@ export default function AddGifts() {
   const [selectedSwiperCollectionId, setSelectedSwiperCollectionId] =
     useState(null);
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
+  const [selectedHeroCollection, setSelectedHeroCollection] = useState(null);
   const [shopAllChecked, setShopAllChecked] = useState(false);
   const [checkedStyles, setCheckedStyles] = useState(() =>
     STYLE_OPTIONS.reduce((acc, o) => ({ ...acc, [o.id]: false }), {}),
@@ -892,6 +1001,9 @@ export default function AddGifts() {
     let list = products;
     const effectiveCheckedCollectionIds = checkedCollectionIds.filter(
       (id) => !Object.values(SPECIAL_PRODUCT_TYPE_IDS).includes(id),
+    );
+    const selectedSpecialTypeIds = checkedCollectionIds.filter((id) =>
+      Object.values(SPECIAL_PRODUCT_TYPE_IDS).includes(id),
     );
 
     // When a parent collection is selected: show only that parent's products, filtered by Product Type (sub-collection) checkboxes
@@ -931,6 +1043,21 @@ export default function AddGifts() {
     }
 
     // No parent selected: use Product Categories (parent checkboxes), then apply Style filter (Modern/Classic/Eclectic/Shop All)
+    if (selectedSpecialTypeIds.length > 0) {
+      const specialBuckets = {
+        [SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS]: specialProducts?.bestsellers || [],
+        [SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS]: specialProducts?.newArrivals || [],
+        [SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS]: specialProducts?.giftCards || [],
+      };
+      const mergedSpecialProducts = selectedSpecialTypeIds.flatMap(
+        (id) => specialBuckets[id] || [],
+      );
+      const dedupedSpecialProducts = Array.from(
+        new Map(mergedSpecialProducts.map((product) => [product.id, product])).values(),
+      );
+      return dedupedSpecialProducts;
+    }
+
     if (shopAllChecked) {
       list = products;
     } else if (effectiveCheckedCollectionIds.length > 0) {
@@ -1002,8 +1129,14 @@ export default function AddGifts() {
 
   const handleAddtoRegistry = (product, quantity = 1, isGroupGift = false) => {
     try {
+      // If user is not logged in, send them to the login page
+      if (!user || !user.user || !user.user.id) {
+        navigate('/login');
+        return;
+      }
+
       // Check if registry exists and has an id
-      if (!registry || !registry.data[0].id) {
+      if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
         setShowAlert(true);
@@ -1147,6 +1280,21 @@ export default function AddGifts() {
                     },
                   }}
                 >
+                  <SwiperSlide
+                    key="special-bestsellers"
+                    onClick={() => navigate('/products/bestsellers')}
+                    style={{cursor: 'pointer'}}
+                  >
+                    <img
+                      src={bestSellers}
+                      alt="BESTSELLERS"
+                      className="w-full h-[440px] max-[1024px]:h-[32vw] max-[475px]:h-[44vw] object-cover"
+                    />
+                    <h3 className="mt-[1.927vw] text-center uppercase text-[1.25vw] leading-[1.667vw] text-sm font-medium tracking-wider">
+                      BESTSELLERS
+                    </h3>
+                  </SwiperSlide>
+
                   {/* Dynamic slides from Shopify collections */}
                   {collections
                     .filter((col) => isParentForSlides(col))
@@ -1202,6 +1350,38 @@ export default function AddGifts() {
                         </h3>
                       </SwiperSlide>
                     ))}
+
+                  <SwiperSlide
+                    key="special-new-in"
+                    onClick={() => navigate('/products/new-arrivals')}
+                    style={{cursor: 'pointer'}}
+                  >
+                    <img
+                      src={newArrivals}
+                      alt="NEW IN"
+                      className="w-full h-[440px] max-[1024px]:h-[32vw] max-[475px]:h-[44vw] object-cover"
+                    />
+                    <h3 className="mt-[1.927vw] text-center uppercase text-[1.25vw] leading-[1.667vw] text-sm font-medium tracking-wider">
+                      NEW IN
+                    </h3>
+                  </SwiperSlide>
+
+                  <SwiperSlide
+                    key="special-gift-cards"
+                    onClick={() => navigate('/dashboard/giftcards')}
+                    style={{cursor: 'pointer'}}
+                  >
+                    <div className="w-full h-[440px] max-[1024px]:h-[32vw] max-[475px]:h-[44vw] bg-[#446184] flex items-center justify-center p-4">
+                      <img
+                        src={giftCards}
+                        alt="GIFT CARDS"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <h3 className="mt-[1.927vw] text-center uppercase text-[1.25vw] leading-[1.667vw] text-sm font-medium tracking-wider">
+                      GIFT CARDS
+                    </h3>
+                  </SwiperSlide>
                 </Swiper>
                 <div className="swiper-button-next-prod absolute right-[1%] max-[1601px]:-right-[0%] cursor-pointer uppercase max-[1601px]:w-[90px] items-center bg-white z-10 top-[38%] px-8 py-10  justify-center text-white max-[1024px]:w-[33px] max-[1024px]:h-[33px] max-[1024px]:p-0 flex">
                   <img
@@ -1240,10 +1420,34 @@ export default function AddGifts() {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 /> */}
 
-                {/* Sub-collections carousel */}
-                {selectedSubCollections &&
-                  selectedSubCollections.length > 0 && (
-                    <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative">
+                {/* Hero section: parent vs selected sub-collection */}
+                {selectedSubCollections && selectedSubCollections.length > 0 && (
+                  <div className="flex items-center bottom-0 left-0 right-0 bg-[#F5F2ED] h-[27.083vw] pl-[7.396vw] relative gap-[8.698vw] w-full overflow-hidden">
+                    {/* If a sub-collection is selected for hero, match Bestsellers hero style */}
+                    {selectedHeroCollection ? (
+                      <>
+                        <div className="relative p-4 w-[30%]">
+                          <h2 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata">
+                            {selectedHeroCollection.title?.toLowerCase() ||
+                              'collection'}
+                          </h2>
+                          <img
+                            src="/assets/Images/gifts-bottom-line.png"
+                            alt="collection divider"
+                            className="w-[14.375vw] h-[6px] mt-[1.198vw] mx-auto object-contain"
+                          />
+                        </div>
+                        <img
+                          src={
+                            selectedHeroCollection.image?.url ||
+                            '/assets/Images/placeholder.png'
+                          }
+                          alt={selectedHeroCollection.title}
+                          className="w-[70%] h-full object-cover"
+                        />
+                      </>
+                    ) : (
+                      // Default: parent collection title on left, sub-collections swiper on right
                       <div className="flex items-center gap-[8.698vw] w-full">
                         <h3 className="text-[2.5vw] leading-[1.875vw] text-center font-normal lowercase prata w-[276px]">
                           {collections
@@ -1269,7 +1473,7 @@ export default function AddGifts() {
 
                           <Swiper
                             spaceBetween={18}
-                            slidesPerView={5} // Shows 3 full + a portion of 4th
+                            slidesPerView={5}
                             loop={false}
                             modules={[Navigation]}
                             navigation={{
@@ -1309,6 +1513,7 @@ export default function AddGifts() {
                                 key={subCol.id}
                                 onClick={() => {
                                   setCheckedCollectionIds([subCol.id]);
+                                  setSelectedHeroCollection(subCol);
                                 }}
                                 className="cursor-pointer group"
                               >
@@ -1338,8 +1543,9 @@ export default function AddGifts() {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1354,6 +1560,7 @@ export default function AddGifts() {
             setCheckedCollectionIds={setCheckedCollectionIds}
             selectedSwiperCollectionId={selectedSwiperCollectionId}
             selectedSubCollections={selectedSubCollections}
+            selectedHeroCollection={selectedHeroCollection}
             shopAllChecked={shopAllChecked}
             setShopAllChecked={setShopAllChecked}
             registry={registry}
@@ -1475,6 +1682,24 @@ export default function AddGifts() {
                   .map((product) => {
                     const firstImage =
                       product.image || '/assets/Images/placeholder.jpg';
+
+                    // Derive brand name: among this product's collections, find a collection marked as a brand
+                    let brandName = '';
+                    if (Array.isArray(collections)) {
+                      for (const col of collections) {
+                        const isBrand = col.brandMetafield?.value === 'true';
+                        if (!isBrand) continue;
+                        const hasProduct =
+                          col.products?.edges?.some(
+                            (edge) => edge?.node?.id === product.id,
+                          ) || false;
+                        if (hasProduct) {
+                          brandName = col.title || '';
+                          break;
+                        }
+                      }
+                    }
+
                     return (
                       <RegistryProduct
                         key={product.id}
@@ -1489,6 +1714,7 @@ export default function AddGifts() {
                         }
                         isLoggedIn={user && user.user && user.user.id}
                         isAddingToRegistry={addingProductId === product.id}
+                        brandName={brandName || 'BRAND NAME'}
                       />
                     );
                   });
@@ -1502,7 +1728,7 @@ export default function AddGifts() {
         <div className="flex justify-center items-center mt-[150px]">
           <div className="w-full xl:w-1/4 "> </div>
           <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-[18px] font-semibold mb-10">
+            <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
               LOADING {Math.min(productsToShow, sortedProducts.length)} of{' '}
               {sortedProducts.length}
             </p>
@@ -1510,9 +1736,7 @@ export default function AddGifts() {
             {sortedProducts.length > 12 &&
               productsToShow < sortedProducts.length && (
                 <WhiteThemeButton
-                  Text="VIEW MORE"
-                  buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
-                  link="#"
+                  Text="View more"
                   onClick={() =>
                     setProductsToShow((prev) =>
                       Math.min(prev + 12, filteredProducts.length),
@@ -1521,22 +1745,7 @@ export default function AddGifts() {
                 />
               )}
 
-            {/* {productsToShow <= 12 && ( */}
-            {/* <button
-                className="border-b mx-auto cursor-pointer uppercase font-bold bg-white text-black mt-0 text-[18px] leading-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.075vw] hover:bg-gray-100 max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[10px] max-[767px]:mb-[50px]"
-                onClick={() => {
-                  setProductsToShow(12);
-                  if (productGridRef.current) {
-                    productGridRef.current.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                    });
-                  }
-                }}
-              >
-                Back to Top
-              </button> */}
-            <BackToTop topRef={topRef} className={'mb-0'} />
+            <BackToTop topRef={topRef} />
           </div>
         </div>
       </section>
@@ -1854,6 +2063,14 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
+        giftCardMetafield: metafield(namespace: "custom", key: "giftcard") {
+          id
+          value
+        }
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
+          id
+          value
+        }
         products(first: 10){
           edges {
             node {
@@ -1933,6 +2150,48 @@ const BESTSELLER_PRODUCTS_QUERY = `#graphql
           title
           handle
           description
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                availableForSale
+                priceV2 {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }`;
+
+const NEW_ARRIVALS_PRODUCTS_QUERY = `#graphql
+  query getNewArrivalsProducts {
+    products(first: 250, query: "tag:new-arrival", sortKey: CREATED_AT, reverse: true) {
+      edges {
+        node {
+          id
+          title
+          handle
+          description
+          createdAt
           priceRange {
             minVariantPrice {
               amount

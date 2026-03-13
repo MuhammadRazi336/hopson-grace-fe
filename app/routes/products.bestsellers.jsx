@@ -31,6 +31,7 @@ import AlertPortal from '~/components/AlertPortal';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import BackToTop from '~/components/BackToTop';
+import WeThinkYouLove from '~/components/WeThinkYouLove';
 
 const isExcludedFundsCollection = (col) => {
   const t = (col.title && String(col.title).toUpperCase().trim()) || '';
@@ -42,7 +43,7 @@ const isParentForSidebar = (col) =>
   col.readyMadeMetafield?.value !== 'true' &&
   !isExcludedFundsCollection(col);
 
-const STYLE_ORDER = ['MODERN', 'ECLECTIC', 'CLASSIC'];
+const STYLE_ORDER = ['MODERN', 'CLASSIC', 'ECLECTIC'];
 
 function SidebarFilter({
   collections,
@@ -149,6 +150,19 @@ function SidebarFilter({
         </h2>
         {openSections.styles && (
           <ul className="space-y-2 text-sm">
+            {subCollections.map((col) => (
+              <li key={col.id} className="mb-[1.69vw]">
+                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                  <input
+                    type="checkbox"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
             <li className="mb-[1.69vw]">
               <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                 <input
@@ -163,19 +177,6 @@ function SidebarFilter({
                 Shop All
               </label>
             </li>
-            {subCollections.map((col) => (
-              <li key={col.id} className="mb-[1.69vw]">
-                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                  <input
-                    type="checkbox"
-                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                    checked={checkedCollectionIds.includes(col.id)}
-                    onChange={() => handleSidebarCheckbox(col.id)}
-                  />
-                  {col.title}
-                </label>
-              </li>
-            ))}
           </ul>
         )}
       </div>
@@ -267,6 +268,10 @@ const COLLECTION_QUERY = `#graphql
           value
         }
           readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          id
+          value
+        }
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
           id
           value
         }
@@ -561,9 +566,9 @@ const Bestsellers = () => {
 
       {/* Products Grid Section */}
       {bestsellerProducts.length > 0 && (
-        <section className="w-[81.25vw] mx-auto py-12" ref={productGridRef}>
+        <section className="px-[8.594vw] mx-auto" ref={productGridRef}>
           <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]"></div>
-          <div className="flex flex-col gap-[2.99vw] md:flex-row pt-10">
+          <div className="flex flex-col md:flex-row gap-[3.75vw] w-full mx-auto pt-[5vw]">
             <SidebarFilter
               collections={collections}
               checkedCollectionIds={checkedCollectionIds}
@@ -571,14 +576,32 @@ const Bestsellers = () => {
               shopAllChecked={shopAllChecked}
               setShopAllChecked={setShopAllChecked}
             />
-            <div className="flex flex-col lg:w-[75.52vw] xl:w-[75.52vw] 2xl:w-[75.52vw]">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12">
+            <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]">
+              {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] mt-12"> */}
                 {displayedProducts.length > 0 ? (
                   displayedProducts.map((product, index) => {
                     console.log(product);
-                    const price = product.node.variants?.edges?.[0]?.node?.priceV2?.amount;
+                    const price =
+                      product.node.variants?.edges?.[0]?.node?.priceV2?.amount;
                     const image = product.node.images?.edges?.[0]?.node?.url;
-                    
+
+                    // Derive brand name: among this product's collections, find a collection marked as a brand
+                    let brandName = '';
+                    if (Array.isArray(collections)) {
+                      for (const col of collections) {
+                        const isBrand = col.brandMetafield?.value === 'true';
+                        if (!isBrand) continue;
+                        const hasProduct =
+                          col.products?.edges?.some(
+                            (edge) => edge?.node?.id === product.node.id,
+                          ) || false;
+                        if (hasProduct) {
+                          brandName = col.title || '';
+                          break;
+                        }
+                      }
+                    }
+
                     return (
                       <RegistryProduct
                         key={product.node.id || index}
@@ -588,7 +611,10 @@ const Bestsellers = () => {
                         price={price}
                         productHandle={product.node.handle}
                         registryId={registry?.id}
-                        onAddToRegistry={(quantity) => handleAddToRegistry(product.node, quantity)}
+                        onAddToRegistry={(quantity) =>
+                          handleAddToRegistry(product.node, quantity)
+                        }
+                        brandName={brandName || 'BRAND NAME'}
                       />
                     );
                   })
@@ -597,28 +623,27 @@ const Bestsellers = () => {
                     No products found for selected filters.
                   </div>
                 )}
-              </div>
+              {/* </div> */}
             </div>
           </div>
 
-          {/* View More and Back to Top Section */}
-          <div className="flex flex-col items-center mt-12 space-y-4">
-            {/* Loading indicator */}
-            <p className="text-gray-600 text-sm">
-              LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
-              {filteredProducts.length}
-            </p>
-            
-            {/* View More Button */}
-            {filteredProducts.length > 12 && hasMoreProducts && (
-              <WhiteThemeButton
-                Text="VIEW MORE"
-                onClick={handleViewMore}
-                buttonClassName="w-[360px] h-[77px] text-[18px] border-3 border-black"
-              />
-            )}
-            
-            <BackToTop topRef={topRef} className={'mb-0 mt-7'} />
+          <div className="flex justify-center items-center">
+            <div className="w-full xl:w-1/4 "> </div>
+            <div className="w-full xl:w-3/4 flex flex-col items-center">
+              <p className="text-center text-[18px] leading-[18px] mt-[6vw] mb-[2.083vw] font-[500] tracking-[0.075vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
+                LOADING {Math.min(productsToShow, filteredProducts.length)} of{' '}
+                {filteredProducts.length}
+              </p>
+
+              {filteredProducts.length > 12 && hasMoreProducts && (
+                <WhiteThemeButton
+                  Text="View more"
+                  onClick={handleViewMore}
+                />
+              )}
+
+              <BackToTop topRef={topRef} />
+            </div>
           </div>
         </section>
       )}
@@ -637,7 +662,7 @@ const Bestsellers = () => {
           </div>
         </AlertPortal>
       )}
-      <WeThinkYoullLove recommendedProducts={recommendedProducts || []} productLinkPrefix="/products/bestsellers" />
+      <WeThinkYouLove recommendedProducts={recommendedProducts || []} productLinkPrefix="/products/bestsellers" />
       <Footer />
     </>
   );

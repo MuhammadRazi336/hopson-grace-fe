@@ -71,12 +71,11 @@ export async function loader({ request, context }) {
     }
 
     if (user) {
-      return { 
-        user, 
-        collections, 
-        context,
+      return {
+        user,
+        collections,
         error: null,
-        stepFromQuery
+        stepFromQuery,
       };
     }
     return redirect('/');
@@ -84,9 +83,8 @@ export async function loader({ request, context }) {
     console.error('Onboarding loader error:', error);
     return {
       user: null,
-      collections: { nodes: [] },
-      context: null,
-      error: 'Failed to load onboarding data'
+      collections: {nodes: []},
+      error: 'Failed to load onboarding data',
     };
   }
 }

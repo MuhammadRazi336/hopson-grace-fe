@@ -95,14 +95,14 @@ const TopHeader = () => {
           <button
             type="button"
             onClick={handleOpenCurrencyPopup}
-            className="inline-flex items-center gap-[-4px] whitespace-nowrap bg-transparent border-0 text-white cursor-pointer p-0"
+            className="inline-flex items-center whitespace-nowrap bg-transparent border-0 text-white cursor-pointer p-0"
           >
-            CAD{' '}
-            <img
+            CAD$
+            {/* <img
               src="/assets/Images/dollar.png"
               alt="cad"
-              className="w-[24px] h-[24px]"
-            />
+              className="w-[24px] h-[24px] mr-0 p-0"
+            /> */}
           </button>
         </div>
       </div>

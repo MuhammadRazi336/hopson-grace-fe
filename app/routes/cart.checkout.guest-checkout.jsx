@@ -82,7 +82,7 @@ export async function action({request, context}) {
     // Forward to external API for order persistence (must accept paypalOrderId)
     let guestCheckoutResponse;
     try {
-      const baseUrl = (context?.env?.API_BASE_URL || process.env.API_BASE_URL || 'https://dev-hopsongrace.codup.io').replace(/\/$/, '');
+      const baseUrl = (context?.env?.API_BASE_URL || process.env.API_BASE_URL).replace(/\/$/, '');
       const response = await fetch(`${baseUrl}/api/transactions/guest-checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

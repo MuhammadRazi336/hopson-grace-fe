@@ -2,6 +2,6 @@
 // Only use this for non-sensitive variables that are safe to expose
 
 export const publicEnv = {
-  API_BASE_URL: process.env.API_BASE_URL,
+  API_BASE_URL: process.env.API_BASE_URL || context.env.API_BASE_URL,
 };
 

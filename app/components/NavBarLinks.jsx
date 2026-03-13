@@ -63,9 +63,9 @@ const NavBarLinks = (mobileClasses) => {
             >
               PRODUCTS
             </NavLink>
-            <div className="absolute custom-mega-menu left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full p-[90px] bg-[#F5F2ED]">
-              <div className="flex mx-auto">
-                <div className="mr-[90px]">
+            <div className="absolute custom-mega-menu left-0 mt-2.5 custom-mega-menu shadow-lg z-999 w-full bg-[#F5F2ED] px-6 lg:px-10 xl:px-16 py-10 lg:py-14">
+              <div className="flex mx-auto w-full max-w-[1400px] justify-center items-start gap-10 lg:gap-16 xl:gap-[90px]">
+                <div className="shrink-0">
                   <ul className="">
                     {/* Static items */}
                     <li>
@@ -107,14 +107,14 @@ const NavBarLinks = (mobileClasses) => {
                     <li>
                       <NavLink
                         to="/dashboard/giftcards"
-                        className="block mb-[26px] text-black"
+                        className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                       >
                         GIFT CARDS
                       </NavLink>
                     </li>
                     <li className='flex items-center gap-2'>
                       <NavLink
-                        to="/products"
+                        to="/dashboard/addgifts"
                         className="mb-[26px] text-black font-semibold underline flex items-center gap-2"
                       >
                         SHOP ALL
@@ -123,7 +123,7 @@ const NavBarLinks = (mobileClasses) => {
                     </li>
                   </ul>
                 </div>
-                <div className="relative">
+                <div className="relative shrink-0">
                   <img src={productImg} alt="Our brands" />
                   <h3 className="absolute top-56 left-14 prata text-black 2xl:text-6xl xl:text-4xl lg:text-2xl">
                     products
