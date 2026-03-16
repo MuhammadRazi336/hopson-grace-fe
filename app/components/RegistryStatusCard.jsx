@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token, className }) => {
   const [status, setStatus] = useState(initialStatus);
   const isDraft = status === 'draft';
-  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = 'https://api.theregistry.ca';
   
   // Toggle handler
   const handleToggle = async () => {
