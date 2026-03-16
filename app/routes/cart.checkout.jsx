@@ -143,8 +143,7 @@ export async function action({request, context}) {
     }
 
     // Get apiBaseUrl from context
-    const apiBaseUrl =
-      'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+    const apiBaseUrl = 'https://api.theregistry.ca';
 
     // Fetch cart items from API to get the latest data
     let apiCartItems = [];
@@ -478,7 +477,7 @@ const DetailsForm = ({onNext}) => {
       try {
         // Fetch cart with registryId from localStorage
         // Ensure apiBaseUrl is set and encode email for URL
-        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+        const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
         const encodedEmail = encodeURIComponent(email);
         const response = await fetch(
           `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
