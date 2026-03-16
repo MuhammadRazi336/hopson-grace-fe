@@ -60,11 +60,20 @@ export async function loader({ request, context }) {
     const stepParam = url.searchParams.get('step');
     const stepFromQuery = stepParam ? Number(stepParam) : null;
     
-    // Query collections using the storefront client directly
-    let collections = { nodes: [] };
+    // Query collections using the storefront client directly and filter out collections that don't have at least one of the relevant metafields
+    let collections = {nodes: []};
     try {
       const result = await context.storefront.query(COLLECTIONS_QUERY);
-      collections = result.collections;
+      const allCollections = result.collections?.nodes || [];
+      // Keep only collections that have at least one of the relevant metafields
+      const filteredNodes = allCollections.filter((collection) => {
+        return (
+          collection?.parentMetafield != null ||
+          collection?.subCollections != null ||
+          collection?.readyMadeMetafield != null
+        );
+      });
+      collections = {nodes: filteredNodes};
     } catch (error) {
       console.error('Error fetching collections:', error);
       // Continue without collections - don't fail the entire loader
