@@ -100,7 +100,7 @@ export async function loader({params, context}) {
     console.log('Loader: Cash fund response:', cashRes);
 
     // Get API base URL from environment with fallback
-    const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io';
+    const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
 
     // Handle case where there are no gift products
     let mergedArray = [];
@@ -384,7 +384,7 @@ export default function CoupleProfile() {
     response = {},
     registryId = null,
     collections = [],
-    apiBaseUrl = 'https://dev-hopsongrace.codup.io',
+    apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca',
     hasProducts = false,
     coupleId = null,
     isLoggedIn = false,
@@ -476,7 +476,7 @@ export default function CoupleProfile() {
     setCartLoading(true);
     try {
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
       const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
         `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
@@ -710,7 +710,7 @@ export default function CoupleProfile() {
     setIsApiLoading(true);
     try {
       // Ensure apiBaseUrl is set
-      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
       const res = await fetch(`${baseUrl}/api/cart`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -761,7 +761,7 @@ export default function CoupleProfile() {
       };
 
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
       const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
         `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
@@ -794,7 +794,7 @@ export default function CoupleProfile() {
     try {
 
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
       const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
         `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
@@ -1011,7 +1011,7 @@ export default function CoupleProfile() {
       setCartLoading(true);
       try {
         // Ensure apiBaseUrl is set and encode email for URL
-        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+        const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
         const encodedEmail = encodeURIComponent(emailForCart);
         const res = await fetch(
           `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
@@ -1211,7 +1211,7 @@ export default function CoupleProfile() {
     if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
       // Update quantity in cart
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
       const encodedEmail = encodeURIComponent(email);
       fetch(
         `${baseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${encodedEmail}`,
@@ -1246,7 +1246,7 @@ export default function CoupleProfile() {
     } else {
       // Remove item from cart
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io';
+      const baseUrl = apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
       const encodedEmail = encodeURIComponent(email);
       fetch(
         `${baseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${encodedEmail}`,
