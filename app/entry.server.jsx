@@ -51,9 +51,6 @@ export default async function handleRequest(
     await body.allReady;
   }
 
-  // https://dev-hopsongrace.codup.io
-  // http://localhost:3040
-
   responseHeaders.set('Content-Type', 'text/html');
   responseHeaders.set('Content-Security-Policy', header);
   const additionalDomains = ['http://localhost:3040'];
