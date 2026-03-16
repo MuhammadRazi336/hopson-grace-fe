@@ -156,7 +156,7 @@ export async function loader({request, context}) {
   const productNodes = Array.isArray(products.nodes) ? products.nodes : [];
 
   let mergedArray = [];
-  const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = context.env?.API_BASE_URL || 'https://api.theregistry.ca';
 
   // Fetch collections and build productId -> parentId (and subCollectionId -> parentId) for merging parentCollectionId onto registry gifts
   let parentCollections = [];
@@ -342,7 +342,7 @@ const index = () => {
 
   // Fallback for apiBaseUrl if it's not available from loader
   const finalApiBaseUrl =
-    apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+    apiBaseUrl || 'https://api.theregistry.ca';
 
   // Get the actual registry data from the response
   const registryData = registry?.data?.[0];
