@@ -46,7 +46,7 @@ export function Header() {
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = 'https://api.theregistry.ca';
 
   // Notification system state
   const [notifications, setNotifications] = useState([]);
