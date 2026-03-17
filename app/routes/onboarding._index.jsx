@@ -64,7 +64,29 @@ export async function loader({ request, context }) {
     let collections = {nodes: []};
     try {
       const result = await context.storefront.query(COLLECTIONS_QUERY);
-      collections = result.collections || {nodes: []};
+      const allNodes = result?.collections?.nodes || [];
+
+      // Keep only collections where at least one of the metafields has a value
+      const filteredNodes = allNodes.filter((collection) => {
+        const hasParent =
+          collection?.parentMetafield &&
+          typeof collection.parentMetafield.value === 'string' &&
+          collection.parentMetafield.value.trim() !== '';
+
+        const hasSub =
+          collection?.subCollections &&
+          typeof collection.subCollections.value === 'string' &&
+          collection.subCollections.value.trim() !== '';
+
+        const hasReadyMade =
+          collection?.readyMadeMetafield &&
+          typeof collection.readyMadeMetafield.value === 'string' &&
+          collection.readyMadeMetafield.value.trim() !== '';
+
+        return hasParent || hasSub || hasReadyMade;
+      });
+
+      collections = {nodes: filteredNodes};
     } catch (error) {
       console.error('Error fetching collections:', error);
       // Continue without collections - don't fail the entire loader
