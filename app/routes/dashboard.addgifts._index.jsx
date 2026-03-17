@@ -2016,7 +2016,7 @@ const PRODUCT_QUERY = `#graphql
 `;
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 250) {
+    collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         description
         title
