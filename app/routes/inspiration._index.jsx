@@ -46,8 +46,38 @@ query GetAllBlogsAndArticlesForInspiration {
 export async function loader({context}) {
   try {
     const {blogs} = await context.storefront.query(BLOGS_QUERY);
+
+    // Allowed blog categories (custom.category metafield values)
+    const ALLOWED_BLOG_CATEGORIES = new Set([
+      'Real Weddings',
+      'The Planning Edit',
+      'At Home',
+      'Travel & Culture',
+    ]);
+
+    // Filter blogs and their articles to only include allowed categories
+    const filteredBlogs =
+      blogs?.nodes
+        ?.map((blog) => {
+          const filteredArticles =
+            blog.articles?.nodes?.filter((article) =>
+              ALLOWED_BLOG_CATEGORIES.has(
+                (article?.categoryMetafield?.value || '').trim(),
+              ),
+            ) || [];
+
+          return {
+            ...blog,
+            articles: {
+              ...blog.articles,
+              nodes: filteredArticles,
+            },
+          };
+        })
+        .filter((blog) => blog.articles.nodes.length > 0) || [];
+
     return json({
-      blogs: blogs?.nodes || [],
+      blogs: filteredBlogs,
     });
   } catch (error) {
     console.error('Error fetching blogs:', error);
