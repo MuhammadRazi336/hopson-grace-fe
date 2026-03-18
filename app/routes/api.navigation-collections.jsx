@@ -6,7 +6,7 @@ export async function action({ request, context }) {
     const result = await context.storefront.query(
       `#graphql
         query getNavigationCollections {
-          collections(first: 250) {
+          collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
             nodes {
               id
               title
@@ -39,11 +39,21 @@ export async function action({ request, context }) {
       return json({ error: 'No collections found' }, { status: 404 });
     }
 
-    // Filter collections for parent_collection=true and ready_made=false
-    const filteredCollections = collections.nodes.filter(collection => 
-      collection.parentCollectionMetafield?.value === 'true' && 
-      collection.readyMadeMetafield?.value === 'false'
-    );
+    // Filter collections for parent_collection=true and NOT ready_made=true
+    // This matches the logic used on other pages (e.g. onboarding step 6, products index)
+    const filteredCollections = collections.nodes.filter((collection) => {
+      const isParent =
+        collection.parentCollectionMetafield &&
+        typeof collection.parentCollectionMetafield.value === 'string' &&
+        collection.parentCollectionMetafield.value.trim() === 'true';
+
+      const isReadyMade =
+        collection.readyMadeMetafield &&
+        typeof collection.readyMadeMetafield.value === 'string' &&
+        collection.readyMadeMetafield.value.trim() === 'true';
+
+      return isParent && !isReadyMade;
+    });
 
     return json({ collections: filteredCollections });
   } catch (error) {
