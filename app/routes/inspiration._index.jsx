@@ -47,24 +47,23 @@ export async function loader({context}) {
   try {
     const {blogs} = await context.storefront.query(BLOGS_QUERY);
 
-    // Allowed blog categories (custom.category metafield values)
-    const ALLOWED_BLOG_CATEGORIES = new Set([
-      'Real Weddings',
-      'The Planning Edit',
-      'At Home',
-      'Travel & Culture',
-    ]);
+    // Allowed blog categories (custom.category metafield values, case-insensitive)
+    const ALLOWED_BLOG_CATEGORIES = new Set(
+      ['Real Weddings', 'The Planning Edit', 'At Home', 'Travel & Culture'].map(
+        (v) => v.toLowerCase(),
+      ),
+    );
 
     // Filter blogs and their articles to only include allowed categories
     const filteredBlogs =
       blogs?.nodes
         ?.map((blog) => {
           const filteredArticles =
-            blog.articles?.nodes?.filter((article) =>
-              ALLOWED_BLOG_CATEGORIES.has(
-                (article?.categoryMetafield?.value || '').trim(),
-              ),
-            ) || [];
+            blog.articles?.nodes?.filter((article) => {
+              const raw = (article?.categoryMetafield?.value || '').trim();
+              const normalized = raw.toLowerCase();
+              return ALLOWED_BLOG_CATEGORIES.has(normalized);
+            }) || [];
 
           return {
             ...blog,
