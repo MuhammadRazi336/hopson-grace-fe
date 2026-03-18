@@ -771,7 +771,7 @@ const REGISTRY_QUERY = `#graphql
 
 const OTHER_REGISTRIES_QUERY = `#graphql
  query getOtherRegistries {
-   collections(first: 250) {
+   collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
      nodes {
        id
        title
@@ -835,7 +835,7 @@ const PRODUCT_QUERY = `#graphql
 
 const COLLECTION_QUERY = `#graphql
     query {
-    collections(first: 250) {
+    collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         description
         title
