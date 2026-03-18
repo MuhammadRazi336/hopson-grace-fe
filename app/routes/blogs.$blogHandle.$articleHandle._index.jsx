@@ -45,6 +45,9 @@ query GetBlogArticlesForMoreStories($blogHandle: String!) {
           url
           altText
         }
+        categoryMetafield: metafield(namespace: "custom", key: "category") {
+          value
+        }
       }
     }
   }
@@ -585,18 +588,39 @@ export async function loader({context, params}) {
     variables: {blogHandle},
   });
 
+  // Allowed blog categories (custom.category metafield values)
+  const ALLOWED_BLOG_CATEGORIES = new Set([
+    'Real Weddings',
+    'The Planning Edit',
+    'At Home',
+    'Travel & Culture',
+  ]);
+
+  // Filter selected blog's articles to only allowed categories
+  const filteredSelectedBlog = selectedBlog
+    ? {
+        ...selectedBlog,
+        articles: {
+          ...selectedBlog.articles,
+          nodes:
+            selectedBlog.articles?.nodes
+              ?.filter((article) =>
+                ALLOWED_BLOG_CATEGORIES.has(
+                  (article?.categoryMetafield?.value || '').trim(),
+                ),
+              )
+              .map((article) => ({
+                ...article,
+                image: article.image || null,
+                contentHtml: article.contentHtml || '',
+              })) || [],
+        },
+      }
+    : null;
+
   // Ensure blogs data is properly structured
-  const safeBlogs = (selectedBlog ? [selectedBlog] : []).map(blog => ({
-    ...blog,
-    articles: {
-      ...blog.articles,
-      nodes: blog.articles?.nodes?.map(article => ({
-        ...article,
-        image: article.image || null,
-        contentHtml: article.contentHtml || ''
-      })) || []
-    }
-  })) || [];
+  const safeBlogs =
+    (filteredSelectedBlog ? [filteredSelectedBlog] : []) || [];
 
   return json({
     article: blog.articleByHandle,
