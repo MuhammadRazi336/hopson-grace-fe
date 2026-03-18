@@ -588,13 +588,12 @@ export async function loader({context, params}) {
     variables: {blogHandle},
   });
 
-  // Allowed blog categories (custom.category metafield values)
-  const ALLOWED_BLOG_CATEGORIES = new Set([
-    'Real Weddings',
-    'The Planning Edit',
-    'At Home',
-    'Travel & Culture',
-  ]);
+  // Allowed blog categories (custom.category metafield values, case-insensitive)
+  const ALLOWED_BLOG_CATEGORIES = new Set(
+    ['Real Weddings', 'The Planning Edit', 'At Home', 'Travel & Culture'].map(
+      (v) => v.toLowerCase(),
+    ),
+  );
 
   // Filter selected blog's articles to only allowed categories
   const filteredSelectedBlog = selectedBlog
@@ -604,11 +603,11 @@ export async function loader({context, params}) {
           ...selectedBlog.articles,
           nodes:
             selectedBlog.articles?.nodes
-              ?.filter((article) =>
-                ALLOWED_BLOG_CATEGORIES.has(
-                  (article?.categoryMetafield?.value || '').trim(),
-                ),
-              )
+              ?.filter((article) => {
+                const raw = (article?.categoryMetafield?.value || '').trim();
+                const normalized = raw.toLowerCase();
+                return ALLOWED_BLOG_CATEGORIES.has(normalized);
+              })
               .map((article) => ({
                 ...article,
                 image: article.image || null,
