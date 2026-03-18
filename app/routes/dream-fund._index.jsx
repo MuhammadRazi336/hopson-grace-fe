@@ -633,7 +633,7 @@ function SidebarFilter({collections = [], checkedCategories = [], setCheckedCate
 
 const CASH_FUND_QUERY = `#graphql
 query getCashFundsForDreamFund {
-  collections(first: 250) {
+  collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
     nodes {
       id
       title
@@ -690,7 +690,7 @@ query getCashFundsForDreamFund {
 
 const COLLECTION_QUERY = `#graphql
   query {
-    collections(first: 250) {
+    collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         description
         title
