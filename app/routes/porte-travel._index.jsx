@@ -639,7 +639,7 @@ function SidebarFilter({collections = [], checkedCategories = [], setCheckedCate
 
 const CASH_FUND_QUERY = `#graphql
 query getCashFundsForPorteTravel {
-  collections(first: 250) {
+  collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
     nodes {
       id
       title
@@ -696,7 +696,7 @@ query getCashFundsForPorteTravel {
 
 const COLLECTION_QUERY = `#graphql
   query {
-    collections(first: 250) {
+    collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         description
         title
