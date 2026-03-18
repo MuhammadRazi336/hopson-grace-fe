@@ -177,7 +177,7 @@ export default ReadyMade;
 
 const READY_MADE_REGISTRIES_QUERY = `#graphql
 query getReadyMadeRegistries {
-collections(first: 250) {
+collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
 nodes {
 id
 title
