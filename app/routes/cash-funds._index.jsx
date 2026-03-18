@@ -57,14 +57,32 @@ export async function loader({request, context}) {
       context.storefront.query(COLLECTION_QUERY),
     ]);
     collections = collectionsData?.nodes || [];
-    
-    // Extract products from collections: include cashfund=true OR titles matching categories (Honeymoon/Home/Date Night)
-    collections.forEach(collection => {
+
+    // Extract products only from Dream Fund and Porte Travel style collections
+    // so this page shows the combined products from those two areas.
+    collections.forEach((collection) => {
       const titleLc = (collection?.title || '').trim().toLowerCase();
-      const isCategoryMatch = titleLc.includes('honeymoon') || titleLc.includes('home') || titleLc.includes('date night') || titleLc.includes('date nights');
-      const includeCollection = collection.cashfundMetafield?.value === 'true' || isCategoryMatch;
+      const handleLc = (collection?.handle || '').trim().toLowerCase();
+
+      // Match Dream Fund collections (allow handle/title variations)
+      const isDreamFund =
+        handleLc === 'dream-fund' ||
+        handleLc.includes('dream') ||
+        titleLc.includes('dream fund') ||
+        titleLc.includes('dream funds') ||
+        titleLc === 'dream';
+
+      // Match Porte Travel collections
+      const isPorteTravel =
+        handleLc === 'porte-travel' ||
+        handleLc.includes('porte') ||
+        titleLc.includes('porte travel') ||
+        titleLc === 'porte';
+
+      const includeCollection = isDreamFund || isPorteTravel;
+
       if (includeCollection && collection.products?.edges) {
-        collection.products.edges.forEach(edge => {
+        collection.products.edges.forEach((edge) => {
           const product = edge.node;
           allProducts.push({
             id: product.id,
@@ -73,10 +91,13 @@ export async function loader({request, context}) {
             description: product.description,
             image: product.images?.edges?.[0]?.node?.url || null,
             price: product.variants?.edges?.[0]?.node?.priceV2?.amount || '0',
-            currency: product.variants?.edges?.[0]?.node?.priceV2?.currencyCode || 'USD',
-            availableForSale: product.variants?.edges?.[0]?.node?.availableForSale || false,
-            collectionId: collection.id, // Add collection ID to track which collection the product belongs to
-            collectionTitle: collection.title
+            currency:
+              product.variants?.edges?.[0]?.node?.priceV2?.currencyCode ||
+              'USD',
+            availableForSale:
+              product.variants?.edges?.[0]?.node?.availableForSale || false,
+            collectionId: collection.id, // Track which collection the product belongs to
+            collectionTitle: collection.title,
           });
         });
       }
@@ -321,6 +342,26 @@ const CashFund = () => {
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
   const topRef = useRef(null);
 
+  // Restrict to only Dream Fund + Porte Travel products (by collection title),
+  // reusing the same matching rules as the dedicated pages.
+  const dreamAndPorteProducts = React.useMemo(() => {
+    const all = products || [];
+
+    // Only show products that belong to the specific Dream Funds / Porte Travel
+    // cash-fund collections we care about.
+    const allowedCollectionTitles = [
+      'dream funds cash fund',
+      'porte travel cash fund',
+    ];
+
+    const filtered = all.filter((product) => {
+      const colTitle = (product.collectionTitle || '').toLowerCase().trim();
+      return allowedCollectionTitles.includes(colTitle);
+    });
+
+    return filtered;
+  }, [products]);
+
   // Build a mapping of category labels to collection IDs (by collection title, fuzzy includes)
   const categoryToCollectionIds = React.useMemo(() => {
     const map = {
@@ -339,7 +380,7 @@ const CashFund = () => {
   }, [collections]);
 
   // Filter products based on selected categories
-  let filteredProducts = products;
+  let filteredProducts = dreamAndPorteProducts;
   if (checkedCategories.length > 0) {
     // Build strict matching set: exact title match per selected category
     const exactIds = new Set();
@@ -482,22 +523,24 @@ const CashFund = () => {
         </div>
       </section>
 
-      <WeThinkYouLove
-        recommendedProducts={products.slice(0, 8).map((p) => ({
-          node: {
-            id: p.id,
-            title: p.title,
-            handle: p.handle,
-            images: {edges: [{node: {url: p.image}}]},
-            priceRange: {
-              minVariantPrice: {
-                amount: String(p.price ?? '0'),
-                currencyCode: p.currency || 'USD',
+      {dreamAndPorteProducts.length > 0 && (
+        <WeThinkYouLove
+          recommendedProducts={dreamAndPorteProducts.slice(0, 8).map((p) => ({
+            node: {
+              id: p.id,
+              title: p.title,
+              handle: p.handle,
+              images: {edges: [{node: {url: p.image}}]},
+              priceRange: {
+                minVariantPrice: {
+                  amount: String(p.price ?? '0'),
+                  currencyCode: p.currency || 'USD',
+                },
               },
             },
-          },
-        }))}
-      />
+          }))}
+        />
+      )}
 
       <style jsx>{`
         @keyframes fadeInOut {
@@ -657,6 +700,7 @@ const COLLECTION_QUERY = `#graphql
       nodes {
         description
         title
+        handle
         id
         image {
           id
