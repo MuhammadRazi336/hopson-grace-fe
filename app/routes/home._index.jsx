@@ -130,10 +130,54 @@ export async function loader({ context }) {
         };
       }
     }
-    
-    return json({ realRegistries, featuredRegistryData, brands, user, bestsellerProducts: bestsellerProducts?.edges || [], blogs: blogs?.nodes || [] });
+
+    // Allowed blog categories (custom.category metafield values)
+    const ALLOWED_BLOG_CATEGORIES = new Set([
+      'Real Weddings',
+      'The Planning Edit',
+      'At Home',
+      'Travel & Culture',
+    ]);
+
+    // Filter blogs/articles so home inspiration only shows allowed categories
+    const filteredBlogs =
+      blogs?.nodes
+        ?.map((blog) => {
+          const filteredArticles =
+            blog.articles?.nodes?.filter((article) =>
+              ALLOWED_BLOG_CATEGORIES.has(
+                (article?.categoryMetafield?.value || '').trim(),
+              ),
+            ) || [];
+
+          return {
+            ...blog,
+            articles: {
+              ...blog.articles,
+              nodes: filteredArticles,
+            },
+          };
+        })
+        // Keep only blogs that still have at least one allowed article
+        .filter((blog) => blog.articles.nodes.length > 0) || [];
+
+    return json({
+      realRegistries,
+      featuredRegistryData,
+      brands,
+      user,
+      bestsellerProducts: bestsellerProducts?.edges || [],
+      blogs: filteredBlogs,
+    });
   } catch (error) {
-    return json({ realRegistries: [], featuredRegistryData: null, brands: [], user: null, bestsellerProducts: [], blogs: [] });
+    return json({
+      realRegistries: [],
+      featuredRegistryData: null,
+      brands: [],
+      user: null,
+      bestsellerProducts: [],
+      blogs: [],
+    });
   }
 }
 
