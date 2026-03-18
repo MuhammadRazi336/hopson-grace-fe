@@ -356,7 +356,7 @@ export default Home;
 
 const REAL_REGISTRIES_QUERY = `#graphql
 query getRealRegistries {
-  collections(first: 250) {
+  collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
     nodes {
       id
       title
@@ -447,7 +447,7 @@ query getHomeSubCollection($id: ID!) {
 
 const BRAND_QUERY = `#graphql
 query getHomeBrands {
-  collections(first: 250) {
+  collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
     nodes {
       id
       title
