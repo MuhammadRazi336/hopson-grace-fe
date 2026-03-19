@@ -4,6 +4,12 @@ import lineImghead from '/assets/Images/line.png';
 import WhiteLine from '/assets/Images/WhiteLine.png';
 
 export default function WeddingRegistrySteps() {
+  const CONNECT_URL = 'https://calendly.com/concierge-theregistry/learn-more';
+  const CONNECT_MARKER = 'click here';
+  const CONNECT_MARKER_DISPLAY = 'click here';
+  const CONSULTATION_MARKER = 'Book a consultation';
+  const CONSULTATION_MARKER_DISPLAY = 'Book a consultation';
+
   const steps = [
     {
       number: '1.',
@@ -33,7 +39,7 @@ export default function WeddingRegistrySteps() {
       number: '5.',
       title: 'AFTER THE WEDDING',
       description:
-        "Finalize your selections, and we'll take care of the rest. Enjoy 15% off anything left on your list. Want to talk to someone about your registry? We're here to help—now we're here to help, either way.",
+        "Finalize your selections, and we’ll take care of the rest. Enjoy 15% off anything left on your list. Want to talk to someone first? Book a consultation or start building now—we’re here to help, either way.",
     },
   ];
 
@@ -89,7 +95,42 @@ export default function WeddingRegistrySteps() {
                   <img src={WhiteLine} width={250} alt="" className='mx-auto pt-2'/>
                 </h3>
                 <p className="text-2xl leading-relaxed text-white/90 py-4">
-                  {step.description}
+                  {(() => {
+                    const desc = step.description || '';
+
+                    const linkDefs = [
+                      {marker: CONNECT_MARKER, display: CONNECT_MARKER_DISPLAY},
+                      {
+                        marker: CONSULTATION_MARKER,
+                        display: CONSULTATION_MARKER_DISPLAY,
+                      },
+                    ];
+
+                    for (const {marker, display} of linkDefs) {
+                      const markerIndex = desc.indexOf(marker);
+                      if (markerIndex === -1) continue;
+
+                      const before = desc.slice(0, markerIndex);
+                      const after = desc.slice(markerIndex + marker.length);
+
+                      return (
+                        <>
+                          {before}
+                          <a
+                            href={CONNECT_URL}
+                            className="text-white underline hover:opacity-90"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {display}
+                          </a>
+                          {after}
+                        </>
+                      );
+                    }
+
+                    return desc;
+                  })()}
                 </p>
               </div>
             ))}
