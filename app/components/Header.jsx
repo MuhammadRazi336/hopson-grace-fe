@@ -1808,7 +1808,12 @@ export function Header() {
           isMenuOpen ? 'left-0' : 'left-[-800px]'
         }`}
       >
-        <HeaderMobileMenu onClose={toggleMenu} onPopup={handleOpenPopup} />
+        <HeaderMobileMenu
+          onClose={toggleMenu}
+          onPopup={handleOpenPopup}
+          collections={stickyMenuCollections}
+          loadingCollections={stickyMenuLoading}
+        />
       </div>
       
     </>
