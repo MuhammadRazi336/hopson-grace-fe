@@ -15,7 +15,7 @@ import registryMonogram from "/assets/Images/registry-monogram.png"
 import { useState } from 'react';
 
 
-const HeaderMobileMenu = ({ onClose, onPopup }) => {
+const HeaderMobileMenu = ({ onClose, onPopup, collections = [], loadingCollections = false }) => {
   const navigate = useNavigate();
   const [isBrandSubMenuOpen, setIsBrandSubMenuOpen] = useState(false);
   const [isProductSubMenuOpen, setIsProductSubMenuOpen] = useState(false);
@@ -58,7 +58,7 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
           className="text-white bg-[#446184] rounded-none text-sm button-cs-sm py-5 w-full px-1" />
       </div>
       <div className="px-8">
-        <input type="text" placeholder="Find gifts, vendors, couples..." className="p-5 pl-[60px] rounded-none border-0 w-full mt-8 search-img" />
+        <input type="text" placeholder="Find gifts, brands, couples..." className="p-5 pl-[60px] rounded-none border-0 w-full mt-8 search-img" />
       </div>
       <nav className="flex-1">
         <ul className="">
@@ -82,36 +82,26 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
                         BESTSELLERS
                       </NavLink>
                     </li>
-                    <li>
-                      <NavLink to="/products/kitchen-essentials" className="block mb-4 text-black hover:bg-gray-200">
-                        KITCHEN ESSENTIALS
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/products/tableware-entertaining" className="block mb-4 text-black hover:bg-gray-200">
-                        TABLEWARE & ENTERTAINING
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/products/decor-furniture" className="block mb-4 text-black hover:bg-gray-200">
-                        DECOR & FURNITURE
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/products/bed-bath" className="block mb-4 text-black hover:bg-gray-200">
-                        BED & BATH
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/products/travel-outdoors" className="block mb-4 text-black hover:bg-gray-200">
-                        TRAVEL & OUTDOORS
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink to="/products/music-tech" className="block mb-4 text-black hover:bg-gray-200">
-                        MUSIC & TECH
-                      </NavLink>
-                    </li>
+                    {loadingCollections ? (
+                      <li className="text-gray-500 mb-4">Loading collections...</li>
+                    ) : (
+                      collections
+                        .filter((collection) => {
+                          const title = (collection.title || '').trim().toLowerCase();
+                          return title !== 'travel funds' && title !== 'cash funds';
+                        })
+                        .map((collection) => (
+                          <li key={collection.id}>
+                            <NavLink
+                              to={`/products/${collection.handle}`}
+                              className="block mb-4 text-black hover:bg-gray-200"
+                              onClick={onClose}
+                            >
+                              {collection.title.toUpperCase()}
+                            </NavLink>
+                          </li>
+                        ))
+                    )}
                     <li>
                       <NavLink to="/products/new-arrivals" className="block mb-4 text-black hover:bg-gray-200">
                         NEW IN
@@ -133,31 +123,31 @@ const HeaderMobileMenu = ({ onClose, onPopup }) => {
           <li className="py-2.5 px-8">
             <NavLink to="/cash-funds"
               className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              CASH FUNDS <img src={more} className="w-2.5" />
+              CASH + TRAVEL FUNDS
             </NavLink>
           </li>
           <li className="py-2.5 px-8">
             <NavLink to="/ready-made-registries"
               className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              READY-MADE REGISTRIES <img src={more} className="w-2.5" />
+              READY-MADE REGISTRIES
             </NavLink>
           </li>
           <li className="py-2.5 px-8">
             <NavLink to="/inspiration"
               className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              INSPIRATION <img src={more} className="w-2.5" />
+              INSPIRATION
             </NavLink>
           </li>
           <li className="py-2.5 px-8">
             <NavLink to="/about-us"
               className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              ABOUT US <img src={more} className="w-2.5" />
+              ABOUT US
             </NavLink>
           </li>
           <li className="py-2.5 px-8">
             <NavLink to="/contact-us"
               className="text-black hover:no-underline font-[800] text-sm min-[1440px]:text-lg uppercase tracking-[1px] flex justify-between items-center w-full">
-              CONTACT US <img src={more} className="w-2.5" />
+              CONTACT US
             </NavLink>
           </li>
         </ul>
