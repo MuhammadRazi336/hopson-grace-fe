@@ -50,8 +50,8 @@ const TopHeader = () => {
   }, [isLoggedIn]);
   return (
     <div className="bg-[#1F1D1B] h-[3.333vw] max-[1024px]:h-[36px] max-[1024px]:py-[5px] max-[1024px]:px-[0px] max-[1024px]:mb-0 mb-[2.813vw] flex items-center justify-center text-white py-[15px] text-center text-sm min[767px]:text-[20px] tracking-[3.6px]">
-      <div className="px-[2.083vw] text-[1.042vw] max-[1024px]:text-[9px] max-[1024px]:leading-[36px] w-full flex items-center">
-        <div className="w-[20%] max-[1024px]:w-[15%] max-[1024px]:hidden">
+      <div className="px-[2.083vw] text-[1.042vw] max-[1024px]:text-[9px] max-[1024px]:leading-[36px] w-full flex items-center justify-between">
+        <div className="w-[20%] max-[1024px]:hidden">
           <a href="https://www.hopsongrace.com/" target="_blank">
             <img
               src={TopLogo}
@@ -60,7 +60,7 @@ const TopHeader = () => {
             />
           </a>
         </div>
-        <div className="w-[60%] max-[1024px]:w-[100%] flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px]">
+        <div className="flex-1 flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px]">
           {isLoggedIn ? (
             <>
               IT’S NEVER TOO LATE TO ADD GIFTS!
@@ -91,7 +91,7 @@ const TopHeader = () => {
             </>
           )}
         </div>
-        <div className="w-[20%] max-[1024px]:w-[100%] flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[10px] max-[1024px]:leading-[14px]">
+        <div className="w-[20%] flex items-center justify-end text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[10px] max-[1024px]:leading-[14px]">
           <button
             type="button"
             onClick={handleOpenCurrencyPopup}
