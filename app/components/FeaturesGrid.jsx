@@ -71,7 +71,7 @@ export default function FeaturesGrid() {
       icon: FREESHIPPING,
       title: 'FREE SHIPPING',
       description:
-        'We cover shipping on two separate deliveries, so you-  can receive your gifts when the timing’s right.',
+        'We cover shipping on two separate deliveries, so you can receive your gifts when the timing’s right.',
     },
     {
       icon: FEWERBETTER,
