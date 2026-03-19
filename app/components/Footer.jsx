@@ -131,11 +131,6 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                       </Link>
                     </li>
                     <li>
-                      <Link className="text-white" to="/dashboard/shipgifts">
-                        SHIPPING
-                      </Link>
-                    </li>
-                    <li>
                       <Link className="text-white" to="/returns">
                         RETURNS & EXCHANGES
                       </Link>
@@ -171,6 +166,11 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
                     <li>
                       <Link className="text-white" to="/couple">
                         FIND A COUPLE
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="text-white" to="/faq" state={{ activeTab: 'guests' }}>
+                        FAQs
                       </Link>
                     </li>
                   </ul>
