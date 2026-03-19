@@ -6,8 +6,21 @@ import lineImg3 from '/assets/Images/line.png';
 import ImageAndText from '~/components/ImageAndText';
 import SpoonImg from '/assets/Images/SpoonImg.png';
 import WeddingRegistrySteps from '~/components/WeddingRegistrySteps';
+import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
+import {useState} from 'react';
 
 const HowItWorks = () => {
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
     <section>
       <Header />
@@ -40,8 +53,15 @@ const HowItWorks = () => {
           description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
           buttontext={'GET STARTED'}
           buttontype={'Color'}
+          onClick={handleOpenPopup}
         />
       </div>
+
+      {showPopup && (
+        <ModalPortal>
+          <Popup onClose={handleClosePopup} />
+        </ModalPortal>
+      )}
 
       <Footer />
     </section>
