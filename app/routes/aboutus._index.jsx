@@ -4,7 +4,7 @@ import {Header} from '~/components/Header';
 import {Footer} from '~/components/Footer';
 import lineImghead from '/assets/Images/line.png';
 import Heading from '~/components/Heading';
-import RegistryLogo from '/assets/Images/registry-monogram.png';
+import RegistryLogo from '/assets/Images/about-us-monogram.png';
 import Button from '~/components/Button.jsx';
 import ImageAndText from '~/components/ImageAndText';
 import BottleImg from '/assets/Images/BottleImg.png';
@@ -35,15 +35,15 @@ const AboutUs = () => {
           alt=""
           className="w-full h-full object-cover"
         />
-        {/* Heading with underline - Left aligned on image */}
-        <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px]">
+        {/* Heading with underline - Left aligned on desktop, centered on mobile */}
+        <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] max-[1024px]:left-1/2 max-[1024px]:-translate-x-1/2 max-[1024px]:px-[20px] max-[1024px]:pb-[20px] max-[1024px]:w-full">
           {/* <h1 className="">
             about us
           </h1> */}
           <Heading
             text="about us"
             classes={
-              'prata text-white text-4xl lg:text-[2.5vw] lg:leading-[4vw] xl:leading-[4vw] 2xl:leading-[4vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[28px] max-[1024px]:mb-[15px] px-[1.406vw] border-b border-white'
+              'prata text-white text-4xl lg:text-[2.5vw] lg:leading-[4vw] xl:leading-[4vw] 2xl:leading-[4vw] font-normal text-left max-[1024px]:text-center mb-[1.042vw] max-[1024px]:mb-[15px] px-[1.406vw] border-b border-white'
             }
             imageClasses=""
           />
@@ -59,11 +59,6 @@ const AboutUs = () => {
         
         <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
           After years of working with engaged couples at our sister store, Hopson Grace, we noticed a shift: couples still wanted beautiful, lasting things—but they wanted to build their registries online without compromising on style, service, or experience. So we created <strong>The Registry: a digital destination that marries ease with elegance.</strong> 
-          
-          <span>
-            {' '}
-            The Registry: a digital destination that marries ease with elegance.
-          </span>{' '}
         </p>
         <br />
         <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal py-4 max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
@@ -79,13 +74,6 @@ const AboutUs = () => {
           src={RegistryLogo}
           alt=""
           className="w-[100px] object-cover mx-auto max-[1024px]:w-[60px]"
-        />
-        <img
-          src={lineImghead}
-          alt=""
-          width={100}
-          height={100}
-          className="object-cover mx-auto lg:w-[6.164vw] xl:w-[6.164vw] 2xl:w-[6.164vw] max-[1024px]:w-[60px]"
         />
 
         <h2 className="text-center font-[500] text-2xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[2.865vw] mb-[0.625vw] max-[1024px]:text-[18px] max-[1024px]:leading-[22px] max-[1024px]:py-[20px]">
