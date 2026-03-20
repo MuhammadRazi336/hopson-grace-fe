@@ -9,8 +9,21 @@ import ImageAndText from '~/components/ImageAndText';
 import OurPhilosophyBg from '/assets/Images/OurPhilosophyBg.png';
 import teaImg from '/assets/Images/tea.png';
 import { Link } from '@remix-run/react';
+import {useState} from 'react';
+import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
 
 const OurPhilosophy = () => {
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
     <>
       <Header />
@@ -77,9 +90,16 @@ const OurPhilosophy = () => {
             </>}
             buttontext={'GET STARTED'}
             buttontype={'Color'}
-            buttonLink={'/register'}
+            onClick={handleOpenPopup}
           />
         </div>
+
+        {showPopup && (
+          <ModalPortal>
+            <Popup onClose={handleClosePopup} />
+          </ModalPortal>
+        )}
+
         <Footer />
       </section>
     </>
