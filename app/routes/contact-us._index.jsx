@@ -174,13 +174,13 @@ const ContactUs = () => {
 
         {/* Hopson Grace Store Section */}
         <div className={`w-full h-fit max-[1024px]:py-[40px] pt-[10.156vw] pb-[15.365vw] ${user ? 'bg-[#FFFFFF]' : 'bg-[#FAF9F6]'}`}>
-          <div className="px-[8.177vw] mx-auto px-4">
+          <div className="px-[8.177vw] mx-auto">
             {/* Logo */}
             <div className="text-center mb-[2.969vw]">
               <img
                 src={RegistryLogo}
                 alt="Registry Logo"
-                className="mx-auto mb-6 w-16 h-16 lg:w-[5.389vw] xl:w-[5.389vw] 2xl:w-[5.389vw]"
+                className="mx-auto mb-6 w-16 h-16 lg:w-[5.389vw] lg:h-[5.389vw] xl:w-[5.389vw] xl:h-[5.389vw] 2xl:w-[5.389vw] 2xl:h-[5.389vw] object-contain"
               />
             </div>
             

@@ -5,7 +5,7 @@ import {Header} from '~/components/Header';
 import faqBg from '/assets/Images/faqcouple.jpg';
 import Heading from '~/components/Heading';
 import lineImghead from '../assets/Images/heading-bottom-curve.png';
-import RegistryLogo from '/assets/Images/registry-monogram.png';
+import RegistryLogo from '/assets/Images/about-us-monogram.png';
 import Button from '~/components/Button.jsx';
 import {Navigate} from '@remix-run/react';
 import ImageAndText from '~/components/ImageAndText';
@@ -562,7 +562,7 @@ const FAQ = () => {
                 {openFAQ === 13 && (
                   <div className="mt-[1.25vw] transition-all duration-300">
                     <p className="text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-[400] lg:w-[50.781vw] xl:w-[50.781vw] 2xl:w-[50.781vw] max-[1024px]:text-[14px] max-[1024px]:leading-[18px]">
-                      Because each order is prepared specifically for you, we’re unable to accept returns or exchanges after fulfillment. If an item arrives damaged or incorrect, simply fill in our return request form within 7 days of delivery. We’ll replace it right away and cover the return shipping — at no cost to you.
+                    If any of your gifts arrive damaged or defective, we’ll replace them and cover the return shipping — at no cost to you. For all other items, returns are accepted within 60 days of receipt, with return shipping fees applied. As many pieces are sourced specifically for your registry, special order items are considered final sale and are not eligible for return or exchange.
                     </p>
                   </div>
                 )}
@@ -681,14 +681,7 @@ const FAQ = () => {
           <img
             src={RegistryLogo}
             alt=""
-            className="w-[103.48px] object-cover mx-auto"
-          />
-          <img
-            src={lineImghead}
-            alt=""
-            width={100}
-            height={100}
-            className="object-cover mx-auto"
+            className="w-[100px] object-cover mx-auto"
           />
           <p className="text-center text-1xl lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[2.865vw] pb-[1.875vw] max-[1024px]:py-[20px]">
             READY TO START YOUR REGISTRY?
