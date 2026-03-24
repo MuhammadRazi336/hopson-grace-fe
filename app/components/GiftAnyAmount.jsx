@@ -5,7 +5,7 @@ import {useState, useEffect} from 'react';
 function GiftAnyAmount() {
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = 'https://api.theregistry.ca';
   
   // State management
   const [user, setUser] = useState(null);
