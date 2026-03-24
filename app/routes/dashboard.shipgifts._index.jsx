@@ -1,8 +1,73 @@
-import {Link} from '@remix-run/react';
+import {Link, useFetcher} from '@remix-run/react';
 import React from 'react';
 import {Footer} from '~/components/Footer';
+import ShipGiftsActionPopup from '~/components/ShipGiftsActionPopup';
+
+export async function action({request, context}) {
+  const formData = await request.formData();
+  const requestType = String(formData.get('requestType') || '').trim();
+
+  const allowedRequestTypes = new Set([
+    'fulfill_my_registry',
+    'withdraw_cash',
+    'activate_travel_fund',
+  ]);
+
+  if (!allowedRequestTypes.has(requestType)) {
+    return {success: false, error: 'Invalid request type'};
+  }
+
+  try {
+    const user = context?.session?.get('@User');
+    if (!user?.user?.id) {
+      return {success: false, error: 'User not found'};
+    }
+
+    const registryResponse = await context.ClientGet(
+      `registries/by-userId/${user.user.id}`,
+      context
+    );
+    const registryId = registryResponse?.data?.[0]?.id;
+
+    if (!registryId) {
+      return {success: false, error: 'Registry not found'};
+    }
+
+    await context.ClientPost(
+      {requestType},
+      `registries/${registryId}/admin-request-notification`,
+      context
+    );
+
+    return {success: true};
+  } catch (error) {
+    return {
+      success: false,
+      error: error?.message || 'Failed to send notification',
+    };
+  }
+}
 
 const ShipGifts = () => {
+  const fetcher = useFetcher();
+  const [showActionPopup, setShowActionPopup] = React.useState(false);
+
+  React.useEffect(() => {
+    if (fetcher.data?.success) {
+      setShowActionPopup(true);
+    }
+  }, [fetcher.data]);
+
+  const handleSendNotification = (requestType) => {
+    const submitFormData = new FormData();
+    submitFormData.append('requestType', requestType);
+    fetcher.submit(submitFormData, {method: 'post'});
+  };
+
+  const handleCloseActionPopup = () => {
+    setShowActionPopup(false);
+  };
+
   return (
     <div className="pt-[4.323vw]">
       <div className=" p-4">
@@ -50,7 +115,11 @@ const ShipGifts = () => {
                 When you're ready to fulfill your registry our team will help you review and make any final adjustments, then coordinate delivery. Simply let us know you're ready and we’ll be in touch to guide you through the final steps. Enjoy two complimentary shipments of your gifts; standard shipping rates apply to any extra deliveries. 
               </p>
               <div>
-                <button className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer">
+                <button
+                  onClick={() => handleSendNotification('fulfill_my_registry')}
+                  disabled={fetcher.state !== 'idle'}
+                  className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer"
+                >
                   FULFILL MY REGISTRY
                 </button>
               </div>
@@ -71,11 +140,13 @@ const ShipGifts = () => {
                 Withdraw your cash at any time, or wait until after your wedding to receive the full amount. When you’re ready, let us know and we’ll securely arrange your transfer. Two withdrawals are on us; additional transfers incur a small processing fee. 
               </p>
               <div>
-                <Link to={'https://calendly.com/concierge-theregistry/30min'} target="_blank" rel="noopener noreferrer">
-                  <button className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer">
-                    WITHDRAW CASH
-                  </button>
-                </Link>
+                <button
+                  onClick={() => handleSendNotification('withdraw_cash')}
+                  disabled={fetcher.state !== 'idle'}
+                  className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer"
+                >
+                  WITHDRAW CASH
+                </button>
               </div>
             </div>
             <div className="mt-[6.25vw] flex flex-col items-center justify-center">
@@ -94,11 +165,13 @@ const ShipGifts = () => {
                 Ready to begin planning? We'll connect you directly with Porte Travel to start designing your journey.
               </p>
               <div>
-                <Link to={'https://calendly.com/concierge-theregistry/30min'} target="_blank" rel="noopener noreferrer">
-                  <button className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer">
-                    ACTIVATE NOW
-                  </button>
-                </Link>
+                <button
+                  onClick={() => handleSendNotification('activate_travel_fund')}
+                  disabled={fetcher.state !== 'idle'}
+                  className="font-bold bg-white text-black px-6 mt-3 py-4 text-sm lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] hover:bg-gray-100 lg:w-[19.635vw] xl:w-[19.635vw] 2xl:w-[19.635vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] cursor-pointer"
+                >
+                  ACTIVATE NOW
+                </button>
               </div>
             </div>
           </div>
@@ -131,6 +204,8 @@ const ShipGifts = () => {
           </Link>
         </div>
       </div>
+
+      {showActionPopup && <ShipGiftsActionPopup onClose={handleCloseActionPopup} />}
 
       <Footer />
     </div>
