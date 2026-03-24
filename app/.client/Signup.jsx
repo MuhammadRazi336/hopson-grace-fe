@@ -3,6 +3,7 @@ import Heading from '~/components/Heading.jsx';
 import Input from '~/components/Input.jsx';
 import Stepper from '~/components/Stepper.jsx';
 import Button from '~/components/Button.jsx';
+import {buildApiUrl} from '~/utils/api-url';
 
 const Signup = () => {
   const formDataRef = useRef({
@@ -28,7 +29,7 @@ const Signup = () => {
       fianceLastName: formDataRef.current.fianceLastName,
     };
     try {
-      const response = await fetch('https://dev-hopsongrace.codup.io/api/auth/signup' || 'https://api.theregistry.ca/api/auth/signup', {
+      const response = await fetch(buildApiUrl('auth/signup'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

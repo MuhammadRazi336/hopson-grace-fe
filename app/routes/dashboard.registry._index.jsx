@@ -12,6 +12,7 @@ import PreviewRegistry from '~/components/PreviewRegistry';
 import { Footer } from '~/components/Footer';
 import {formatPrice} from '~/utils/priceFormatter';
 import BackToTop from '~/components/BackToTop';
+import {getApiBaseUrl} from '~/utils/api-url';
 
 // Collections with products per node (same approach as addgifts: parent -> sub -> products -> parentCollectionId)
 const REGISTRY_COLLECTION_QUERY = `#graphql
@@ -156,7 +157,7 @@ export async function loader({request, context}) {
   const productNodes = Array.isArray(products.nodes) ? products.nodes : [];
 
   let mergedArray = [];
-  const apiBaseUrl = context.env?.API_BASE_URL || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = getApiBaseUrl(context?.env);
 
   // Fetch collections and build productId -> parentId (and subCollectionId -> parentId) for merging parentCollectionId onto registry gifts
   let parentCollections = [];
@@ -341,8 +342,7 @@ const index = () => {
   }, [data, cashfundData]);
 
   // Fallback for apiBaseUrl if it's not available from loader
-  const finalApiBaseUrl =
-    apiBaseUrl || 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const finalApiBaseUrl = apiBaseUrl || getApiBaseUrl();
 
   // Get the actual registry data from the response
   const registryData = registry?.data?.[0];

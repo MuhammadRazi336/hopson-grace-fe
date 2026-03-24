@@ -19,6 +19,7 @@ import ModalPortal from './ModalPortal';
 import {useLocation} from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { ToastContainer } from 'react-toastify';
+import {getApiBaseUrl} from '~/utils/api-url';
 
 export function Header() {
   const [user, setUser] = useState(null);
@@ -46,7 +47,7 @@ export function Header() {
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = getApiBaseUrl(env);
 
   // Notification system state
   const [notifications, setNotifications] = useState([]);

@@ -1,11 +1,12 @@
 import Button from '~/components/Button.jsx';
 import {useLoaderData} from '@remix-run/react';
 import {useState, useEffect} from 'react';
+import {getApiBaseUrl} from '~/utils/api-url';
 
 function GiftAnyAmount() {
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
-  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = getApiBaseUrl(env);
   
   // State management
   const [user, setUser] = useState(null);
