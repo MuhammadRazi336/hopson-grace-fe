@@ -603,11 +603,11 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
 
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticles {
-  blogs(first: 10) {
+  blogs(first: 10, reverse: true) {
     nodes {
       title
       handle
-      articles(first: 20) {
+      articles(first: 50) {
         nodes {
           id
           title
