@@ -1,4 +1,5 @@
 import UnderwaterImg from '/assets/Images/UnderwaterImg.png';
+import UnderwaterImgMobile from '/assets/Images/underwatermobile.png';
 import RegistryLogo from '/assets/Images/registry-monogram.png';
 import lineImghead from '/assets/Images/line.png';
 import WhiteLine from '/assets/Images/WhiteLine.png';
@@ -45,9 +46,9 @@ export default function WeddingRegistrySteps() {
 
   return (
     <div className="bg-white">
-      <div className="flex flex-col lg:flex-row">
+      <div className="flex flex-col lg:flex-row max-[1024px]:relative">
         {/* Left side - Image */}
-        <div className="lg:w[37.552vw] relative mb-12 z-0">
+        <div className="lg:w-[37.552vw] h-[90vw] relative mb-12 z-0 max-[1024px]:w-9/10 max-[1024px]:mb-0">
           {/* <div
               className="h-64 lg:h-screen bg-cover bg-center bg-teal-400"
               style={{
@@ -59,35 +60,40 @@ export default function WeddingRegistrySteps() {
           <img
             src={UnderwaterImg}
             alt="Underwater"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover min-[1024px]:block hidden"
+          />
+          <img
+            src={UnderwaterImgMobile}
+            alt="Underwater"
+            className="w-full h-full object-cover max-[1024px]:block hidden"
           />
           {/* Overlay for better text contrast if needed */}
           <div className="absolute inset-0"></div>
 
           {/* Logo/Brand mark */}
-          <div className="absolute top-8 -left-16">
+          <div className="absolute top-8 -left-16 max-[1024px]:-right-[40px] max-[1024px]:top-1/2 max-[1024px]:left-[initial]">
             <img
               src={RegistryLogo}
               alt=""
-              className="w-[130px] object-cover mx-auto"
+              className="w-[130px] object-cover mx-auto max-[1024px]:w-[80px] max-[1024px]:contain"
             />
             <img
               src={lineImghead}
               alt=""
               width={150}
               height={100}
-              className="object-cover mx-auto"
+              className="object-cover mx-auto max-[1024px]:w-[80px] max-[1024px]:contain"
             />
           </div>
         </div>
         {/* </div> */}
 
         {/* Right side - Steps */}
-        <div className="lg:w-[52.083vw] flex flex-col items-center justify-center bg-[#446184] text-white p-8 lg:p-12 mt-16 relative z-10 lg:-ml-12">
+        <div className="lg:w-[52.083vw] flex flex-col items-center justify-center bg-[#446184] text-white p-8 lg:p-12 mt-16 relative z-10 lg:-ml-12 max-[1024px]:w-9/10 max-[1024px]:ml-auto max-[1024px]:-mt-[80px]">
           <div className="w-full  mx-auto lg:mx-0 space-y-12">
             {steps.map((step, index) => (
               <div key={index} className="space-y-3 text-center">
-                <div className="text-6xl lg:text-8xl font-light text-white/90">
+                <div className="text-6xl lg:text-7xl font-light text-white/90 font-prata">
                   {step.number}
                 </div>
                 <h3 className="text-[1.146vw] leading-[1.875vw] font-normal tracking-wider uppercase text-white">

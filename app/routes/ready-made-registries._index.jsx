@@ -8,6 +8,8 @@ import readMoreIcon from '/assets/Images/readMoreIcon.png';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/tea.png';
 import lineImg3 from '/assets/Images/Vector 14.png';
+import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
 
 export async function loader({context}) {
 try {
@@ -63,8 +65,17 @@ return json({ readyMadeRegistries: [], subCollectionsWithProducts: [] });
 
 const ReadyMade = () => {
    const { readyMadeRegistries, subCollectionsWithProducts } = useLoaderData();
+   const [showPopup, setShowPopup] = useState(false);
    // State to track which parent collection is selected
    const [selectedParentCollection, setSelectedParentCollection] = React.useState(null);
+
+   const handleOpenPopup = () => {
+     setShowPopup(true);
+   };
+
+   const handleClosePopup = () => {
+     setShowPopup(false);
+   };
    
    // Filter sub-collections based on selected parent
    const filteredSubCollections = selectedParentCollection 
@@ -162,9 +173,15 @@ const ReadyMade = () => {
       }
       buttontext={'GET STARTED'}
       buttontype={'Color'}
-      buttonLink={'/register'}
+      onClick={handleOpenPopup}
       />
   </section>
+
+  {showPopup && (
+    <ModalPortal>
+      <Popup onClose={handleClosePopup} />
+    </ModalPortal>
+  )}
 
 
   <Footer />
