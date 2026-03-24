@@ -28,7 +28,7 @@ const Signup = () => {
       fianceLastName: formDataRef.current.fianceLastName,
     };
     try {
-      const response = await fetch('https://dev-hopsongrace.codup.io/api/auth/signup' || 'https://api.theregistry.ca/api/auth/signup', {
+      const response = await fetch('https://api.theregistry.ca/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

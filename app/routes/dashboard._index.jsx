@@ -170,7 +170,7 @@ const index = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
-  const apiBaseUrl = 'https://dev-hopsongrace.codup.io' || 'https://api.theregistry.ca';
+  const apiBaseUrl = 'https://api.theregistry.ca';
 
   // Fetch notifications function
   const fetchNotifications = async (isRefresh = false) => {
