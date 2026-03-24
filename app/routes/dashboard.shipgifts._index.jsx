@@ -15,7 +15,10 @@ const ShipGifts = () => {
           className="max-w-[23.646vw] mt-4 h-auto mx-auto"
         />
         <p className="max-w-[45.26vw] mx-auto text-center mt-[4.01vw] mb-6 lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] font-normal leading-relaxed lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-[1024px]:max-w-[90%]">
-          Your registry gifts and funds will be ready when you are — though many couples find it easiest to finalize selections and arrange deliveries after the wedding, once plans and living arrangements are settled. Our Concierge team will guide you through everything when the time comes.
+        Your registry gifts and funds will be ready when you are. Many couples choose to finalize selections and arrange deliveries after the wedding, giving them the greatest flexibility and a clearer sense of what they’ll truly need for their home.
+        </p>
+        <p className="max-w-[45.26vw] mx-auto text-center mt-4 mb-6 lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] font-normal leading-relaxed lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-[1024px]:max-w-[90%]">
+        When you're ready, simply choose one of the options below to continue. Our team will guide you through the rest.
         </p>
       </div>
 
@@ -111,7 +114,10 @@ const ShipGifts = () => {
           className="max-[1024px]:h-full object-cover object-[80%]"
         />
         <h3 className="text-xl font-[500] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mt-[1.771vw]">
-          FULFILLMENT QUESTIONS? LET US HELP.
+          FULFILLMENT QUESTIONS?
+        </h3>
+        <h3 className="text-xl font-[500] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mt-1">
+          LET US HELP.
         </h3>
         <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-w-[38.49vw] mt-4 mb-4 text-center ">
           Book a virtual appointment with a registry concierge 

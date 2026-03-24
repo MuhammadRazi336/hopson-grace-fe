@@ -40,7 +40,7 @@ const WhyTheRegistry = () => {
         </div>
       </div>
 
-      <div className="w-full pt-16 pb-[7.813vw]">
+      <div className="w-full pt-16 pb-[7.813vw] max-[1024px]:pt-[80px] max-[1024px]:pb-[80px]">
         <ImageAndText
           direction={'right'}
           imgBanner={teaImg}

@@ -96,7 +96,7 @@ export default function FeaturesGrid() {
   return (
     <div className="pt-[6.563vw] pb-[11.823vw] px-2">
       <div className="max-w-[96.615vw] mx-auto">
-        <div className="flex justify-center gap-y-[7.031vw] gap-x-[4.167vw] flex-wrap">
+        <div className="flex justify-center gap-y-[7.031vw] gap-x-[4.167vw] flex-wrap max-[1024px]:gap-y-[12vw]">
           {features.map((feature, index) => {
             return (
               <div
@@ -104,11 +104,11 @@ export default function FeaturesGrid() {
                 className="text-center space-y-4 lg:w-[20.24vw] max-[1024px]:w-[45%] max-[600px]:w-[90%]"
               >
                 {/* Icon Circle */}
-                <div className="mx-auto w-[11.563vw] h-[11.563vw] max-[600px]:w-[100px] max-[600px]:h-[100px] bg-[#446184] rounded-full flex items-center justify-center mb-[2.135vw]">
+                <div className="mx-auto w-[11.563vw] h-[11.563vw] max-[600px]:w-[120px] max-[600px]:h-[120px] bg-[#446184] rounded-full flex items-center justify-center mb-[2.135vw]">
                   <img
                     src={feature.icon}
                     alt={feature.title}
-                    className="w-[8.906vw] object-contain max-[600px]:w-[80px] max-[600px]:h-[80px]"
+                    className="w-[8.906vw] object-contain max-[600px]:w-[100px] max-[600px]:h-[100px]"
                   />
                 </div>
 
