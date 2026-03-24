@@ -25,7 +25,7 @@ const HowItWorks = () => {
     <section>
       <Header />
 
-      <div className="container mx-auto py-16">
+      <div className="container mx-auto py-16 pb-0">
         <Heading
           text="how it works"
           classes={
@@ -34,7 +34,7 @@ const HowItWorks = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px]'}
         />
-        <p className="text-center text-2xl lg:text-[1.25vw] lg:max-w-[55.729vw] lg:mx-auto lg:leading-[1.875vw] font-normal py-16">
+        <p className="text-center text-2xl lg:text-[1.25vw] lg:max-w-[55.729vw] lg:mx-auto lg:leading-[1.875vw] font-normal py-16 pb-0 max-[1024px]:text-xl max-[1024px]:pt-8">
            Creating your registry is simple. Just follow the steps below to see
           how it all comes together.
         </p>
