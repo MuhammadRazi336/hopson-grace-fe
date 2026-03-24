@@ -9,7 +9,7 @@ const AccordionIcon = ({ isOpen, className = '' }) => {
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
       className={`w-[10%] h-[10%] lg:w-[2.917vw] xl:w-[2.917vw] 2xl:w-[2.917vw] lg:h-[2.917vw] xl:h-[2.917vw] 2xl:h-[2.917vw] transition-transform duration-300 flex-shrink-0 basis-[24px] lg:basis-auto ${
-        isOpen ? '' : 'rotate-180'
+        isOpen ? 'rotate-180' : ''
       } ${className}`}
     >
       <circle cx="28" cy="28" r="28" fill="#446184"/>

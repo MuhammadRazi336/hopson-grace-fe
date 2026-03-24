@@ -16,6 +16,8 @@ import {Swiper, SwiperSlide} from 'swiper/react';
 import {Pagination} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
+import Popup from '~/components/Popup';
+import ModalPortal from '~/components/ModalPortal';
 
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticlesForInspiration {
@@ -95,6 +97,15 @@ const Inspiration = () => {
   const [isStickyBarVisible, setIsStickyBarVisible] = useState(false);
   const [activeStickyCategory, setActiveStickyCategory] = useState(null);
   const blogCategoriesRef = useRef(null);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleOpenPopup = () => {
+    setShowPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
 
   // Show sticky bar when user reaches .blogCategories section and hide when section ends
   useEffect(() => {
@@ -516,8 +527,8 @@ const Inspiration = () => {
                         </Link>
                       )}
                       <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
-                      <h4 className="text-xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] font-semibold mt-[1.667vw] mb-[14px] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw] text-ellipsis overflow-hidden whitespace-nowrap">
-                        {displayedTitle}
+                        <h4 className="text-xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] font-semibold mt-[1.667vw] mb-[14px] lg:mb-[0.729vw] xl:mb-[0.729vw] 2xl:mb-[0.729vw] text-ellipsis overflow-hidden whitespace-nowrap uppercase">
+                        {displayedTitle.toUpperCase()}
                       </h4>
                       </Link>
                       <p className="text-sm mt-0 mb-[1.042vw] ivyora italic lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.4vw] xl:leading-[1.4vw] 2xl:leading-[1.4vw] lg:tracking-[0.052vw] xl:tracking-[0.052vw] 2xl:tracking-[0.052vw] tracking-[1px] font-normal">
@@ -599,9 +610,15 @@ const Inspiration = () => {
           description="TIMELESS GIFTS. THOUGHTFULLY CURATED. EXCEPTIONAL SERVICE."
           buttontext={'GET STARTED'}
           buttontype={'Color'}
-          buttonLink={'/register'} 
+          onClick={handleOpenPopup}
         />
       </div>
+
+      {showPopup && (
+        <ModalPortal>
+          <Popup onClose={handleClosePopup} />
+        </ModalPortal>
+      )}
 
       <Footer />
     </div>

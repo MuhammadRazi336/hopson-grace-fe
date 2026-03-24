@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -18,6 +18,9 @@ const Returns = () => {
         additionalDetails: "",
         agreedToReturn: false,
       })
+
+    const fileInputRef = useRef(null)
+    const [isDragActive, setIsDragActive] = useState(false)
 
     const [itemsCharacterCount, setItemsCharacterCount] = useState(0)
     const [detailsCharacterCount, setDetailsCharacterCount] = useState(0)
@@ -39,9 +42,18 @@ const Returns = () => {
       setFormData((prev) => ({ ...prev, agreedToReturn: e.target.checked }))
     }
 
+    const MAX_UPLOAD_FILES = 5
+    const handleAddFiles = (fileList) => {
+      const files = Array.from(fileList || [])
+
+      // Only accept images (users may drop non-image files by mistake)
+      const imageFiles = files.filter((f) => (f.type || '').startsWith('image/'))
+
+      setUploadedFiles((prev) => [...prev, ...imageFiles].slice(0, MAX_UPLOAD_FILES))
+    }
+
     const handleFileUpload = (e) => {
-      const files = Array.from(e.target.files || [])
-      setUploadedFiles((prev) => [...prev, ...files].slice(0, 5))
+      handleAddFiles(e.target?.files)
     }
 
     const handleSubmit = (e) => {
@@ -168,7 +180,41 @@ const Returns = () => {
           {/* PHOTO UPLOAD */}
           <div className="space-y-2">
             <label className="text-white font-semibold">PHOTO UPLOAD</label>
-            <div className="bg-white border-2 border-dashed border-gray-300 p-8 pt-5 mt-2 lg:h-[15.573vw]">
+            <div
+              className={`bg-white border-2 border-dashed p-8 pt-5 mt-2 lg:h-[15.573vw] ${
+                isDragActive ? 'border-[#446184]' : 'border-gray-300'
+              }`}
+              onDragEnter={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIsDragActive(true)
+              }}
+              onDragOver={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIsDragActive(true)
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIsDragActive(false)
+              }}
+              onDrop={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIsDragActive(false)
+                handleAddFiles(e.dataTransfer?.files)
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  fileInputRef.current?.click()
+                }
+              }}
+              onClick={() => fileInputRef.current?.click()}
+            >
             <p className="text-black/70 text-sm">If your item arrived damaged, please upload a photo so we can take care of it quickly.</p>
               <div className="space-y-4 text-center">
                 <div className="mx-auto w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mt-3">
@@ -176,12 +222,15 @@ const Returns = () => {
                 </div>
                 <div>
                   <label htmlFor="photo-upload" className="cursor-pointer">
-                    <span className="text-black font-medium">Upload up to 5 photos *</span>
+                    <span className="text-black font-medium">
+                      {isDragActive ? 'Drop photos here' : 'Upload up to 5 photos *'}
+                    </span>
                     <br />
                     <span className="text-black/70 text-sm">(JPEG/PNG max 5MB each)</span>
                   </label>
                   <input
                     id="photo-upload"
+                    ref={fileInputRef}
                     type="file"
                     multiple
                     accept="image/jpeg,image/png"
