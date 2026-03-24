@@ -10,6 +10,7 @@ import headingBottomCurve from '../assets/Images/heading-bottom-curve.png';
 import {Footer} from '~/components/Footer';
 import AlertPortal from '~/components/AlertPortal';
 import ModalPortal from '~/components/ModalPortal';
+import {getApiBaseUrl} from '~/utils/api-url';
 
 const COLLECTION_QUERY = `#graphql
 query {
@@ -100,7 +101,7 @@ export async function loader({params, context}) {
     console.log('Loader: Cash fund response:', cashRes);
 
     // Get API base URL from environment with fallback
-    const apiBaseUrl = context.env?.API_BASE_URL || 'https://api.theregistry.ca';
+    const apiBaseUrl = getApiBaseUrl(context?.env);
 
     // Handle case where there are no gift products
     let mergedArray = [];
@@ -384,7 +385,7 @@ export default function CoupleProfile() {
     response = {},
     registryId = null,
     collections = [],
-    apiBaseUrl = 'https://api.theregistry.ca',
+    apiBaseUrl = getApiBaseUrl(),
     hasProducts = false,
     coupleId = null,
     isLoggedIn = false,
@@ -476,7 +477,7 @@ export default function CoupleProfile() {
     setCartLoading(true);
     try {
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
+      const baseUrl = apiBaseUrl || getApiBaseUrl();
       const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
         `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
@@ -710,7 +711,7 @@ export default function CoupleProfile() {
     setIsApiLoading(true);
     try {
       // Ensure apiBaseUrl is set
-      const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
+      const baseUrl = apiBaseUrl || getApiBaseUrl();
       const res = await fetch(`${baseUrl}/api/cart`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -761,7 +762,7 @@ export default function CoupleProfile() {
       };
 
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
+      const baseUrl = apiBaseUrl || getApiBaseUrl();
       const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
         `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
@@ -794,7 +795,7 @@ export default function CoupleProfile() {
     try {
 
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
+      const baseUrl = apiBaseUrl || getApiBaseUrl();
       const encodedEmail = encodeURIComponent(email);
       const res = await fetch(
         `${baseUrl}/api/cart/add-to-cart/${registryId}/${encodedEmail}`,
@@ -1011,7 +1012,7 @@ export default function CoupleProfile() {
       setCartLoading(true);
       try {
         // Ensure apiBaseUrl is set and encode email for URL
-        const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
+        const baseUrl = apiBaseUrl || getApiBaseUrl();
         const encodedEmail = encodeURIComponent(emailForCart);
         const res = await fetch(
           `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
@@ -1211,7 +1212,7 @@ export default function CoupleProfile() {
     if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
       // Update quantity in cart
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
+      const baseUrl = apiBaseUrl || getApiBaseUrl();
       const encodedEmail = encodeURIComponent(email);
       fetch(
         `${baseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${encodedEmail}`,
@@ -1246,7 +1247,7 @@ export default function CoupleProfile() {
     } else {
       // Remove item from cart
       // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || 'https://api.theregistry.ca';
+      const baseUrl = apiBaseUrl || getApiBaseUrl();
       const encodedEmail = encodeURIComponent(email);
       fetch(
         `${baseUrl}/api/cart/remove-from-cart/${registryProductId}/${registryId}/${encodedEmail}`,
