@@ -1,10 +1,8 @@
 import axios from 'axios';
+import {buildApiUrl} from '~/utils/api-url';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://api.theregistry.ca/api/', // Set your API URL here
-  // baseURL: 'http://localhost:3040/api/', // Set your API URL here
-
-  // https://dev-hopsongrace.codup.io/api/
+  baseURL: buildApiUrl(''),
   timeout: 20000,
 });
 

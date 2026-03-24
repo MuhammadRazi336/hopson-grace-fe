@@ -9,6 +9,7 @@ import FooterBottom from '~/components/FooterBottom';
 import NotificationCard from '~/components/NotificationCard';
 import { Footer } from '~/components/Footer';
 import {syncCustomerBalancesToMetafields} from '~/utils/shopify-customer-balances.server';
+import {getApiBaseUrl} from '~/utils/api-url';
 
 export async function loader(args) {
   const {context, request} = args;
@@ -170,7 +171,7 @@ const index = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
-  const apiBaseUrl = 'https://api.theregistry.ca';
+  const apiBaseUrl = getApiBaseUrl(loaderData?.env);
 
   // Fetch notifications function
   const fetchNotifications = async (isRefresh = false) => {
