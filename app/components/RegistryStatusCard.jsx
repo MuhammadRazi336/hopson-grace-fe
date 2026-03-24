@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import {getApiBaseUrl} from '~/utils/api-url';
 
 const RegistryStatusCard = ({ status: initialStatus = 'draft', registryId, token, className }) => {
   const [status, setStatus] = useState(initialStatus);
   const isDraft = status === 'draft';
-  const apiBaseUrl = 'https://api.theregistry.ca';
+  const apiBaseUrl = getApiBaseUrl();
   
   // Toggle handler
   const handleToggle = async () => {
