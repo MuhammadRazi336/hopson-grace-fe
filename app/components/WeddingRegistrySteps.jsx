@@ -1,6 +1,6 @@
 import UnderwaterImg from '/assets/Images/UnderwaterImg.png';
 import UnderwaterImgMobile from '/assets/Images/underwatermobile.png';
-import RegistryLogo from '/assets/Images/registry-monogram.png';
+import RegistryLogo from '/assets/Images/about-us-monogram.png';
 import lineImghead from '/assets/Images/line.png';
 import WhiteLine from '/assets/Images/WhiteLine.png';
 
@@ -45,10 +45,10 @@ export default function WeddingRegistrySteps() {
   ];
 
   return (
-    <div className="bg-white">
-      <div className="flex flex-col lg:flex-row max-[1024px]:relative">
+    <div className="bg-white overflow-visible">
+      <div className="flex flex-col lg:flex-row max-[1024px]:relative overflow-visible">
         {/* Left side - Image */}
-        <div className="lg:w-[37.552vw] h-[90vw] relative mb-12 z-0 max-[1024px]:w-9/10 max-[1024px]:mb-0">
+        <div className="lg:w-[37.552vw] h-[90vw] relative mb-12 z-0 max-[1024px]:w-9/10 max-[1024px]:mb-0 overflow-visible">
           {/* <div
               className="h-64 lg:h-screen bg-cover bg-center bg-teal-400"
               style={{
@@ -70,19 +70,12 @@ export default function WeddingRegistrySteps() {
           {/* Overlay for better text contrast if needed */}
           <div className="absolute inset-0"></div>
 
-          {/* Logo/Brand mark */}
-          <div className="absolute top-8 -left-16 max-[1024px]:-right-[40px] max-[1024px]:top-1/2 max-[1024px]:left-[initial]">
+          {/* Logo: centered on left/right edge — half on image, half outside (horizontal), not split from top */}
+          <div className="absolute top-8 z-20 min-[1025px]:left-0 min-[1025px]:right-auto min-[1025px]:-translate-x-1/2 max-[1024px]:left-auto max-[1024px]:right-0 max-[1024px]:translate-x-1/2">
             <img
               src={RegistryLogo}
-              alt=""
-              className="w-[130px] object-cover mx-auto max-[1024px]:w-[80px] max-[1024px]:contain"
-            />
-            <img
-              src={lineImghead}
-              alt=""
-              width={150}
-              height={100}
-              className="object-cover mx-auto max-[1024px]:w-[80px] max-[1024px]:contain"
+              alt="The Registry"
+              className="w-[120px] object-cover max-[1024px]:w-[90px]"
             />
           </div>
         </div>
@@ -93,14 +86,14 @@ export default function WeddingRegistrySteps() {
           <div className="w-full  mx-auto lg:mx-0 space-y-12">
             {steps.map((step, index) => (
               <div key={index} className="space-y-3 text-center">
-                <div className="text-6xl lg:text-7xl font-light text-white/90 font-prata">
+                <div className="text-5xl lg:text-7xl font-light text-white/90 font-prata">
                   {step.number}
                 </div>
                 <h3 className="text-[1.146vw] leading-[1.875vw] font-normal tracking-wider uppercase text-white">
                   {step.title}
                   <img src={WhiteLine} width={250} alt="" className='mx-auto pt-2'/>
                 </h3>
-                <p className="text-2xl leading-relaxed text-white/90 py-4">
+                <p className="text-md leading-relaxed text-white/90 py-4 lg:text-2xl">
                   {(() => {
                     const desc = step.description || '';
 

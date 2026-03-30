@@ -6,16 +6,15 @@ const ProductCard = ({
   image,
   productName,
   price,
-  description,
+  description: _description,
   onAddToRegistry,
   productHandle,
-  isLoggedIn = false,
-  isAddingToRegistry = false,
+  isLoggedIn: _isLoggedIn = false,
+  isSubmitting = false,
   brandName = 'BRAND NAME',
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
-  const [isReadMore, setIsReadMore] = useState(false);
 
   const incrementQuantity = () => {
     setQuantity((prev) => prev + 1);
@@ -31,94 +30,123 @@ const ProductCard = ({
     }
   };
 
-  const handleGroupGiftChange = (e) => {
-    const isChecked = e.target.checked;
-    setIsGroupGift(isChecked);
-  };
+  const productDetailUrl = productHandle
+    ? `/dashboard/addgifts/${productHandle}`
+    : null;
 
   return (
     <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
       <div className="relative group mb-[4.844vw]">
-        {/* Product Image and Info */}
-        <div className="z-10 relative">
-          <img
-            src={image}
-            alt={productName}
-            className="w-full h-[23.43vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
-          />
-          <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
-            {productName}
-          </h3>
-          <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">{formatPrice(price)}</p>
-        </div>
-
-        {/* Expanding Overlay */}
-        <div className="absolute lg:h-[33.5vw] xl:h-[33.5vw] 2xl:h-[37.3vw] lg:min-h-[20vw] xl:min-h-[20vw] 2xl:min-h-[20vw] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center scale-[1.13]">
-          <div>
-            <Link to={`/dashboard/addgifts/${productHandle}`}>
+        {/* Product image and summary — aligned with dashboard.giftcards GiftCard default state */}
+        <div className="relative z-0">
+          {productDetailUrl ? (
+            <Link to={productDetailUrl} className="block cursor-pointer">
               <img
                 src={image}
                 alt={productName}
-                className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                className="w-full h-[300px] lg:h-[18.75vw] object-cover"
               />
-            </Link>
-            <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-              {brandName}
-            </h4>
-            <Link to={`/dashboard/addgifts/${productHandle}`}>
-              <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
+              <h3 className="text-[18px] font-semibold uppercase mt-3">
                 {productName}
               </h3>
             </Link>
-            <p className="text-2xl mt-2 text-left">{formatPrice(price)}</p>
+          ) : (
+            <>
+              <img
+                src={image}
+                alt={productName}
+                className="w-full h-[300px] lg:h-[18.75vw] object-cover"
+              />
+              <h3 className="text-[18px] font-semibold uppercase mt-3">
+                {productName}
+              </h3>
+            </>
+          )}
+          <p className="text-sm mt-1">{formatPrice(price)}</p>
+        </div>
+
+        {/* Hover overlay — matches dashboard.giftcards._index GiftCard */}
+        <div className="absolute h-[460px] lg:h-[31.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+          <div>
+            {productDetailUrl ? (
+              <Link to={productDetailUrl} className="block cursor-pointer">
+                <img
+                  src={image}
+                  alt={productName}
+                  className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-cover mb-[20px]"
+                />
+                <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
+                  {brandName}
+                </h4>
+                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
+                  {productName}
+                </h3>
+              </Link>
+            ) : (
+              <>
+                <img
+                  src={image}
+                  alt={productName}
+                  className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-cover mb-[20px]"
+                />
+                <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
+                  {brandName}
+                </h4>
+                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
+                  {productName}
+                </h3>
+              </>
+            )}
+            <p className="text-[20px] lg:text-[1.25vw] leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
+              {formatPrice(price)}
+            </p>
           </div>
 
-          <div className="flex items-center justify-between mt-[2.3vw]">
-            {/* Quantity Controls */}
-            <div className="flex w-full items-center text-xs gap-1.5">
-              {/* Quantity Selector - Only show when logged in */}
-              {/* {isLoggedIn && ( */}
-                <div className="flex items-center w-[45%] gap-2 justify-center">
-                  <p className="text-[18px] font-semibold uppercase text-left mb-1">QTY</p>
-                  {/* Quantity Selector */}
-                  <div className="flex flex-col items-center">
-                    <button
-                      onClick={incrementQuantity}
-                      className="flex items-center justify-center bg-white transition-colors"
-                    >
-                      <img
-                        src="/assets/Images/arrowDown.png"
-                        className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw] rotate-180"
-                        alt=""
-                      />
-                    </button>
-
-                    <input
-                      value={quantity}
-                      className="w-16 lg:text-[1.458vw] lg:leading-[1.25vw] lg:h-[1.563vw] relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-sm"
-                      readOnly
-                    />
-
-                    <button
-                      onClick={decrementQuantity}
-                      className="flex items-center justify-center bg-white transition-colors"
-                    >
-                      <img
-                        src="/assets/Images/arrowDown.png"
-                        className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw]"
-                        alt=""
-                      />
-                    </button>
-                  </div>
-                </div>
-              {/* )} */}
-              {/* Add to Registry Button */}
+          <div className="flex flex-col w-full items-center text-xs">
+            <div className="flex items-center justify-around w-full mb-4">
+              <p className="text-[18px] lg:text-[0.938vw] font-[500] uppercase text-left mb-1">
+                QTY
+              </p>
+              <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={incrementQuantity}
+                  className="flex items-center justify-center bg-white transition-colors"
+                >
+                  <img
+                    src="/assets/Images/arrowDown.png"
+                    className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-180"
+                    alt=""
+                  />
+                </button>
+                <input
+                  value={quantity}
+                  className="w-16 lg:text-[1.458vw] lg:leading-[1.25vw] lg:h-[1.563vw] relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-sm"
+                  readOnly
+                />
+                <button
+                  type="button"
+                  onClick={decrementQuantity}
+                  className="flex items-center justify-center bg-white transition-colors"
+                >
+                  <img
+                    src="/assets/Images/arrowDown.png"
+                    className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw]"
+                    alt=""
+                  />
+                </button>
+              </div>
               <button
-                className={`uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 tracking-widest ${isAddingToRegistry ? 'bg-[#1F1D1B] cursor-wait' : 'bg-[#446184] cursor-pointer'}`}
+                type="button"
                 onClick={handleAddToRegistry}
-                disabled={isAddingToRegistry}
+                disabled={isSubmitting}
+                className={`${
+                  isSubmitting
+                    ? 'bg-[#1F1D1B] cursor-default'
+                    : 'bg-[#446184]'
+                } text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[10.156vw] lg:h-[4.01vw]`}
               >
-                {isAddingToRegistry ? 'ADDED!' : 'ADD TO REGISTRY'}
+                {isSubmitting ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>

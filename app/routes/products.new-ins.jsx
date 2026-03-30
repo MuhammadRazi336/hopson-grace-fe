@@ -200,8 +200,8 @@ const tabsData = [
 ];
 
 const NEW_ARRIVALS_PRODUCTS_QUERY = `#graphql
-  query GetNewArrivalsProducts($first: Int!) {
-    products(first: $first, query: "tag:new-arrival", sortKey: CREATED_AT, reverse: true) {
+  query GetNewInsProducts($first: Int!) {
+    products(first: $first, query: "tag:new-in", sortKey: CREATED_AT, reverse: true) {
       edges {
         node {
           id
@@ -384,7 +384,7 @@ async function loadCollectionData({context}) {
   };
 }
 
-const NewArrivals = () => {
+const NewIns = () => {
   const {products, collections, newArrivalsProducts, registry, user} = useLoaderData();
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -394,8 +394,13 @@ const NewArrivals = () => {
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
   const [shopAllChecked, setShopAllChecked] = useState(false);
   const [productsToShow, setProductsToShow] = useState(12);
+  const [addingProductId, setAddingProductId] = useState(null);
   const topRef = useRef(null);
   const productGridRef = useRef(null);
+
+  useEffect(() => {
+    if (fetcher.state === 'idle') setAddingProductId(null);
+  }, [fetcher.state]);
 
   const getSubCollectionIdsForParent = (parentCollection) => {
     if (parentCollection.subCollectionMetafield?.references?.edges) {
@@ -495,6 +500,7 @@ const NewArrivals = () => {
         quantity: quantity,
       };
 
+      setAddingProductId(product.id);
       fetcher.submit(
         {payload: JSON.stringify(payload)},
         {method: 'post', encType: 'application/json'},
@@ -594,6 +600,10 @@ const NewArrivals = () => {
                         onAddToRegistry={(quantity) =>
                           handleAddToRegistry(product.node, quantity)
                         }
+                        isSubmitting={
+                          addingProductId === product.node.id &&
+                          fetcher.state !== 'idle'
+                        }
                         brandName={brandName || 'BRAND NAME'}
                       />
                     );
@@ -647,4 +657,4 @@ const NewArrivals = () => {
   );
 };
 
-export default NewArrivals;
+export default NewIns;

@@ -1,5 +1,9 @@
 import {useState, useEffect} from 'react';
-import {PayPalScriptProvider, PayPalButtons} from '@paypal/react-paypal-js';
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  FUNDING,
+} from '@paypal/react-paypal-js';
 import {Form, useFetcher, useLoaderData, useNavigate} from '@remix-run/react';
 import {json} from '@shopify/remix-oxygen';
 import {getPayPalAccessToken, createPayPalOrder} from '~/lib/paypal';
@@ -12,6 +16,7 @@ import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import ModalPortal from '~/components/ModalPortal';
 import billingAddressOptions from '~/data/billing-address-options.json';
 import {getApiBaseUrl} from '~/utils/api-url';
+import SideCart from '~/components/SideCart';
 
 export async function loader({context, request}) {
   try {
@@ -372,6 +377,7 @@ const DetailsForm = ({onNext}) => {
     email: '',
     subscribe: false,
   });
+  const [sideCartOpen, setSideCartOpen] = useState(false);
 
   // Normalize country key so dropdown data is always found (handles case / alternate names)
   const countryRaw = (fields.country || 'Canada').trim();
@@ -384,12 +390,6 @@ const DetailsForm = ({onNext}) => {
   const statesOrProvinces = countryData
     ? (countryData.states || countryData.provinces || [])
     : [];
-  const citiesByRegion =
-    countryData?.citiesByState || countryData?.citiesByProvince || {};
-  const cityOptions = fields.province ? (citiesByRegion[fields.province] || []) : [];
-  const hasCityList = cityOptions.length > 0;
-  const cityValue =
-    hasCityList && cityOptions.includes(fields.city) ? fields.city : '';
 
   // Utility function to round currency values to 2 decimal places
   const roundCurrency = (value) => {
@@ -614,24 +614,23 @@ const DetailsForm = ({onNext}) => {
     });
   };
 
-  // Keep city in sync when province/country change makes current city invalid (fixes dropdown sometimes not working)
-  useEffect(() => {
-    if (!hasCityList || !fields.city) return;
-    const options = fields.province ? (citiesByRegion[fields.province] || []) : [];
-    if (options.length > 0 && !options.includes(fields.city)) {
-      setFields((prev) => ({...prev, city: ''}));
-    }
-  }, [hasCityList, fields.city, fields.province, countryKey]);
-
   // Log cartItems.length and cartLoading in render
   console.log('DetailsForm: cartItems.length in render:', cartItems.length);
   console.log('DetailsForm: cartLoading in render:', cartLoading);
   console.log('DetailsForm: cartItems in render:', cartItems);
   console.log('DetailsForm: cartTotal in render:', cartTotal);
 
+  const handleCartClick = () => {
+    setSideCartOpen(true);
+  };
+
+  const onClose = () => {
+    setSideCartOpen(false);
+  };
+
   return (
     <div className="pt-[80px]">
-      <CoupleProfileViewHeader />
+      <CoupleProfileViewHeader onCartClick={handleCartClick} />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
         <img
@@ -665,12 +664,10 @@ const DetailsForm = ({onNext}) => {
       <div className="container mx-auto py-[100px]">
         <div className="bg-[#446184] py-16 px-16">
           <h2 className="md:text-[36px] font-normal text-center text-white ivyora">
-            enclose your <span className="font-italic">PERSONAL MESSAGE</span>{' '}
-            here
+            <span className="">BILLING</span>{' '} details
           </h2>
           <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
-            Your message and gift notification will be sent to the couple
-            immediately upon completion of your order.
+          Enter your billing address connected to your credit card. We don’t require shipping information as your gift will be shipped to the couple when they’re ready.
           </p>
           <div className="flex mt-[100px]">
             <div className="w-1/2">
@@ -752,31 +749,14 @@ const DetailsForm = ({onNext}) => {
                     </select>
                   </div>
                   <div className="grid grid-cols-2 gap-x-4">
-                    {hasCityList ? (
-                      <select
-                        name="city"
-                        value={cityValue}
-                        onChange={handleChange}
-                        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                        required
-                      >
-                        <option value="">City *</option>
-                        {cityOptions.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        placeholder="City *"
-                        name="city"
-                        value={fields.city}
-                        onChange={handleChange}
-                        className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
-                        required
-                      />
-                    )}
+                    <input
+                      placeholder="City *"
+                      name="city"
+                      value={fields.city}
+                      onChange={handleChange}
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      required
+                    />
                     <input
                       placeholder="Email *"
                       name="email"
@@ -788,20 +768,6 @@ const DetailsForm = ({onNext}) => {
                   </div>
 
                   <div className="flex items-center mt-4">
-                    <input
-                      id="subscribe"
-                      name="subscribe"
-                      type="checkbox"
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      checked={fields.subscribe}
-                      onChange={handleChange}
-                    />
-                    <label
-                      htmlFor="subscribe"
-                      className="ml-2 text-sm text-white"
-                    >
-                      Subscribe to Email and receive a HG Coupon Code!
-                    </label>
                   </div>
                 </div>
               </div>
@@ -929,6 +895,38 @@ const DetailsForm = ({onNext}) => {
           buttontype={'Color'}
         />
       </section>
+      {/* Side cart overlay and panel */}
+      {sideCartOpen && (
+        <div
+          className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
+          onClick={onClose}
+        />
+      )}
+      <SideCart
+        open={sideCartOpen}
+        onClose={onClose}
+        cartItems={cartItems}
+        total={cartTotal}
+        subtotal={cartTotal}
+        onCartChange={() => {}}
+        onClearCart={() => {}}
+        registryId={
+          loaderRegistryId ||
+          (typeof window !== 'undefined'
+            ? localStorage.getItem('registryId') || ''
+            : '')
+        }
+        guestEmail={
+          loaderEmail ||
+          (typeof window !== 'undefined'
+            ? localStorage.getItem('guestEmail') || ''
+            : '')
+        }
+        hideDeleteButtons={true}
+        showExtrasSection={true}
+        showFooterActions={false}
+        hideExtrasHeading={true}
+      />
       <Footer />
     </div>
   );
@@ -975,10 +973,23 @@ export default Checkout;
 
 const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
   const navigate = useNavigate();
+  const loaderData = useLoaderData();
+  const {
+    apiBaseUrl,
+    registryId: loaderRegistryId,
+    email: loaderEmail,
+    productData = [],
+    cashFundData = [],
+  } = loaderData || {};
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const fetcher = useFetcher();
+
+  const [sideCartOpen, setSideCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartTotal, setCartTotal] = useState(0);
 
   useEffect(() => {
     if (fetcher.data?.success && fetcher.state === 'idle') {
@@ -1010,6 +1021,105 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
     });
   };
 
+  // Fetch cart items for SideCart in payment step, similar to DetailsForm
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      const email =
+        loaderEmail ||
+        (typeof window !== 'undefined'
+          ? localStorage.getItem('guestEmail')
+          : '') ||
+        '';
+      const registryId =
+        loaderRegistryId ||
+        (typeof window !== 'undefined'
+          ? localStorage.getItem('registryId')
+          : '') ||
+        '';
+
+      if (!email || !registryId) {
+        setCartItems([]);
+        setCartTotal(0);
+        return;
+      }
+
+      try {
+        const baseUrl = apiBaseUrl || getApiBaseUrl();
+        const encodedEmail = encodeURIComponent(email);
+        const response = await fetch(
+          `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
+        );
+        const apiData = await response.json();
+
+        if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
+          const cartData = apiData.data[0];
+
+          const transformedItems = (cartData.cartItemProducts || []).map(
+            (cartItem) => {
+              const registryProduct = cartItem.registryProduct || {};
+              const isCashFund = registryProduct.productTypeId === 2;
+
+              const productFromData = isCashFund
+                ? cashFundData.find(
+                    (p) => p.productId === registryProduct.productId,
+                  )
+                : productData.find(
+                    (p) =>
+                      p.id ===
+                      `gid://shopify/Product/${registryProduct.productId}`,
+                  );
+
+              return {
+                id: cartItem.id,
+                price: Number(cartItem.price) || 0,
+                quantity: Number(cartItem.quantity) || 1,
+                title:
+                  cartItem.title ||
+                  productFromData?.title ||
+                  productFromData?.name ||
+                  productFromData?.cashFund?.name ||
+                  `Product ${registryProduct.productId}`,
+                image:
+                  cartItem.image ||
+                  productFromData?.images?.edges?.[0]?.node?.url ||
+                  productFromData?.image?.fileUrl ||
+                  productFromData?.cashFund?.image?.fileUrl ||
+                  '/assets/Images/placeholder.png',
+                isCashFund,
+                productId: registryProduct.productId,
+                amount: Number(registryProduct.amount) || 0,
+                registryProductId: registryProduct.id,
+              };
+            },
+          );
+
+          setCartItems(transformedItems);
+          const total = transformedItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0,
+          );
+          setCartTotal(total);
+        } else {
+          setCartItems([]);
+          setCartTotal(0);
+        }
+      } catch (e) {
+        setCartItems([]);
+        setCartTotal(0);
+      }
+    };
+
+    fetchCartItems();
+  }, [apiBaseUrl, loaderEmail, loaderRegistryId, productData, cashFundData]);
+
+  const handleCartClick = () => {
+    setSideCartOpen(true);
+  };
+
+  const onClose = () => {
+    setSideCartOpen(false);
+  };
+
   return (
     <div className="pt-[80px]">
       {showPopup && (
@@ -1038,7 +1148,7 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
         </div>
         </ModalPortal>
       )}
-      <CoupleProfileViewHeader />
+      <CoupleProfileViewHeader onCartClick={handleCartClick} />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
         <img
@@ -1084,13 +1194,14 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
                 }}
               >
                 <PayPalButtons
+                  fundingSource={FUNDING.CARD}
                   createOrder={() => Promise.resolve(paypalOrderId)}
                   onApprove={(data) => handleApprove(data)}
                   onError={(err) => {
                     setError(err?.message || 'PayPal error');
                     setShowPopup(true);
                   }}
-                  style={{layout: 'vertical', color: 'gold', shape: 'rect'}}
+                  style={{layout: 'vertical', color: 'black', shape: 'rect'}}
                   disabled={fetcher.state === 'submitting' || !paypalOrderId}
                 />
               </PayPalScriptProvider>
@@ -1130,6 +1241,39 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
           </div>
         </ModalPortal>
       )}
+
+      {/* Side cart overlay and panel for payment step */}
+      {sideCartOpen && (
+        <div
+          className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
+          onClick={onClose}
+        />
+      )}
+      <SideCart
+        open={sideCartOpen}
+        onClose={onClose}
+        cartItems={cartItems}
+        total={cartTotal}
+        subtotal={cartTotal}
+        onCartChange={() => {}}
+        onClearCart={() => {}}
+        registryId={
+          loaderRegistryId ||
+          (typeof window !== 'undefined'
+            ? localStorage.getItem('registryId') || ''
+            : '')
+        }
+        guestEmail={
+          loaderEmail ||
+          (typeof window !== 'undefined'
+            ? localStorage.getItem('guestEmail') || ''
+            : '')
+        }
+        hideDeleteButtons={true}
+        showExtrasSection={true}
+        showFooterActions={false}
+        hideExtrasHeading={true}
+      />
     </div>
   );
 };

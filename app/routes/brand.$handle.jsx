@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo} from 'react';
+import React, {useState, useRef, useMemo, useEffect} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -10,8 +10,8 @@ import {extractShopifyId} from '~/utils/helpers.js';
 import Marquee from '~/components/Marquee';
 import ButtonComponent from '~/components/Button';
 import lineImg4 from '/assets/Images/Vector 14.png';
-import {formatPrice} from '~/utils/priceFormatter';
 import BackToTop from '~/components/BackToTop';
+import RegistryProduct from '~/components/RegistryProduct';
 
 const STYLE_OPTIONS = [
   {id: 'modern', label: 'Modern'},
@@ -86,9 +86,13 @@ export async function action({request, context}) {
 
 const Brand = () => {
   const {collection, registry, brands, user} = useLoaderData();
-  const [quantities, setQuantities] = useState({});
   const fetcher = useFetcher();
+  const [addingProductId, setAddingProductId] = useState(null);
   const topRef = useRef(null);
+
+  useEffect(() => {
+    if (fetcher.state === 'idle') setAddingProductId(null);
+  }, [fetcher.state]);
 
   // All brand products
   const productsEdges = collection?.products?.edges || [];
@@ -219,7 +223,7 @@ const Brand = () => {
         isGroupGift: false,
       };
 
-      // Submit to action using fetcher
+      setAddingProductId(product.id);
       fetcher.submit(
         {payload: JSON.stringify(payload)},
         {
@@ -289,124 +293,25 @@ const Brand = () => {
                 product.images?.edges?.[0]?.node?.url ||
                 '/assets/Images/placeholder.png';
               const firstVariant = product.variants?.edges?.[0]?.node;
-              const price = formatPrice(firstVariant?.priceV2?.amount);
 
               return (
-                <div key={product.id} className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
-                  <div className="relative group mb-[4.844vw]">
-                  {/* Product Image and Info */}
-                  <div className="z-10 relative">
-                    <Link to={`/dashboard/addgifts/${product.handle}`}>
-                      <img
-                        src={firstImage}
-                        alt={product.title}
-                        className="w-full h-[23.43vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
-                      />
-                      <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
-                        {product.title}
-                      </h3>
-                      <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">{price}</p>
-                    </Link>
-                  </div>
-
-                  {/* Expanding Overlay */}
-                  <div className="absolute lg:h-[33.5vw] xl:h-[33.5vw] 2xl:h-[37.3vw] lg:min-h-[20vw] xl:min-h-[20vw] 2xl:min-h-[20vw] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center scale-[1.13]">
-                    <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
-                      <div>
-                        <img
-                          src={firstImage}
-                          alt={product.title}
-                          className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                        />
-                        <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-                          {collection.title || 'BRAND NAME'}
-                        </h4>
-                        <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
-                          {product.title}
-                        </h3>
-                        <p className="text-2xl mt-2 text-left">{price}</p>
-                      </div>
-                    </Link>
-
-                    <div className="flex items-center justify-between mt-[2.3vw]">
-                      {/* Quantity Controls */}
-                      <div className="flex w-full items-center text-xs gap-1.5">
-                        <p className="text-[18px] font-semibold uppercase text-left mb-1">
-                          QTY
-                        </p>
-                        {/* Quantity Selector */}
-                        <div className="flex flex-col items-center">
-                          <button
-                            onClick={() =>
-                              setQuantities((prev) => ({
-                                ...prev,
-                                [product.id]: (prev[product.id] || 1) + 1,
-                              }))
-                            }
-                            className="flex items-center justify-center bg-white transition-color"
-                          >
-                            <img
-                              src="/assets/Images/arrowDown.png"
-                              className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw] rotate-180"
-                              alt=""
-                            />
-                          </button>
-
-                          <input
-                            value={quantities[product.id] || 1}
-                            className="w-16 lg:text-[1.458vw] lg:leading-[1.25vw] lg:h-[1.563vw] relative top-[2px] p-0 mx-0 my-[0.521vw] text-center border-none outline-none text-sm"
-                            readOnly
-                          />
-
-                          <button
-                            onClick={() =>
-                              setQuantities((prev) => ({
-                                ...prev,
-                                [product.id]: Math.max(
-                                  1,
-                                  (prev[product.id] || 1) - 1,
-                                ),
-                              }))
-                            }
-                            className="flex items-center justify-center bg-white transition-colors"
-                          >
-                            <img
-                              src="/assets/Images/arrowDown.png"
-                              className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw]"
-                              alt=""
-                            />
-                          </button>
-                        </div>
-
-                        {/* Add to Registry Button */}
-                        <button
-                          onClick={() =>
-                            handleAddToRegistry(
-                              product,
-                              quantities[product.id] || 1,
-                            )
-                          }
-                          disabled={fetcher.state === 'submitting'}
-                          className={`bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest ${
-                            fetcher.state === 'submitting'
-                              ? 'bg-gray-400 cursor-not-allowed'
-                              : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
-                          }`}
-                        >
-                          {fetcher.state === 'submitting' ? (
-                            <div className="flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Adding...
-                            </div>
-                          ) : (
-                            'ADD TO REGISTRY'
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  </div>
-                </div>
+                <RegistryProduct
+                  key={product.id}
+                  id={product.id}
+                  image={firstImage}
+                  productName={product.title}
+                  price={firstVariant?.priceV2?.amount}
+                  description={product.description}
+                  productHandle={product.handle}
+                  onAddToRegistry={(quantity) =>
+                    handleAddToRegistry(product, quantity)
+                  }
+                  isLoggedIn={Boolean(user?.user?.id)}
+                  isSubmitting={
+                    addingProductId === product.id && fetcher.state !== 'idle'
+                  }
+                  brandName={collection.title || 'BRAND NAME'}
+                />
               );
             }) || []}
           </div>
