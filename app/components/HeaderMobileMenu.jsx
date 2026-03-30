@@ -103,7 +103,7 @@ const HeaderMobileMenu = ({ onClose, onPopup, collections = [], loadingCollectio
                         ))
                     )}
                     <li>
-                      <NavLink to="/products/new-arrivals" className="block mb-4 text-black hover:bg-gray-200">
+                      <NavLink to="/products/new-ins" className="block mb-4 text-black hover:bg-gray-200">
                         NEW IN
                       </NavLink>
                     </li>

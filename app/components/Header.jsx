@@ -1119,7 +1119,7 @@ export function Header() {
                       ))
                     ) : null}
                     <NavLink
-                      to="/products/new-arrivals"
+                      to="/products/new-ins"
                       onClick={() => setIsMenuOpenBottom(false)}
                       className="block text-black hover:text-gray-600 py-2 text-base"
                     >

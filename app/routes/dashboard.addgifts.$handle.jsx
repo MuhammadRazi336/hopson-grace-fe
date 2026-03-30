@@ -212,18 +212,23 @@ const GiftDetailHandle = () => {
           {/* Images Grid */}
           <div className=" grid grid-cols-1  gap-4 flex-1">
           <GiftDetail
+        key={product.id}
         productTitle={product.title}
         productPrice={product.variants?.edges?.[0]?.node?.priceV2 || product.priceRange?.minVariantPrice || {amount: '0', currencyCode: 'USD'}}
         productDescription={product.description}
         productImages={product.images.edges}
-        onRegistryPress={({quantity, isGroupGift}) => {
-          const variant = product.variants?.edges?.[0]?.node;
-          const price = variant?.priceV2?.amount || product.priceRange?.minVariantPrice?.amount || 0;
+        variants={product.variants?.edges?.map((e) => e.node) ?? []}
+        onRegistryPress={({quantity, isGroupGift, variant}) => {
+          const v = variant || product.variants?.edges?.[0]?.node;
+          const price =
+            v?.priceV2?.amount ||
+            product.priceRange?.minVariantPrice?.amount ||
+            0;
           handleAddtoRegistry({
             id: Number(extractShopifyId(product.id)),
-            price: price,
+            price: Number(price),
             quantity,
-            isGroupPayment: isGroupGift
+            isGroupPayment: isGroupGift,
           });
         }}
         isLoggedIn={user && user.user && user.user.id}
@@ -570,14 +575,19 @@ query getProductByHandle($handle: String!) {
         }
       }
     }
-    variants(first: 10) {
+    variants(first: 100) {
       edges {
         node {
           id
           title
+          availableForSale
           priceV2 {
             amount
             currencyCode
+          }
+          image {
+            url
+            altText
           }
         }
       }

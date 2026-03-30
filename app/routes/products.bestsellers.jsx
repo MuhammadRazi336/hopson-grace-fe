@@ -409,8 +409,13 @@ const Bestsellers = () => {
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
   const [shopAllChecked, setShopAllChecked] = useState(false);
   const [productsToShow, setProductsToShow] = useState(12);
+  const [addingProductId, setAddingProductId] = useState(null);
   const topRef = useRef(null);
   const productGridRef = useRef(null);
+
+  useEffect(() => {
+    if (fetcher.state === 'idle') setAddingProductId(null);
+  }, [fetcher.state]);
 
   const getSubCollectionIdsForParent = (parentCollection) => {
     if (parentCollection.subCollectionMetafield?.references?.edges) {
@@ -510,6 +515,7 @@ const Bestsellers = () => {
         quantity: quantity,
       };
 
+      setAddingProductId(product.id);
       fetcher.submit(
         {payload: JSON.stringify(payload)},
         {method: 'post', encType: 'application/json'},
@@ -613,6 +619,10 @@ const Bestsellers = () => {
                         registryId={registry?.id}
                         onAddToRegistry={(quantity) =>
                           handleAddToRegistry(product.node, quantity)
+                        }
+                        isSubmitting={
+                          addingProductId === product.node.id &&
+                          fetcher.state !== 'idle'
                         }
                         brandName={brandName || 'BRAND NAME'}
                       />
