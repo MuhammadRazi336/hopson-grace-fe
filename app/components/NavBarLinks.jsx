@@ -97,7 +97,7 @@ const NavBarLinks = (mobileClasses) => {
 
                     <li>
                       <NavLink
-                        to="/products/new-arrivals"
+                        to="/products/new-ins"
                         className="block mb-[26px] text-[18px] lg:text-[0.938vw] tracking-[1.44px] text-black"
                       >
                         NEW IN
