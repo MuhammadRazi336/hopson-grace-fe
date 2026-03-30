@@ -126,19 +126,9 @@ const GiftCards = () => {
   const productGridRef = useRef(null);
   const [addingGiftCardId, setAddingGiftCardId] = useState(null);
   const [productsToShow, setProductsToShow] = useState(12);
-  
-  console.log('Gift Cards Data:', giftCards);
-  console.log('Collections Data:', collections);
-  console.log('Collections count:', collections?.length || 0);
-  if (collections && collections.length > 0) {
-    console.log('First collection sample:', collections[0]);
-    console.log('Collections with parentMetafield:', collections.filter(col => col.parentMetafield?.value === 'true'));
-  }
 
   useEffect(() => {
-    if (fetcher.state === 'idle') {
-      setAddingGiftCardId(null);
-    }
+    if (fetcher.state === 'idle') setAddingGiftCardId(null);
   }, [fetcher.state]);
 
   const displayedGiftCards = giftCards.slice(0, productsToShow);
@@ -229,7 +219,9 @@ const GiftCards = () => {
                 registryId={registry?.data[0]?.id}
                 user={user}
                 onAddToRegistry={(quantity) => handleAddToRegistry(giftCard, quantity)}
-                isAdding={addingGiftCardId === giftCard.id && fetcher.state !== 'idle'}
+                isSubmitting={
+                  addingGiftCardId === giftCard.id && fetcher.state !== 'idle'
+                }
               />
             );
           })}
@@ -296,7 +288,17 @@ const GiftCards = () => {
 
 export default GiftCards
 
-const GiftCard = ({id, handle, image, title, price, registryId, user, onAddToRegistry, isAdding}) => {
+const GiftCard = ({
+  id,
+  handle,
+  image,
+  title,
+  price,
+  registryId,
+  user,
+  onAddToRegistry,
+  isSubmitting = false,
+}) => {
   const [quantity, setQuantity] = useState(1);
 
   const incrementQuantity = () => {
@@ -409,14 +411,17 @@ const GiftCard = ({id, handle, image, title, price, registryId, user, onAddToReg
               </div>
 
               {/* Add to Registry Button */}
-              <button 
+              <button
+                type="button"
                 onClick={() => onAddToRegistry(quantity)}
-                disabled={isAdding}
+                disabled={isSubmitting}
                 className={`${
-                  isAdding ? 'bg-[#1F1D1B] cursor-default' : 'bg-[#446184]'
+                  isSubmitting
+                    ? 'bg-[#1F1D1B] cursor-default'
+                    : 'bg-[#446184]'
                 } text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[10.156vw] lg:h-[4.01vw]`}
               >
-                {isAdding ? 'ADDED!' : 'ADD TO REGISTRY'}
+                {isSubmitting ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>

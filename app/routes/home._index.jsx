@@ -91,11 +91,11 @@ export async function loader({ context }) {
       return normalized === 'true';
     });
 
-    // Remove duplicates by title (keep first occurrence)
-    const brands =
-      brandCollections?.nodes?.filter(
-        (collection) => collection.metafield?.value === 'true',
-      ) || [];
+    // "A few of our brands" carousel: only collections with custom.brand_homepage = true
+    const brands = (brandCollections?.nodes || []).filter((collection) => {
+      const normalized = normalizeBool(collection.brandHomepageMetafield?.value);
+      return normalized === 'true';
+    });
     
     // Debug: Log each brand's metafield to see what we're getting
     brandCollections?.nodes?.forEach((collection, index) => {
@@ -504,6 +504,10 @@ query getHomeBrands {
         height
       }
       metafield(namespace: "custom", key: "brand") {
+        id
+        value
+      }
+      brandHomepageMetafield: metafield(namespace: "custom", key: "brand_homepage") {
         id
         value
       }

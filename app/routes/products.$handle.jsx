@@ -625,9 +625,7 @@ export default function ProductCollection() {
   };
 
   useEffect(() => {
-    if (fetcher.state === 'idle') {
-      setAddingProductId(null);
-    }
+    if (fetcher.state === 'idle') setAddingProductId(null);
   }, [fetcher.state]);
 
   // Filter the products based on selected filters
@@ -926,8 +924,9 @@ export default function ProductCollection() {
                       onAddToRegistry={(quantity, isGroupGift) =>
                         handleAddtoRegistry(product, quantity, isGroupGift)
                       }
-                      isAddingToRegistry={
-                        addingProductId === product.id && fetcher.state !== 'idle'
+                      isSubmitting={
+                        addingProductId === product.id &&
+                        fetcher.state !== 'idle'
                       }
                       onGroupGiftTagChange={(isGroupGift) =>
                         console.log(`Group Gift tag changed: ${isGroupGift}`)

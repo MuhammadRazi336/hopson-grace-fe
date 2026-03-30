@@ -1573,7 +1573,7 @@ export default function CoupleProfile() {
           alt="Couple"
           className="w-full h-[400px] lg:h-[620px] object-cover"
         />
-        <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-10 xl:-translate-y-[200px]">
+        <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-16 xl:-translate-y-[200px]">
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
             <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] font-[400] lowercase prata ml-[3.646vw] lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto">
               {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} &{' '}
@@ -1630,18 +1630,9 @@ export default function CoupleProfile() {
           </div>
         </div>
 
-        {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage ?
-        <>
-        <p className="w-[58.073vw] max-w-[100%] text-[16px] tracking-[0.5px] lg:text-[1.875vw] lg:leading-[2.604vw] mx-auto mt-5 mb-[7.552vw] leading-relaxed">
+        <p className="prata w-[58.073vw] max-w-[100%] text-[42px] tracking-[0.5px] lg:leading-[2.604vw] mx-auto mb-[7.552vw] leading-relaxed">
           {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage}
         </p>
-        </> : <>
-        <h2 className="text-[42px] -tracking-[0.3px] mb-[9px] lg:text-[2.917vw] lg:leading-[3.125vw] xl:mt-0 mt-16 font-normal prata">
-          we are looking <span className="font-italic">so forward</span> to
-          celebrating with you
-        </h2>
-        </>
-        }
       </div>
 
       <div
