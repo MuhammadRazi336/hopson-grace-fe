@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {Money} from '@shopify/hydrogen';
 
 const GiftDetail = ({
@@ -6,11 +6,29 @@ const GiftDetail = ({
   productDescription,
   productPrice,
   productImages,
+  variants: variantsProp,
   onRegistryPress,
   productBrand = 'HOPSON GRACE', // Default brand, can be passed as prop
   isLoggedIn = false, // Show quantity counter only when logged in
   isAdding = false, // Loading state for Add to Registry button
 }) => {
+  const variantList = useMemo(
+    () => (Array.isArray(variantsProp) ? variantsProp : []),
+    [variantsProp],
+  );
+  const showVariantPicker = variantList.length > 1;
+
+  const [variantIndex, setVariantIndex] = useState(() => {
+    const idx = variantList.findIndex((v) => v.availableForSale !== false);
+    return idx >= 0 ? idx : 0;
+  });
+
+  const selectedVariant =
+    variantList.length > 0
+      ? variantList[Math.min(variantIndex, variantList.length - 1)]
+      : null;
+
+  const displayPrice = selectedVariant?.priceV2 || productPrice;
   // Defensive: ensure productImages is an array and has at least one image
   const allProductImages =
     Array.isArray(productImages) && productImages.length > 0
@@ -39,8 +57,19 @@ const GiftDetail = ({
     onRegistryPress({
       quantity,
       isGroupGift,
+      variant: selectedVariant,
     });
   };
+
+  const heroImageUrl =
+    selectedImage?.node?.url ||
+    selectedVariant?.image?.url ||
+    '/fallback-image.jpg';
+  const heroImageAlt =
+    selectedImage?.node?.altText ||
+    selectedVariant?.image?.altText ||
+    productTitle ||
+    'Product image';
 
   return (
     <div className="w-full">
@@ -74,8 +103,8 @@ const GiftDetail = ({
               {/* Main Product Image */}
               <div className="w-full bg-gray-50 rounded-none overflow-hidden mb-6">
                 <img
-                  src={selectedImage?.node?.url || '/fallback-image.jpg'}
-                  alt={selectedImage?.node?.altText || productTitle || 'Product image'}
+                  src={heroImageUrl}
+                  alt={heroImageAlt}
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -118,9 +147,37 @@ const GiftDetail = ({
             {productTitle}
           </h1>
 
+          {showVariantPicker && (
+            <div className="mb-[1.25vw] max-w-md">
+              <label
+                htmlFor="gift-detail-variant"
+                className="block text-[18px] lg:text-[0.938vw] font-semibold uppercase mb-2 tracking-wide"
+              >
+                Options
+              </label>
+              <select
+                id="gift-detail-variant"
+                value={variantIndex}
+                onChange={(e) => setVariantIndex(Number(e.target.value))}
+                className="w-full border border-[#1F1D1B] bg-white py-3 px-4 text-[18px] lg:text-[0.938vw] rounded-none focus:outline-none focus:ring-2 focus:ring-[#446184]"
+              >
+                {variantList.map((v, i) => (
+                  <option
+                    key={v.id || i}
+                    value={i}
+                    disabled={v.availableForSale === false}
+                  >
+                    {v.title}
+                    {v.availableForSale === false ? ' — Sold out' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Price */}
           <div className="text-[28px] lg:text-[1.458vw] xl:text-[1.458vw] 2xl:text-[1.458vw] font-semibold mb-[2.76vw]">
-            <Money data={productPrice} />
+            <Money data={displayPrice} />
           </div>
 
           {/* Quantity Selector - Only show when logged in */}
@@ -161,12 +218,20 @@ const GiftDetail = ({
               {/* Add to Registry Button */}
               <button
                 onClick={handleRegistryPress}
-                disabled={isAdding}
+                disabled={
+                  isAdding || selectedVariant?.availableForSale === false
+                }
                 className={`text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6 ${
-                  isAdding ? 'bg-[#1F1D1B]' : 'bg-[#446184]'
+                  isAdding || selectedVariant?.availableForSale === false
+                    ? 'bg-[#1F1D1B]'
+                    : 'bg-[#446184]'
                 }`}
               >
-                {isAdding ? 'ADDED!' : 'ADD TO REGISTRY'}
+                {isAdding
+                  ? 'ADDED!'
+                  : selectedVariant?.availableForSale === false
+                    ? 'SOLD OUT'
+                    : 'ADD TO REGISTRY'}
               </button>
 
               <div className="flex items-center gap-3">
@@ -192,12 +257,20 @@ const GiftDetail = ({
             <div className="flex items-center w-full gap-6 lg:gap-[1.927vw] xl:gap-[1.927vw] 2xl:gap-[1.927vw]">
               <button
                 onClick={handleRegistryPress}
-                disabled={isAdding}
+                disabled={
+                  isAdding || selectedVariant?.availableForSale === false
+                }
                 className={`text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] tracking-[0.8px] font-bold w-[320px] h-[80px] lg:w-[16.667vw] xl:w-[16.667vw] 2xl:w-[16.667vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] px-6 ${
-                  isAdding ? 'bg-[#1F1D1B]' : 'bg-[#446184]'
+                  isAdding || selectedVariant?.availableForSale === false
+                    ? 'bg-[#1F1D1B]'
+                    : 'bg-[#446184]'
                 }`}
               >
-                {isAdding ? 'ADDED!' : 'ADD TO REGISTRY'}
+                {isAdding
+                  ? 'ADDED!'
+                  : selectedVariant?.availableForSale === false
+                    ? 'SOLD OUT'
+                    : 'ADD TO REGISTRY'}
               </button>
             </div>
           )}

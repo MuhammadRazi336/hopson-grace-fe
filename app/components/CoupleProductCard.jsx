@@ -198,20 +198,28 @@ const CoupleProductCard = ({
               alt={name}
               className="w-full h-full object-cover mb-4 cursor-pointer"
               onClick={() => {
-            if (isCashFund || isGroupGift) {
-              if (isAnyAmount || maxContribution - contributedAmount > 0) {
-                onTitleClick(name);
-              }
-            } else if (!isFullyGifted) {
-              onTitleClick(name);
-            }
-          }}
+                if (isCashFund || isGroupGift) {
+                  if (isAnyAmount || maxContribution - contributedAmount > 0) {
+                    onTitleClick(name);
+                  }
+                } else if (!isFullyGifted) {
+                  onTitleClick(name);
+                }
+              }}
             />
 
             {isGroupGift && (
-              <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100  flex items-center justify-center">
-                <h2 className=" prata text-black text-sm text-center font-bold mt-1">
+              <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
                   group <br /> gift
+                </h2>
+              </div>
+            )}
+
+            {!isGroupGift && isCashFund && (
+              <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
+                  cash <br /> fund
                 </h2>
               </div>
             )}
@@ -240,7 +248,11 @@ const CoupleProductCard = ({
           {name}
         </h2>
         <div className="flex justify-between items-center">
-         {isAnyAmount ? "" : <p className="font-normal text-lg lg:text-[1.25vw]">{formatPrice(price)}</p>}
+          {isAnyAmount ? '' : (
+            <p className="font-normal text-lg lg:text-[1.25vw]">
+              {formatPrice(price)}
+            </p>
+          )}
 
           {(isCashFund || isGroupGift) && !isAnyAmount && (
             <p className="text-sm ivyora lg:text-[1.042vw] italic mt-2 text-right w-full ivyora mb-2 text-[#1F1D1B]">

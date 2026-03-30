@@ -381,7 +381,7 @@ const Products = () => {
                   </h3>
                 </Link>
               ))}
-              <Link to="/products/new-arrivals">
+              <Link to="/products/new-ins">
                 <div className="flex flex-col items-center justify-center cursor-pointer">
                   <img src={newArrivals} alt="" className="w-full aspect-square object-cover" />
                   <h3 className="mt-2 text-center lg:mt-[1.875vw] uppercase lg:text-[1.25vw] lg:leading-[1.875vw] text-sm font-[500] tracking-wider">

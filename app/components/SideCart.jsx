@@ -19,6 +19,10 @@ export default function SideCart({
   onAddCashFund, // Add this prop for adding cash funds
   registryId = '', // Current couple's registry (for checkout URL)
   guestEmail = '', // Guest email (for checkout URL)
+  hideDeleteButtons = false, // When true, hide X/delete buttons for all items
+  showExtrasSection = true, // Controls "add a little something extra" section
+  showFooterActions = true, // Controls Continue/Checkout buttons
+  hideExtrasHeading = false, // When true, hide "add a little something extra" heading
 }) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -236,14 +240,16 @@ export default function SideCart({
                       <div className="col-span-2 text-center text-[26px]">
                         ${(item.price * (item.quantity || 1)).toFixed(2)}
                       </div>
-                      <div className="col-span-1 flex justify-center">
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-xl hover:bg-gray-200"
-                        >
-                          &times;
-                        </button>
-                      </div>
+                      {!hideDeleteButtons && (
+                        <div className="col-span-1 flex justify-center">
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-xl hover:bg-gray-200"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -281,14 +287,16 @@ export default function SideCart({
                         {formatPrice(item.price)}
                       </div>
                       <div className="col-span-2 text-center text-[26px]"></div>
-                      <div className="col-span-1 flex justify-center">
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-xl hover:bg-gray-200"
-                        >
-                          &times;
-                        </button>
-                      </div>
+                      {!hideDeleteButtons && (
+                        <div className="col-span-1 flex justify-center">
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-xl hover:bg-gray-200"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -329,14 +337,16 @@ export default function SideCart({
                         {formatPrice(item.price)}
                       </div>
                       <div className="col-span-2 text-center text-lg"></div>
-                      <div className="col-span-1 flex justify-center">
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-xl hover:bg-gray-200"
-                        >
-                          &times;
-                        </button>
-                      </div>
+                      {!hideDeleteButtons && (
+                        <div className="col-span-1 flex justify-center">
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 text-xl hover:bg-gray-200"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -361,91 +371,103 @@ export default function SideCart({
                     alt="Border"
                     className="w-auto mx-auto mt-4"
                   />
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="font-semibold text-[36px] uppercase tracking-wide">
-                      Total
-                    </span>
-                    <span className="font-bold text-[36px]">
-                      $
-                      {typeof total === 'number' && !isNaN(total)
-                        ? total.toFixed(2)
-                        : '0.00'}
-                    </span>
-                  </div>
                 </div>
               </div>
 
-              <div className='pt-10 pb-4'>
-                <Heading
-                  text="add a little something extra?"
-                  classes={
-                    'prata text-xl lg:text-[32px] font-normal text-center max-[1024px]:m-0'
-                  }
-                  image={'/assets/Images/cart-sum-bdr.png'}
-                  imageClasses={'max-[1024px]:max-w-[300px]'}
-                />
-              </div>
+              {showExtrasSection && (
+                <>
+                  {!hideExtrasHeading && (
+                    <div className="pt-10 pb-4">
+                      <Heading
+                        text="add a little something extra?"
+                        classes={
+                          'prata text-xl lg:text-[32px] font-normal text-center max-[1024px]:m-0'
+                        }
+                        image={'/assets/Images/cart-sum-bdr.png'}
+                        imageClasses={'max-[1024px]:max-w-[300px]'}
+                      />
+                    </div>
+                  )}
 
-              {/* Combined Recommended Items Section */}
-              {[...recommendedProducts, ...cashFunds].length > 0 && (
-                <div className="mt-6">
-                  <div className="grid grid-cols-4 gap-3">
-                    {[...recommendedProducts, ...cashFunds].slice(0, 4).map((item) => (
-                      <div
-                        key={item.id}
-                        className="rounded p-2 cursor-pointer hover:bg-gray-100 transition-colors"
-                        onClick={() => {
-                          if (item.isCashFund) {
-                            onAddCashFund && onAddCashFund(item);
-                          } else {
-                            onAddRecommendedProduct && onAddRecommendedProduct(item);
-                          }
-                        }}
-                      >
-                        <div className="aspect-square mb-2">
-                          <img
-                            src={item.image || '/placeholder.svg'}
-                            alt={item.title}
-                            className="w-[230px] h-[230px] object-cover rounded"
-                          />
-                        </div>
-                        <div className="text-[16px] font-semibold leading-tight mb-1">
-                          {item.title}
-                        </div>
-                        <div className="text-[18px] font-semibold text-gray-600">
-                          {formatPrice(item.price)}
-                        </div>
+                  {/* Combined Recommended Items Section */}
+                  {[...recommendedProducts, ...cashFunds].length > 0 && (
+                    <div className="mt-6">
+                      <div className="grid grid-cols-4 gap-3">
+                        {[...recommendedProducts, ...cashFunds]
+                          .slice(0, 4)
+                          .map((item) => (
+                            <div
+                              key={item.id}
+                              className="rounded p-2 cursor-pointer hover:bg-gray-100 transition-colors"
+                              onClick={() => {
+                                if (item.isCashFund) {
+                                  onAddCashFund && onAddCashFund(item);
+                                } else {
+                                  onAddRecommendedProduct &&
+                                    onAddRecommendedProduct(item);
+                                }
+                              }}
+                            >
+                              <div className="aspect-square mb-2">
+                                <img
+                                  src={item.image || '/placeholder.svg'}
+                                  alt={item.title}
+                                  className="w-[230px] h-[230px] object-cover rounded"
+                                />
+                              </div>
+                              <div className="text-[16px] font-semibold leading-tight mb-1">
+                                {item.title}
+                              </div>
+                              <div className="text-[18px] font-semibold text-gray-600">
+                                {formatPrice(item.price)}
+                              </div>
+                            </div>
+                          ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  )}
+                </>
               )}
 
-              <div className="flex justify-center gap-x-10 my-16">
-                <button
-                  onClick={onClose}
-                  className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white border-2 border-black hover:opacity-90 uppercase font-[800] text-black max-[1601px]:w-[200px] text-center"
-                >
-                  continue shopping
-                </button>
+              {showFooterActions && (
+                <div className="flex justify-center gap-x-10 my-16">
+                  <button
+                    onClick={onClose}
+                    className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white border-2 border-black hover:opacity-90 uppercase font-[800] text-black max-[1601px]:w-[200px] text-center"
+                  >
+                    continue shopping
+                  </button>
 
-                <button
-                  onClick={() => {
-                    const email = guestEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
-                    const regId = registryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') || '';
-                    const params = new URLSearchParams();
-                    if (regId) params.set('registryId', String(regId));
-                    if (email) params.set('email', email);
-                    const query = params.toString();
-                    const path = query ? `/cart/message?${query}` : '/cart/message';
-                    console.log('SideCart: Navigating to', path);
-                    navigate(path);
-                  }}
-                  className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white max-[1601px]:w-[200px] text-center"
-                >
-                  checkout now
-                </button>
-              </div>
+                  <button
+                    onClick={() => {
+                      const email =
+                        guestEmail ||
+                        (typeof window !== 'undefined'
+                          ? localStorage.getItem('guestEmail')
+                          : '') ||
+                        '';
+                      const regId =
+                        registryId ||
+                        (typeof window !== 'undefined'
+                          ? localStorage.getItem('registryId')
+                          : '') ||
+                        '';
+                      const params = new URLSearchParams();
+                      if (regId) params.set('registryId', String(regId));
+                      if (email) params.set('email', email);
+                      const query = params.toString();
+                      const path = query
+                        ? `/cart/message?${query}`
+                        : '/cart/message';
+                      console.log('SideCart: Navigating to', path);
+                      navigate(path);
+                    }}
+                    className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white max-[1601px]:w-[200px] text-center"
+                  >
+                    checkout now
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>

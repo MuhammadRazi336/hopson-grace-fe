@@ -365,7 +365,7 @@ export async function loader({request, context}) {
 
     // Log deduplication results
 
-    // Fetch bestseller, new-arrivals and recommended products in parallel
+    // Fetch bestseller, new-ins and recommended products in parallel
     let bestsellerProducts = [];
     let specialBestsellerProducts = [];
     let specialNewArrivalProducts = [];
@@ -1353,7 +1353,7 @@ export default function AddGifts() {
 
                   <SwiperSlide
                     key="special-new-in"
-                    onClick={() => navigate('/products/new-arrivals')}
+                    onClick={() => navigate('/products/new-ins')}
                     style={{cursor: 'pointer'}}
                   >
                     <img
@@ -1713,7 +1713,10 @@ export default function AddGifts() {
                           handleAddtoRegistry(product, quantity, isGroupGift)
                         }
                         isLoggedIn={user && user.user && user.user.id}
-                        isAddingToRegistry={addingProductId === product.id}
+                        isSubmitting={
+                          addingProductId === product.id &&
+                          fetcher.state !== 'idle'
+                        }
                         brandName={brandName || 'BRAND NAME'}
                       />
                     );

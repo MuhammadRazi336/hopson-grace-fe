@@ -755,9 +755,9 @@ const index = () => {
           </div>
         </div>
         <div className="max-w-3xl mx-auto mb-14">
-          <div className="border-3 border-gray-300 rounded p-4">
+          <div className="border-2 border-[#B9B4AE] rounded p-4">
             <textarea
-              className="w-full h-32 resize-none outline-none border-none text-gray-700 text-base placeholder-gray-500"
+              className="w-full h-32 resize-none outline-none border-none text-[#948E8A] text-base placeholder-gray-500"
               maxLength={maxLength}
               placeholder="Write a short note to friends and family — a warm welcome, a thank you, or why you chose these gifts. (optional)"
               value={note}
@@ -870,12 +870,11 @@ const index = () => {
               alt="couple"
               className="max-w-[325.9px] mb-[35px] lg:mb-[1.792vw] xl:mb-[1.792vw] 2xl:mb-[1.792vw] mx-auto max-[1024px]:mb-[20px] max-[1024px]:w-[70%] max-[1024px]:mx-auto"
             />
-            <h5 className="text-white text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] leading-[44px] text-center font-[500] mt-0 mb-[2.083vw] max-[1024px]:text-[16px] max-[1024px]:leading-[20px] max-[1024px]:mb-[20px]">
-              CONTRIBUTE TO OUR JOURNEY!
-            </h5>
+            {/* <h5 className="text-white text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] leading-[44px] text-center font-[500] mt-0 mb-[2.083vw] max-[1024px]:text-[16px] max-[1024px]:leading-[20px] max-[1024px]:mb-[20px]">
+            add a gift card
+            </h5> */}
             <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] leading-[30px] text-white max-w-[30.99vw] mt-0 mb-[2.708vw] font-normal text-center max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:mb-[20px] max-[1024px]:w-[100%] max-[1024px]:max-w-full">
-              Help us create our dream wedding, honeymoon or life experience.
-              We're so grateful.
+            Not everything needs to be decided now — a gift card lets you choose what you need, when you need it.
             </p>
             <Link to="/dashboard/giftcards">
               <button
@@ -1050,19 +1049,19 @@ const ProductPage = ({
                   <div className="flex flex-col justify-between">
                     <div className="h-[inherit] w-full mb-4 flex justify-center relative">
                       <Link to={`/dashboard/addgifts/${product.handle}`} key={product.handle}>
-                      <img
-                        src={
-                          product.images?.edges?.[0]?.node?.url ||
-                          '/assets/Images/placeholder.png'
-                        }
-                        alt={product.title || 'Product'}
-                        className="w-full aspect-square object-cover mb-4"
-                      />
+                        <img
+                          src={
+                            product.images?.edges?.[0]?.node?.url ||
+                            '/assets/Images/placeholder.png'
+                          }
+                          alt={product.title || 'Product'}
+                          className="w-full aspect-square object-cover mb-4"
+                        />
                       </Link>
 
-                      {product.isGroupGift && (
+                      {(product.isGroupPayment || product.isGroupGift) && (
                         <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
-                          <h2 className="prata text-black text-sm text-center font-bold mt-1">
+                          <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
                             group <br /> gift
                           </h2>
                         </div>
@@ -1094,7 +1093,7 @@ const ProductPage = ({
                       </p>
                     </div>
 
-                    {product.isGroupGift && (
+                    {(product.isGroupPayment || product.isGroupGift) && (
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
                           Contributed: $
@@ -1154,7 +1153,7 @@ const ProductPage = ({
                         className="w-full aspect-square object-cover mb-4"
                       />
                       <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
-                        <h2 className="prata text-black text-sm text-center font-bold mt-1">
+                        <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
                           cash <br /> fund
                         </h2>
                       </div>

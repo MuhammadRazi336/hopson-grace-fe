@@ -1,14 +1,22 @@
 import {redirect} from '@remix-run/server-runtime';
 import {useState, useEffect} from 'react';
-import { Footer } from '~/components/Footer';
-import { CoupleProfileViewHeader } from './couple.test._index';
+import {Footer} from '~/components/Footer';
+import {CoupleProfileViewHeader} from './couple.test._index';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
-import { Form, useActionData, useLoaderData, useSubmit, useSearchParams } from '@remix-run/react';
-import { json } from '@shopify/remix-oxygen';
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useSubmit,
+  useSearchParams,
+} from '@remix-run/react';
+import {json} from '@shopify/remix-oxygen';
+import SideCart from '~/components/SideCart';
+import {getApiBaseUrl} from '~/utils/api-url';
 
-export async function loader({ context, request }) {
+export async function loader({context, request}) {
   try {
     const url = new URL(request.url);
     const registryId = url.searchParams.get('registryId') || '';
@@ -16,18 +24,85 @@ export async function loader({ context, request }) {
 
     // Get message/couplesName from session (per-registry when we have registryId)
     const messageKey = registryId ? `message_${registryId}` : 'message';
-    const couplesNameKey = registryId ? `couplesName_${registryId}` : 'couplesName';
+    const couplesNameKey = registryId
+      ? `couplesName_${registryId}`
+      : 'couplesName';
     const message = context.session.get(messageKey) || '';
     const couplesName = context.session.get(couplesNameKey) || '';
+
+    // Enrich cart items similar to cart.checkout.jsx so we have proper titles/images
+    let productData = [];
+    let cashFundData = [];
+
+    const apiBaseUrl = context.env?.API_BASE_URL || process.env.API_BASE_URL;
+
+    if (email && registryId) {
+      try {
+        const encodedEmail = encodeURIComponent(email);
+        const response = await fetch(
+          `${apiBaseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
+        );
+        const data = await response.json();
+
+        if (data.code === 200 && data.data && data.data.length > 0) {
+          const cartData = data.data[0];
+          const cartItems = cartData.cartItemProducts || [];
+
+          // Extract product IDs for Shopify query (exclude cash funds)
+          const productIds = cartItems
+            .filter((item) => item.registryProduct.productTypeId !== 2)
+            .map(
+              (item) =>
+                `gid://shopify/Product/${item.registryProduct.productId}`,
+            );
+
+          if (productIds.length > 0) {
+            const {fetchProducts} = await import(
+              '~/graphql/product-query/GetProductsQuery'
+            );
+            const products = await fetchProducts(context.storefront, productIds);
+            productData = products?.nodes || [];
+          }
+
+          // Fetch cash fund data from registry API
+          try {
+            const cashRes = await context.ClientGet(
+              `registryProducts/${registryId}?type=cash`,
+              context,
+            );
+            if (cashRes?.data && Array.isArray(cashRes.data)) {
+              cashFundData = cashRes.data.map((item) => ({
+                ...item,
+                isCashFund: true,
+                productId: item.productId,
+              }));
+            }
+          } catch {
+            // ignore cash fund errors here
+          }
+        }
+      } catch {
+        // ignore enrichment errors; cart will still work with fallbacks
+      }
+    }
 
     return json({
       message,
       couplesName,
       registryId,
       email,
+      productData,
+      cashFundData,
     });
   } catch (error) {
-    return json({ message: '', couplesName: '', registryId: '', email: '' });
+    return json({
+      message: '',
+      couplesName: '',
+      registryId: '',
+      email: '',
+      productData: [],
+      cashFundData: [],
+    });
   }
 }
 
@@ -111,8 +186,110 @@ const Message = () => {
   const [error, setError] = useState('');
 
   // Prefer URL params for this checkout flow (so each registry has its own)
-  const registryIdFromUrl = searchParams.get('registryId') || loaderData?.registryId || '';
-  const emailFromUrl = searchParams.get('email') || loaderData?.email || '';
+  const registryIdFromUrl =
+    searchParams.get('registryId') || loaderData?.registryId || '';
+  const emailFromUrl =
+    searchParams.get('email') || loaderData?.email || '';
+
+  const [sideCartOpen, setSideCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const loaderProductData = loaderData?.productData || [];
+  const loaderCashFundData = loaderData?.cashFundData || [];
+
+  const cartTotal = cartItems.reduce((sum, item) => {
+    if (!item || typeof item.price !== 'number') return sum;
+    const qty = typeof item.quantity === 'number' ? item.quantity : 1;
+    return sum + item.price * qty;
+  }, 0);
+
+  const fetchCartItems = async () => {
+    const registryId = registryIdFromUrl ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('registryId') || ''
+        : '');
+    const email = emailFromUrl ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('guestEmail') || ''
+        : '');
+
+    if (!registryId || !email) {
+      setCartItems([]);
+      return;
+    }
+
+    try {
+      const baseUrl = getApiBaseUrl();
+      const encodedEmail = encodeURIComponent(email);
+      const res = await fetch(
+        `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
+      );
+      const apiData = await res.json();
+
+      if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
+        const cartData = apiData.data[0];
+        const transformedItems = (cartData.cartItemProducts || []).map(
+          (cartItem) => {
+            const registryProduct = cartItem.registryProduct || {};
+            const isCashFund = registryProduct.productTypeId === 2;
+
+            const productFromData = isCashFund
+              ? loaderCashFundData.find(
+                  (p) => p.productId === registryProduct.productId,
+                )
+              : loaderProductData.find(
+                  (p) =>
+                    p.id ===
+                    `gid://shopify/Product/${registryProduct.productId}`,
+                );
+
+            return {
+              id: cartItem.id,
+              price: Number(cartItem.price) || 0,
+              quantity:
+                Number(
+                  cartItem.quantity || cartItem.purchasedQuantity || 1,
+                ) || 1,
+              title:
+                cartItem.title ||
+                productFromData?.title ||
+                productFromData?.name ||
+                productFromData?.cashFund?.name ||
+                `Product ${registryProduct.productId}`,
+              image:
+                cartItem.image ||
+                productFromData?.images?.edges?.[0]?.node?.url ||
+                productFromData?.image?.fileUrl ||
+                productFromData?.cashFund?.image?.fileUrl ||
+                '/assets/Images/placeholder.png',
+              isCashFund,
+              productId: registryProduct.productId,
+              amount: Number(registryProduct.amount) || 0,
+              registryProductId: registryProduct.id,
+              requestedQuantity:
+                Number(registryProduct.quantity) || 1,
+            };
+          },
+        );
+        setCartItems(transformedItems);
+      } else {
+        setCartItems([]);
+      }
+    } catch (e) {
+      setCartItems([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartItems();
+  }, [registryIdFromUrl, emailFromUrl]);
+
+  const handleCartClick = () => {
+    setSideCartOpen(true);
+  };
+
+  const onClose = () => {
+    setSideCartOpen(false);
+  };
 
   // Reset form with loader data
   useEffect(() => {
@@ -184,7 +361,7 @@ const Message = () => {
 
   return (
     <div className="pt-[80px]">
-      <CoupleProfileViewHeader />
+      <CoupleProfileViewHeader onCartClick={handleCartClick} />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
         <img
@@ -355,6 +532,29 @@ const Message = () => {
           buttontype={'Color'}
         />
       </section>
+
+      {/* Simple side cart overlay, same behaviour as couple.test._index */}
+      {sideCartOpen && (
+        <div
+          className="fixed inset-0 bg-[#2b2b2b61] bg-opacity-40 z-40"
+          onClick={onClose}
+        />
+      )}
+      <SideCart
+        open={sideCartOpen}
+        onClose={onClose}
+        cartItems={cartItems}
+        total={cartTotal}
+        subtotal={cartTotal}
+        onCartChange={() => {}}
+        onClearCart={() => {}}
+        registryId={registryIdFromUrl}
+        guestEmail={emailFromUrl}
+        hideDeleteButtons={true}
+        showExtrasSection={true}
+        showFooterActions={false}
+        hideExtrasHeading={true}
+      />
 
       <Footer />
     </div>
