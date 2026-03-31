@@ -1,6 +1,6 @@
 import Accordiance from '~/components/Accordiance.jsx';
 import {defer} from '@remix-run/server-runtime';
-import {Link, useLoaderData, json} from '@remix-run/react';
+import {Form, Link, useLoaderData, json} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
@@ -282,6 +282,7 @@ export async function loader({request, context}) {
         return {
           ...item1,
           ...product,
+          registryProductId: item1.id,
           amount,
           collectedAmount,
           parentCollectionId: parentCollectionId ?? product.parentCollectionId,
@@ -289,6 +290,7 @@ export async function loader({request, context}) {
       }
       return {
         ...item1,
+        registryProductId: item1.id,
         amount,
         collectedAmount,
         parentCollectionId,
@@ -316,30 +318,43 @@ export async function loader({request, context}) {
 
 export async function action({request, context}) {
   const contentType = request.headers.get('content-type') || '';
-  let body, file;
 
-  const {payload} = await request.json();
+  if (contentType.includes('application/json')) {
+    const {payload} = await request.json();
+    const response = await context.ClientPut(
+      payload,
+      `events/${payload.id}`,
+      context,
+    );
+    return json(response);
+  }
 
-  const response = await context.ClientPut(
-    payload,
-    `events/${payload.id}`,
-    context,
-  );
+  const formData = await request.formData();
+  const intent = formData.get('intent');
 
-  return json(response);
+  if (intent === 'deleteGift') {
+    const registryProductId = formData.get('registryProductId');
+    if (!registryProductId) {
+      return json(
+        {success: false, error: 'Missing registry product id'},
+        {status: 400},
+      );
+    }
+
+    const response = await context.ClientDelete(
+      `registryProducts/${registryProductId}`,
+      context,
+    );
+    return json({success: true, response});
+  }
+
+  return json({success: false, error: 'Invalid action'}, {status: 400});
 }
 
 const index = () => {
   const loaderData = useLoaderData();
   const {data, cashfundData, eventGet, registry, userGet, user, apiBaseUrl} =
     loaderData;
-
-  // Browser console: verify registry data
-  useEffect(() => {
-    const gifts = Array.isArray(data) ? data : [];
-    console.log('[Registry Dashboard] gifts (data):', gifts.length);
-    console.log('cashfundData', cashfundData);
-  }, [data, cashfundData]);
 
   // Fallback for apiBaseUrl if it's not available from loader
   const finalApiBaseUrl = apiBaseUrl || getApiBaseUrl();
@@ -366,6 +381,13 @@ const index = () => {
         : null) ||
       '/assets/Images/couple-profile-bg.png',
   );
+
+  // Browser console: verify registry data
+  useEffect(() => {
+    const gifts = Array.isArray(data) ? data : [];
+    console.log('[Registry Dashboard] gifts (data):', gifts.length);
+    console.log('cashfundData', cashfundData);
+  }, [data, cashfundData]);
 
   // Add state for the note textarea
   const [note, setNote] = useState(eventGet?.data?.welcomeMessage || '');
@@ -1091,6 +1113,24 @@ const ProductPage = ({
                       <p className="text-sm text-gray-500 italic">
                         Still Needs: {stillNeeds}
                       </p>
+                    </div>
+
+                    <div className="mt-4">
+                      <Form method="post">
+                        <input type="hidden" name="intent" value="deleteGift" />
+                        <input
+                          type="hidden"
+                          name="registryProductId"
+                          value={product.registryProductId || ''}
+                        />
+                        <button
+                          type="submit"
+                          disabled={!product.registryProductId}
+                          className="w-full border border-black py-3 px-4 text-sm font-semibold uppercase hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Delete Gift
+                        </button>
+                      </Form>
                     </div>
 
                     {(product.isGroupPayment || product.isGroupGift) && (

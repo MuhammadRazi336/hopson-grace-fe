@@ -713,14 +713,14 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
-        products(first: 10){
+        products(first: 250){
           edges {
             node {
               id
               title
               handle
               description
-              images(first: 10) {
+              images(first: 250) {
                 edges {
                   node {
                     id
@@ -728,7 +728,7 @@ const COLLECTION_QUERY = `#graphql
                   }
                 }
               }
-              variants(first: 1) {
+              variants(first: 250) {
                 edges {
                   node {
                     id
