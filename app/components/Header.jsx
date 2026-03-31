@@ -16,6 +16,7 @@ import {useState, useEffect, useRef} from 'react';
 import {createPortal} from 'react-dom';
 import Popup from './Popup';
 import ModalPortal from './ModalPortal';
+import MobileDesktopNoticePopup from './MobileDesktopNoticePopup';
 import {useLocation} from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { ToastContainer } from 'react-toastify';
@@ -44,6 +45,7 @@ export function Header() {
   const [stickyMenuCollections, setStickyMenuCollections] = useState([]);
   const [stickyMenuLoading, setStickyMenuLoading] = useState(true);
   const [isProductSubMenuOpen, setIsProductSubMenuOpen] = useState(false);
+  const [showMobileDesktopNotice, setShowMobileDesktopNotice] = useState(false);
   
   // Get API base URL from loader data
   const { env } = useLoaderData() || {};
@@ -173,6 +175,20 @@ export function Header() {
         }
       }
     }
+  }, []);
+
+  // Show desktop-optimized notice only on mobile screens, once per session
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth <= 1024;
+    if (!isMobile) return;
+
+    const hasSeenNotice =
+      sessionStorage.getItem('@MobileDesktopNoticeShown') === 'true';
+    if (hasSeenNotice) return;
+
+    setShowMobileDesktopNotice(true);
+    sessionStorage.setItem('@MobileDesktopNoticeShown', 'true');
   }, []);
 
   // Fetch unread count when user data is available
@@ -1060,6 +1076,13 @@ export function Header() {
         )}
       </header>,
         headerPortalTarget
+      )}
+
+      {/* Mobile-only notice that the site is optimized for desktop */}
+      {showMobileDesktopNotice && (
+        <MobileDesktopNoticePopup
+          onClose={() => setShowMobileDesktopNotice(false)}
+        />
       )}
 
       {/* Sticky Vertical Menu - Rendered via Portal outside app-scale */}
