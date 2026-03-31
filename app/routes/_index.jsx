@@ -6,7 +6,9 @@ export async function loader(args) {
   const {context} = args;
   const user = await requireAuth(context);
   if (!user) {
-    return redirect('/login');
+    // If there is no authenticated user in session, land on the marketing
+    // home page instead of forcing a login.
+    return redirect('/home');
   }
 
   try {
