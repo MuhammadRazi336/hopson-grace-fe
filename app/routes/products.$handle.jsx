@@ -164,6 +164,9 @@ function SidebarFilter({
   selectedHeroCollection,
   shopAllChecked,
   setShopAllChecked,
+  availableBrands,
+  checkedBrandIds,
+  onBrandCheckbox,
   checkedStyles,
   onStyleCheckbox,
 }) {
@@ -171,6 +174,7 @@ function SidebarFilter({
     categories: true,
     styles: true,
     productType: true,
+    brands: true,
   });
 
   const parentCollection = collections.filter(isParentForSlides);
@@ -306,6 +310,46 @@ function SidebarFilter({
                 )}
             </div>
           )}
+          <div className="mb-6">
+            <h2
+              className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+              onClick={() => toggleSection('brands')}
+            >
+              Brands
+              <span className="text-lg relative -top-[3px]">
+                {openSections.brands ? (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="minus"
+                    className="w-[0.833vw] h-[0.833vw] rotate-180"
+                  />
+                ) : (
+                  <img
+                    src="/assets/Images/next.png"
+                    alt="plus"
+                    className="w-[0.833vw] h-[0.833vw]"
+                  />
+                )}
+              </span>
+            </h2>
+            {openSections.brands && (
+              <ul className="space-y-2 text-sm">
+                {(availableBrands || []).map((brand) => (
+                  <li key={brand.id} className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                        checked={checkedBrandIds?.includes(brand.id)}
+                        onChange={() => onBrandCheckbox?.(brand.id)}
+                      />
+                      {brand.title}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div>
             <h2
               className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
@@ -429,6 +473,7 @@ export default function ProductCollection() {
   const [selectedSubCollections, setSelectedSubCollections] = useState([]);
   const [selectedHeroCollection, setSelectedHeroCollection] = useState(null);
   const [shopAllChecked, setShopAllChecked] = useState(false);
+  const [checkedBrandIds, setCheckedBrandIds] = useState([]);
   const [checkedStyles, setCheckedStyles] = useState(() =>
     STYLE_OPTIONS.reduce((acc, o) => ({ ...acc, [o.id]: false }), {}),
   );
@@ -457,12 +502,12 @@ export default function ProductCollection() {
     const isParent = selectedCollection.parentMetafield?.value === 'true';
     if (isParent) {
       const subs = getSubCollectionsForParent(selectedCollection);
-      const subIds = subs.map((s) => s.id);
       setSelectedSwiperCollectionId(selectedCollection.id);
       setSelectedSubCollections(subs);
       // Do not pre-select any Product Type checkboxes
       setCheckedCollectionIds([]);
       setShopAllChecked(true);
+      setSelectedHeroCollection(null);
     } else {
       const parent = collections.find((col) => {
         if (col.parentMetafield?.value !== 'true') return false;
@@ -473,9 +518,12 @@ export default function ProductCollection() {
         const subs = getSubCollectionsForParent(parent);
         setSelectedSwiperCollectionId(parent.id);
         setSelectedSubCollections(subs);
-        // Do not pre-select any Product Type checkboxes
-        setCheckedCollectionIds([]);
+        const fullSub =
+          collections.find((c) => c.id === selectedCollection.id) ||
+          selectedCollection;
+        setCheckedCollectionIds([selectedCollection.id]);
         setShopAllChecked(false);
+        setSelectedHeroCollection(fullSub);
       }
     }
   }, [selectedCollection?.id, collections?.length]);
@@ -536,6 +584,35 @@ export default function ProductCollection() {
     return uniqueProducts;
   };
 
+  const handleBrandCheckbox = (brandId) => {
+    setCheckedBrandIds((prev) =>
+      prev.includes(brandId)
+        ? prev.filter((id) => id !== brandId)
+        : [...prev, brandId],
+    );
+  };
+
+  const selectedBrandCollections = React.useMemo(
+    () =>
+      (collections || []).filter((col) => col.brandMetafield?.value === 'true'),
+    [collections],
+  );
+
+  const productBrandIdsMap = React.useMemo(() => {
+    const map = new Map();
+    selectedBrandCollections.forEach((brandCol) => {
+      const productIds =
+        brandCol.products?.edges?.map((edge) => edge?.node?.id).filter(Boolean) ||
+        [];
+      productIds.forEach((productId) => {
+        const current = map.get(productId) || [];
+        if (!current.includes(brandCol.id)) current.push(brandCol.id);
+        map.set(productId, current);
+      });
+    });
+    return map;
+  }, [selectedBrandCollections]);
+
   const displayedProducts = React.useMemo(() => {
     let list = [];
     // Resolve sub-collection references to full collections (with products) from loader data
@@ -572,10 +649,30 @@ export default function ProductCollection() {
           return selectedStyleIds.some((id) => productStyle === id);
         });
       }
+      if (checkedBrandIds.length > 0) {
+        list = list.filter((product) => {
+          const brandIds = productBrandIdsMap.get(product.id) || [];
+          return checkedBrandIds.some((brandId) => brandIds.includes(brandId));
+        });
+      }
       return list;
     }
     return getProductsForCheckedCollections(checkedCollectionIds);
-  }, [shopAllChecked, selectedSwiperCollectionId, selectedSubCollections, checkedCollectionIds, checkedStyles, collections]);
+  }, [shopAllChecked, selectedSwiperCollectionId, selectedSubCollections, checkedCollectionIds, checkedStyles, checkedBrandIds, collections, productBrandIdsMap]);
+
+  const availableBrands = React.useMemo(() => {
+    if (!selectedSwiperCollectionId) return [];
+    const productIds = new Set(displayedProducts.map((product) => product.id));
+    return selectedBrandCollections.filter((brandCol) =>
+      (brandCol.products?.edges || []).some((edge) =>
+        productIds.has(edge?.node?.id),
+      ),
+    );
+  }, [selectedSwiperCollectionId, displayedProducts, selectedBrandCollections]);
+
+  useEffect(() => {
+    setCheckedBrandIds([]);
+  }, [selectedSwiperCollectionId, selectedHeroCollection?.id]);
 
   const handleAddtoRegistry = (product, quantity = 1, isGroupGift = false) => {
     try {
@@ -817,9 +914,13 @@ export default function ProductCollection() {
                           <SwiperSlide
                             key={subCol.id}
                             onClick={() => {
-                              setCheckedCollectionIds([subCol.id]);
-                              setShopAllChecked(false);
-                              setSelectedHeroCollection(subCol);
+                              const full =
+                                collections.find((c) => c.id === subCol.id) ||
+                                subCol;
+                              if (!full.handle) return;
+                              navigate(
+                                `/products/subcollection/${full.handle}`,
+                              );
                             }}
                             className="cursor-pointer group min-w-[14.542vw] max-w-[17.542vw]"
                           >
@@ -870,6 +971,9 @@ export default function ProductCollection() {
             selectedHeroCollection={selectedHeroCollection}
             shopAllChecked={shopAllChecked}
             setShopAllChecked={setShopAllChecked}
+            availableBrands={availableBrands}
+            checkedBrandIds={checkedBrandIds}
+            onBrandCheckbox={handleBrandCheckbox}
             checkedStyles={checkedStyles}
             onStyleCheckbox={handleStyleCheckbox}
           />
@@ -1008,7 +1112,7 @@ export default function ProductCollection() {
 
 const PRODUCT_QUERY = `#graphql
   query {
-    products(first: 10) {
+    products(first: 250) {
       edges {
         node {
           handle
@@ -1016,7 +1120,7 @@ const PRODUCT_QUERY = `#graphql
           id
           title
           createdAt
-          images(first: 10) {
+          images(first: 250) {
             edges {
               node {
                 id
@@ -1024,7 +1128,7 @@ const PRODUCT_QUERY = `#graphql
               }
             }
           }
-          variants(first: 1) {
+          variants(first: 250) {
             edges {
               node {
                 id
@@ -1095,7 +1199,7 @@ const COLLECTION_QUERY = `#graphql
             }
           }
         }
-        products(first: 10){
+        products(first: 250){
           edges {
             node {
     id
@@ -1106,7 +1210,7 @@ const COLLECTION_QUERY = `#graphql
                 id
                 value
               }
-              images(first: 10) {
+              images(first: 250) {
                 edges {
                   node {
                     id
@@ -1114,7 +1218,7 @@ const COLLECTION_QUERY = `#graphql
                   }
                 }
     }
-    variants(first: 1) {
+    variants(first: 250) {
                 edges {
                   node {
                     id
