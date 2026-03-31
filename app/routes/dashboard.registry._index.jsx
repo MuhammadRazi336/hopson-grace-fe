@@ -1,6 +1,6 @@
 import Accordiance from '~/components/Accordiance.jsx';
 import {defer} from '@remix-run/server-runtime';
-import {Link, useFetcher, useLoaderData, useRevalidator, json} from '@remix-run/react';
+import {Form, Link, useLoaderData, json} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import EditImagePopup from '~/components/EditImagePopup';
 import EditBackgroundImagePopup from '~/components/EditBackgroundImagePopup';
@@ -370,9 +370,6 @@ const index = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [isBackgroundUploading, setIsBackgroundUploading] = useState(false);
-  const [deletingGiftId, setDeletingGiftId] = useState(null);
-  const deleteGiftFetcher = useFetcher();
-  const revalidator = useRevalidator();
   const [eventImage, setEventImage] = useState(
     eventGet?.data?.image?.fileUrl || null,
   );
@@ -391,18 +388,6 @@ const index = () => {
     console.log('[Registry Dashboard] gifts (data):', gifts.length);
     console.log('cashfundData', cashfundData);
   }, [data, cashfundData]);
-
-  useEffect(() => {
-    if (deleteGiftFetcher.state !== 'idle') return;
-    if (deleteGiftFetcher.data?.success) {
-      setDeletingGiftId(null);
-      revalidator.revalidate();
-      toast.success('Gift removed from registry');
-    } else if (deleteGiftFetcher.data?.error) {
-      setDeletingGiftId(null);
-      toast.error(deleteGiftFetcher.data.error || 'Failed to delete gift');
-    }
-  }, [deleteGiftFetcher.state, deleteGiftFetcher.data, revalidator]);
 
   // Add state for the note textarea
   const [note, setNote] = useState(eventGet?.data?.welcomeMessage || '');
@@ -1131,12 +1116,7 @@ const ProductPage = ({
                     </div>
 
                     <div className="mt-4">
-                      <deleteGiftFetcher.Form
-                        method="post"
-                        onSubmit={() =>
-                          setDeletingGiftId(String(product.registryProductId || ''))
-                        }
-                      >
+                      <Form method="post">
                         <input type="hidden" name="intent" value="deleteGift" />
                         <input
                           type="hidden"
@@ -1145,20 +1125,12 @@ const ProductPage = ({
                         />
                         <button
                           type="submit"
-                          disabled={
-                            !product.registryProductId ||
-                            (deleteGiftFetcher.state !== 'idle' &&
-                              deletingGiftId ===
-                                String(product.registryProductId || ''))
-                          }
+                          disabled={!product.registryProductId}
                           className="w-full border border-black py-3 px-4 text-sm font-semibold uppercase hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {deleteGiftFetcher.state !== 'idle' &&
-                          deletingGiftId === String(product.registryProductId || '')
-                            ? 'Deleting...'
-                            : 'Delete Gift'}
+                          Delete Gift
                         </button>
-                      </deleteGiftFetcher.Form>
+                      </Form>
                     </div>
 
                     {(product.isGroupPayment || product.isGroupGift) && (
