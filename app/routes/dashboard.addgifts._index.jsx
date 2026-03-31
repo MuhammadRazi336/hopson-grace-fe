@@ -358,6 +358,32 @@ export async function loader({request, context}) {
           }
         }
       }
+
+      // Also merge in brand collections so brand filters work.
+      // For each brand collection, attach its collection ID onto any
+      // existing product's collectionIds array so sidebar brand
+      // checkboxes can reuse the existing filtering logic.
+      const brandCollections = collections.filter(
+        (col) => col.brandMetafield?.value === 'true',
+      );
+
+      for (const brandCol of brandCollections) {
+        if (!brandCol.products?.edges) continue;
+        for (const edge of brandCol.products.edges) {
+          const product = edge.node;
+          const existingProduct = productMap.get(product.id);
+          if (!existingProduct) continue;
+
+          if (!existingProduct.collectionIds) {
+            existingProduct.collectionIds = [
+              existingProduct.collectionId,
+            ].filter(Boolean);
+          }
+          if (!existingProduct.collectionIds.includes(brandCol.id)) {
+            existingProduct.collectionIds.push(brandCol.id);
+          }
+        }
+      }
     } catch (error) {
       // Handle any errors in extracting products from collections
       console.error('Error extracting products from collections:', error);
@@ -618,6 +644,11 @@ function SidebarFilter({
   // Get parent collections for the swiper and Product Categories
   const parentCollection = collections.filter(isParentForSlides);
 
+  // Brand collections (collections flagged as brands via metafield)
+  const brandCollections = collections.filter(
+    (col) => col.brandMetafield?.value === 'true',
+  );
+
   // Get sub-collections for Shop by Style (these are the ones that actually contain products)
   const baseSubCollection = collections.filter(
     (col) =>
@@ -652,91 +683,144 @@ function SidebarFilter({
     <div className="w-[400px] h-fit lg:w-[22.28vw] xl:w-[22.28vw] 2xl:w-[22.28vw]">
       <div className=" bg-[#FAF9F6] px-[1.979vw] pt-[2.865vw] pb-[3.802vw]">
         {!selectedSwiperCollectionId && (
-          <div className="mb-[3.438vw]">
-            <h2
-              className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
-              onClick={() => toggleSection('categories')}
-            >
-              Product Types
-              <span className="text-lg relative -top-[3px]">
-                {openSections.categories ? (
-                  <img
-                    src="/assets/Images/next.png"
-                    alt="minus"
-                    className="w-[0.833vw] h-[0.833vw] rotate-180"
-                  />
-                ) : (
-                  <img
-                    src="/assets/Images/next.png"
-                    alt="plus"
-                    className="w-[0.833vw] h-[0.833vw]"
-                  />
-                )}
-              </span>
-            </h2>
-            {openSections.categories && (
-              <ul className="space-y-2 text-sm">
-                <li className="mb-[1.69vw]">
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                    <input
-                      type="checkbox"
-                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                      checked={checkedCollectionIds.includes(
-                        SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS,
-                      )}
-                      onChange={() =>
-                        handleSidebarCheckbox(SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS)
-                      }
+          <>
+            {/* Product Types */}
+            <div className="mb-[3.438vw]">
+              <h2
+                className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+                onClick={() => toggleSection('categories')}
+              >
+                Product Types
+                <span className="text-lg relative -top-[3px]">
+                  {openSections.categories ? (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="minus"
+                      className="w-[0.833vw] h-[0.833vw] rotate-180"
                     />
-                    BESTSELLERS
-                  </label>
-                </li>
-                {parentCollection.map((col) => (
-                  <li key={col.id} className="mb-[1.69vw]">
+                  ) : (
+                    <img
+                      src="/assets/Images/next.png"
+                      alt="plus"
+                      className="w-[0.833vw] h-[0.833vw]"
+                    />
+                  )}
+                </span>
+              </h2>
+              {openSections.categories && (
+                <ul className="space-y-2 text-sm">
+                  <li className="mb-[1.69vw]">
                     <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                       <input
                         type="checkbox"
                         className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                        checked={checkedCollectionIds.includes(col.id)}
-                        onChange={() => handleSidebarCheckbox(col.id)}
+                        checked={checkedCollectionIds.includes(
+                          SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS,
+                        )}
+                        onChange={() =>
+                          handleSidebarCheckbox(
+                            SPECIAL_PRODUCT_TYPE_IDS.BESTSELLERS,
+                          )
+                        }
                       />
-                      {col.title}
+                      BESTSELLERS
                     </label>
                   </li>
-                ))}
-                <li className="mb-[1.69vw]">
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                    <input
-                      type="checkbox"
-                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                      checked={checkedCollectionIds.includes(
-                        SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS,
-                      )}
-                      onChange={() =>
-                        handleSidebarCheckbox(SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS)
-                      }
-                    />
-                    NEW IN
-                  </label>
-                </li>
-                <li className="mb-[1.69vw]">
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
-                    <input
-                      type="checkbox"
-                      className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
-                      checked={checkedCollectionIds.includes(
-                        SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS,
-                      )}
-                      onChange={() =>
-                        handleSidebarCheckbox(SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS)
-                      }
-                    />
-                    GIFT CARDS
-                  </label>
-                </li>
-              </ul>
+                  {parentCollection.map((col) => (
+                    <li key={col.id} className="mb-[1.69vw]">
+                      <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                        <input
+                          type="checkbox"
+                          className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                          checked={checkedCollectionIds.includes(col.id)}
+                          onChange={() => handleSidebarCheckbox(col.id)}
+                        />
+                        {col.title}
+                      </label>
+                    </li>
+                  ))}
+                  <li className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                        checked={checkedCollectionIds.includes(
+                          SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS,
+                        )}
+                        onChange={() =>
+                          handleSidebarCheckbox(
+                            SPECIAL_PRODUCT_TYPE_IDS.NEW_ARRIVALS,
+                          )
+                        }
+                      />
+                      NEW IN
+                    </label>
+                  </li>
+                  <li className="mb-[1.69vw]">
+                    <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                      <input
+                        type="checkbox"
+                        className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                        checked={checkedCollectionIds.includes(
+                          SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS,
+                        )}
+                        onChange={() =>
+                          handleSidebarCheckbox(
+                            SPECIAL_PRODUCT_TYPE_IDS.GIFT_CARDS,
+                          )
+                        }
+                      />
+                      GIFT CARDS
+                    </label>
+                  </li>
+                </ul>
+              )}
+            </div>
+
+            {/* Brands (all brand collections from GraphQL) */}
+            {brandCollections.length > 0 && (
+              <div className="mb-[3.438vw]">
+                <h2
+                  className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+                  onClick={() => toggleSection('brands')}
+                >
+                  Brands
+                  <span className="text-lg relative -top-[3px]">
+                    {openSections.brands ? (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="minus"
+                        className="w-[0.833vw] h-[0.833vw] rotate-180"
+                      />
+                    ) : (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="plus"
+                        className="w-[0.833vw] h-[0.833vw]"
+                      />
+                    )}
+                  </span>
+                </h2>
+                {openSections.brands && (
+                  <ul className="space-y-2 text-sm">
+                    {brandCollections.map((brand) => (
+                      <li key={brand.id} className="mb-[1.69vw]">
+                        <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                          <input
+                            type="checkbox"
+                            className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                            checked={checkedCollectionIds.includes(brand.id)}
+                            onChange={() => handleSidebarCheckbox(brand.id)}
+                          />
+                          {brand.title}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
 
         {/* When a parent collection is selected: optionally Product Type + Style */}
@@ -778,6 +862,50 @@ function SidebarFilter({
                             onChange={() => handleSidebarCheckbox(col.id)}
                           />
                           {col.title}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {/* Brands between Product Type and Style when viewing a parent collection */}
+            {brandCollections.length > 0 && (
+              <div className="mb-[3.438vw]">
+                <h2
+                  className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+                  onClick={() => toggleSection('brands')}
+                >
+                  Brands
+                  <span className="text-lg relative -top-[3px]">
+                    {openSections.brands ? (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="minus"
+                        className="w-[0.833vw] h-[0.833vw] rotate-180"
+                      />
+                    ) : (
+                      <img
+                        src="/assets/Images/next.png"
+                        alt="plus"
+                        className="w-[0.833vw] h-[0.833vw]"
+                      />
+                    )}
+                  </span>
+                </h2>
+                {openSections.brands && (
+                  <ul className="space-y-2 text-sm">
+                    {brandCollections.map((brand) => (
+                      <li key={brand.id} className="mb-[1.69vw]">
+                        <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                          <input
+                            type="checkbox"
+                            className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                            checked={checkedCollectionIds.includes(brand.id)}
+                            onChange={() => handleSidebarCheckbox(brand.id)}
+                          />
+                          {brand.title}
                         </label>
                       </li>
                     ))}
@@ -1302,39 +1430,8 @@ export default function AddGifts() {
                       <SwiperSlide
                         key={col.id}
                         onClick={() => {
-                          // Get sub-collections from the Collection type metafield references
-                          let subCollections = [];
-                          let subCollectionGids = [];
-
-                          // First, try to get from the new Collection type metafield (references)
-                          if (col.subCollectionMetafield?.references?.edges) {
-                            subCollections =
-                              col.subCollectionMetafield.references.edges.map(
-                                (edge) => edge.node,
-                              );
-                            subCollectionGids = subCollections.map(
-                              (sub) => sub.id,
-                            );
-                          } else if (col.subMetafield?.value) {
-                            // Fallback to old JSON string format
-                            try {
-                              subCollectionGids = JSON.parse(
-                                col.subMetafield.value,
-                              );
-                              // Find sub-collections from collections array
-                              subCollections = collections.filter((c) =>
-                                subCollectionGids.includes(c.id),
-                              );
-                            } catch (error) {
-                              // Handle any errors in parsing subMetafield
-                            }
-                          }
-
-                          // Parent selected: show its sub-collections in sidebar but do not pre-select any Product Type
-                          setCheckedCollectionIds([]);
-                          setSelectedSubCollections(subCollections);
-                          setSelectedSwiperCollectionId(col.id);
-                          setShopAllChecked(true);
+                          if (!col.handle) return;
+                          navigate(`/products/${col.handle}`);
                         }}
                         style={{cursor: 'pointer'}}
                       >
@@ -1984,7 +2081,7 @@ export default function AddGifts() {
 
 const PRODUCT_QUERY = `#graphql
   query {
-    products(first: 10) {
+    products(first: 250) {
       edges {
         node {
           handle
@@ -1992,7 +2089,7 @@ const PRODUCT_QUERY = `#graphql
           id
           title
           createdAt
-          images(first: 10) {
+          images(first: 250) {
             edges {
               node {
                 id
@@ -2000,7 +2097,7 @@ const PRODUCT_QUERY = `#graphql
               }
             }
           }
-          variants(first: 1) {
+          variants(first: 250) {
             edges {
               node {
                 id
@@ -2023,6 +2120,7 @@ const COLLECTION_QUERY = `#graphql
       nodes {
         description
         title
+        handle
         id
         image {
           id
@@ -2074,7 +2172,7 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
-        products(first: 10){
+        products(first: 250){
           edges {
             node {
               id
@@ -2086,7 +2184,7 @@ const COLLECTION_QUERY = `#graphql
                 id
                 value
               }
-              images(first: 10) {
+              images(first: 250) {
                 edges {
                   node {
                     id
@@ -2094,7 +2192,7 @@ const COLLECTION_QUERY = `#graphql
                   }
                 }
               }
-              variants(first: 1) {
+              variants(first: 250) {
                 edges {
                   node {
                     id
@@ -2241,7 +2339,7 @@ const SUB_COLLECTION_QUERY = `#graphql
         width
         height
       }
-      products(first: 10) {
+      products(first: 250) {
         edges {
           node {
             id
@@ -2253,7 +2351,7 @@ const SUB_COLLECTION_QUERY = `#graphql
               id
               value
             }
-            images(first: 1) {
+            images(first: 250) {
               edges {
                 node {
                   id
@@ -2261,7 +2359,7 @@ const SUB_COLLECTION_QUERY = `#graphql
                 }
               }
             }
-            variants(first: 1) {
+            variants(first: 250) {
               edges {
                 node {
                   id
