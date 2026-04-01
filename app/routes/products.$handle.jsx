@@ -27,7 +27,6 @@ import {Footer} from '~/components/Footer';
 import {Navigation} from 'swiper/modules';
 import {Header} from '~/components/Header';
 import ExploreCategories from '~/components/ExploreCategories';
-import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
 import BackToTop from '~/components/BackToTop';
@@ -55,27 +54,86 @@ export async function loader({request, context, params}) {
   const {products} = await loadCriticalData({context});
   const {collections} = await loadCollectionData({context});
   const user = context?.session?.get('@User');
-  
-  // Fetch recommended products
-  let recommendedProducts = [];
-  try {
-    const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
-      variables: { first: 8 } 
-    });
-    recommendedProducts = recommendedProductsData?.edges || [];
-  } catch (error) {
-    console.error('Error loading recommended products:', error);
-  }
-  
+
   let registry = null;
   let userData = null;
   let selectedCollection = null;
-  
+
   // Find the selected collection based on the handle from URL
   if (handle) {
     selectedCollection = collections.find(col => col.handle === handle);
   }
-  
+
+  const getParentCollectionForSelected = (collection, allCollections) => {
+    if (!collection) return null;
+    if (collection.parentMetafield?.value === 'true') return collection;
+
+    return (
+      allCollections.find((candidate) => {
+        if (candidate.parentMetafield?.value !== 'true') return false;
+
+        const refs =
+          candidate.subCollectionMetafield?.references?.edges?.map(
+            (edge) => edge?.node?.id,
+          ) || [];
+        if (refs.includes(collection.id)) return true;
+
+        if (!candidate.subMetafield?.value) return false;
+        try {
+          const gids = JSON.parse(candidate.subMetafield.value);
+          return Array.isArray(gids) && gids.includes(collection.id);
+        } catch {
+          return false;
+        }
+      }) || null
+    );
+  };
+
+  const parentCollection = getParentCollectionForSelected(
+    selectedCollection,
+    collections,
+  );
+
+  // "We think you'll love":
+  // - `/products/subcollection/:handle`: recommended + current sub-collection only
+  // - otherwise: recommended + any sub-collection linked to the active parent
+  let recommendedProducts = [];
+  try {
+    const isSubCollectionRoute = request.url.includes('/products/subcollection/');
+    const isSelectedSubCollection =
+      selectedCollection?.parentMetafield?.value === 'false';
+
+    const subCollectionIds = isSubCollectionRoute && isSelectedSubCollection
+      ? new Set([selectedCollection.id])
+      : new Set(
+          getSubCollectionsForParentLoader(parentCollection, collections).map(
+            (sub) => sub.id,
+          ),
+        );
+
+    if (subCollectionIds.size > 0) {
+      const {products: recommendedProductsData} = await context.storefront.query(
+        RECOMMENDED_PRODUCTS_BY_PARENT_QUERY,
+        {
+          variables: {first: 80},
+        },
+      );
+
+      recommendedProducts = (recommendedProductsData?.edges || [])
+        .filter((edge) => {
+          const node = edge?.node;
+          if (!node) return false;
+          const productCollectionIds = (node.collections?.nodes || []).map(
+            (c) => c.id,
+          );
+          return productCollectionIds.some((id) => subCollectionIds.has(id));
+        })
+        .slice(0, 8);
+    }
+  } catch (error) {
+    console.error('Error loading recommended products:', error);
+  }
+
   // Only fetch registry if user is logged in
   if (user && user.user && user.user.id) {
     try {
@@ -122,6 +180,25 @@ async function loadCriticalData({context}) {
   } catch (error) {
     throw error;
   }
+}
+
+/** Sub-collections linked on the parent (same rules as client `getSubCollectionsForParent`). */
+function getSubCollectionsForParentLoader(parentCol, allCollections) {
+  if (!parentCol) return [];
+  if (parentCol.subCollectionMetafield?.references?.edges?.length) {
+    return parentCol.subCollectionMetafield.references.edges
+      .map((edge) => edge?.node)
+      .filter(Boolean);
+  }
+  if (parentCol.subMetafield?.value) {
+    try {
+      const gids = JSON.parse(parentCol.subMetafield.value);
+      return allCollections.filter((c) => gids.includes(c.id));
+    } catch {
+      return [];
+    }
+  }
+  return [];
 }
 
 async function loadCollectionData({context}) {
@@ -665,9 +742,9 @@ export default function ProductCollection() {
     return map;
   }, [selectedBrandCollections]);
 
-  const displayedProducts = React.useMemo(() => {
+  // Same as visible grid but without brand narrowing — keeps sidebar brand list stable when toggling brands
+  const displayedProductsBeforeBrandFilter = React.useMemo(() => {
     let list = [];
-    // Resolve sub-collection references to full collections (with products) from loader data
     const fullSubCollections = (selectedSubCollections || [])
       .map((ref) => collections.find((c) => c.id === ref.id))
       .filter(Boolean);
@@ -690,7 +767,6 @@ export default function ProductCollection() {
         );
       }
       list = Array.from(new Map(list.map((p) => [p.id, p])).values());
-      // Style filter (product style metafield)
       const selectedStyleIds = STYLE_OPTIONS.filter(
         (o) => o.id !== 'shopAll' && checkedStyles[o.id],
       ).map((o) => o.id);
@@ -701,26 +777,56 @@ export default function ProductCollection() {
           return selectedStyleIds.some((id) => productStyle === id);
         });
       }
-      if (checkedBrandIds.length > 0) {
-        list = list.filter((product) => {
-          const brandIds = productBrandIdsMap.get(product.id) || [];
-          return checkedBrandIds.some((brandId) => brandIds.includes(brandId));
-        });
-      }
       return list;
     }
     return getProductsForCheckedCollections(checkedCollectionIds);
-  }, [shopAllChecked, selectedSwiperCollectionId, selectedSubCollections, checkedCollectionIds, checkedStyles, checkedBrandIds, collections, productBrandIdsMap]);
+  }, [
+    shopAllChecked,
+    selectedSwiperCollectionId,
+    selectedSubCollections,
+    checkedCollectionIds,
+    checkedStyles,
+    collections,
+  ]);
+
+  const displayedProducts = React.useMemo(() => {
+    const fullSubCollections = (selectedSubCollections || [])
+      .map((ref) => collections.find((c) => c.id === ref.id))
+      .filter(Boolean);
+    const inSwiperMode =
+      selectedSwiperCollectionId && fullSubCollections.length > 0;
+
+    let list = displayedProductsBeforeBrandFilter;
+    if (inSwiperMode && checkedBrandIds.length > 0) {
+      list = list.filter((product) => {
+        const brandIds = productBrandIdsMap.get(product.id) || [];
+        return checkedBrandIds.some((brandId) => brandIds.includes(brandId));
+      });
+    }
+    return list;
+  }, [
+    displayedProductsBeforeBrandFilter,
+    selectedSwiperCollectionId,
+    selectedSubCollections,
+    checkedBrandIds,
+    productBrandIdsMap,
+  ]);
 
   const availableBrands = React.useMemo(() => {
     if (!selectedSwiperCollectionId) return [];
-    const productIds = new Set(displayedProducts.map((product) => product.id));
+    const productIds = new Set(
+      displayedProductsBeforeBrandFilter.map((product) => product.id),
+    );
     return selectedBrandCollections.filter((brandCol) =>
       (brandCol.products?.edges || []).some((edge) =>
         productIds.has(edge?.node?.id),
       ),
     );
-  }, [selectedSwiperCollectionId, displayedProducts, selectedBrandCollections]);
+  }, [
+    selectedSwiperCollectionId,
+    displayedProductsBeforeBrandFilter,
+    selectedBrandCollections,
+  ]);
 
   useEffect(() => {
     setCheckedBrandIds([]);
@@ -1128,7 +1234,9 @@ export default function ProductCollection() {
         </div>
       </section>
 
-        <WeThinkYouLove recommendedProducts={recommendedProducts} />
+        {recommendedProducts?.length > 0 && (
+          <WeThinkYouLove recommendedProducts={recommendedProducts} />
+        )}
 
       <div className="py-[5.26vw] px-0">
           <ExploreCategories collections={collections} />
@@ -1330,6 +1438,40 @@ const COLLECTION_PRODUCTS_PAGE_QUERY = `#graphql
         pageInfo {
           hasNextPage
           endCursor
+        }
+      }
+    }
+  }
+`;
+
+const RECOMMENDED_PRODUCTS_BY_PARENT_QUERY = `#graphql
+  query GetRecommendedProductsByParent($first: Int!) {
+    products(first: $first, query: "tag:recommended") {
+      edges {
+        node {
+          id
+          title
+          handle
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          images(first: 1) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+          collections(first: 30) {
+            nodes {
+              id
+            }
+          }
         }
       }
     }

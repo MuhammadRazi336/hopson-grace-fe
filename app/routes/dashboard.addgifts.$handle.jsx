@@ -20,7 +20,6 @@ import product2 from '/assets/Images/product2.png';
 import product1 from '/assets/Images/product1.png';
 import product4 from '/assets/Images/product4.png';
 import {Navigation, Pagination} from 'swiper/modules';
-import { RECOMMENDED_PRODUCTS_QUERY } from '~/graphql/product-queries';
 import {formatShopifyPrice} from '~/utils/priceFormatter';
 import WeThinkYoullLove from '~/components/WeThinkYoullLove';
 import WeThinkYouLove from '~/components/WeThinkYouLove';
@@ -34,17 +33,37 @@ const images = [
 
 export async function loader(args) {
   try {
-    const {request, context} = args;
+    const {context, params} = args;
     const {collections} = await loadCollectionData({context});
     const {product, vendorProducts} = await loadProductData(args);
     
     // Fetch recommended products
     let recommendedProducts = [];
     try {
-      const { products: recommendedProductsData } = await context.storefront.query(RECOMMENDED_PRODUCTS_QUERY, { 
-        variables: { first: 8 } 
-      });
-      recommendedProducts = recommendedProductsData?.edges || [];
+      const {products: recommendedProductsData} = await context.storefront.query(
+        RECOMMENDED_PRODUCTS_BY_COLLECTION_QUERY,
+        {
+          variables: {first: 40},
+        },
+      );
+
+      const currentCollectionIds = new Set(
+        (product?.collections?.nodes || []).map((c) => c.id),
+      );
+
+      recommendedProducts = (recommendedProductsData?.edges || [])
+        .filter((edge) => {
+          const node = edge?.node;
+          if (!node || node.handle === params?.handle) return false;
+
+          if (currentCollectionIds.size === 0) return true;
+
+          const nodeCollectionIds = (node.collections?.nodes || []).map(
+            (c) => c.id,
+          );
+          return nodeCollectionIds.some((id) => currentCollectionIds.has(id));
+        })
+        .slice(0, 8);
     } catch (error) {
       console.error('Error loading recommended products:', error);
     }
@@ -233,6 +252,7 @@ const GiftDetailHandle = () => {
         }}
         isLoggedIn={user && user.user && user.user.id}
         isAdding={isAdding}
+        productBrand={product?.vendor || 'Hopson Grace'}
       />
           </div>
 
@@ -592,6 +612,11 @@ query getProductByHandle($handle: String!) {
         }
       }
     }
+    collections(first: 30) {
+      nodes {
+        id
+      }
+    }
   }
 }`;
 
@@ -617,6 +642,39 @@ query getProductsByVendor($vendor: String!) {
               url
               altText
             }
+          }
+        }
+      }
+    }
+  }
+}`;
+
+const RECOMMENDED_PRODUCTS_BY_COLLECTION_QUERY = `#graphql
+query GetRecommendedProductsByCollection($first: Int!) {
+  products(first: $first, query: "tag:recommended") {
+    edges {
+      node {
+        id
+        title
+        handle
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        images(first: 1) {
+          edges {
+            node {
+              id
+              url
+              altText
+            }
+          }
+        }
+        collections(first: 30) {
+          nodes {
+            id
           }
         }
       }
