@@ -2081,7 +2081,7 @@ export default function AddGifts() {
 
 const PRODUCT_QUERY = `#graphql
   query {
-    products(first: 250) {
+    products(first: 10) {
       edges {
         node {
           handle
@@ -2172,7 +2172,7 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
-        products(first: 250){
+        products(first: 10){
           edges {
             node {
               id
@@ -2339,7 +2339,7 @@ const SUB_COLLECTION_QUERY = `#graphql
         width
         height
       }
-      products(first: 250) {
+      products(first: 10) {
         edges {
           node {
             id
