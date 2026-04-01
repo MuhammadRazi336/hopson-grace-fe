@@ -590,12 +590,65 @@ async function loadCollectionData({context}) {
     const [{collections}] = await Promise.all([
       context.storefront.query(COLLECTION_QUERY),
     ]);
+
+    const collectionNodes = collections?.nodes || [];
+    const hydratedCollections = [];
+
+    for (const col of collectionNodes) {
+      // Skip ready-made collections for this expensive hydration path.
+      if (col.readyMadeMetafield?.value === 'true') {
+        hydratedCollections.push(col);
+        continue;
+      }
+
+      const allProductEdges = await fetchAllCollectionProducts(
+        context.storefront,
+        col.id,
+      );
+
+      hydratedCollections.push({
+        ...col,
+        products: {
+          edges: allProductEdges,
+        },
+      });
+    }
+
     return {
-      collections: collections?.nodes || [],
+      collections: hydratedCollections,
     };
   } catch (error) {
     throw error;
   }
+}
+
+async function fetchAllCollectionProducts(storefront, collectionId) {
+  const pageSize = 100;
+  const maxPages = 20;
+  let hasNextPage = true;
+  let cursor = null;
+  let pageCount = 0;
+  const allEdges = [];
+
+  while (hasNextPage && pageCount < maxPages) {
+    const result = await storefront.query(COLLECTION_PRODUCTS_PAGE_QUERY, {
+      variables: {
+        id: collectionId,
+        first: pageSize,
+        after: cursor,
+      },
+    });
+
+    const connection = result?.collection?.products;
+    const edges = connection?.edges || [];
+    allEdges.push(...edges);
+
+    hasNextPage = Boolean(connection?.pageInfo?.hasNextPage);
+    cursor = connection?.pageInfo?.endCursor || null;
+    pageCount += 1;
+  }
+
+  return allEdges;
 }
 
 const STYLE_OPTIONS = [
@@ -2172,7 +2225,7 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
-        products(first: 10){
+        products(first: 1){
           edges {
             node {
               id
@@ -2184,7 +2237,7 @@ const COLLECTION_QUERY = `#graphql
                 id
                 value
               }
-              images(first: 10) {
+              images(first: 1) {
                 edges {
                   node {
                     id
@@ -2192,7 +2245,7 @@ const COLLECTION_QUERY = `#graphql
                   }
                 }
               }
-              variants(first: 10) {
+              variants(first: 1) {
                 edges {
                   node {
                     id
@@ -2372,6 +2425,52 @@ const SUB_COLLECTION_QUERY = `#graphql
               }
             }
           }
+        }
+      }
+    }
+  }`;
+
+const COLLECTION_PRODUCTS_PAGE_QUERY = `#graphql
+  query getCollectionProductsPage($id: ID!, $first: Int!, $after: String) {
+    collection(id: $id) {
+      id
+      products(first: $first, after: $after) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            createdAt
+            styleMetafield: metafield(namespace: "custom", key: "style") {
+              id
+              value
+            }
+            images(first: 10) {
+              edges {
+                node {
+                  id
+                  url
+                }
+              }
+            }
+            variants(first: 10) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
         }
       }
     }
