@@ -2089,7 +2089,7 @@ const PRODUCT_QUERY = `#graphql
           id
           title
           createdAt
-          images(first: 250) {
+          images(first: 10) {
             edges {
               node {
                 id
@@ -2097,7 +2097,7 @@ const PRODUCT_QUERY = `#graphql
               }
             }
           }
-          variants(first: 250) {
+          variants(first: 10) {
             edges {
               node {
                 id
@@ -2184,7 +2184,7 @@ const COLLECTION_QUERY = `#graphql
                 id
                 value
               }
-              images(first: 250) {
+              images(first: 10) {
                 edges {
                   node {
                     id
@@ -2192,7 +2192,7 @@ const COLLECTION_QUERY = `#graphql
                   }
                 }
               }
-              variants(first: 250) {
+              variants(first: 10) {
                 edges {
                   node {
                     id
@@ -2351,7 +2351,7 @@ const SUB_COLLECTION_QUERY = `#graphql
               id
               value
             }
-            images(first: 250) {
+            images(first: 10) {
               edges {
                 node {
                   id
@@ -2359,7 +2359,7 @@ const SUB_COLLECTION_QUERY = `#graphql
                 }
               }
             }
-            variants(first: 250) {
+            variants(first: 10) {
               edges {
                 node {
                   id
