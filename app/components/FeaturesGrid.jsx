@@ -104,7 +104,7 @@ export default function FeaturesGrid() {
                 className="text-center space-y-4 lg:w-[20.24vw] max-[1024px]:w-[45%] max-[600px]:w-[90%]"
               >
                 {/* Icon Circle */}
-                <div className="mx-auto w-[11.563vw] h-[11.563vw] max-[600px]:w-[120px] max-[600px]:h-[120px] bg-[#446184] rounded-full flex items-center justify-center mb-[2.135vw]">
+                <div className="mx-auto w-[11.563vw] h-[11.563vw] max-[600px]:w-[120px] max-[600px]:h-[120px] bg-[#446184] rounded-full flex items-center justify-center mb-[2.135vw] max-[600px]:mb-[4.135vw]">
                   <img
                     src={feature.icon}
                     alt={feature.title}

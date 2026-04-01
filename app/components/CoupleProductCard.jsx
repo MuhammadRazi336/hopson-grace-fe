@@ -17,6 +17,8 @@ const CoupleProductCard = ({
   onAddToCart,
   onContribute,
   onTitleClick,
+  /** Brief black "ADDED!" state (same idea as dashboard add gifts / RegistryProduct) */
+  showAddedState = false,
 }) => {
   const [contributionAmount, setContributionAmount] = useState('');
   const [error, setError] = useState('');
@@ -65,6 +67,17 @@ const CoupleProductCard = ({
   };
 
   const renderButton = () => {
+    if (showAddedState) {
+      return (
+        <button
+          type="button"
+          disabled
+          className="bg-[#1F1D1B] text-white w-full cursor-default px-4 py-2 lg:h-[4.063vw] tracking-[0.8px] uppercase text-[14px] leading-[20px] font-bold mt-4 lg:text-[0.729vw] lg:leading-[1.042vw]"
+        >
+          ADDED!
+        </button>
+      );
+    }
     // Check for group gift first (both status and prop)
     if (status === 'groupGift' || isGroupGift) {
       return (

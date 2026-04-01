@@ -289,20 +289,20 @@ const Dashboard_index = ({context}) => {
                 <NotificationCard
                   className={currentStep === 7 ? 'border-2 border-black' : ''}
                   count={2}
-                  onView={() => { } } />
+                />
               </div>
               
             </div>
 
             {/* Blue card */}
             <div ref={introCardRef} className="bg-[#3d5676] text-white py-[1.979vw] px-[3.698vw] w-full lg:w-[41.354vw] xl:w-[41.354vw] 2xl:w-[41.354vw] text-center shadow-lg z-40 relative max-[1024px]:order-3 max-[1024px]:p-[20px]">
-              <div className="uppercase text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold tracking-wide mb-2 max-[1024px]:text-[20px]">
+              <div className="uppercase text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-bold tracking-wide mb-2 max-[1024px]:text-[16px] max-[1024px]:leading-tight">
                 {introSteps[currentStep].type ? introSteps[currentStep].type.toUpperCase() : introSteps[currentStep].tab}
                 <svg className='mx-auto mt-[1.042vw] mb-[1.771vw] lg:w-[11.172vw] xl:w-[11.172vw] 2xl:w-[11.172vw]' width="223" height="6" viewBox="0 0 223 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2 2.61322C54.2128 2.61322 106.426 2.61322 158.638 2.61322C174.645 2.61322 190.652 2.61322 206.659 2.61322C209.331 2.61322 219.683 0.547044 221 4" stroke="white" stroke-width="3" stroke-linecap="round"/>
                 </svg>
               </div>
-              <div className="mb-6 font-normal text-[22px] lg:w-[33.906vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] lg:leading-[32px] max-[1024px]:text-[18px]">
+              <div className="mb-6 font-normal text-[22px] lg:w-[33.906vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] lg:leading-[32px] max-[1024px]:text-[14px] max-[1024px]:leading-[1.45] max-[1024px]:px-0 max-[1024px]:pt-3">
                 {introSteps[currentStep].message}
               </div>
               <div className="absolute left-4 bottom-3">

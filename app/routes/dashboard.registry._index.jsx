@@ -14,6 +14,54 @@ import {formatPrice} from '~/utils/priceFormatter';
 import BackToTop from '~/components/BackToTop';
 import {getApiBaseUrl} from '~/utils/api-url';
 
+/** e.g. "6. 30 2026" — numeric month; handles ISO, "2026 06 30", YYYYMMDD, etc. */
+function formatRegistryEventDate(value) {
+  if (value == null || value === '') return '';
+  const s = String(value).trim();
+
+  let year;
+  let monthIndex; // 0–11
+  let day;
+
+  if (/^\d{8}$/.test(s)) {
+    year = Number(s.slice(0, 4));
+    monthIndex = Number(s.slice(4, 6)) - 1;
+    day = Number(s.slice(6, 8));
+  } else {
+    const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (iso) {
+      year = Number(iso[1]);
+      monthIndex = Number(iso[2]) - 1;
+      day = Number(iso[3]);
+    } else {
+      const spaced = s.match(/^(\d{4})\s+(\d{1,2})\s+(\d{1,2})$/);
+      if (spaced) {
+        year = Number(spaced[1]);
+        monthIndex = Number(spaced[2]) - 1;
+        day = Number(spaced[3]);
+      } else {
+        const d = new Date(s);
+        if (!Number.isNaN(d.getTime())) {
+          return `${d.getMonth() + 1}. ${d.getDate()} ${d.getFullYear()}`;
+        }
+        return s;
+      }
+    }
+  }
+
+  if (
+    monthIndex < 0 ||
+    monthIndex > 11 ||
+    day < 1 ||
+    day > 31 ||
+    !year
+  ) {
+    return s;
+  }
+
+  return `${monthIndex + 1}. ${day} ${year}`;
+}
+
 // Collections with products per node (same approach as addgifts: parent -> sub -> products -> parentCollectionId)
 const REGISTRY_COLLECTION_QUERY = `#graphql
   query RegistryCollectionsWithProducts {
@@ -753,7 +801,7 @@ const index = () => {
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px] pl-[40px]">
             <div className="mr-16">
               <p className="lg:text-[2vw] xl:text-[2vw] 2xl:text-[2vw] text-right my-2 lg:leading-[2.3vw] xl:leading-[2.3vw] 2xl:leading-[2.3vw] prata ml-auto">
-                {eventGet?.data?.eventDate}
+                {formatRegistryEventDate(eventGet?.data?.eventDate)}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"

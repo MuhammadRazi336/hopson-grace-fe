@@ -211,69 +211,10 @@ export async function action({request, context}) {
       })),
     );
 
-    // Calculate tax for payment intent
-    let taxPercentage = 0;
-    let totalAmountWithTax = 0;
-    
-    try {
-      // Calculate total amount from line items
-      const totalAmount = lineItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
-      
-      // Get shipping address from form data or use defaults
-      const address = formData.get('address')?.trim() || '';
-      const city = formData.get('city')?.trim() || '';
-      const province = formData.get('province')?.trim() || '';
-      const country = formData.get('country')?.trim() || 'Canada';
-      const zip = formData.get('zip')?.trim() || formData.get('postalCode')?.trim() || '';
-      
-      // Only calculate tax if we have address information
-      if (address && city && province && country) {
-        // Get tax rate from API
-        const taxResponse = await fetch(`${apiBaseUrl}/api/transactions/calculate-tax-rate`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            lineItems: lineItems.map(item => ({
-              productId: item.productId,
-              amount: item.amount,
-              quantity: item.quantity
-            })),
-            shippingAddress: {
-              address1: address,
-              city: city,
-              province: province, 
-              country: country,
-              zip: zip
-            }
-          })
-        });
-        
-        if (taxResponse.ok) {
-          const taxData = await taxResponse.json();
-          if (taxData.code === 200 && taxData.data) {
-            taxPercentage = taxData.data.taxPercentage || 0;
-            const taxAmount = (totalAmount * taxPercentage) / 100;
-            totalAmountWithTax = totalAmount + taxAmount;
-          } else {
-            // If tax calculation fails, use original total
-            totalAmountWithTax = totalAmount;
-          }
-        } else {
-          console.error('Tax API returned non-OK status:', taxResponse.status);
-          totalAmountWithTax = totalAmount;
-        }
-      } else {
-        // If no address info, use original total without tax
-        totalAmountWithTax = totalAmount;
-      }
-    } catch (error) {
-      console.error('Error calculating tax for payment intent:', error);
-      // If tax calculation fails, use original total
-      const totalAmount = lineItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
-      totalAmountWithTax = totalAmount;
-    }
+    const totalAmount = lineItems.reduce(
+      (sum, item) => sum + item.amount * item.quantity,
+      0,
+    );
 
     // Step 1: Create PayPal order (server-side only; credentials never sent to browser)
     const clientId =
@@ -291,7 +232,7 @@ export async function action({request, context}) {
       );
     }
 
-    const amount = Math.round(totalAmountWithTax * 100) / 100;
+    const amount = Math.round(totalAmount * 100) / 100;
     if (!Number.isFinite(amount) || amount <= 0) {
       return json({error: 'Invalid total amount'}, {status: 400});
     }
@@ -365,8 +306,6 @@ const DetailsForm = ({onNext}) => {
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
   const [cartLoading, setCartLoading] = useState(true);
-  const [taxData, setTaxData] = useState(null);
-  const [taxLoading, setTaxLoading] = useState(false);
   const [fields, setFields] = useState({
     firstName: '',
     lastName: '',
@@ -394,69 +333,6 @@ const DetailsForm = ({onNext}) => {
   // Utility function to round currency values to 2 decimal places
   const roundCurrency = (value) => {
     return Math.round(Number(value) * 100) / 100;
-  };
-
-  // Function to calculate tax
-  const calculateTax = async (items, shippingAddress) => {
-    if (!items || items.length === 0 || !shippingAddress) {
-      return;
-    }
-
-    setTaxLoading(true);
-    try {
-      const lineItems = items.map(item => ({
-        productId: Number(item.productId),
-        amount: Number(item.price),
-        quantity: Number(item.quantity)
-      }));
-
-      const requestBody = {
-        lineItems,
-        shippingAddress: {
-          address1: shippingAddress.address,
-          city: shippingAddress.city,
-          province: shippingAddress.province,
-          country: shippingAddress.country,
-          zip: shippingAddress.postalCode
-        }
-      };
-
-      console.log('Tax calculation request:', requestBody);
-
-      const response = await fetch(`${apiBaseUrl}/api/transactions/calculate-tax-rate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      const data = await response.json();
-      console.log('Tax calculation response:', data);
-
-      if (data.code === 200 && data.data) {
-        // Calculate tax on the total checkout amount (including cash funds)
-        const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const taxRate = data.data.taxPercentage || 0;
-        const calculatedTax = (totalAmount * taxRate) / 100;
-        const totalWithTax = totalAmount + calculatedTax;
-        
-        setTaxData({
-          ...data.data,
-          totalTax: calculatedTax,
-          total: totalWithTax,
-          taxRate: taxRate.toFixed(2)
-        });
-      } else {
-        console.error('Tax calculation failed:', data.message);
-        setTaxData(null);
-      }
-    } catch (error) {
-      console.error('Error calculating tax:', error);
-      setTaxData(null);
-    } finally {
-      setTaxLoading(false);
-    }
   };
 
   // Fetch cart items from API on client side (prefer URL/loader params so this checkout stays for the correct registry)
@@ -555,11 +431,6 @@ const DetailsForm = ({onNext}) => {
             ),
           );
           setCartTotal(total);
-
-          // Calculate tax if we have shipping address from registryApi
-          if (registryApi?.data?.user?.shippingAddress) {
-            await calculateTax(transformedItems, registryApi.data.user.shippingAddress);
-          }
         } else {
           setCartItems([]);
           setCartTotal(0);
@@ -825,24 +696,6 @@ const DetailsForm = ({onNext}) => {
                       </span>
                       <span className="text-lg">FREE</span>
                     </div>
-                    {taxData && (
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-bold tracking-wide text-sm uppercase">
-                          Tax ({taxData.taxRate}%)
-                        </span>
-                        <span className="text-lg">
-                          ${taxData.totalTax ? taxData.totalTax.toFixed(2) : '0.00'}
-                        </span>
-                      </div>
-                    )}
-                    {taxLoading && (
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-bold tracking-wide text-sm uppercase">
-                          Tax
-                        </span>
-                        <span className="text-lg">Calculating...</span>
-                      </div>
-                    )}
                     <img
                       src="/assets/Images/cart-sum-bdr.png"
                       alt="Border"
@@ -853,7 +706,7 @@ const DetailsForm = ({onNext}) => {
                         Total
                       </span>
                       <span className="font-bold text-2xl">
-                        ${taxData ? taxData.total.toFixed(2) : cartTotal.toFixed(2)}
+                        ${cartTotal.toFixed(2)}
                       </span>
                     </div>
                   </div>
