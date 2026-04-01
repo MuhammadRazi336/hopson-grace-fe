@@ -429,6 +429,19 @@ export default function CoupleProfile() {
   const [onlyGiftCards, setOnlyGiftCards] = useState(false); // when true, show only gift card products
   const filterRef = useRef(null);
   const topRef = useRef(null);
+  const addedHighlightTimeoutRef = useRef(null);
+  const [addedHighlightProductId, setAddedHighlightProductId] = useState(null);
+  const flashProductAdded = (productId) => {
+    if (productId == null) return;
+    if (addedHighlightTimeoutRef.current) {
+      clearTimeout(addedHighlightTimeoutRef.current);
+    }
+    setAddedHighlightProductId(productId);
+    addedHighlightTimeoutRef.current = setTimeout(() => {
+      setAddedHighlightProductId(null);
+      addedHighlightTimeoutRef.current = null;
+    }, 2500);
+  };
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
@@ -563,14 +576,11 @@ export default function CoupleProfile() {
       if (!fetcher.data.success) {
         setAlertMessage(fetcher.data.error);
         setAlertType('error');
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 3000);
       } else {
-        setAlertMessage(fetcher.data.message || 'Cart updated successfully');
-        setAlertType('success');
-        // Refresh cart items after successful cart operation
         fetchCartItems();
       }
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
     }
   }, [fetcher.data]);
 
@@ -893,12 +903,7 @@ export default function CoupleProfile() {
     if (result.success) {
       // Refresh cart items after successful addition
       fetchCartItems();
-      setAlertMessage(
-        `${product.title || 'Item'} (${quantity}) added to cart successfully`,
-      );
-      setAlertType('success');
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      flashProductAdded(product.id);
     } else {
       setAlertMessage('Failed to add item to cart');
       setAlertType('error');
@@ -965,12 +970,7 @@ export default function CoupleProfile() {
     if (result.success) {
       // Refresh cart items after successful contribution
       fetchCartItems();
-      setAlertMessage(
-        `$${amount} contributed to ${product.title || 'fund'} successfully`,
-      );
-      setAlertType('success');
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      flashProductAdded(product.id);
     } else {
       setAlertMessage('Failed to contribute to fund');
       setAlertType('error');
@@ -1121,15 +1121,7 @@ export default function CoupleProfile() {
           const result = await callAddToCartApiWithQuantity(email, payload);
 
           if (result.success) {
-            // Show success alert
-            setAlertMessage(
-              `${
-                product.title || 'Item'
-              } (${quantity}) added to cart successfully`,
-            );
-            setAlertType('success');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            flashProductAdded(product.id);
           } else {
             // Show error alert
             setAlertMessage('Failed to add item to cart');
@@ -1157,15 +1149,7 @@ export default function CoupleProfile() {
           );
 
           if (result.success) {
-            // Show success alert
-            setAlertMessage(
-              `$${pendingCartAction.amount} contributed to ${
-                product.title || 'fund'
-              } successfully`,
-            );
-            setAlertType('success');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
+            flashProductAdded(product.id);
           } else {
             // Show error alert
             setAlertMessage('Failed to contribute to fund');
@@ -1525,14 +1509,12 @@ export default function CoupleProfile() {
       {showAlert && (
         <AlertPortal>
           <div
-            className={`fixed top-4 right-4 ${
-              alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
+            className={`fixed top-4 right-4 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
           >
             <div className="flex items-center">
               {alertType === 'success' ? (
                 <svg
-                  className="w-5 h-5 mr-2"
+                  className="w-5 h-5 mr-2 shrink-0"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -1844,6 +1826,7 @@ export default function CoupleProfile() {
                       handleContribute(product.id, amount)
                     }
                     onTitleClick={() => handleTitleClick(product)}
+                    showAddedState={addedHighlightProductId === product.id}
                   />
                 );
               })

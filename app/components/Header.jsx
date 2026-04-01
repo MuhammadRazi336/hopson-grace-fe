@@ -21,6 +21,7 @@ import {useLocation} from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { ToastContainer } from 'react-toastify';
 import {getApiBaseUrl} from '~/utils/api-url';
+import {OPEN_NOTIFICATION_DROPDOWN_EVENT} from '~/constants/UiConstants';
 
 export function Header() {
   const [user, setUser] = useState(null);
@@ -373,6 +374,17 @@ export function Header() {
       setShowUserDropdown(false);
     }
   };
+
+  // Open notifications dropdown when NotificationCard (or others) dispatches this event
+  useEffect(() => {
+    const openNotificationsFromExternal = () => {
+      setShowNotificationDropdown(true);
+      setShowUserDropdown(false);
+    };
+    window.addEventListener(OPEN_NOTIFICATION_DROPDOWN_EVENT, openNotificationsFromExternal);
+    return () =>
+      window.removeEventListener(OPEN_NOTIFICATION_DROPDOWN_EVENT, openNotificationsFromExternal);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -1003,7 +1015,7 @@ export function Header() {
                   )}
                 </div>
                 {isLoadingRegistry ? (
-                  <div className='pt-1'>
+                  <div className='pt-1 max-[1024px]:hidden'>
                     <div className={`text-xs font-medium tracking-wide text-center mb-2 ${
                       isFixed ? 'text-white' : 'text-black'
                     }`}>
@@ -1016,7 +1028,7 @@ export function Header() {
                     </div>
                   </div>
                 ) : registryData?.id ? (
-                <div className='pt-1'>
+                <div className='pt-1 max-[1024px]:hidden'>
                   <button
                     type="button"
                     aria-pressed={!isDraft}
@@ -1040,7 +1052,7 @@ export function Header() {
                     </div>
                   </div>
                 ) : (
-                <div className='pt-1'>
+                <div className='pt-1 max-[1024px]:hidden'>
                   <button
                     type="button"
                     aria-pressed={!isDraft}
@@ -1548,7 +1560,7 @@ export function Header() {
                     )}
                   </div>
                   {isLoadingRegistry ? (
-                    <div className='pt-1'>
+                    <div className='pt-1 max-[1024px]:hidden'>
                       <div className={`text-xs font-medium tracking-wide text-center mb-2 ${
                         isFixed ? 'text-white' : 'text-black'
                       }`}>
@@ -1561,7 +1573,7 @@ export function Header() {
                       </div>
                     </div>
                   ) : registryData?.id ? (
-                  <div className='pt-1'>
+                  <div className='pt-1 max-[1024px]:hidden'>
                     <button
                       type="button"
                       aria-pressed={!isDraft}
@@ -1585,7 +1597,7 @@ export function Header() {
                       </div>
                     </div>
                   ) : (
-                  <div className='pt-1'>
+                  <div className='pt-1 max-[1024px]:hidden'>
                     <button
                       type="button"
                       aria-pressed={!isDraft}

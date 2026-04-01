@@ -937,8 +937,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
       <div className="text-center">
         {/* <Heading text={'How many guests are you inviting?'} /> */}
         <h2 className="font-normal  w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
-          This will help us calculate the magic number to ensure all guests have
-          a good amount of gifts to choose from.
+        how many guests are you inviting?
         </h2>
       </div>
       {/* Event Name Input */}
@@ -951,9 +950,10 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
             onChange(e);
           }
         }}
+        onWheel={(e) => e.currentTarget.blur()}
         type="number"
         min="1"
-        placeholder="Enter No Of Guest"
+        placeholder="Enter # Of Guest"
         className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black mx-auto mt-4 text-center text-3xl font-bold placeholder:text-lg placeholder:font-normal max-w-full"
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
