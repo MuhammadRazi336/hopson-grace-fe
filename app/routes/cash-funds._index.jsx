@@ -58,6 +58,21 @@ export async function loader({request, context}) {
     ]);
     collections = collectionsData?.nodes || [];
 
+    const hydratedCollections = [];
+    for (const collection of collections) {
+      const allProductEdges = await fetchAllCollectionProducts(
+        context.storefront,
+        collection.id,
+      );
+      hydratedCollections.push({
+        ...collection,
+        products: {
+          edges: allProductEdges,
+        },
+      });
+    }
+    collections = hydratedCollections;
+
     // Extract products only from Dream Fund and Porte Travel style collections
     // so this page shows the combined products from those two areas.
     collections.forEach((collection) => {
@@ -177,6 +192,35 @@ export async function action({request, context}) {
       success: false,
     };
   }
+}
+
+async function fetchAllCollectionProducts(storefront, collectionId) {
+  const pageSize = 100;
+  const maxPages = 20;
+  let hasNextPage = true;
+  let cursor = null;
+  let pageCount = 0;
+  const allEdges = [];
+
+  while (hasNextPage && pageCount < maxPages) {
+    const result = await storefront.query(COLLECTION_PRODUCTS_PAGE_QUERY, {
+      variables: {
+        id: collectionId,
+        first: pageSize,
+        after: cursor,
+      },
+    });
+
+    const connection = result?.collection?.products;
+    const edges = connection?.edges || [];
+    allEdges.push(...edges);
+
+    hasNextPage = Boolean(connection?.pageInfo?.hasNextPage);
+    cursor = connection?.pageInfo?.endCursor || null;
+    pageCount += 1;
+  }
+
+  return allEdges;
 }
 
 
@@ -713,14 +757,14 @@ const COLLECTION_QUERY = `#graphql
           id
           value
         }
-        products(first: 250){
+        products(first: 1){
           edges {
             node {
               id
               title
               handle
               description
-              images(first: 250) {
+              images(first: 1) {
                 edges {
                   node {
                     id
@@ -728,7 +772,7 @@ const COLLECTION_QUERY = `#graphql
                   }
                 }
               }
-              variants(first: 250) {
+              variants(first: 1) {
                 edges {
                   node {
                     id
@@ -742,6 +786,48 @@ const COLLECTION_QUERY = `#graphql
               }
             }
           }
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTION_PRODUCTS_PAGE_QUERY = `#graphql
+  query getCollectionProductsPage($id: ID!, $first: Int!, $after: String) {
+    collection(id: $id) {
+      id
+      products(first: $first, after: $after) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            images(first: 10) {
+              edges {
+                node {
+                  id
+                  url
+                }
+              }
+            }
+            variants(first: 10) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
         }
       }
     }
