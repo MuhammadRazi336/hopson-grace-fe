@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState, useEffect} from 'react';
 import { Footer } from '~/components/Footer';
 import { Header } from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -8,6 +8,7 @@ import { useLoaderData, useFetcher, useNavigate, Link } from '@remix-run/react';
 import { extractShopifyId } from '~/utils/helpers.js';
 import {formatPrice} from '~/utils/priceFormatter';
 import AlertPortal from '~/components/AlertPortal';
+import RegistryProduct from '~/components/RegistryProduct.jsx';
 
 const PRODUCTS_QUERY = `#graphql
   query($query: String) {
@@ -18,6 +19,7 @@ const PRODUCTS_QUERY = `#graphql
           description
           id
           title
+          vendor
           createdAt
           images(first: 10) {
             edges {
@@ -68,11 +70,15 @@ const COLLECTIONS_QUERY = `#graphql
           id
           value
         }
-        metafield(namespace: "custom", key: "brand") {
+        cashfundMetafield: metafield(namespace: "custom", key: "cashfund") {
           id
           value
         }
-        products(first: 10){
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
+          id
+          value
+        }
+        products(first: 50){
           edges {
             node {
               id
@@ -269,6 +275,7 @@ export async function loader({ request, context }) {
     return defer({
       products: [],
       collections: [],
+      collectionsForBrandLookup: [],
       cashFunds: [],
       blogs: [],
       brands: [],
@@ -302,6 +309,8 @@ export async function loader({ request, context }) {
 
     // Filter products (fallback refinement to ensure inclusive match)
     const term = searchQuery.toLowerCase();
+    const collectionsAllNodes = collections?.nodes || [];
+
     const filteredProducts = products?.edges?.filter(edge => {
       const p = edge.node;
       const inTitle = p.title?.toLowerCase().includes(term);
@@ -313,7 +322,7 @@ export async function loader({ request, context }) {
     // Filter collections (excluding cash fund collections)
     const filteredCollections = collections?.nodes?.filter(collection => {
       // Skip collections that are cash funds
-      const isCashFund = collection.metafield?.value === 'true';
+      const isCashFund = collection.cashfundMetafield?.value === 'true';
       if (isCashFund) return false;
       
       return (
@@ -395,6 +404,7 @@ export async function loader({ request, context }) {
     return defer({
       products: filteredProducts,
       collections: filteredCollections,
+      collectionsForBrandLookup: collectionsAllNodes,
       cashFunds: filteredCashFundProducts,
       blogs: filteredBlogs,
       brands: filteredBrands,
@@ -407,6 +417,7 @@ export async function loader({ request, context }) {
     return defer({
       products: [],
       collections: [],
+      collectionsForBrandLookup: [],
       cashFunds: [],
       blogs: [],
       brands: [],
@@ -436,6 +447,7 @@ export default function SearchResults() {
   const {
     products,
     collections,
+    collectionsForBrandLookup,
     cashFunds,
     blogs,
     brands,
@@ -448,6 +460,11 @@ export default function SearchResults() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  const [addingProductId, setAddingProductId] = useState(null);
+
+  useEffect(() => {
+    if (fetcher.state === 'idle') setAddingProductId(null);
+  }, [fetcher.state]);
 
   // Cash funds are now already filtered products from the loader
   const allCashFundProducts = cashFunds || [];
@@ -473,18 +490,15 @@ export default function SearchResults() {
     })),
   ];
 
-  const handleAddtoRegistry = (product) => {
+  const handleAddtoRegistry = (product, quantity = 1, isGroupGift = false) => {
     try {
-      // Check if user is logged in by looking for token in localStorage
       const token = localStorage.getItem('@token') || localStorage.getItem('@Token');
-      
+
       if (!token) {
-        // No token found, redirect to login
         navigate('/login');
         return;
       }
 
-      // Check if registry exists and has an id
       if (!registry || !registry.id) {
         setAlertMessage('Registry not found. Please try again.');
         setAlertType('error');
@@ -513,23 +527,23 @@ export default function SearchResults() {
         amount: Number(firstVariant.priceV2.amount),
         registryId: Number(registry.id),
         productTypeId: 1,
-        quantity: 1,
+        quantity: quantity || 1,
+        isGroupPayment: isGroupGift || false,
       };
 
+      setAddingProductId(product.id);
       fetcher.submit(
-        { payload: JSON.stringify(payload) },
+        {payload: JSON.stringify(payload)},
         {
           method: 'post',
           encType: 'application/json',
         },
       );
 
-      // Show success alert
       setAlertMessage(`${product.title} has been added to your registry!`);
       setAlertType('success');
       setShowAlert(true);
 
-      // Hide alert after 3 seconds
       setTimeout(() => {
         setShowAlert(false);
         setAlertMessage('');
@@ -545,94 +559,50 @@ export default function SearchResults() {
     }
   };
 
-  const ProductCard = ({ product, isCashFund = false }) => {
-    const firstImage = product.images?.edges?.[0]?.node?.url || 
-                      product.images?.edges?.[0]?.node?.src || 
-                      '/assets/Images/placeholder.png';
+  const ProductCard = ({product, isCashFund = false}) => {
+    const firstImage =
+      product.images?.edges?.[0]?.node?.url ||
+      product.images?.edges?.[0]?.node?.src ||
+      '/assets/Images/placeholder.png';
     const firstVariant = product.variants?.edges?.[0]?.node;
-    const price = formatPrice(firstVariant?.priceV2?.amount);
+    const priceAmount = firstVariant?.priceV2?.amount;
 
-    // Derive brand name: among this product's collections, find a collection marked as a brand
     let brandName = '';
-    if (Array.isArray(collections)) {
-      for (const col of collections) {
-        const isBrand = col.metafield?.value === 'true';
+    const lookupCols = collectionsForBrandLookup || collections || [];
+    if (Array.isArray(lookupCols)) {
+      for (const col of lookupCols) {
+        const isBrand = col.brandMetafield?.value === 'true';
         if (!isBrand) continue;
         const hasProduct =
-          col.products?.edges?.some(
-            (edge) => edge?.node?.id === product.id,
-          ) || false;
+          col.products?.edges?.some((edge) => edge?.node?.id === product.id) ||
+          false;
         if (hasProduct) {
           brandName = col.title || '';
           break;
         }
       }
     }
-    
+
+    const displayBrand = isCashFund
+      ? product.collectionTitle || 'CASH FUND'
+      : brandName || product.vendor || 'BRAND NAME';
+
     return (
-      <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw px-5">
-      <div className="relative group mb-[4.844vw]">
-        {/* Product Image and Info */}
-        <div className="z-10 relative">
-          <Link to={`/dashboard/addgifts/${product.handle}`} >
-            <img
-              src={firstImage}
-              alt={product.title}
-              className="w-full h-[23.43vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
-            />
-            <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
-              {product.title}
-            </h3>
-            <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">{price}</p>
-          </Link>
-        </div>
-
-        {/* Expanding Overlay */}
-        <div className="absolute lg:h-[33.5vw] xl:h-[33.5vw] 2xl:h-[35.3vw] lg:min-h-[20vw] xl:min-h-[20vw] 2xl:min-h-[20vw] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center scale-[1.13]">
-          <Link to={`/dashboard/addgifts/${product.handle}`} className="hover:no-underline">
-            <div>
-              <img
-                src={firstImage}
-                alt={product.title}
-                className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
-              />
-              <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-                {isCashFund
-                  ? product.collectionTitle || 'CASH FUND'
-                  : brandName || 'GIFT'}
-              </h4>
-              <h3 className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
-                {product.title}
-              </h3>
-              <p className="text-2xl mt-2 text-left">{price}</p>
-            </div>
-          </Link>
-
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex flex-col w-full items-center text-xs">
-              <button
-                className={`bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest
-                  ${
-                            fetcher.state === 'submitting'
-                              ? 'bg-gray-400 cursor-not-allowed'
-                              : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
-                          }
-                  `}
-                onClick={() => handleAddtoRegistry(product)}
-              >
-                {fetcher.state === 'submitting' ? (
-                            <div className="flex items-center justify-center">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Adding...
-                            </div>
-                          ) : (
-                            'ADD TO REGISTRY'
-                          )}
-              </button>
-            </div>
-          </div>
-        </div>
-        </div>
+      <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw] px-5">
+        <RegistryProduct
+          image={firstImage}
+          productName={product.title}
+          price={priceAmount}
+          description={product.description}
+          productHandle={product.handle}
+          onAddToRegistry={(quantity, isGroupGift) =>
+            handleAddtoRegistry(product, quantity, isGroupGift)
+          }
+          isSubmitting={
+            addingProductId === product.id && fetcher.state !== 'idle'
+          }
+          brandName={displayBrand}
+        />
       </div>
     );
   };
