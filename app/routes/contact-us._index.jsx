@@ -95,7 +95,27 @@ const ContactUs = () => {
                   className="my-[5px] lg:w-[6.25vw] xl:w-[6.25vw] 2xl:w-[6.25vw] max-[768px]:m-1 brightness-0 invert-100 max-[768px]:w-[71px] mx-auto"
                 />
                 <p className="text-[13px] underline lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw]  max-w-[500px] mt-4 mb-4 text-center text-white">
-                  <span className="text-white font-[500]">{user ? <a href='mailto:concierge@theregistry.ca' target='_blank' rel='noopener noreferrer' className='font-semibold underline text-white'>concierge@theregistry.ca</a> : <a href='mailto:hello@theregistry.ca' target='_blank' rel='noopener noreferrer' className='font-semibold underline text-white'>hello@theregistry.ca</a>}</span>
+                  <span className="text-white font-[500]">
+                    {user ? (
+                      <a
+                        href="mailto:concierge@theregistry.ca"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold underline text-white"
+                      >
+                        concierge@theregistry.ca
+                      </a>
+                    ) : (
+                      <a
+                        href="mailto:hello@theregistry.ca"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold underline text-white"
+                      >
+                        hello@theregistry.ca
+                      </a>
+                    )}
+                  </span>
                 </p>
               </div>
             </div>
@@ -132,9 +152,11 @@ const ContactUs = () => {
                 ) : (
                   <></>
                 )}
-                
+
                 <p className="text-[12px] leading-[18px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] mb-4 text-center text-white">
-                  {user ? "Need a hand getting started? Book a virtual appointment with our Registry Concierge. We’ll walk you through the process, answer your questions, and help you build a registry that reflects your style, your life, and your wishlist." : "Book a virtual appointment with a Registry Concierge to learn more about The Registry before you sign up, or for support at any stage once you’re registered. Whether you’re just getting started, refining your selections, or ready to coordinate fulfillment and delivery, we’re here to guide you through the process with thoughtful, seamless support."}
+                  {user
+                    ? 'Need a hand getting started? Book a virtual appointment with our Registry Concierge. We’ll walk you through the process, answer your questions, and help you build a registry that reflects your style, your life, and your wishlist.'
+                    : 'Book a virtual appointment with a Registry Concierge to learn more about The Registry before you sign up, or for support at any stage once you’re registered. Whether you’re just getting started, refining your selections, or ready to coordinate fulfillment and delivery, we’re here to guide you through the process with thoughtful, seamless support.'}
                 </p>
 
                 {user ? (
