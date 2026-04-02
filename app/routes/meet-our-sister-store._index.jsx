@@ -41,7 +41,7 @@ const MeetOurSisterStore = () => {
       </div>
 
       <div className="container mx-auto pt-[5.833vw] pb-[4.896vw] max-[1024px]:py-[50px]">
-        <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px]">
+        <p className="text-center text-[26px] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.979vw] leading-[38px] font-normal lg:w-[75.469vw] xl:w-[75.469vw] 2xl:w-[75.469vw] mx-auto max-[1024px]:text-[16px] max-[1024px]:leading-[26px]">
           The Registry was born out of Hopson Grace, Toronto’s destination for
           beautifully curated homewares, design-forward essentials, and timeless
           gifts. Hopson Grace is where modern entertaining meets considered
@@ -65,9 +65,10 @@ const MeetOurSisterStore = () => {
         </p>
         <div className="flex justify-center pt-[2.292vw] max-[1024px]:py-[20px]">
           <Link to="https://hopsongrace.com/" target="_blank">
-            <button className="text-white font-[500] cursor-pointer tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[17.292vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]">
-              TAKE ME THERE
-            </button>
+            <Button
+                text="TAKE ME THERE"
+                className="text-white font-normal cursor-pointer bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg max-[1024px]:text-[14px] max-[1024px]:w-full max-[1024px]:h-[40px] max-[1024px]:px-8"
+              />
           </Link>
         </div>
       </div>
