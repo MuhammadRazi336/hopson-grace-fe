@@ -3,8 +3,9 @@ import {
   useLoaderData,
   useSubmit,
   useFetcher,
-  redirect,
+  useRevalidator,
 } from '@remix-run/react';
+import {json} from '@shopify/remix-oxygen';
 import {useEffect, useState, useRef} from 'react';
 import ButtonComponent from '~/components/Button';
 import { Footer } from '~/components/Footer';
@@ -160,12 +161,41 @@ export async function action({request, context}) {
     }
 
     console.log('All updates successful');
-    return redirect('/dashboard/registry');
-    
+    return json({ok: true});
   } catch (error) {
     console.error('Action error:', error);
     return { error: error.message || 'An unexpected error occurred' };
   }
+}
+
+function buildRegistryFormState(data, userData, shippingData) {
+  const u = userData?.user || {};
+  return {
+    coupleName:
+      data.coupleName || `${u.firstName || ''} & ${u.fianceFirstName || ''}`,
+    hashtag: data.hashtags?.join(', ') || '',
+    weddingDate: data.eventDate?.split('T')[0] || '',
+    weddingTime: data.weddingTime || '',
+    venue: data.location || '',
+    location: data.city || '',
+    noOfGuests: data.noOfGuest || 0,
+    welcomeMessage: data.welcomeMessage || '',
+    yourFirstName: u.firstName || '',
+    yourLastName: u.lastName || '',
+    fianceFirstName: u.fianceFirstName || '',
+    fianceLastName: u.fianceLastName || '',
+    email: u.email || '',
+    shippingAddress: shippingData.address || '',
+    shippingPhone: shippingData.phoneNumber || '',
+    shippingPostalCode: shippingData.postalCode || '',
+    shippingCity: shippingData.city || '',
+    shippingProvince: shippingData.province || '',
+    shippingCountry: shippingData.country || '',
+    eventId: data.id,
+    userId: u.id,
+    image: data.image,
+    shippingId: shippingData.id,
+  };
 }
 
 export default function Index() {
@@ -174,59 +204,37 @@ export default function Index() {
   const [validationErrors, setValidationErrors] = useState({});
   const submit = useSubmit();
   const actionData = useActionData();
+  const revalidator = useRevalidator();
 
-  // Consolidated state for the entire form
-  const [formState, setFormState] = useState({
-    // Event Details
-    coupleName:
-      data.coupleName ||
-      `${userData.user.firstName} & ${userData.user.fianceFirstName}`,
-    hashtag: data.hashtags?.join(', ') || '',
-    weddingDate: data.eventDate?.split('T')[0] || '',
-    weddingTime: data.weddingTime || '',
-    venue: data.location || '',
-    location: data.city || '',
-    noOfGuests: data.noOfGuest || 0,
-    welcomeMessage: data.welcomeMessage || '',
-    // User Details
-    yourFirstName: userData.user.firstName || '',
-    yourLastName: userData.user.lastName || '',
-    fianceFirstName: userData.user.fianceFirstName || '',
-    fianceLastName: userData.user.fianceLastName || '',
-    email: userData.user.email || '',
-    // Shipping Details (assuming these are stored on the user object)
-    shippingAddress: shippingData.address || '',
-    shippingPhone: shippingData.phoneNumber || '',
-    shippingPostalCode: shippingData.postalCode || '',
-    shippingCity: shippingData.city || '',
-    shippingProvince: shippingData.province || '',
-    shippingCountry: shippingData.country || '',
-    // IDs
-    eventId: data.id,
-    userId: userData.user.id,
-    image: data.image,
-    // Additional fields needed for submission
-    shippingId: shippingData.id,
-  });
+  const [formState, setFormState] = useState(() =>
+    buildRegistryFormState(data, userData, shippingData),
+  );
 
+  const editFormRef = useRef(editForm);
+  editFormRef.current = editForm;
 
-
-  // Handle action responses
+  // Keep form in sync with loader when data updates (e.g. after save revalidation), not while editing
   useEffect(() => {
-    if (actionData) {
-      if (actionData.error) {
-        console.error('Form submission error:', actionData.error);
-        // You can show an error message to the user here
-        alert(`Error: ${actionData.error}`);
-      } else {
-        console.log('Form submitted successfully');
-        setEditForm(false);
-        setValidationErrors({});
-        // Optionally refresh the page or show success message
-        window.location.reload();
-      }
+    if (editFormRef.current) return;
+    setFormState(buildRegistryFormState(data, userData, shippingData));
+  }, [data, userData, shippingData]);
+
+
+
+  // Handle action responses — stay on this route and reload loader data
+  useEffect(() => {
+    if (!actionData) return;
+    if (actionData.error) {
+      console.error('Form submission error:', actionData.error);
+      alert(`Error: ${actionData.error}`);
+      return;
     }
-  }, [actionData]);
+    if (actionData.ok) {
+      setEditForm(false);
+      setValidationErrors({});
+      revalidator.revalidate();
+    }
+  }, [actionData, revalidator]);
 
   const handleChange = (e) => {
     const {name, value} = e.target;

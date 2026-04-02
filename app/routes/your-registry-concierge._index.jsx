@@ -42,7 +42,7 @@ const YourRegistryConcierge = () => {
       </div>
 
       <div className="container mx-auto pt-[5.833vw] pb-[4.896vw] max-[1024px]:py-[50px]">
-        <p className="text-center text-2xl lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal max-[1024px]:text-[16px] max-[1024px]:leading-[20px] w-[67.396vw] max-w-full mx-auto">
+        <p className="text-center text-2xl leading-relaxed lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] font-normal max-[1024px]:text-[16px] w-[67.396vw] max-w-full mx-auto">
           From styling your registry to managing gift fulfillment, a Registry
           Concierge is always available to guide you every step of the way.
           Whether you need help choosing the perfect serving bowl, coordinating
