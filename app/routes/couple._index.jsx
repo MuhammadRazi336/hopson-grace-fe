@@ -130,7 +130,7 @@ export default function FindCoupleForm() {
             </div>
           </div>
 
-          <div className="mt-20 lg:mt-[9.01vw]"></div>
+          <div className="mt-20 lg:mt-[9.01vw] max-[1024px]:mt-[260px]"></div>
           <Faqs content="guest"/>
           <div className="mb-16"></div>
           <section className=" my-12 lg:my-[240px]">
