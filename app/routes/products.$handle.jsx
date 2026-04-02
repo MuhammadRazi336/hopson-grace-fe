@@ -1118,7 +1118,7 @@ export default function ProductCollection() {
       </section>
 
       <section className="px-[8.594vw] mx-auto">
-        <div className="flex flex-col md:flex-row gap-[3.75vw] w-full mx-auto pt-[5vw]">
+        <div className="flex flex-row max-[1024px]:flex-col gap-[3.75vw] w-full mx-auto pt-[5vw]">
           <SidebarFilter
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}

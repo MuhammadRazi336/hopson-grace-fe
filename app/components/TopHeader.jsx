@@ -60,7 +60,7 @@ const TopHeader = () => {
             />
           </a>
         </div>
-        <div className="flex-1 flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px]">
+        <div className="flex-1 flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px] max-[1024px]:justify-start">
           {isLoggedIn ? (
             <>
               IT’S NEVER TOO LATE TO ADD GIFTS!
@@ -91,7 +91,7 @@ const TopHeader = () => {
             </>
           )}
         </div>
-        <div className="w-[20%] flex items-center justify-end text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[10px] max-[1024px]:leading-[14px]">
+        <div className="w-[20%] max-[1024px]:w-auto flex items-center justify-end text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[10px] max-[1024px]:leading-[14px]">
           <button
             type="button"
             onClick={handleOpenCurrencyPopup}
