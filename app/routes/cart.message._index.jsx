@@ -380,14 +380,14 @@ const Message = () => {
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+            <h4 className="text-[60px] text-center prata text-[#1F1D1B40]">2.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40]">
               Billing & Payment
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center">
+            <h4 className="text-[60px] text-center prata text-[#1F1D1B40]">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40]">
               Order Confirmation
             </p>
           </div>
@@ -433,9 +433,9 @@ const Message = () => {
                 <div className="flex items-center justify-start h-full flex-row">
                   <div className={`w-9/12 pl-16 ${!showPreview ? 'pt-16' : 'pt-10'}`}>
                     <img
-                      src="/assets/Images/greeting-flower-checkout.png"
+                      src="/assets/Images/checkoutHeart.png"
                       alt="checkout-bg-1"
-                      className="w-auto h-auto mx-auto mb-8"
+                      className="w-auto h-auto mx-auto mb-2.5"
                     />
 
                     {!showPreview ? (
