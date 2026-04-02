@@ -364,7 +364,7 @@ const index = () => {
     <>
     <div className="pt-[80px] lg:pt-[2.917vw] xl:pt-[2.917vw] 2xl:pt-[2.917vw] max-[1024px]:py-[50px] max-[1024px]:px-[20px]">
       <div className="flex lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-[5.208vw] max-[1024px]:justify-center">
-        <div className="w-9/12 lg:w-9/12 xl:w-9/12 2xl:w-9/12 flex flex-col items-center pt-[1vw] pl-[27vw] max-[1024px]:pl-0">
+        <div className="w-9/12 lg:w-9/12 xl:w-9/12 2xl:w-9/12 flex flex-col items-center pt-[1vw] pl-[31vw] max-[1024px]:pl-0">
           <div className="w-64 h-32 flex items-center justify-center">
             <img src="/assets/Images/heart.png" alt="" />
           </div>

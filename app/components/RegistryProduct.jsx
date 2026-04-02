@@ -1,5 +1,5 @@
 import { Link } from '@remix-run/react';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {formatPrice} from '~/utils/priceFormatter';
 
 const ProductCard = ({
@@ -15,6 +15,24 @@ const ProductCard = ({
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
+  const [addedHold, setAddedHold] = useState(false);
+  const prevSubmittingRef = useRef(false);
+
+  useEffect(() => {
+    const wasSubmitting = prevSubmittingRef.current;
+    if (isSubmitting) {
+      setAddedHold(false);
+    }
+    if (wasSubmitting && !isSubmitting) {
+      setAddedHold(true);
+      const t = setTimeout(() => setAddedHold(false), 3000);
+      prevSubmittingRef.current = isSubmitting;
+      return () => clearTimeout(t);
+    }
+    prevSubmittingRef.current = isSubmitting;
+  }, [isSubmitting]);
+
+  const showAdded = isSubmitting || addedHold;
 
   const incrementQuantity = () => {
     setQuantity((prev) => prev + 1);
@@ -35,7 +53,7 @@ const ProductCard = ({
     : null;
 
   return (
-    <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
+    <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw] h-[460px]">
       <div className="relative group mb-[4.844vw]">
         {/* Product image and summary — aligned with dashboard.giftcards GiftCard default state */}
         <div className="relative z-0">
@@ -44,7 +62,7 @@ const ProductCard = ({
               <img
                 src={image}
                 alt={productName}
-                className="w-full h-[300px] lg:h-[18.75vw] object-cover"
+                className="w-full object-cover aspect-square"
               />
               <h3 className="text-[18px] font-semibold uppercase mt-3">
                 {productName}
@@ -55,7 +73,7 @@ const ProductCard = ({
               <img
                 src={image}
                 alt={productName}
-                className="w-full h-[300px] lg:h-[18.75vw] object-cover"
+                className="w-full object-cover aspect-square"
               />
               <h3 className="text-[18px] font-semibold uppercase mt-3">
                 {productName}
@@ -66,14 +84,14 @@ const ProductCard = ({
         </div>
 
         {/* Hover overlay — matches dashboard.giftcards._index GiftCard */}
-        <div className="absolute h-[460px] lg:h-[31.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute h-[460px] lg:h-[36.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
           <div>
             {productDetailUrl ? (
               <Link to={productDetailUrl} className="block cursor-pointer">
                 <img
                   src={image}
                   alt={productName}
-                  className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-cover mb-[20px]"
+                  className="w-full mx-auto object-cover aspect-square mb-[20px]"
                 />
                 <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
                   {brandName}
@@ -87,7 +105,7 @@ const ProductCard = ({
                 <img
                   src={image}
                   alt={productName}
-                  className="w-full h-[200px] lg:h-[13.542vw] mx-auto object-cover mb-[20px]"
+                  className="w-full mx-auto object-cover mb-[20px] aspect-square"
                 />
                 <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
                   {brandName}
@@ -139,14 +157,14 @@ const ProductCard = ({
               <button
                 type="button"
                 onClick={handleAddToRegistry}
-                disabled={isSubmitting}
+                disabled={showAdded}
                 className={`${
-                  isSubmitting
+                  showAdded
                     ? 'bg-[#1F1D1B] cursor-default'
                     : 'bg-[#446184]'
                 } text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[10.156vw] lg:h-[4.01vw]`}
               >
-                {isSubmitting ? 'ADDED!' : 'ADD TO REGISTRY'}
+                {showAdded ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>
             </div>
           </div>

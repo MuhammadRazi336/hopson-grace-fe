@@ -242,7 +242,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="First Name *"
             name="firstName"
-            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
+            className="mt-2 p-2 border border-gray-300 rounded w-80  rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full  "
             classNameLabel="max-[580px]:text-left"
             error={errors.firstName}
           />
@@ -251,7 +251,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="Last Name *"
             name="lastName"
-            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
+            className="mt-2 p-2 border border-gray-300 rounded w-80  rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full  "
             classNameLabel="max-[580px]:text-left"
             error={errors.lastName}
           />

@@ -215,7 +215,7 @@ const ShipGifts = () => {
           <br />
           and we’ll do this with you.
         </p>
-        <p className="text-sm max-w-[38.49vw] mt-4 mb-4 text-center min-[1025px]:hidden">
+        <p className="text-sm max-w-[38.49vw] mt-4 mb-4 text-center min-[1025px]:hidden max-[425px]:max-w-[60%]">
           Book a virtual appointment
           <br />
           with a registry concierge
