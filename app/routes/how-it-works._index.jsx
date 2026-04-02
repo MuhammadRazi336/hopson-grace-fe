@@ -1,6 +1,6 @@
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
-import lineImghead from '/assets/Images/line.png';
+import lineImghead from '/assets/Images/heading-bottom-curve.png';
 import Heading from '~/components/Heading';
 import lineImg3 from '/assets/Images/line.png';
 import ImageAndText from '~/components/ImageAndText';
@@ -29,18 +29,18 @@ const HowItWorks = () => {
         <Heading
           text="how it works"
           classes={
-            'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
+            'prata text-[20px] leading-[36px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-center max-[1024px]:m-0'
           }
           image={lineImghead}
-          imageClasses={'max-[1024px]:max-w-[330px]'}
+          imageClasses={'max-[1024px]:w-[141px] w-[23.646vw] h-[4px]'}
         />
-        <p className="text-center text-2xl lg:text-[1.25vw] lg:max-w-[55.729vw] lg:mx-auto lg:leading-[1.875vw] font-normal py-16 pb-0 max-[1024px]:text-xl max-[1024px]:pt-8">
+        <p className="text-center max-[1024px]:w-[270px] mx-auto text-[12px] leading-[18px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:max-w-[55.729vw] lg:mx-auto lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal py-16 pb-0 max-[1024px]:pt-6">
            Creating your registry is simple. Just follow the steps below to see
           how it all comes together.
         </p>
       </div>
 
-      <div className="w-full py-16 container mx-auto">
+      <div className="w-full py-16 max-[1024px]:py-[30px] container mx-auto">
         <WeddingRegistrySteps />
       </div>
 
