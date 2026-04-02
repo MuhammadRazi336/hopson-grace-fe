@@ -16,8 +16,8 @@ const YourRegistryConcierge = () => {
     <section>
       <Header />
 
-      <div className="relative w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px] banner-overlay">
-        <img src={GlassBg} alt="" className="w-full h-full object-cover" />
+      <div className="relative h-[33.854vw] max-[1024px]:h-[40vw] banner-overlay">
+        <img src={GlassBg} alt="" className="w-full h-[40vw] lg:h-[33.854vw] xl:h-[33.854vw] 2xl:h-[33.854vw] object-cover object-position-[0%_50%] max-[1024px]:object-position-[-23vw_0%]" />
         {/* Heading with underline - Left aligned on image */}
         <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px] flex flex-col items-center ">
           {/* <h1 className="">
@@ -26,16 +26,16 @@ const YourRegistryConcierge = () => {
           <Heading
             text="your registry concierge"
             classes={
-              'prata text-white text-4xl lg:text-[2.5vw] lg:leading-[4vw] xl:leading-[4vw] 2xl:leading-[4vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[28px] max-[1024px]:mb-[15px] px-[1.406vw]'
+              'prata text-white text-[20px] leading-[36px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-left mb-[1.5vw] max-[1024px]:mb-[5px] px-[1.406vw]'
             }
             imageClasses=""
           />
           <img
             src={lineImghead}
             alt=""
-            className="max-[1024px]:max-w-[230px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] brightness-0 invert-100 max-[1024px]:mx-auto"
+            className="max-[1024px]:max-w-[141px] lg:w-[18.542vw] xl:w-[18.542vw] 2xl:w-[18.542vw] brightness-0 invert-100 max-[1024px]:mx-auto"
           />
-          <h2 className="text-center text-white font-[500] text-2xl lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[1vw] m-0 max-[1024px]:text-[18px] max-[1024px]:leading-[22px]">
+          <h2 className="text-center text-white font-[500] text-[12px] leading-[36px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[1vw] m-0">
             REAL PEOPLE, HERE TO HELP.
           </h2>
         </div>
@@ -63,9 +63,10 @@ const YourRegistryConcierge = () => {
         </h2>
         <div className="flex justify-center pt-[2.292vw] max-[1024px]:py-[20px]">
           <Link to="/contact-us">
-            <button className="text-white font-normal cursor-pointer bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-full max-[1024px]:h-[40px]">
-              CONTACT A REGISTRY CONCIERGE
-            </button>
+            <Button
+                text="CONTACT A REGISTRY CONCIERGE"
+                className="text-white font-normal cursor-pointer bg-[#446184] py-[5px] lg:w-[24.219vw] xl:w-[24.219vw] 2xl:w-[24.219vw] lg:h-[4.063vw] xl:h-[4.063vw] 2xl:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[768px]:text-lg max-[1024px]:text-[14px] max-[1024px]:w-full max-[1024px]:h-[40px] max-[1024px]:px-8"
+              />
           </Link>
         </div>
       </div>
