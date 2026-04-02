@@ -89,11 +89,11 @@ export default function WeddingRegistrySteps() {
                 <div className="text-5xl lg:text-7xl font-light text-white/90 font-prata">
                   {step.number}
                 </div>
-                <h3 className="text-[1.146vw] leading-[1.875vw] font-normal tracking-wider uppercase text-white">
+                <h3 className="text-[1.146vw] leading-[1.875vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px] font-normal tracking-wider uppercase text-white">
                   {step.title}
-                  <img src={WhiteLine} width={250} alt="" className='mx-auto pt-2'/>
+                  <img src={WhiteLine} width={250} alt="" className='mx-auto pt-2 max-[1024px]:w-[106px]'/>
                 </h3>
-                <p className="text-md leading-relaxed text-white/90 py-4 lg:text-2xl">
+                <p className="text-[12px] leading-[18px] w-[33.177vw] max-w-full mx-auto max-[1024px]:w-[260px] text-white/90 py-4 lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.771vw] xl:leading-[1.771vw] 2xl:leading-[1.771vw]">
                   {(() => {
                     const desc = step.description || '';
 
