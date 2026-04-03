@@ -144,7 +144,7 @@ export default function FindCoupleForm() {
             </div>
           </div>
 
-          <div className="py-24 text-center bg-[#FAF9F6] mb-16 registrySection scroll-mt-[10px]">
+          <div className="py-24 text-center bg-[#FAF9F6] mb-16 registrySection scroll-mt-[10px] max-[1024px]:pt-[260px]">
             {/* <h1 className="text-3xl font-semibold mb-4">No couples found</h1>
             <p className="text-gray-600 mb-8">
               No couples match your search. Try different names or browse all couples below.
@@ -155,10 +155,10 @@ export default function FindCoupleForm() {
             >
               Browse All Couples
             </Link> */}
-            <h2 className='prata text-5xl font-normal'>registries</h2>
-            <img src="/assets/Images/found-registries.png" alt="couple" className="max-w-[315px] mb-8 mx-auto" />
-            <img src="/assets/Images/NEWLYWED-NotFound.png" alt="couple" className="max-w-[315px] mx-auto" />
-            <div className="uppercase font-bold text-xl">NO REGISTRIES FOUND</div>
+            <h2 className='prata text-5xl font-normal max-[1024px]:text-[24px] max-[1024px]:mb-2.5'>registries</h2>
+            <img src="/assets/Images/found-registries.png" alt="couple" className="max-w-[315px] mb-8 mx-auto max-[1024px]:max-w-48 max-[1024px]:mb-4" />
+            <img src="/assets/Images/NEWLYWED-NotFound.png" alt="couple" className="max-w-[315px] mx-auto max-[1024px]:max-w-40" />
+            <div className="uppercase font-bold text-xl max-[1024px]:text-base">NO REGISTRIES FOUND</div>
           </div>
 
 
