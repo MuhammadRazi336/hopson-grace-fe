@@ -208,7 +208,7 @@ export default function SideCart({
                   {regularItems.map((item) => (
                     <div
                       key={item.id}
-                      className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 py-8 px-4"
+                      className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 p-8"
                     >
                       <div className="col-span-5 flex gap-4 items-center">
                         <img
