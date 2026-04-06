@@ -97,8 +97,7 @@ const Brand = () => {
   // All brand products
   const productsEdges = collection?.products?.edges || [];
 
-  // Sidebar categories: unique sub-collections that these products belong to
-  // (excluding this brand collection itself and any brand collections)
+  // Sidebar categories: unique collections on these products, with metafield filters applied
   const sidebarCategories = useMemo(() => {
     const map = new Map();
     productsEdges.forEach((edge) => {
@@ -106,10 +105,17 @@ const Brand = () => {
       const colEdges = product.collections?.edges || [];
       colEdges.forEach(({node}) => {
         if (!node || node.id === collection.id) return;
-        // Only consider sub-collections (children of parent collections)
-        if (node.parentMetafield?.value !== 'false') return;
-        // Exclude collections that are brands (metafield custom.brand === 'true')
+        // Exclude brand collections (separate rule)
         if (node.brandMetafield?.value === 'true') return;
+        // Exclude when both ready_made and parent.collection are explicitly false
+        if (
+          node.readyMadeMetafield?.value === 'false' &&
+          node.parentMetafield?.value === 'false'
+        ) {
+          return;
+        }
+        // Exclude ready-made registry collections (custom.ready_made === 'true')
+        if (node.readyMadeMetafield?.value === 'true') return;
         if (!map.has(node.id)) {
           map.set(node.id, node.title);
         }
@@ -560,6 +566,10 @@ const BRAND_QUERY = `#graphql
                   id
                   title
                   parentMetafield: metafield(namespace: "parent", key: "collection") {
+                    id
+                    value
+                  }
+                  readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
                     id
                     value
                   }
