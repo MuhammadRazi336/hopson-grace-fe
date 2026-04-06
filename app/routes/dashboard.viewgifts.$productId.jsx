@@ -7,7 +7,7 @@ import lineImg3 from '/assets/Images/line.png';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 
 export async function loader({params, context}) {
-  const {greetingId} = params;
+  const {productId} = params;
   const user = context?.session?.get('@User');
   const registry = await context.ClientGet(
     `registries/by-userId/${user.user.id}`,
@@ -15,10 +15,18 @@ export async function loader({params, context}) {
   );
 
   const response = await context.ClientGet(
-    `transactions/detail/${greetingId}/${registry.data[0].id}`,
+    `transactions/detail/${productId}/${registry.data[0].id}`,
     context,
   );
-  const viewGifts = response.data || [];
+  const viewGifts = Array.isArray(response.data) ? response.data : [];
+  const greetingsId =
+    response.greetingsId ??
+    viewGifts.find((g) => g?.greetingsId != null)?.greetingsId ??
+    viewGifts.find((g) => g?.greetingId != null)?.greetingId ??
+    (response.data && !Array.isArray(response.data)
+      ? response.data.greetingsId ?? response.data.greetingId
+      : null) ??
+    null;
 
   // Collect all unique Shopify product IDs (for gifts only)
   const productIds = viewGifts
@@ -49,56 +57,33 @@ export async function loader({params, context}) {
     }
   });
 
-  const apiBaseUrl = context.env?.API_BASE_URL;
-
   return {
     viewGifts: giftsWithShopify,
     user: user,
     registry: registry?.data[0],
-    greetingId,
+    productId,
+    greetingsId,
   };
 }
 
-export async function action({request, params, context}) {
-  const {greetingId} = params;
+export async function action({request, context}) {
   const formData = await request.formData();
   const intent = formData.get('intent');
 
   if (intent === 'markComplete') {
+    const greetingsId = formData.get('greetingsId');
+    if (!greetingsId) {
+      return {success: false, message: 'Missing greeting reference'};
+    }
     try {
-      console.log('Attempting to mark greeting as sent for ID:', greetingId);
-      
-      const token = context?.session?.get('@Token');
-      
-      const response = await fetch(`${apiBaseUrl}/api/greetings/${greetingId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          messageSent: true
-        })
-      });
-
-      console.log('Fetch response status:', response.status);
-      
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Fetch response data:', responseData);
-        return {success: true, message: 'Greeting marked as sent successfully'};
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        console.log('Fetch error response:', errorData);
-        return {success: false, message: 'Failed to mark greeting as sent'};
-      }
+      await context.ClientPut(
+        {messageSent: true},
+        `greetings/${greetingsId}`,
+        context,
+      );
+      return {success: true, message: 'Greeting marked as sent successfully'};
     } catch (error) {
       console.error('Error marking greeting as sent:', error);
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack,
-        greetingId: greetingId
-      });
       return {success: false, message: `Error marking greeting as sent: ${error.message}`};
     }
   }
@@ -107,7 +92,8 @@ export async function action({request, params, context}) {
 }
 
 const ViewGifts = () => {
-  const {viewGifts, registry, greetingId} = useLoaderData();
+  const {viewGifts, registry, greetingsId} = useLoaderData();
+  console.log(viewGifts, 'viewGifts');
   const fetcher = useFetcher();
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
 
@@ -225,6 +211,9 @@ const ViewGifts = () => {
           <div className="flex justify-center gap-x-4 mt-12">
             <fetcher.Form method="post">
               <input type="hidden" name="intent" value="markComplete" />
+              {greetingsId != null && (
+                <input type="hidden" name="greetingsId" value={String(greetingsId)} />
+              )}
               <button
                 type="submit"
                 disabled={isMarkingComplete || fetcher.state === 'submitting'}
@@ -235,7 +224,14 @@ const ViewGifts = () => {
                   : 'SENT BY MAIL MARK COMPLETE'}
               </button>
             </fetcher.Form>
-            <Link to={`/dashboard/sendthanks/toguest?greetingId=${greetingId}`}>
+            <Link
+              to={
+                greetingsId != null
+                  ? `/dashboard/sendthanks/toguest?greetingsId=${encodeURIComponent(String(greetingsId))}`
+                  : '#'
+              }
+              aria-disabled={greetingsId == null}
+            >
               <button className=" text-white font-bold py-4 px-6 bg-[#446184] rounded-none cursor-pointer w-full max-w-xs">
                 SEND EMAIL THANK YOU
               </button>
