@@ -60,7 +60,7 @@ export async function loader(args) {
 
 const GiftTracker = () => {
   const {giftTrackingData} = useLoaderData();
-  console.log(giftTrackingData);
+  console.log( 'giftTrackingData', giftTrackingData);
 
   return (
     <>
@@ -117,15 +117,15 @@ const GiftTracker = () => {
                     className="grid grid-cols-6 items-center  bg-white px-4 py-6 text-sm"
                   >
                     <div className='text-center'>{item.checkoutNumber}</div>
-                    <div className='text-center'>{item.name}</div>
-                    <div className='text-center'>{new Date(item.purchaseDate).toLocaleDateString('en-US', {
+                    <div className='text-center'>{item.guestName}</div>
+                    <div className='text-center'>{new Date(item.createdAt).toLocaleDateString('en-US', {
                       month: 'long',
                       day: 'numeric', 
                       year: 'numeric'
                     })}</div>
-                    <div className='text-center'>${item.totalAmount}</div>
+                    <div className='text-center'>${item.amount}</div>
                     <div className='text-center'>
-                      <Link to={`/dashboard/viewgifts/${item.greetingId}`}>
+                      <Link to={`/dashboard/viewgifts/${item.productId}`}>
                       <button className="border border-gray-700 px-3 py-3 text-sm font-medium hover:bg-gray-100 uppercase">
                         View Gifts/Message
                       </button>
@@ -135,7 +135,7 @@ const GiftTracker = () => {
                       {item.messageSent ? (
                         <span className='text-xl text-center block text-[#446184] font-bold'>&#10004;</span>
                       ) : (
-                        <Link to={`/dashboard/sendthanks/toguest?greetingId=${item.greetingId}`}>
+                        <Link to={`/dashboard/sendthanks/toguest?greetingsId=${item.greetingsId}`}>
                         <button className=" text-white font-bold py-3 px-3 bg-[#446184] rounded-none cursor-pointer">
                           SEND THANKS
                         </button>
