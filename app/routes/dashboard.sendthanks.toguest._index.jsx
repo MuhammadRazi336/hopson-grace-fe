@@ -40,15 +40,15 @@ export async function loader({context, request}) {
 
   // Get greetingId from URL params if available
   const url = new URL(request.url);
-  const greetingId = url.searchParams.get('greetingId');
+  const greetingsId = url.searchParams.get('greetingsId');
   const emailFromUrl = url.searchParams.get('email') || url.searchParams.get('guestEmail');
   let guestEmail = emailFromUrl || '';
   let guestName = '';
 
   // If greetingId is provided, fetch transaction detail to get guest email and name
-  if (greetingId) {
+  if (greetingsId) {
     try {
-      console.log('Fetching guest data for greetingId:', greetingId);
+      console.log('Fetching guest data for greetingsId:', greetingsId);
       
       // FIRST: Always fetch greeting directly since user confirmed email is there
       try {
