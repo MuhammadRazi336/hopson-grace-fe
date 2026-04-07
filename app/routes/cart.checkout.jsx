@@ -690,12 +690,6 @@ const DetailsForm = ({onNext}) => {
                       </span>
                       <span className="text-lg">${cartTotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold tracking-wide text-sm uppercase">
-                        Shipping
-                      </span>
-                      <span className="text-lg">FREE</span>
-                    </div>
                     <img
                       src="/assets/Images/cart-sum-bdr.png"
                       alt="Border"
