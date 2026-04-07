@@ -20,6 +20,52 @@ const STYLE_OPTIONS = [
   {id: 'shopAll', label: 'Shop All'},
 ];
 
+/** Same rules as `dashboard.addgifts._index.jsx` / `products.$handle.jsx` (parent slides). */
+function isExcludedFundsCollection(col) {
+  const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+  return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+}
+
+function isParentForSlides(col) {
+  return (
+    col.parentMetafield?.value === 'true' &&
+    col.readyMadeMetafield?.value !== 'true' &&
+    !isExcludedFundsCollection(col)
+  );
+}
+
+/** Sub-collections linked on the parent (same as `getSubCollectionsForParentLoader` in products.$handle). */
+function getSubCollectionsForParentLoader(parentCol, allCollections) {
+  if (!parentCol) return [];
+  if (parentCol.subCollectionMetafield?.references?.edges?.length) {
+    return parentCol.subCollectionMetafield.references.edges
+      .map((edge) => edge?.node)
+      .filter(Boolean);
+  }
+  if (parentCol.subMetafield?.value) {
+    try {
+      const gids = JSON.parse(parentCol.subMetafield.value);
+      return allCollections.filter((c) => gids.includes(c.id));
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+/** Union of all catalog sub-collection IDs under parent collections (add gifts / products catalog). */
+function buildAllowedCatalogSubCollectionIds(collectionNodes) {
+  const parents = collectionNodes.filter(isParentForSlides);
+  const ids = new Set();
+  for (const parent of parents) {
+    const subs = getSubCollectionsForParentLoader(parent, collectionNodes);
+    for (const sub of subs) {
+      if (sub?.id) ids.add(sub.id);
+    }
+  }
+  return [...ids];
+}
+
 export async function loader({params, context}) {
   const {handle} = params;
 
@@ -30,16 +76,21 @@ export async function loader({params, context}) {
   }
 
   try {
-    const [{collection}, {collections: brandCollections}] = await Promise.all([
-      context.storefront.query(BRAND_QUERY, {
-        variables: {handle},
-      }),
-      context.storefront.query(BRANDS_FOR_MARQUEE_QUERY),
-    ]);
+    const [{collection}, {collections: brandCollections}, catalogCollectionsRes] =
+      await Promise.all([
+        context.storefront.query(BRAND_QUERY, {
+          variables: {handle},
+        }),
+        context.storefront.query(BRANDS_FOR_MARQUEE_QUERY),
+        context.storefront.query(COLLECTIONS_CATALOG_PARENTS_QUERY),
+      ]);
 
     if (!collection) {
       throw new Response('Not Found', {status: 404});
     }
+
+    const catalogNodes = catalogCollectionsRes?.collections?.nodes || [];
+    const allowedSubCollectionIds = buildAllowedCatalogSubCollectionIds(catalogNodes);
 
     // Only fetch registry data if user is logged in
     let registry = null;
@@ -61,7 +112,7 @@ export async function loader({params, context}) {
         (collection) => collection.metafield?.value === 'true',
       ) || [];
 
-    return json({collection, registry, brands, user});
+    return json({collection, registry, brands, user, allowedSubCollectionIds});
   } catch (error) {
     throw new Response('Not Found', {status: 404});
   }
@@ -85,7 +136,8 @@ export async function action({request, context}) {
 }
 
 const Brand = () => {
-  const {collection, registry, brands, user} = useLoaderData();
+  const {collection, registry, brands, user, allowedSubCollectionIds} =
+    useLoaderData();
   const fetcher = useFetcher();
   const [addingProductId, setAddingProductId] = useState(null);
   const topRef = useRef(null);
@@ -97,7 +149,13 @@ const Brand = () => {
   // All brand products
   const productsEdges = collection?.products?.edges || [];
 
-  // Sidebar categories: unique collections on these products, with metafield filters applied
+  const allowedCatalogSubIds = useMemo(
+    () => new Set(allowedSubCollectionIds || []),
+    [allowedSubCollectionIds],
+  );
+
+  // Sidebar categories: only sub-collections that belong to the same catalog parents as add gifts / products,
+  // and that this brand product is also tagged with.
   const sidebarCategories = useMemo(() => {
     const map = new Map();
     productsEdges.forEach((edge) => {
@@ -105,16 +163,10 @@ const Brand = () => {
       const colEdges = product.collections?.edges || [];
       colEdges.forEach(({node}) => {
         if (!node || node.id === collection.id) return;
-        // Exclude brand collections (separate rule)
+        if (!allowedCatalogSubIds.has(node.id)) return;
+        // Sub-collections only (not parent category rows)
+        if (node.parentMetafield?.value !== 'false') return;
         if (node.brandMetafield?.value === 'true') return;
-        // Exclude when both ready_made and parent.collection are explicitly false
-        if (
-          node.readyMadeMetafield?.value === 'false' &&
-          node.parentMetafield?.value === 'false'
-        ) {
-          return;
-        }
-        // Exclude ready-made registry collections (custom.ready_made === 'true')
         if (node.readyMadeMetafield?.value === 'true') return;
         if (!map.has(node.id)) {
           map.set(node.id, node.title);
@@ -122,7 +174,7 @@ const Brand = () => {
       });
     });
     return Array.from(map, ([id, title]) => ({id, title}));
-  }, [productsEdges, collection.id]);
+  }, [productsEdges, collection.id, allowedCatalogSubIds]);
 
   const [selectedCategoryIds, setSelectedCategoryIds] = useState([]);
   const [checkedStyles, setCheckedStyles] = useState(() =>
@@ -625,3 +677,38 @@ query getBrandsForMarquee {
     }
   }
 }`;
+
+/** Same collection metafields as `products.$handle` COLLECTION_QUERY — for catalog sub-collection allowlist. */
+const COLLECTIONS_CATALOG_PARENTS_QUERY = `#graphql
+  query getCollectionsForCatalogSubs {
+    collections(first: 250, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        id
+        title
+        parentMetafield: metafield(namespace: "parent", key: "collection") {
+          value
+        }
+        readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+          value
+        }
+        subMetafield: metafield(namespace: "sub", key: "collection") {
+          value
+        }
+        subCollectionMetafield: metafield(namespace: "sub", key: "collection") {
+          value
+          references(first: 20) {
+            edges {
+              node {
+                ... on Collection {
+                  id
+                  title
+                  handle
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
