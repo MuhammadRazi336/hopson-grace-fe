@@ -805,7 +805,7 @@ export function Header() {
           </NavLink>
         </div>
 
-        <div className="min-[1025px]:hidden max-[1024px]:order-1 hamburger" onClick={toggleMenu}>
+        <div className="min-[1024px]:hidden max-[1025px]:order-1 hamburger" onClick={toggleMenu}>
           <img
             src={isFixed ? hamburgerscroll : hamburger}
             alt=""
@@ -1330,7 +1330,7 @@ export function Header() {
             </NavLink>
           </div>
 
-          <div className="min-[1025px]:hidden max-[1024px]:order-1 hamburger" onClick={toggleMenu}>
+          <div className="min-[1024px]:hidden max-[1025px]:order-1 hamburger" onClick={toggleMenu}>
             <img
               src={isFixed ? hamburgerscroll : hamburger}
               alt=""
@@ -1636,7 +1636,7 @@ export function Header() {
 
       {/* Default Menu - Hidden when sticky (menu is rendered via portal) */}
       <div
-        className={`mt-0 max-[1024px]:hidden ${
+        className={`mt-0 max-[1025px]:hidden ${
           isFixed ? 'hidden' : ''
         }`}
       >

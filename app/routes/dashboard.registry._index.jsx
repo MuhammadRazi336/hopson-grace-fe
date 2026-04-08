@@ -690,12 +690,12 @@ const index = () => {
           >
           </div>
           <div
-            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] h-[4vw]"
+            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] h-[4vw] max-[768px]:right-[50px]"
             onClick={() =>
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
           >
-            <div className="bg-white rounded-full p-0 shadow-lg hover:bg-gray-50 max-[1024px]:p-1">
+            <div className="bg-white rounded-full p-0 shadow-lg hover:bg-gray-50 max-[1024px]:p-1 max-[768px]:w-[60px] max-[768px]:h-[60px]">
               <img
                 src="/assets/Images/edit-icon.png"
                 alt="Edit Background"
@@ -722,14 +722,14 @@ const index = () => {
           />
         </div> */}
 
-        <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 lg:-translate-y-[200px] xl:-translate-y-[200px] 2xl:-translate-y-[200px] ">
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px] pr-[40px]">
+        <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 -translate-y-[200px] max-[1025px]:w-[183px] max-[1025px]:h-[183px] max-[1025px]:-translate-x-[50%]">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px] pr-[40px] max-[1024px]:order-1">
             <h1 className="lg:text-[3.2vw] xl:text-[3.2vw] 2xl:text-[3.2vw] lg:leading-[3.7vw] xl:leading-[3.7vw] 2xl:leading-[3.7vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px] lowercase">
               {userGet?.data?.user?.firstName} &{' '}<br />
               {userGet?.data?.user?.fianceFirstName}
             </h1>
           </div>
-          <div className="lg:w-[30vw] xl:w-[30vw] 2xl:w-[30vw] lg:min-w-[30vw] xl:min-w-[30vw] 2xl:min-w-[30vw] lg:min-h-[30vw] xl:min-h-[30vw] 2xl:min-h-[30vw] lg:h-[30vw] xl:h-[30vw] 2xl:h-[30vw]  w-full">
+          <div className="lg:w-[30vw] xl:w-[30vw] 2xl:w-[30vw] lg:min-w-[30vw] xl:min-w-[30vw] 2xl:min-w-[30vw] lg:min-h-[30vw] xl:min-h-[30vw] 2xl:min-h-[30vw] lg:h-[30vw] xl:h-[30vw] 2xl:h-[30vw]  w-full max-[1025px]:w-[183px] max-[1025px]:h-[183px] max-[1024px]:order-0">
             <div className="relative w-full h-full">
               {(() => {
                 // Check if we have a valid image URL
@@ -748,14 +748,14 @@ const index = () => {
                         <img 
                           src="/assets/Images/copyrightLogo.png" 
                           alt='placeholder' 
-                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain' 
+                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain max-[768px]:w-[120px] max-[768px]:h-[120px]' 
                           onError={(e) => console.error('Failed to load copyrightLogo.png', e)}
                           onLoad={() => console.log('copyrightLogo.png loaded successfully')}
                         />
                         <img 
                           src="/assets/Images/placeholder-line.png" 
                           alt='placeholder' 
-                          className='object-contain w-[16.042vw] h-[4px] mt-2' 
+                          className='object-contain w-[16.042vw] h-[4px] mt-2 max-[768px]:w-[120px]' 
                           onError={(e) => console.error('Failed to load placeholder-line.png', e)}
                           onLoad={() => console.log('placeholder-line.png loaded successfully')}
                         />
@@ -780,7 +780,7 @@ const index = () => {
                 );
               })()}
               <div
-                className="absolute -bottom-[1.604vw] left-[50%] translate-x-[-50%] w-[4vw] h-[4vw] z-1"
+                className="absolute -bottom-[1.604vw] left-[50%] translate-x-[-50%] w-[4vw] h-[4vw] z-1 max-[768px]:w-[60px] max-[768px]:h-[60px]"
                 onClick={() => !isUploading && setIsEditPopupOpen(true)}
               >
                 <img
@@ -798,7 +798,7 @@ const index = () => {
               </div>
             </div>
           </div>
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px] pl-[40px]">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px] pl-[40px] max-[1024px]:order-2">
             <div className="mr-16">
               <p className="lg:text-[2vw] xl:text-[2vw] 2xl:text-[2vw] text-right my-2 lg:leading-[2.3vw] xl:leading-[2.3vw] 2xl:leading-[2.3vw] prata ml-auto">
                 {formatRegistryEventDate(eventGet?.data?.eventDate)}

@@ -30,12 +30,7 @@ import CashFundsIcon from '/assets/Images/cashFundCategory.png';
 import TravelFundsIcon from '/assets/Images/travelFundCategory.png';
 
 import React from 'react';
-import {Swiper, SwiperSlide} from 'swiper/react';
-import {Navigation, Pagination} from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
 import ModalPortal from '~/components/ModalPortal';
-import nextitem from '/assets/Images/next.png';
 import placeholder from '/assets/Images/placeholder.jpg';
 import notsure from '/assets/Images/notsure.jpg';
 import modern from '/assets/Images/modern.png';
@@ -756,7 +751,7 @@ const OnboardingClient = ({onStepChange}) => {
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
       {step !== 6 && <Stepper step={step} totalSteps={7} />}
-      <div className="container p-2  max-[768px]:p-2 bg-rounded-md w-full">
+      <div className="container p-2  max-[768px]:p-2 bg-rounded-md w-full max-[426px]:p-0">
         {/* Stepper for progress */}
         <div className="mb-6">
           {/* Render the step content dynamically */}
@@ -893,7 +888,7 @@ const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
 
   return (
     <div className="text-center">
-      <div className="p-4 w-[300px] mx-auto customdatepicker">
+      <div className="p-4 w-[300px] mx-auto customdatepicker max-[476px]:w-full">
         <DatePicker
           selectedDate={localSelectedDate}
           onDateChange={handleDateChange}
@@ -937,7 +932,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
       <div className="text-center">
         {/* <Heading text={'How many guests are you inviting?'} /> */}
         <h2 className="font-normal  w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
-        how many guests are you inviting?
+        This will help us calculate the magic number of gifts so that guests have a variety to choose from
         </h2>
       </div>
       {/* Event Name Input */}
@@ -953,7 +948,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
         onWheel={(e) => e.currentTarget.blur()}
         type="number"
         min="1"
-        placeholder="Enter # Of Guest"
+        placeholder="Enter # Of Guests"
         className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black mx-auto mt-4 text-center text-3xl font-bold placeholder:text-lg placeholder:font-normal max-w-full"
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
@@ -1368,7 +1363,6 @@ const STEP7_FIXED_STYLES = [
 
 const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const [swiper, setSwiper] = useState(null);
 
   const handleOptionClick = (option) => {
     setSelectedOptions((prev) => {
@@ -1392,97 +1386,113 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
 
   return (
     <div className="">
-      <p className="font-normal mb-10 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-[14px] mx-auto text-center">
+      <p className="font-normal mb-10 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-[16px] mx-auto text-center">
         Pick a style, and we'll make gift recommendations tailored to your
         taste.
       </p>
       <p className="font-normal mb-4 mt-4 w-[80%] text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[768px]:text-[14px] mx-auto text-center">
         CHOOSE AS MANY AS YOU'D LIKE:
       </p>
-      <div className="relative">
-        <div className="swiper-button-prev-subcollection absolute top-[60px] max-[1024px]:top-[45%] -left-16 max-[1024px]:-left-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex ">
-          <img src={nextitem} alt="" className="rotate-90 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" />
-          <span className="-rotate-90 text-white block text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] tracking-wider max-[1024px]:hidden">
-            more
-          </span>
+      <div className="w-full max-w-5xl mx-auto px-2 sm:px-0 max-[1024px]:px-0">
+        {/*
+        <div className="relative">
+          <div className="swiper-button-prev-subcollection absolute top-[60px] max-[1024px]:top-[45%] -left-16 max-[1024px]:-left-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex ">
+            <img src={nextitem} alt="" className="rotate-90 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" />
+            <span className="-rotate-90 text-white block text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] tracking-wider max-[1024px]:hidden">
+              more
+            </span>
+          </div>
+          <Swiper
+            key="step7-fixed-styles"
+            spaceBetween={20}
+            slidesPerView={4}
+            loop={false}
+            className="subcollection-swiper"
+            modules={[Navigation]}
+            navigation={{
+              nextEl: '.swiper-button-next-subcollection',
+              prevEl: '.swiper-button-prev-subcollection',
+            }}
+            onSwiper={setSwiper}
+            breakpoints={{
+              320: { slidesPerView: 1, spaceBetween: 10 },
+              640: { slidesPerView: 2, spaceBetween: 15 },
+              768: { slidesPerView: 3, spaceBetween: 20 },
+              1024: { slidesPerView: 4, spaceBetween: 20 },
+              1100: { slidesPerView: 4, spaceBetween: 20 },
+            }}
+          >
+            {STEP7_FIXED_STYLES.map((option) => (
+              <SwiperSlide key={option.id}>
+                <button onClick={() => handleOptionClick(option)} className="">
+                  <div
+                    className={
+                      selectedOptions.some((item) => item.id === option.id)
+                        ? 'tickafter'
+                        : ''
+                    }
+                  >
+                    <Image
+                      alt={option.image?.altText || option.title}
+                      aspectRatio="1/1"
+                      data={{
+                        url: option.image?.url || placeholder,
+                        altText: option.title,
+                        width: 200,
+                        height: 220,
+                      }}
+                      loading="lazy"
+                      sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
+                    />
+                  </div>
+                  <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
+                    {option.title}
+                  </span>
+                </button>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          <div className="swiper-button-next-subcollection absolute top-[60px] max-[1024px]:top-[45%] -right-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex">
+            <span className="rotate-90 text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] block tracking-wider max-[1024px]:hidden">
+              more
+            </span>
+            <img src={nextitem} className="rotate-270 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" alt="" />
+          </div>
         </div>
-        <Swiper
-          key="step7-fixed-styles"
-          spaceBetween={20}
-          slidesPerView={4}
-          loop={false}
-          className="subcollection-swiper"
-          modules={[Navigation]}
-          navigation={{
-            nextEl: '.swiper-button-next-subcollection',
-            prevEl: '.swiper-button-prev-subcollection',
-          }}
-          onSwiper={setSwiper}
-          breakpoints={{
-            320: {
-              slidesPerView: 1,
-              spaceBetween: 10,
-            },
-            640: {
-              slidesPerView: 2,
-              spaceBetween: 15,
-            },
-            768: {
-              slidesPerView: 3,
-              spaceBetween: 20,
-            },
-            1024: {
-              slidesPerView: 4,
-              spaceBetween: 20,
-            },
-            1100: {
-              slidesPerView: 4,
-              spaceBetween: 20,
-            },
-          }}
-        >
+        */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-[1024px]:mb-10 max-[768px]:gap-x-3 max-[768px]:gap-y-6">
           {STEP7_FIXED_STYLES.map((option) => (
-            <SwiperSlide key={option.id}>
-              <button
-                onClick={() => handleOptionClick(option)}
-                className={`${
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => handleOptionClick(option)}
+              className="w-full text-left"
+            >
+              <div
+                className={
                   selectedOptions.some((item) => item.id === option.id)
-                    ? ''
+                    ? 'tickafter'
                     : ''
-                }`}
+                }
               >
-                <div
-                  className={
-                    selectedOptions.some((item) => item.id === option.id)
-                      ? 'tickafter'
-                      : ''
-                  }
-                >
-                  <Image
-                    alt={option.image?.altText || option.title}
-                    aspectRatio="1/1"
-                    data={{
-                      url: option.image?.url || placeholder,
-                      altText: option.title,
-                      width: 200,
-                      height: 220,
-                    }}
-                    loading="lazy"
-                    sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
-                  />
-                </div>
-                <span className="mt-4 block tracking-wider text-[15px] font-medium min-h-[45px]">
-                  {option.title}
-                </span>
-              </button>
-            </SwiperSlide>
+                <Image
+                  alt={option.image?.altText || option.title}
+                  aspectRatio="1/1"
+                  data={{
+                    url: option.image?.url || placeholder,
+                    altText: option.title,
+                    width: 200,
+                    height: 220,
+                  }}
+                  loading="lazy"
+                  sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
+                />
+              </div>
+              <span className="mt-4 block tracking-wider text-[15px] font-medium text-center max-[767px]:text-[10px] max-[767px]:mt-3 max-[768px]:font-bold">
+                {option.title}
+              </span>
+            </button>
           ))}
-        </Swiper>
-        <div className="swiper-button-next-subcollection absolute top-[60px] max-[1024px]:top-[45%] -right-[27px] max-[1024px]:-translate-y-[45%] cursor-pointer text-white uppercase flex">
-          <span className="rotate-90 text-white text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.667vw] xl:leading-[1.667vw] 2xl:leading-[1.667vw] block tracking-wider max-[1024px]:hidden">
-            more
-          </span>
-          <img src={nextitem} className="rotate-270 invert-100 lg:h-[1.042vw] xl:h-[1.042vw] 2xl:h-[1.042vw] h-[20px] lg:w-[1.042vw] xl:w-[1.042vw] 2xl:w-[1.042vw] w-[20px] max-[1024px]:w-[17px] max-[1024px]:h-[17px]" alt="" />
         </div>
       </div>
     </div>

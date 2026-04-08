@@ -22,13 +22,13 @@ const Faqs = ({content}) => {
     return (
       <>
         {truncatedText}{' '}
-        <Link
+        {/* <Link
           to="/faq"
           className="text-[#1F1D1B] flex items-center gap-[8px] max-[1024px]:justify-center cursor-pointer uppercase font-[700] mt-2 text-[1vw] leading-[1.4vw] max-[1024px]:text-[12px] max-[1024px]:leading-[18px]"
         >
           {'Read More'}
           <img src={readMoreIcon} alt="read more icon" className='brightness-0 w-[10px] h-[10px] rotate-270' />
-        </Link>
+        </Link> */}
       </>
     );
   };
