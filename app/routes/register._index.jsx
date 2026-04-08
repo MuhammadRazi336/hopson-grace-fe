@@ -242,7 +242,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="First Name *"
             name="firstName"
-            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
+            className="mt-2 p-2 border border-gray-300 rounded w-80  rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full  "
             classNameLabel="max-[580px]:text-left"
             error={errors.firstName}
           />
@@ -251,7 +251,7 @@ const RegisterIndex = () => {
             onChange={handleInputChange}
             placeholder="Last Name *"
             name="lastName"
-            className="mt-2 p-2 border border-gray-300 rounded w-80 rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12 "
+            className="mt-2 p-2 border border-gray-300 rounded w-80  rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full  "
             classNameLabel="max-[580px]:text-left"
             error={errors.lastName}
           />
@@ -327,7 +327,7 @@ const RegisterIndex = () => {
       <div className="space-y-6">
         <div className="text-center mb-4">
         <h2 className="font-normal mb-4 mt-4 w-[80%] lg:w-[29.74vw] xl:w-[29.74vw] 2xl:w-[29.74vw] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
-          We'll use this email to keep you updated on gifts notifications and all things registry.
+          We'll use this email to keep you updated on gift notifications and all things registry.
         </h2>
         </div>
         <div className="grid grid-cols-2 gap-4 max-[580px]:grid-cols-1">

@@ -364,7 +364,7 @@ const index = () => {
     <>
     <div className="pt-[80px] lg:pt-[2.917vw] xl:pt-[2.917vw] 2xl:pt-[2.917vw] max-[1024px]:py-[50px] max-[1024px]:px-[20px]">
       <div className="flex lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap flex-wrap gap-4 flex-shrink-0 pb-[5.208vw] max-[1024px]:justify-center">
-        <div className="w-9/12 lg:w-9/12 xl:w-9/12 2xl:w-9/12 flex flex-col items-center pt-[1vw] pl-[27vw] max-[1024px]:pl-0">
+        <div className="w-9/12 lg:w-9/12 xl:w-9/12 2xl:w-9/12 flex flex-col items-center pt-[1vw] pl-[31.6vw] max-[1024px]:pl-0">
           <div className="w-64 h-32 flex items-center justify-center">
             <img src="/assets/Images/heart.png" alt="" />
           </div>
@@ -387,8 +387,8 @@ const index = () => {
             UNTIL THE WEDDING!
           </p>
         </div>
-        <div className="w-3/12 lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4 pr-[4.271vw] max-[1024px]:w-full max-[1024px]:pr-0">
-          <div className='flex justify-end'>
+        <div className="w-3/12 lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4 pr-[4.271vw] max-[1024px]:w-full max-[1024px]:pr-0 max-[1025px]:hidden">
+          <div className='flex justify-end max-[1025px]:hidden'>
             <NotificationCard 
               count={unreadCount} 
               onView={handleNotificationView}
@@ -467,6 +467,42 @@ const index = () => {
           </div>
         ))}
       </div>
+
+      <div className="w-3/12 lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4 pr-[4.271vw] max-[1024px]:w-full max-[1024px]:pr-0">
+          <div className='flex justify-end max-[1025px]:hidden'>
+            <NotificationCard 
+              count={unreadCount} 
+              onView={handleNotificationView}
+              loading={loading}
+              refreshing={refreshing}
+            />
+          </div>
+          {/* Show Intro Card - appears below notification card */}
+          <div className='flex justify-end'>
+            <div className="bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px]" onClick={() => {
+              // Trigger intro restart by updating localStorage and navigating
+              localStorage.setItem('showDashboardIntro', 'true');
+              window.location.href = '/dashboard';
+            }}>
+              {/* Message */}
+              <div className="uppercase text-base lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.042vw] xl:leading-[1.042vw] 2xl:leading-[1.042vw] font-medium tracking-wide text-black mb-[23px] lg:mb-[1.198vw] xl:mb-[1.198vw] 2xl:mb-[1.198vw]">
+                DASHBOARD<br />TUTORIAL
+              </div>
+              {/* Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  localStorage.setItem('showDashboardIntro', 'true');
+                  // Navigate to dashboard root to trigger intro
+                  window.location.href = '/dashboard';
+                }}
+                className="uppercase cursor-pointer font-bold text-lg tracking-wide text-black lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-b-2 border-[#1F1D1B] hover:text-gray-700"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       <Footer />
           {/* <RegistryChecklist registry={registry} /> */}

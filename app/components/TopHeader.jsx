@@ -60,7 +60,7 @@ const TopHeader = () => {
             />
           </a>
         </div>
-        <div className="flex-1 flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px] max-[1024px]:justify-start">
+        <div className="flex-1 flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px] max-[1024px]:justify-start max-[767px]:tracking-[1px] max-[767px]:justify-center">
           {isLoggedIn ? (
             <>
               IT’S NEVER TOO LATE TO ADD GIFTS!

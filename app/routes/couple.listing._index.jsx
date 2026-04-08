@@ -155,8 +155,8 @@ export default function FindCoupleForm() {
             >
               Browse All Couples
             </Link> */}
-            <h2 className='prata text-5xl font-normal max-[1024px]:text-[24px] max-[1024px]:mb-2.5'>registries</h2>
-            <img src="/assets/Images/found-registries.png" alt="couple" className="max-w-[315px] mb-8 mx-auto max-[1024px]:max-w-48 max-[1024px]:mb-4" />
+            <h2 className='registrySection scroll-mt-[10px] mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-2xl prata text-center lg:leading-[60px] font-normal mb-5 max-[1024px]:text-5xl'>registries</h2>
+            <img src="/assets/Images/found-registries.png" alt="couple" className="max-w-[315px] mb-8 mx-auto" />
             <img src="/assets/Images/NEWLYWED-NotFound.png" alt="couple" className="max-w-[315px] mx-auto max-[1024px]:max-w-40" />
             <div className="uppercase font-bold text-xl max-[1024px]:text-base">NO REGISTRIES FOUND</div>
           </div>
@@ -347,7 +347,7 @@ function CoupleListing({data}) {
               <img
                 src="/assets/Images/white-bdr.png"
                 alt="couple"
-                className="md:max-w-[315px] max-w-[200px] mb-4"
+                className="max-w-[315px] mb-4"
               />
               <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
                 enter either person's <br/>first or last name
@@ -406,7 +406,7 @@ function CoupleListing({data}) {
           </div>
         </div>
 
-        <h2 className="registrySection scroll-mt-[10px] mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5">
+        <h2 className="registrySection scroll-mt-[10px] mt-0 pt-24 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-2xl prata text-center lg:leading-[60px] font-normal mb-5 max-[1024px]:text-5xl">
           {/* we found {data.filter(couple => couple.registry).length}  */}
           registries
         </h2>
