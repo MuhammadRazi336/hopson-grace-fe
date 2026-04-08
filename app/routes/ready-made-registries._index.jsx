@@ -97,11 +97,11 @@ const ReadyMade = () => {
     </p> */}
   </div>
 
-  <div className='w-full flex flex-row justify-center lg:w-[61.354vw] mx-auto gap-6 mt-12'>
+  <div className='w-full flex flex-row justify-center lg:w-[61.354vw] mx-auto gap-6 mt-12 max-[767px]:gap-2.5 max-[375px]:flex-col max-[375px]:px-[9.323vw]'>
     {readyMadeRegistries.length > 0 ? (
     readyMadeRegistries.map((collection, index) => (
     <div key={collection.id} className='flex flex-col items-center'>
-      <div className={`p-6 w-[300px] border-black border-2 cursor-pointer ${
+      <div className={`p-6 w-[300px] border-black border-2 cursor-pointer max-[767px]:w-[100%] max-[767px]:p-2.5 ${
         selectedParentCollection?.id===collection.id ? 'bg-[#1F1D1B] text-white' : '' }`} onClick={()=>
         setSelectedParentCollection(selectedParentCollection?.id === collection.id ? null : collection)}
         >
@@ -109,7 +109,7 @@ const ReadyMade = () => {
           className='w-full h-full rounded-full object-cover lg:w-[16.563vw] xl:w-[16.563vw] 2xl:w-[16.563vw] lg:h-[16.563vw] xl:h-[16.563vw] 2xl:h-[16.563vw]'
           alt={collection.image?.altText || collection.title} /> */}
         <div className='text-center'>
-          <h2 className='text-base lg:text-base m-0 uppercase lg:leading-[1.458vw] tracking-widest font-bold'>
+          <h2 className='text-base lg:text-base m-0 uppercase lg:leading-[1.458vw] tracking-widest font-bold max-[767px]:text-[14px]'>
             {collection.title}</h2>
           {/* <p className='text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-normal max-w-2xl mx-auto'>
             {collection.description}</p> */}

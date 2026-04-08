@@ -377,7 +377,7 @@ export default function Index() {
               {editForm ? (
                 <button
                   onClick={handleSubmit}
-                  className="uppercase text-[#223247] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border border-[#223247] cursor-pointer font-bold text-lg w-[11.458vw] h-[4.063vw] bg-white"
+                  className="uppercase text-[#000000] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-2 border-[#000000] cursor-pointer font-bold text-lg w-[11.458vw] h-[4.063vw] bg-white max-[768px]:w-40 max-[768px]:h-auto max-[768px]:p-3 max-[768px]:mt-2.5"
                 >
                   Save
                 </button>
@@ -405,9 +405,9 @@ export default function Index() {
 
 function EditForm({state, onStateChange, onImageChange, validationErrors}) {
   return (
-    <form className="grid grid-cols-2 gap-x-8 gap-y-4 p-8 bg-[#375a7f] text-white">
+    <form className="grid grid-cols-2 gap-x-8 gap-y-4 p-8 bg-[#375a7f] text-white max-[768px]:grid-cols-1 max-[768px]:gap-x-0">
       {/* User and Fiancé Details */}
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="yourFirstName">
           YOUR FIRST NAME*
         </label>
@@ -423,7 +423,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           <p className="text-[#FD446F] text-sm mt-1">{validationErrors.yourFirstName}</p>
         )}
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="yourLastName">
           YOUR LAST NAME*
         </label>
@@ -439,7 +439,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           <p className="text-[#FD446F] text-sm mt-1">{validationErrors.yourLastName}</p>
         )}
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="fianceFirstName">
           YOUR FIANCÉ'S FIRST NAME*
         </label>
@@ -455,7 +455,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           <p className="text-[#FD446F] text-sm mt-1">{validationErrors.fianceFirstName}</p>
         )}
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="fianceLastName">
           YOUR FIANCÉ'S LAST NAME*
         </label>
@@ -471,7 +471,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           <p className="text-[#FD446F] text-sm mt-1">{validationErrors.fianceLastName}</p>
         )}
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="email">
           YOUR EMAIL*
         </label>
@@ -487,7 +487,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
       </div>
 
       {/* Event Details */}
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="weddingDate">
           WEDDING DATE*
         </label>
@@ -503,7 +503,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           <p className="text-[#FD446F] text-sm mt-1">{validationErrors.weddingDate}</p>
         )}
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="venue">
           WEDDING VENUE
         </label>
@@ -516,8 +516,8 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
+      <div className="grid grid-cols-2 gap-4 max-[768px]:col-span-2">
+        <div className="max-[768px]:col-span-2">
           <label className="block font-medium mb-1 text-base" htmlFor="location">
             WEDDING LOCATION
           </label>
@@ -530,7 +530,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
             className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
           />
         </div>
-        <div>
+        <div className="max-[768px]:col-span-2">
           <label className="block font-medium mb-1 text-base" htmlFor="noOfGuests">
             NO. OF GUESTS*
           </label>
@@ -548,7 +548,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           )}
         </div>
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <label className="block font-medium mb-1 text-base" htmlFor="hashtag">
           WEDDING HASHTAG
         </label>
@@ -567,7 +567,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
       <div className="col-span-2 font-medium mb-2 mt-10">
         YOUR SHIPPING ADDRESS
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <input
           type="text"
           name="shippingAddress"
@@ -577,7 +577,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <input
           type="text"
           name="shippingPhone"
@@ -587,7 +587,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <input
           type="text"
           name="shippingPostalCode"
@@ -597,7 +597,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <input
           type="text"
           name="shippingCity"
@@ -607,7 +607,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <input
           type="text"
           name="shippingProvince"
@@ -617,7 +617,7 @@ function EditForm({state, onStateChange, onImageChange, validationErrors}) {
           className="outline-none text-black w-full border border-gray-300 bg-white rounded-none px-4 py-4"
         />
       </div>
-      <div>
+      <div className="max-[768px]:col-span-2">
         <input
           type="text"
           name="shippingCountry"

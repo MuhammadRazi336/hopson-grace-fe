@@ -1545,3 +1545,15 @@ html, body { height: 100%; margin: 0; }
 .Toastify__toast {
   border-radius: 0 !important;
 }
+
+@media screen and (max-width: 1024px) {
+  .afterimg::after {
+    width: 100%;
+    max-width: 215px;
+}
+}
+@media screen and (max-width: 476px) {
+  .date-picker .relative.w-full.min-w-\[200px\].h-10 {
+      min-width: 100%;
+  }
+}
