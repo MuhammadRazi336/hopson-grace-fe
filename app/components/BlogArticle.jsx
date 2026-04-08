@@ -153,8 +153,28 @@ export default function BlogArticle({article, processedContent}) {
           background: none;
           padding: 0;
         }
+        
 
         /* Responsive adjustments */
+        @media (max-width: 1024px) {
+          .blog-content-custom > div > div {
+          flex-direction: column;
+        }
+
+        .blog-content-custom img {
+          width: 100% !important;
+          margin: 12px 0 !important;
+          height: auto !important;
+        }
+          .blog-content-custom p {
+            font-size: 1rem;
+            line-height: 1.5;
+          }
+            .blog-content-custom h2 {
+              line-height: 1.1;
+              margin-top: 40px;
+          }
+        }
         @media (max-width: 768px) {
           .blog-content-custom h2 {
             font-size: 1.75rem;
@@ -166,9 +186,7 @@ export default function BlogArticle({article, processedContent}) {
             margin: 10px 0;
           }
           
-          .blog-content-custom p {
-            font-size: 1rem;
-          }
+          
         }
       `}</style>
     </article>

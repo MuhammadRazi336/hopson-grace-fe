@@ -660,6 +660,15 @@ const BlogDetails = () => {
   const [showAlert, setShowAlert] = React.useState(false);
   const [alertMessage, setAlertMessage] = React.useState('');
   const [alertType, setAlertType] = React.useState('success');
+  const getSlidesForWidth = React.useCallback((width) => {
+    if (width >= 1024) return 4;
+    if (width >= 768) return 3;
+    if (width > 500) return 2;
+    return 1;
+  }, []);
+  const [activeSlidesPerView, setActiveSlidesPerView] = React.useState(() =>
+    typeof window !== 'undefined' ? getSlidesForWidth(window.innerWidth || 1600) : 4,
+  );
 
   const handleAddToRegistry = (product, quantity) => {
     try {
@@ -731,30 +740,52 @@ const BlogDetails = () => {
     }
   };
 
+  React.useEffect(() => {
+    const updateSlides = () => setActiveSlidesPerView(getSlidesForWidth(window.innerWidth || 1600));
+    updateSlides();
+    window.addEventListener('resize', updateSlides);
+    return () => window.removeEventListener('resize', updateSlides);
+  }, [getSlidesForWidth]);
+
+  const relatedArticles = React.useMemo(
+    () =>
+      blogs
+        .flatMap((blog) =>
+          blog.articles.nodes
+            .filter((article) => article.handle !== currentArticleHandle)
+            .map((article) => ({...article, blogHandle: blog.handle})),
+        )
+        .slice(0, 12),
+    [blogs, currentArticleHandle],
+  );
+
+  const showMoreStoriesButtons = relatedArticles.length > activeSlidesPerView;
+  const canSlideMoreStories = relatedArticles.length > activeSlidesPerView;
+
 
   return (
     <>
       <Header />
 
       <div className="w-full lg:h-[34.375vw] xl:h-[34.375vw] 2xl:h-[34.375vw] flex flex-row items-center justify-center">
-        <div className="w-[50%] h-full bg-[#446184] relative">
+        <div className="w-[50%] h-full bg-[#446184] relative max-[1025px]:h-[500px] max-[768px]:h-[360px]">
           <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
-            <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:tracking-[0.083vw] xl:tracking-[0.083vw] 2xl:tracking-[0.083vw] font-[800] mb-[1.771vw] uppercase">{metafields.category || 'WEDDING STORIES'}</p>
-            <h1 className='prata capitalize text-[46px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] font-normal text-center max-[1024px]:m-0 text-white'>{article.title}</h1>
+            <p className="text-white text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:tracking-[0.083vw] xl:tracking-[0.083vw] 2xl:tracking-[0.083vw] font-[800] mb-[1.771vw] uppercase max-[1025px]:text-[16px]">{metafields.category || 'WEDDING STORIES'}</p>
+            <h1 className='prata capitalize text-[46px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] font-normal text-center max-[1024px]:m-0 text-white max-[1025px]:text-[24px]'>{article.title}</h1>
             <Heading
               text=""
               classes={
                 'prata text-[46px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] font-normal text-center max-[1024px]:m-0 text-white'
               }
               image={lineImgWhiteHead}
-              imageClasses={'max-[1024px]:max-w-[330px] lg:w-[16.875vw] xl:w-[16.875vw] 2xl:w-[16.875vw] brightness-0 invert-100'}
+              imageClasses={'max-[1024px]:max-w-[330px] lg:w-[16.875vw] xl:w-[16.875vw] 2xl:w-[16.875vw] brightness-0 invert-100 max-[1025px]:w-[180px] max-[391px]:w-[100px]'}
             />
-            <p className="ivyora font-[400] italic text-[32px] lg:tracking-[0.1vw] xl:tracking-[0.1vw] 2xl:tracking-[0.1vw] lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] text-white leading-relaxed lg:leading-[2.29vw] xl:leading-[2.29vw] 2xl:leading-[2.29vw] mx-auto mt-10">
+            <p className="ivyora font-[400] italic text-[32px] lg:tracking-[0.1vw] xl:tracking-[0.1vw] 2xl:tracking-[0.1vw] lg:text-[1.667vw] xl:text-[1.667vw] 2xl:text-[1.667vw] text-white leading-relaxed lg:leading-[2.29vw] xl:leading-[2.29vw] 2xl:leading-[2.29vw] mx-auto mt-10 max-[1025px]:text-[20px]">
               {metafields.first_para}
             </p>
           </div>
         </div>
-        <div className="w-[50%] h-full">
+        <div className="w-[50%] h-full max-[1025px]:h-[500px] max-[768px]:h-[360px]">
           {article.image?.url ? (
           <img
             src={article.image.url}
@@ -767,19 +798,19 @@ const BlogDetails = () => {
         </div>
       </div>
 
-      <div className="w-full flex flex-row px-[9.375vw] py-[6.927vw] gap-[6.979vw]">
+      <div className="w-full flex flex-row px-[9.375vw] py-[6.927vw] gap-[6.979vw] max-[1025px]:flex-col max-[1025px]:px-[40px] max-[1025px]:py-[40px] max-[768px]:px-[20px] max-[768px]:py-[20px]">
         {/* Full Content Display */}
-        <div className="w-[73.3%]">
+        <div className="w-[73.3%] max-[993px]:w-full">
           <BlogArticle article={article} processedContent={article.contentHtml} />
         </div>
 
-        <div className="w-[26.7%]">
+        <div className="w-[26.7%] max-[993px]:w-full">
 
           {/* Event details block: driven solely by event.details metafield (namespace "event", key "details") */}
           {eventDetailsBlock?.heading && (
-          <div className="bg-[#FAF9F6] relative px-16 py-12">
-            <div className="text-center w-full px-10">
-              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-medium tracking-[8%] uppercase">   
+          <div className="bg-[#FAF9F6] relative px-16 py-12 max-[993px]:px-[40px] max-[993px]:py-[40px] max-[768px]:px-[30px] max-[768px]:py-[30px]">
+            <div className="text-center w-full px-10 max-[1025px]:px-0">
+              <p className="text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] bastardogrotesk font-medium tracking-[8%] uppercase max-[1025px]:text-[20px]">   
                 {eventDetailsBlock?.heading && (
                   (() => {
                     const heading = eventDetailsBlock.heading.trim();
@@ -948,8 +979,8 @@ const BlogDetails = () => {
 
           {/* CTA block driven by create.registry rich text when present */}
           {createRegistryBlock?.title && (
-            <div className="h-[620px] w-full bg-[#446184] relative mt-10 mx-auto">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-10">
+            <div className="h-max w-full bg-[#446184] relative mt-10 mx-auto">
+              <div className="py-20 text-center w-full px-10">
                 <img
                   src={regLogo}
                   alt=""
@@ -975,33 +1006,48 @@ const BlogDetails = () => {
       </div>
 
       <div>
-        <img src={heart} alt="" className='mx-auto w-[250px]'/>
+        <img src={heart} alt="" className='mx-auto w-[250px] max-[993px]:w-[200px] max-[768px]:w-[150px]'/>
 
         <Heading
           text="more wedding stories"
-          classes={'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 mt-10'}
+          classes={'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 mt-10 max-[1025px]:text-3xl'}
           image={lineImghead}
-          imageClasses={'max-w-[430px]'}
+          imageClasses={'max-w-[430px] max-[993px]:max-w-[250px]'}
         />
 
         <div className="relative items-start mt-16">
           <div className="lg:w-[100vw] max-w-[85%] mx-auto">
-            <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px]">
-              <img src={nextitem} alt="" className="rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
-              <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-            </div>
+            {showMoreStoriesButtons && (
+              <div className="swiper-button-prev-prod absolute top-0 left-[0] max-[1601px]:-left-[0%] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center h-[19.5vw] max-[768px]:h-[41.35vw] justify-center max-[1024px]:w-[33px] z-20">
+                <img src={nextitem} alt="" className="rotate-90 w-[12px] h-[12px] lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" />
+                <span className="-rotate-90 text-black lg:text-[1.146vw] block tracking-wider max-[1024px]:hidden">
+                  more
+                </span>
+              </div>
+            )}
 
             <Swiper
               spaceBetween={15}
               slidesPerView={4}
-              loop={true}
+              loop={canSlideMoreStories}
               modules={[Navigation]}
-              navigation={{
-                nextEl: '.swiper-button-next-prod',
-                prevEl: '.swiper-button-prev-prod',
+              onSwiper={(swiper) => {
+                const spv = Number(swiper.params?.slidesPerView) || 4;
+                setActiveSlidesPerView(spv);
               }}
+              onBreakpoint={(swiper) => {
+                const spv = Number(swiper.params?.slidesPerView) || 4;
+                setActiveSlidesPerView(spv);
+              }}
+              navigation={
+                canSlideMoreStories
+                  ? {
+                      nextEl: '.swiper-button-next-prod',
+                      prevEl: '.swiper-button-prev-prod',
+                    }
+                  : false
+              }
+              allowTouchMove={canSlideMoreStories}
               className=""
               breakpoints={{
                 345: {
@@ -1009,7 +1055,7 @@ const BlogDetails = () => {
                   slidesPerView: 1,
                   centeredSlides: false,
                 },
-                475: {
+                501: {
                   spaceBetween: 15,
                   slidesPerView: 2,
                   centeredSlides: false,
@@ -1036,10 +1082,7 @@ const BlogDetails = () => {
                 },
               }}
             >
-              {blogs.flatMap(blog => 
-                blog.articles.nodes
-                  .filter(article => article.handle !== currentArticleHandle) // Exclude current article
-                  .map(article => (
+              {relatedArticles.map((article) => (
                     <SwiperSlide key={article.id}>
                       <div className="w-full">
                         {article.image?.url ? (
@@ -1055,7 +1098,7 @@ const BlogDetails = () => {
                           ...
                         </p>
                         <div className="flex items-center justify-start">
-                          <Link to={`/blogs/${blog.handle}/${article.handle}`}>
+                          <Link to={`/blogs/${article.blogHandle}/${article.handle}`}>
                             <p className="font-bold flex items-center justify-center lg:text-[18px] uppercase gap-2">
                               Read More
                               <img src={readMoreIcon} className='w-[16px] h-[16px] pl-0.5 relative -top-[2px]' alt="" />
@@ -1064,16 +1107,17 @@ const BlogDetails = () => {
                         </div>
                       </div>
                     </SwiperSlide>
-                  ))
-                ).slice(0, 12)}
+                  ))}
             </Swiper>
             
-            <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px]">
-              <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
-                more
-              </span>
-              <img src={nextitem} className="-rotate-90 lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
-            </div>
+            {showMoreStoriesButtons && (
+              <div className="swiper-button-next-prod absolute top-0 right-[0] cursor-pointer uppercase flex w-[139px] max-[1601px]:w-[90px] items-center max-[768px]:h-[41.35vw] h-[19.5vw] justify-center text-white max-[1024px]:w-[33px] z-20">
+                <span className="rotate-90 text-black block lg:text-[1.146vw] tracking-wider max-[1024px]:hidden">
+                  more
+                </span>
+                <img src={nextitem} className="-rotate-90 w-[12px] h-[12px] lg:w-[1.042vw] lg:h-[1.042vw] xl:w-[1.042vw] xl:h-[1.042vw] 2xl:w-[1.042vw] 2xl:h-[1.042vw]" alt="" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -1155,9 +1199,9 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
   return (
     <>
       <p className="text-[72px] text-center prata">{index + 1}.</p>
-      <div className="p-3 bg-white mx-auto relative group h-[460px] mb-20 last:mb-10">
+      <div className="p-3 bg-white mx-auto relative group h-[460px] mb-20 last:mb-10 max-[1025px]:h-auto max-[1025px]:mb-10">
         {/* Product Image and Info */}
-        <div className="relative">
+        <div className="relative z-0 max-[1025px]:hidden">
           {product.images?.edges?.[0]?.node?.url && (
             <img
               src={product.images.edges[0].node.url}
@@ -1178,7 +1222,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
         </div>
 
         {/* Expanding Overlay */}
-        <div className="absolute h-[680px] w-[400px] left-1/2 top-[75%] -translate-x-1/2 -translate-y-1/2 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute h-[35.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center max-[1025px]:opacity-100 max-[1025px]:h-max max-[1025px]:z-10 max-[1025px]:static max-[1025px]:border-gray-300 max-[768px]:p-5">
           <div>
             {product.images?.edges?.[0]?.node?.url && (
               <img
@@ -1188,23 +1232,23 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
                   product.title ||
                   'Product'
                 }
-                className="w-[300px] h-[300px] lg:h-[13.542vw] mx-auto object-cover mb-[20px] rounded"
+                className="w-full mx-auto object-cover mb-[20px] aspect-square rounded"
               />
             )}
-            <h4 className="text-[16px] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
-              PRODUCT
+            <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
+                PRODUCT
             </h4>
-            <h3 className="text-[22px] lg:leading-[1.146vw] font-semibold uppercase text-left leading-[22px] m-0">
+            <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0 max-[1025px]:text-lg">
               {product.title || `Product ${index + 1}`}
             </h3>
-            <p className="text-[24px] font-normal leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
+            <p className="text-[20px] lg:text-[1.25vw] leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left max-[1025px]:mt-2.5 max-[768px]:mt-0">
               {formatShopifyPrice(product.priceRange?.minVariantPrice)}
             </p>
           </div>
 
           <div className="flex flex-col w-full items-center text-xs">
             {/* Quantity Selector and View Product Button */}
-            <div className="flex items-center justify-around w-full mb-4">
+            <div className="flex items-center justify-around w-full mb-4 max-[1025px]:mt-4 max-[1025px]:mb-0 max-[1025px]:flex-wrap max-[1025px]:justify-center">
               <p className="text-[18px] font-[500] uppercase text-left mb-1">
                 QTY
               </p>
@@ -1242,7 +1286,7 @@ const ProductCard = ({product, index, onAddToRegistry}) => {
               {/* Add to Registry Button */}
               <button
                 onClick={() => onAddToRegistry(quantity)}
-                className="bg-[#446184] text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[190px] lg:h-[65px]"
+                className="bg-[#446184] text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:leading-[1.042vw] w-[10.156vw] h-[4.01vw] max-[1025px]:w-full max-[1025px]:mt-4 max-[1025px]:h-auto max-[1025px]:text-[12px]"
               >
                 ADD TO REGISTRY
               </button>

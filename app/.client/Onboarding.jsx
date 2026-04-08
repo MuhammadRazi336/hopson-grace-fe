@@ -751,7 +751,7 @@ const OnboardingClient = ({onStepChange}) => {
       {/* Main content wrapper */}
       {/* Hide Stepper and buttons on last step */}
       {step !== 6 && <Stepper step={step} totalSteps={7} />}
-      <div className="container p-2  max-[768px]:p-2 bg-rounded-md w-full">
+      <div className="container p-2  max-[768px]:p-2 bg-rounded-md w-full max-[426px]:p-0">
         {/* Stepper for progress */}
         <div className="mb-6">
           {/* Render the step content dynamically */}
@@ -888,7 +888,7 @@ const Step1 = ({selectedDate, setSelectedDate, eventDateError}) => {
 
   return (
     <div className="text-center">
-      <div className="p-4 w-[300px] mx-auto customdatepicker">
+      <div className="p-4 w-[300px] mx-auto customdatepicker max-[476px]:w-full">
         <DatePicker
           selectedDate={localSelectedDate}
           onDateChange={handleDateChange}
@@ -932,7 +932,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
       <div className="text-center">
         {/* <Heading text={'How many guests are you inviting?'} /> */}
         <h2 className="font-normal  w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
-        how many guests are you inviting?
+        This will help us calculate the magic number of gifts so that guests have a variety to choose from
         </h2>
       </div>
       {/* Event Name Input */}
@@ -948,7 +948,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
         onWheel={(e) => e.currentTarget.blur()}
         type="number"
         min="1"
-        placeholder="Enter # Of Guest"
+        placeholder="Enter # Of Guests"
         className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black mx-auto mt-4 text-center text-3xl font-bold placeholder:text-lg placeholder:font-normal max-w-full"
         classNameLabel="text-center mt-10 mb-3 text-[22px] max-[768px]:text-lg"
       />
@@ -1386,7 +1386,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
 
   return (
     <div className="">
-      <p className="font-normal mb-10 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-[14px] mx-auto text-center">
+      <p className="font-normal mb-10 mt-4 w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-[16px] mx-auto text-center">
         Pick a style, and we'll make gift recommendations tailored to your
         taste.
       </p>
@@ -1460,7 +1460,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
           </div>
         </div>
         */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-5 max-[1024px]:mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 max-[1024px]:mb-10 max-[768px]:gap-x-3 max-[768px]:gap-y-6">
           {STEP7_FIXED_STYLES.map((option) => (
             <button
               key={option.id}
@@ -1488,7 +1488,7 @@ const Step7 = ({selectedCollections, storefront, onSubCollectionsSelect}) => {
                   sizes="(min-width: 45em) (min-height: 45em) 400px, 100vw"
                 />
               </div>
-              <span className="mt-4 block tracking-wider text-[15px] font-medium text-center max-[767px]:text-[10px] max-[767px]:mt-3">
+              <span className="mt-4 block tracking-wider text-[15px] font-medium text-center max-[767px]:text-[10px] max-[767px]:mt-3 max-[768px]:font-bold">
                 {option.title}
               </span>
             </button>

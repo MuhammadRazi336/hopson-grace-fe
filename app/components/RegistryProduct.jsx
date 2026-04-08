@@ -53,10 +53,10 @@ const ProductCard = ({
     : null;
 
   return (
-    <div className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw] h-[460px]">
-      <div className="relative group mb-[4.844vw]">
+    <div className="pt-0 relative w-[23.43vw] max-[1025px]:w-full max-[1025px]:h-auto max-[1025px]:z-1">
+      <div className="relative group mb-[1.844vw] max-[1025px]:mb-0 max-[1025px]:h-full max-[1025px]:w-full">
         {/* Product image and summary — aligned with dashboard.giftcards GiftCard default state */}
-        <div className="relative z-0">
+        <div className="relative z-0 max-[1025px]:hidden">
           {productDetailUrl ? (
             <Link to={productDetailUrl} className="block cursor-pointer">
               <img
@@ -84,7 +84,7 @@ const ProductCard = ({
         </div>
 
         {/* Hover overlay — matches dashboard.giftcards._index GiftCard */}
-        <div className="absolute h-[460px] lg:h-[36.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center">
+        <div className="absolute h-[35.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center max-[1025px]:opacity-100 max-[1025px]:h-full max-[1025px]:z-10 max-[1025px]:static max-[1025px]:border-gray-300 max-[768px]:p-5 max-[1025px]:h-auto">
           <div>
             {productDetailUrl ? (
               <Link to={productDetailUrl} className="block cursor-pointer">
@@ -96,7 +96,7 @@ const ProductCard = ({
                 <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
                   {brandName}
                 </h4>
-                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
+                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0 max-[1025px]:text-lg">
                   {productName}
                 </h3>
               </Link>
@@ -110,18 +110,18 @@ const ProductCard = ({
                 <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
                   {brandName}
                 </h4>
-                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0">
+                <h3 className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0 max-[1025px]:text-lg">
                   {productName}
                 </h3>
               </>
             )}
-            <p className="text-[20px] lg:text-[1.25vw] leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left">
+            <p className="text-[20px] lg:text-[1.25vw] leading-[20px] lg:leading-[1.25vw] mt-[22px] text-left max-[1025px]:mt-2.5 max-[768px]:mt-0">
               {formatPrice(price)}
             </p>
           </div>
 
           <div className="flex flex-col w-full items-center text-xs">
-            <div className="flex items-center justify-around w-full mb-4">
+            <div className="flex items-center justify-around w-full mb-4 max-[1025px]:mt-4 max-[1025px]:mb-0 max-[1025px]:flex-wrap max-[1025px]:justify-center">
               <p className="text-[18px] lg:text-[0.938vw] font-[500] uppercase text-left mb-1">
                 QTY
               </p>
@@ -162,7 +162,7 @@ const ProductCard = ({
                   showAdded
                     ? 'bg-[#1F1D1B] cursor-default'
                     : 'bg-[#446184]'
-                } text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:py-0 lg:text-[0.729vw] lg:leading-[1.042vw] lg:w-[10.156vw] lg:h-[4.01vw]`}
+                } text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:leading-[1.042vw] w-[10.156vw] h-[4.01vw] max-[1025px]:w-full max-[1025px]:mt-4 max-[1025px]:h-auto max-[1025px]:text-[12px]`}
               >
                 {showAdded ? 'ADDED!' : 'ADD TO REGISTRY'}
               </button>

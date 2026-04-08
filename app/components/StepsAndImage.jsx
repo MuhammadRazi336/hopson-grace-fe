@@ -12,7 +12,7 @@ import step3Image from "/assets/Images/laurenstep.jpg"
 import step4Image from "/assets/Images/no-of-guests.jpg"
 import step5Image from "/assets/Images/amanyarastep.jpg"
 import step6Image from "/assets/Images/giftkindstep.jpg"
-import step7Image from "/assets/Images/dreamFunds.png"
+import step7Image from "/assets/Images/Step7.png"
 import step8Image from "/assets/Images/giftkindstep.jpg"
 import step9Image from "/assets/Images/BeachBg.png"
 import step10Image from "/assets/Images/BreadBg.png"
@@ -65,8 +65,8 @@ const StepsAndImage = ({ content, title, stepNo, totalSteps, className, showLogi
                     )}
                 </div>
             </div>
-            <div className={`${className} ${Number(stepNo) >= Number(totalSteps) ? "lg:py-[3.333vw] xl:py-[3.333vw] 2xl:py-[3.333vw]" : "lg:py-[5.417vw] xl:py-[5.417vw] 2xl:py-[5.417vw]"} bg-steel-blue text-white lg:px-[5.417vw] xl:px-[5.417vw] 2xl:px-[5.417vw] lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] relative -left-[37.5px] top-[59px] lg:top-[3.073vw] xl:top-[3.073vw] 2xl:top-[3.073vw] max-[1024px]:max-w-[100%] max-w-[1000px] max-[1024px]:-top-[10.292vw] max-[1024px]:left-2.5 max-[1024px]:w-[95%] max-[1024px]:px-[24px] max-[1024px]:py-[27px] text-center`}>
-                <h3 className="text-5xl font-[400] lg:text-[2.292vw] xl:text-[2.292vw] 2xl:text-[2.292vw] lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] prata text-center max-[1024px]:text-[26px] max-[1024px]:leading-[30px] afterimg">{title}</h3>
+            <div className={`${className} ${Number(stepNo) >= Number(totalSteps) ? "lg:py-[3.333vw] xl:py-[3.333vw] 2xl:py-[3.333vw]" : "lg:py-[5.417vw] xl:py-[5.417vw] 2xl:py-[5.417vw]"} bg-steel-blue text-white lg:px-[5.417vw] xl:px-[5.417vw] 2xl:px-[5.417vw] lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] relative -left-[37.5px] top-[59px] lg:top-[3.073vw] xl:top-[3.073vw] 2xl:top-[3.073vw] max-[1024px]:max-w-[100%] max-w-[1000px] max-[1024px]:-top-[10.292vw] max-[1024px]:left-2.5 max-[1024px]:w-[95%] max-[1024px]:px-[24px] max-[1024px]:py-[27px] text-center max-[768px]:py-[60px]`}>
+                <h3 className="text-5xl font-[400] prata text-center max-[1025px]:text-[26px] max-[1025px]:leading-[30px] afterimg">{title}</h3>
                 {/* <img src={StepLine} alt="" className="mx-auto mt-4" /> */}
                 <div className={Number(stepNo) >= Number(totalSteps) ? "" : "mb-10"}>
                     {content}
