@@ -187,6 +187,11 @@ const GiftDetailHandle = () => {
   console.log('Product priceRange:', product?.priceRange);
   console.log('Vendor products:', vendorProducts);
 
+  const brandProfileHandle =
+    product?.collections?.nodes?.find(
+      (col) => col?.brandMetafield?.value === 'true' && col?.handle,
+    )?.handle || 'hopson-grace';
+
   const handleAddtoRegistry = ({id, price, quantity, isGroupPayment}) => {
     // Check if user is logged in
     if (!user || !user.user || !user.user.id) {
@@ -234,7 +239,7 @@ const GiftDetailHandle = () => {
         key={product.id}
         productTitle={product.title}
         productPrice={product.variants?.edges?.[0]?.node?.priceV2 || product.priceRange?.minVariantPrice || {amount: '0', currencyCode: 'USD'}}
-        productDescription={product.description}
+        productDescription={product.descriptionHtml}
         productImages={product.images.edges}
         variants={product.variants?.edges?.map((e) => e.node) ?? []}
         onRegistryPress={({quantity, isGroupGift, variant}) => {
@@ -327,12 +332,12 @@ const GiftDetailHandle = () => {
                 {product?.vendor || 'Hopson Grace'}
               </h5>
               <p className="text-[18px] font-[400] max-[1024px]:text-[16px] lg:leading-[28px] xl:leading-[28px] 2xl:leading-[28px] text-center mb-0">
-                {product?.description ? 
-                  product.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : 
+                {product?.descriptionHtml ? 
+                  product.descriptionHtml.replace(/<[^>]*>/g, '').substring(0, 200) + '...' : 
                   'Lorem ipsum dolor sit amet. Ab nesciunt officia qui labore unde 33 veniam reprehenderit ut impedit perspiciatis in magnam accusantium est ratione dignissimos qui dolor internos. Sit laboriosam rerum est minima provident eos doloremque omnis.'
                 }
               </p>
-              <Link to={`/brand/${product?.vendor?.toLowerCase().replace(/\s+/g, '-') || 'hopson-grace'}`}>
+              <Link to={`/brand/${brandProfileHandle}`}>
                 <button className="text-white border-b pt-2 pb-1 text-[14px] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] font-semibold uppercase tracking-wide hover:text-gray-300 transition-colors cursor-pointer">
                   View Full Profile
                 </button>
@@ -615,6 +620,10 @@ query getProductByHandle($handle: String!) {
     collections(first: 30) {
       nodes {
         id
+        handle
+        brandMetafield: metafield(namespace: "custom", key: "brand") {
+          value
+        }
       }
     }
   }
