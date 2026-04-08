@@ -174,7 +174,7 @@ aside li {
 .custom-mega-menu{
   opacity: 0;
   visibility: hidden;
-  transition: 0.5s ease;
+  transition: 0.1s ease;
 }
 
 .mega-menu-triggers:hover + .custom-mega-menu,

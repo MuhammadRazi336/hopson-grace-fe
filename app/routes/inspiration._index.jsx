@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useId} from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import StickyBarPortal from '~/components/StickyBarPortal';
@@ -98,6 +98,7 @@ const Inspiration = () => {
   const [activeStickyCategory, setActiveStickyCategory] = useState(null);
   const blogCategoriesRef = useRef(null);
   const [showPopup, setShowPopup] = useState(false);
+  const navArrowFilterId = useId().replace(/:/g, '');
 
   const handleOpenPopup = () => {
     setShowPopup(true);
@@ -275,7 +276,7 @@ const Inspiration = () => {
       )}
 
       {/* Hero Carousel Section */}
-      <div className="relative w-full">
+      <div className="relative w-full asda">
         <Swiper
           modules={[Pagination]}
           slidesPerView={1}
@@ -289,16 +290,16 @@ const Inspiration = () => {
         >
           {/* Slide 1 */}
           <SwiperSlide>
-            <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
+            <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
                 src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
               {/* Text Overlay - Left Side */}
-              <div className="absolute left-0 top-0 h-full w-full flex items-center">
-                <div className="text-white text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[25px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
+              <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
+                <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
                     lorem ipsum title
                   </h2>
                   <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
@@ -317,21 +318,21 @@ const Inspiration = () => {
 
           {/* Slide 2 */}
           <SwiperSlide>
-            <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
+            <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
                 src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
               {/* Text Overlay - Left Side */}
-              <div className="absolute left-0 top-0 h-full w-full flex items-center">
-                <div className="text-white text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[32px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
+              <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
+                <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
                     lorem ipsum title
                   </h2>
-                  <p className="text-[12px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
                     LOREM IPSUM SUB-TITLE BLURB
-                    <br className="max-[1024px]:hidden" />DOLR SIT AMIT LOREM
+                    <br />DOLR SIT AMIT LOREM
                   </p>
                   <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
@@ -345,21 +346,21 @@ const Inspiration = () => {
 
           {/* Slide 3 */}
           <SwiperSlide>
-            <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
+            <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
                 src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
               {/* Text Overlay - Left Side */}
-              <div className="absolute left-0 top-0 h-full w-full flex items-center">
-                <div className="text-white text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[32px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
+              <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
+                <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
                     lorem ipsum title
                   </h2>
-                  <p className="text-[12px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
                     LOREM IPSUM SUB-TITLE BLURB
-                    <br className="max-[1024px]:hidden" />DOLR SIT AMIT LOREM
+                    <br />DOLR SIT AMIT LOREM
                   </p>
                   <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
@@ -367,27 +368,27 @@ const Inspiration = () => {
                 </div>
               </div>
               {/* Circular Icon with J - Right Side */}
-             
+              
             </div>
           </SwiperSlide>
 
           {/* Slide 4 */}
           <SwiperSlide>
-            <div className="relative w-full h-[42vw] max-[1024px]:h-[50vw] max-h-[800px] overflow-hidden">
+            <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
                 src="/assets/Images/inspiration-carousel-img2.jpg"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
               {/* Text Overlay - Left Side */}
-              <div className="absolute left-0 top-0 h-full w-full flex items-center">
-                <div className="text-white text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[32px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
+              <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
+                <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
                     lorem ipsum title
                   </h2>
-                  <p className="text-[12px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
                     LOREM IPSUM SUB-TITLE BLURB
-                    <br className="max-[1024px]:hidden" />DOLR SIT AMIT LOREM
+                    <br />DOLR SIT AMIT LOREM
                   </p>
                   <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
@@ -395,16 +396,20 @@ const Inspiration = () => {
                 </div>
               </div>
               {/* Circular Icon with J - Right Side */}
-             
+              
             </div>
           </SwiperSlide>
         </Swiper>
       </div>
 
-      <div ref={blogCategoriesRef} className="blogCategories mx-auto w-full">
-        <div className="h-[10.729vw] max-[767px]:h-auto max-[767px]:py-3 max-[767px]:flex-wrap flex items-center justify-center z-50 bg-[#446184] w-full shadow-lg gap-8 lg:gap-16 px-4">
+      <div
+        ref={blogCategoriesRef}
+        className="blogCategories mx-auto w-full max-[767px]:pb-9"
+      >
+        <div className="relative w-full">
+        <div className="h-[10.729vw] max-[767px]:h-auto max-[767px]:pt-3 max-[767px]:pb-5 max-[767px]:overflow-x-auto max-[767px]:justify-start flex items-center justify-center z-50 bg-[#446184] w-full shadow-lg gap-8 lg:gap-16 px-4">
           <div
-            className="relative cursor-pointer"
+            className="relative cursor-pointer text-center max-[767px]:min-w-[max-content]"
             onClick={() => { 
               setClickedSection(prev => prev === 'wedding' ? null : 'wedding'); 
               setArticlesToShow(12); 
@@ -423,7 +428,7 @@ const Inspiration = () => {
             )}
           </div>
           <div
-            className="relative cursor-pointer"
+            className="relative cursor-pointer text-center max-[767px]:min-w-[max-content]"
             onClick={() => { 
               setClickedSection(prev => prev === 'planning' ? null : 'planning'); 
               setArticlesToShow(12); 
@@ -442,7 +447,7 @@ const Inspiration = () => {
             )}
           </div>
           <div
-            className="relative cursor-pointer"
+            className="relative cursor-pointer text-center max-[767px]:min-w-[max-content]"
             onClick={() => { 
               setClickedSection(prev => prev === 'design' ? null : 'design'); 
               setArticlesToShow(12); 
@@ -461,7 +466,7 @@ const Inspiration = () => {
             )}
           </div>
           <div
-            className="relative cursor-pointer"
+            className="relative cursor-pointer text-center max-[767px]:min-w-[max-content]"
             onClick={() => { 
               setClickedSection(prev => prev === 'taste' ? null : 'taste'); 
               setArticlesToShow(12); 
@@ -480,9 +485,68 @@ const Inspiration = () => {
             )}
           </div>
         </div>
+        <div
+          className="hidden max-[767px]:block pointer-events-none absolute left-[50%] translate-x-[-50%] bottom-[-15px] z-[60] translate-y-1/2"
+          aria-hidden="true"
+        >
+          <svg
+            width="72"
+            height="72"
+            viewBox="0 0 72 72"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="shrink-0"
+          >
+            <g filter={`url(#${navArrowFilterId})`}>
+              <circle cx="36" cy="32" r="24" fill="#F5F2ED" />
+              <path
+                d="M36.8655 39.9297C36.4806 40.5964 35.5183 40.5964 35.1334 39.9297L27.9578 27.5011C27.5729 26.8345 28.054 26.0011 28.8238 26.0011H43.1751C43.9449 26.0011 44.426 26.8344 44.0411 27.5011L36.8655 39.9297Z"
+                fill="black"
+              />
+            </g>
+            <defs>
+              <filter
+                id={navArrowFilterId}
+                x="0"
+                y="0"
+                width="72"
+                height="72"
+                filterUnits="userSpaceOnUse"
+                colorInterpolationFilters="sRGB"
+              >
+                <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="4" />
+                <feGaussianBlur stdDeviation="6" />
+                <feComposite in2="hardAlpha" operator="out" />
+                <feColorMatrix
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0"
+                />
+                <feBlend
+                  mode="normal"
+                  in2="BackgroundImageFix"
+                  result="effect1_dropShadow_12412_6302"
+                />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="effect1_dropShadow_12412_6302"
+                  result="shape"
+                />
+              </filter>
+            </defs>
+          </svg>
+        </div>
+        </div>
       </div>
 
-      <div className="py-16 mx-auto">
+      <div className="py-16 mx-auto max-[767px]:pt-9">
         <h3 className="text-center text-[1.458vw] font-[500]">
           {clickedSection === 'wedding' ? 'WEDDING STORIES' : 
            clickedSection === 'planning' ? 'REGISTRY & PLANNING TIPS' :
