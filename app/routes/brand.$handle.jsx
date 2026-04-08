@@ -316,7 +316,7 @@ const Brand = () => {
               image={lineImghead}
               imageClasses={'w-[150px] lg:w-[22.14vw]'}
             />
-            <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw]">
+            <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw] max-[1025px]:leading-[18px]">
               {collection.description}
             </p>
           </div>
@@ -330,8 +330,8 @@ const Brand = () => {
         </div>
       </div>
 
-      <section className="px-[8.802vw] mx-auto">
-        <div className="flex flex-col md:flex-row gap-12 pt-[6.302vw]">
+      <section className="px-[8.594vw] mx-auto max-[1025px]:px-5">
+        <div className="flex flex-row gap-[3.75vw] w-full mx-auto pt-[5vw] max-[1025px]:gap-2.5 max-[1025px]:flex-col">
           <SidebarFilter
             categories={sidebarCategories}
             selectedCategoryIds={selectedCategoryIds}
@@ -344,7 +344,7 @@ const Brand = () => {
             checkedStyles={checkedStyles}
             onStyleCheckbox={handleStyleCheckbox}
           />
-          <div className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-0 pt-0 p-4 relative z-0">
+          <div className="w-full xl:w-9/12 grid max-[600px]:grid-cols-1 max-[992px]:grid-cols-2 grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]">
             {visibleProducts.map((edge) => {
               const product = edge.node;
               const firstImage =
@@ -376,10 +376,10 @@ const Brand = () => {
         </div>
 
         <div className="flex justify-center items-center">
-          <div className="w-full xl:w-1/4 "> </div>
-          <div className="w-full xl:w-3/4 flex flex-col items-center">
-            <p className="text-center text-md lg:text-[0.938vw] lg:leading-[0.938vw] mt-[8.073vw] mb-[2.083vw]">
-              LOADING {displayedProductsCount} of {totalProductsCount}
+        <div className="w-full xl:w-1/4 max-[1025px]:hidden"> </div>
+        <div className="w-full xl:w-3/4 flex flex-col items-center">
+          <p className="text-center text-[18px] leading-[18px] mt-[1vw] mb-[2.083vw] font-[500] tracking-[0.075vw] min-[1025px]:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] min-[1025px]:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] max-[767px]:text-[14px] max-[767px]:leading-[14px] max-[767px]:mt-[40px] max-[767px]:mb-[20px]">
+          LOADING {displayedProductsCount} of {totalProductsCount}
             </p>
 
             {hasMore && canLoadMore && (
@@ -461,6 +461,16 @@ function SidebarFilter({
     brands: true,
     styles: true,
   });
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    if (!filterOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [filterOpen]);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
@@ -469,11 +479,14 @@ function SidebarFilter({
     }));
   };
 
-  return (
-    <div className="w-full xl:w-3/12 px-[1.979vw] py-[2.5vw] h-fit bg-[#FAF9F6]">
+  const filterPanelClasses =
+    'w-full px-[1.979vw] py-[2.5vw] h-fit bg-[#FAF9F6] max-[768px]:p-5';
+
+  const filterInner = (
+    <>
       <div className="mb-6">
         <h2
-          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+          className="text-sm font-bold uppercase mb-[2.031vw] min-[1025px]:text-[0.938vw] min-[1025px]:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('categories')}
         >
           Categories
@@ -482,13 +495,13 @@ function SidebarFilter({
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
+                className="w-[0.833vw] h-[0.833vw] rotate-180 max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
+                className="w-[0.833vw] h-[0.833vw] max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
               />
             )}
           </span>
@@ -497,8 +510,8 @@ function SidebarFilter({
           <ul className="space-y-2 text-sm">
             {categories && categories.length > 0 ? (
               categories.map((cat) => (
-                <li key={cat.id} className="mb-[1.69vw]">
-                  <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                <li key={cat.id} className="mb-[1.69vw] max-[768px]:mb-2.5">
+                  <label className="uppercase flex items-center gap-[1.10vw] min-[1025px]:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
                       className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
@@ -518,7 +531,7 @@ function SidebarFilter({
 
       <div>
         <h2
-          className="text-sm font-bold uppercase mb-[2.031vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+          className="text-sm font-bold uppercase mb-[2.031vw] min-[1025px]:text-[0.938vw] min-[1025px]:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
           onClick={() => toggleSection('styles')}
         >
           Shop by Style
@@ -527,13 +540,13 @@ function SidebarFilter({
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
+                className="w-[0.833vw] h-[0.833vw] rotate-180 max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
+                className="w-[0.833vw] h-[0.833vw] max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
               />
             )}
           </span>
@@ -541,8 +554,8 @@ function SidebarFilter({
         {openSections.styles && (
           <ul className="space-y-2 text-sm">
             {STYLE_OPTIONS.map((style) => (
-              <li key={style.id} className="mb-[1.69vw]">
-                <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+              <li key={style.id} className="mb-[1.69vw] max-[768px]:mb-2.5">
+                <label className="uppercase flex items-center gap-[1.10vw] min-[1025px]:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                   <input
                     type="checkbox"
                     className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
@@ -555,6 +568,58 @@ function SidebarFilter({
             ))}
           </ul>
         )}
+      </div>
+    </>
+  );
+
+  return (
+    <div className="w-full min-[1025px]:w-[19.031vw] shrink-0">
+      <div className="min-[1025px]:hidden my-4">
+        <button
+          type="button"
+          onClick={() => setFilterOpen(true)}
+          className="uppercase font-semibold text-sm tracking-wider"
+        >
+          Show Filter
+        </button>
+      </div>
+
+      <div className={`hidden min-[1025px]:block ${filterPanelClasses}`}>
+        {filterInner}
+      </div>
+
+      <div
+        className={`min-[1025px]:hidden fixed inset-0 z-[100] transition-opacity duration-300 ease-out ${
+          filterOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+        aria-hidden={!filterOpen}
+      >
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/50"
+          aria-label="Close filters"
+          onClick={() => setFilterOpen(false)}
+        />
+        <div
+          className={`absolute left-0 top-0 bottom-0 z-10 flex w-[min(100%,22rem)] max-w-[90vw] flex-col bg-[#FAF9F6] shadow-xl transition-transform duration-300 ease-out ${
+            filterOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="flex shrink-0 items-center justify-end border-b border-[#E8E6E3] px-5 py-4">
+            <button
+              type="button"
+              onClick={() => setFilterOpen(false)}
+              className="text-[13px] font-bold uppercase tracking-wide text-[#1F1D1B] underline underline-offset-2"
+            >
+              Close
+            </button>
+          </div>
+          <div className={`min-h-0 flex-1 overflow-y-auto ${filterPanelClasses}`}>
+            {filterInner}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -71,7 +71,7 @@ const introSteps = [
   },
   {
     tab: 'SHIP MY GIFTS',
-    message: 'Enjoy one-time free shipping after the wedding - just let us know when you\'re ready. Prefer to receive something sooner? You can ship gifts anytime; standard shipping rates will apply.',
+    message: 'We cover shipping on two separate deliveries after your wedding, so you can receive your gifts when the timing is right. Prefer to receive something sooner? You can ship gifts anytime; standard shipping rates apply.',
     arrow: {
       tailOffsetX: 180,
       tailOffsetY: -200,
@@ -277,14 +277,14 @@ const Dashboard_index = ({context}) => {
             {/* Welcome and couple name */}
             <div className="mt-[6.25vw] max-[1024px]:order-1 max-[1024px]:mt-[0px]">
               <div className="md:text-[42px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center xl:mt-0 mt-16 font-normal ivyora max-[1024px]:mt-0 max-[1024px]:text-[30px]">welcome to your dashboard</div>
-              <div className="prata text-[48px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mb-[3.385vw] mt-[1.615vw]">{coupleName}</div>
+              <div className="prata lowercase text-[48px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center mb-[3.385vw] mt-[1.615vw]">{coupleName}</div>
               
               {/* <img src={lineImg3} alt="line" className="w-[60%] mt-[1.615vw] lg:w-[23.438vw] xl:w-[23.438vw] 2xl:w-[23.438vw] h-auto mx-auto" /> */}
               {/* <div className="uppercase mt-[2.031vw] mb-[2.865vw] text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] text-center tracking-widest text-black/70">How this works</div> */}
             </div>
 
             {/* Right side cards */}
-            <div className="absolute right-4 top-4 lg:right-[4.271vw] xl:right-[4.271vw] 2xl:right-[4.271vw] lg:top-[2.917vw] xl:top-[2.917vw] 2xl:top-[2.917vw] flex flex-col gap-[18px] max-[1024px]:relative max-[1024px]:order-2 max-[1024px]:top-0 max-[1024px]:right-0 max-[1024px]:w-full max-[1024px]:mb-[30px]">
+            <div className="absolute right-4 top-4 lg:right-[4.271vw] xl:right-[4.271vw] 2xl:right-[4.271vw] lg:top-[2.917vw] xl:top-[2.917vw] 2xl:top-[2.917vw] flex flex-col gap-[18px] max-[1024px]:relative max-[1024px]:order-2 max-[1024px]:top-0 max-[1024px]:right-0 max-[1024px]:w-full max-[1024px]:mb-[30px] max-[1025px]:hidden">
               <div ref={(node) => setNotificationNode(node)}>
                 <NotificationCard
                   className={currentStep === 7 ? 'border-2 border-black' : ''}
@@ -339,7 +339,7 @@ const Dashboard_index = ({context}) => {
                 </button>
               </div>
               <div className="text-lg font-bold text-center mb-[35px] mt-[20px] lg:mt-[1.042vw] xl:mt-[1.042vw] 2xl:mt-[1.042vw] lg:mb-[2.396vw] xl:mb-[2.396vw] 2xl:mb-[2.396vw]">
-                <span className="text-3xl md:text-4xl font-normal lg:text-[3.229vw] xl:text-[3.229vw] 2xl:text-[3.229vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] top-[10px] relative mr-[10px]">{currentStep + 1}</span> <span className="font-normal text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.467vw] xl:leading-[1.467vw] 2xl:leading-[1.467vw]">/ {introSteps.length}</span>
+                <span className="text-[3.229vw] font-normal leading-[1.25vw] top-[10px] relative mr-[10px] max-[1025px]:text-[54px]">{currentStep + 1}</span> <span className="font-normal text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.467vw] xl:leading-[1.467vw] 2xl:leading-[1.467vw]">/ {introSteps.length}</span>
               </div>
               <button
                 className="font-bold uppercase tracking-wide text-black mb-[140px] lg:mb-[7.604vw] xl:mb-[7.604vw] 2xl:mb-[7.604vw] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] pb-[0.313vw] cursor-pointer border-b-1.5 border-[#1F1D1B] lg:leading-[18px] max-[1024px]:text-base max-[1024px]:mb-0"
