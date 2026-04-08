@@ -279,7 +279,10 @@ const GiftDetail = ({
           <div className="prose prose-gray max-w-none">
             <div className="text-[22px] leading-8 pt-[2.917vw] product-detail-list ">
               {productDescription ? (
-                <p>{productDescription}</p>
+                <div
+                  className="whitespace-normal [&_p]:block [&_p]:mb-4 [&_p]:last:mb-0 [&_ul]:block [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:my-4 [&_li]:list-item [&_li]:mb-1 [&_a]:underline [&_a]:underline-offset-2"
+                  dangerouslySetInnerHTML={{__html: productDescription}}
+                />
               ) : (
                 <>
                   <p>
