@@ -17,6 +17,16 @@ import ModalPortal from '~/components/ModalPortal';
 import billingAddressOptions from '~/data/billing-address-options.json';
 import {getApiBaseUrl} from '~/utils/api-url';
 import SideCart from '~/components/SideCart';
+import {
+  buildLineItemsForTax,
+  buildCoupleRegistryShippingAddress,
+  buildGuestBillingAddressForTax,
+  postCalculateTaxRate,
+  getCalculateTaxRateErrorMessage,
+  getTaxCalculationErrorForDisplay,
+  parseRegistryIdForTax,
+  isAllCashFundCartItems,
+} from '~/utils/checkout-tax';
 
 export async function loader({context, request}) {
   try {
@@ -34,8 +44,20 @@ export async function loader({context, request}) {
     const registryApi = await context.ClientGet(
       `registries/${registryId}`,
       context,
-    )
-    console.log('registryApi', registryApi);
+    );
+
+    let registryDetail = null;
+    if (registryId) {
+      try {
+        const detailRes = await context.ClientGet(
+          `registries/detail/${registryId}`,
+          context,
+        );
+        registryDetail = detailRes?.data ?? null;
+      } catch {
+        /* registries/detail optional */
+      }
+    }
 
     let productData = [];
     let cashFundData = [];
@@ -87,12 +109,12 @@ export async function loader({context, request}) {
                 productId: item.productId,
               }));
             }
-          } catch (cashError) {
-            console.error('Error fetching cash fund data:', cashError);
+          } catch {
+            /* cash fund optional */
           }
         }
-      } catch (error) {
-        console.error('Error fetching cart or product data:', error);
+      } catch {
+        /* cart / product fetch optional for loader */
       }
     }
 
@@ -103,6 +125,7 @@ export async function loader({context, request}) {
       productData,
       cashFundData,
       registryApi,
+      registryDetail,
       registryId,
       email,
       apiBaseUrl:
@@ -116,6 +139,7 @@ export async function loader({context, request}) {
       productData: [],
       cashFundData: [],
       registryApi: {},
+      registryDetail: null,
       registryId: '',
       email: '',
       apiBaseUrl: context.env.API_BASE_URL || process.env.API_BASE_URL,
@@ -153,6 +177,7 @@ export async function action({request, context}) {
 
     // Fetch cart items from API to get the latest data
     let apiCartItems = [];
+    let rawCartItemProducts = [];
     try {
       // Ensure apiBaseUrl is set and encode email for URL
       const baseUrl = apiBaseUrl;
@@ -163,7 +188,8 @@ export async function action({request, context}) {
       const data = await response.json();
       if (data.code === 200 && data.data && data.data.length > 0) {
         const cartData = data.data[0];
-        apiCartItems = (cartData.cartItemProducts || []).map((cartItem) => {
+        rawCartItemProducts = cartData.cartItemProducts || [];
+        apiCartItems = rawCartItemProducts.map((cartItem) => {
           const registryProduct = cartItem.registryProduct;
           return {
             id: cartItem.id,
@@ -178,8 +204,8 @@ export async function action({request, context}) {
           };
         });
       }
-    } catch (error) {
-      console.error('Error fetching cart items:', error);
+    } catch {
+      /* cart unavailable for action */
     }
 
     if (apiCartItems.length === 0) {
@@ -200,21 +226,140 @@ export async function action({request, context}) {
       };
     });
 
-    // Debug logging for payment amounts
-    console.log('Payment API - Line Items:', lineItems);
-    console.log(
-      'Payment API - Amounts being sent:',
-      lineItems.map((item) => ({
-        productId: item.productId,
-        amount: item.amount,
-        amountType: typeof item.amount,
-      })),
-    );
+    const address = formData.get('address')?.trim() || '';
+    const city = formData.get('city')?.trim() || '';
+    const province = formData.get('province')?.trim() || '';
+    const country = formData.get('country')?.trim() || '';
+    const postalCode = formData.get('postalCode')?.trim() || '';
 
-    const totalAmount = lineItems.reduce(
-      (sum, item) => sum + item.amount * item.quantity,
-      0,
+    let registryDetailForTax = null;
+    let registryApiForTax = null;
+    try {
+      const detailRes = await context.ClientGet(
+        `registries/detail/${registryId}`,
+        context,
+      );
+      registryDetailForTax = detailRes?.data ?? null;
+    } catch {
+      /* registries/detail optional for tax address */
+    }
+    try {
+      registryApiForTax = await context.ClientGet(
+        `registries/${registryId}`,
+        context,
+      );
+    } catch {
+      /* registries/:id optional for tax address */
+    }
+
+    const shippingAddress = buildCoupleRegistryShippingAddress(
+      registryDetailForTax,
+      registryApiForTax,
     );
+    const billingAddress = buildGuestBillingAddressForTax({
+      address,
+      city,
+      province,
+      country,
+      postalCode,
+      zip: postalCode,
+    });
+
+    if (!shippingAddress) {
+      return json(
+        {
+          error:
+            'Registry shipping address is missing or incomplete, so tax cannot be calculated. Please try again later or contact support.',
+        },
+        {status: 400},
+      );
+    }
+
+    const taxLinePayload = buildLineItemsForTax(rawCartItemProducts);
+
+    if (!taxLinePayload.length) {
+      return json({error: 'Could not build line items for tax.'}, {status: 400});
+    }
+
+    const cashFundOnly = isAllCashFundCartItems(rawCartItemProducts);
+    let taxData;
+    let payCurrency;
+    let amount;
+
+    if (cashFundOnly) {
+      payCurrency = 'CAD';
+      amount = Math.round(
+        apiCartItems.reduce(
+          (sum, item) =>
+            sum +
+            Number(item.price) * Math.max(1, Number(item.quantity) || 1),
+          0,
+        ) * 100,
+      ) / 100;
+      taxData = {
+        subtotal: amount,
+        totalTax: 0,
+        total: amount,
+        taxRate: '0.00',
+        taxPercentage: 0,
+        currency: payCurrency,
+      };
+      console.log('[calculate-tax-rate] action skipped (all cash fund)', {
+        total: amount,
+        currency: payCurrency,
+      });
+    } else {
+      const taxRegistryId = parseRegistryIdForTax(registryId);
+      const taxRequestBody = {
+        lineItems: taxLinePayload,
+        shippingAddress,
+        ...(billingAddress ? {billingAddress} : {}),
+        email: email || undefined,
+        shippingLine: {title: 'Standard', price: '0.00'},
+        ...(taxRegistryId != null ? {registryId: taxRegistryId} : {}),
+      };
+      console.log('[calculate-tax-rate] action request', taxRequestBody);
+
+      const taxRes = await postCalculateTaxRate(
+        apiBaseUrl,
+        taxRequestBody,
+      );
+
+      const taxJson = taxRes.json;
+      taxData = taxJson?.data;
+      if (
+        !taxRes.ok ||
+        taxJson?.code !== 200 ||
+        taxData == null ||
+        !Number.isFinite(Number(taxData.total))
+      ) {
+        console.log('[calculate-tax-rate] action response (error)', {
+          httpStatus: taxRes.status,
+          body: taxJson,
+        });
+        return json(
+          {
+            error: getCalculateTaxRateErrorMessage(
+              taxJson,
+              taxRes.status,
+            ),
+          },
+          {status: 400},
+        );
+      }
+
+      payCurrency = taxData.currency || 'CAD';
+      amount = Math.round(Number(taxData.total) * 100) / 100;
+
+      console.log('[calculate-tax-rate] action response (ok)', {
+        subtotal: taxData.subtotal,
+        totalTax: taxData.totalTax,
+        total: taxData.total,
+        taxRate: taxData.taxRate,
+        taxPercentage: taxData.taxPercentage,
+        currency: payCurrency,
+      });
+    }
 
     // Step 1: Create PayPal order (server-side only; credentials never sent to browser)
     const clientId =
@@ -232,7 +377,6 @@ export async function action({request, context}) {
       );
     }
 
-    const amount = Math.round(totalAmount * 100) / 100;
     if (!Number.isFinite(amount) || amount <= 0) {
       return json({error: 'Invalid total amount'}, {status: 400});
     }
@@ -242,10 +386,9 @@ export async function action({request, context}) {
       const accessToken = await getPayPalAccessToken({clientId, clientSecret});
       order = await createPayPalOrder(accessToken, {
         amount,
-        currencyCode: 'CAD',
+        currencyCode: payCurrency,
       });
     } catch (paypalErr) {
-      console.error('Create PayPal order error:', paypalErr);
       return json(
         {
           error: paypalErr.message || 'Failed to create PayPal order',
@@ -267,7 +410,11 @@ export async function action({request, context}) {
         {
           paypalOrderId: order.id,
           amount,
-          currency: 'CAD',
+          currency: payCurrency,
+          subtotal: taxData.subtotal,
+          totalTax: taxData.totalTax,
+          taxRate: taxData.taxRate,
+          taxPercentage: taxData.taxPercentage,
         },
         {
           status: 200,
@@ -283,8 +430,6 @@ export async function action({request, context}) {
       {status: 500},
     );
   } catch (error) {
-    console.error('Checkout action error:', error);
-    console.error('Error stack:', error.stack);
     return json(
       {
         error: error.message || 'An error occurred during checkout',
@@ -297,15 +442,25 @@ export async function action({request, context}) {
 
 // Step 1: Details Form using useFetcher
 const DetailsForm = ({onNext}) => {
-  const {message, couplesName, productData, cashFundData, apiBaseUrl, registryApi, registryId: loaderRegistryId, email: loaderEmail} = useLoaderData();
-  // console.log('DetailsForm: productData:', productData);
-  // console.log('DetailsForm: apiBaseUrl from loader:', apiBaseUrl);
-  console.log('DetailsForm: registryApi from loader:', registryApi);
-  console.log('DetailsForm: cashFundData from loader:', cashFundData);
+  const {
+    message,
+    couplesName,
+    productData,
+    cashFundData,
+    apiBaseUrl,
+    registryApi,
+    registryDetail,
+    registryId: loaderRegistryId,
+    email: loaderEmail,
+  } = useLoaderData();
   const fetcher = useFetcher();
   const [cartItems, setCartItems] = useState([]);
+  const [cartItemProductsRaw, setCartItemProductsRaw] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
   const [cartLoading, setCartLoading] = useState(true);
+  const [taxData, setTaxData] = useState(null);
+  const [taxLoading, setTaxLoading] = useState(false);
+  const [taxError, setTaxError] = useState(null);
   const [fields, setFields] = useState({
     firstName: '',
     lastName: '',
@@ -313,6 +468,7 @@ const DetailsForm = ({onNext}) => {
     city: '',
     province: '',
     country: 'Canada',
+    postalCode: '',
     email: '',
     subscribe: false,
   });
@@ -340,14 +496,11 @@ const DetailsForm = ({onNext}) => {
     const fetchCartItems = async () => {
       const email = loaderEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
       const registryId = loaderRegistryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') || '';
-      console.log('DetailsForm: userEmail (loader then localStorage):', email);
-      console.log('DetailsForm: registryId (loader then localStorage):', registryId);
 
       if (!email || !registryId) {
         setCartItems([]);
         setCartTotal(0);
         setCartLoading(false);
-        console.log('DetailsForm: Missing email or registryId');
         return;
       }
 
@@ -360,34 +513,14 @@ const DetailsForm = ({onNext}) => {
           `${baseUrl}/api/cart/get-cart/${registryId}/${encodedEmail}`,
         );
         const apiData = await response.json();
-        console.log('DetailsForm: API response:', apiData);
-        console.log('DetailsForm: API response code:', apiData.code);
-        console.log(
-          'DetailsForm: API response data length:',
-          apiData.data?.length,
-        );
 
         if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
           const cartData = apiData.data[0];
-          console.log('DetailsForm: Cart API Response:', cartData);
-          console.log('DetailsForm: Cart Items:', cartData.cartItemProducts);
-          console.log(
-            'DetailsForm: Cart Items length:',
-            cartData.cartItemProducts?.length,
-          );
 
           // Transform the API data to match SideCart expectations
           const transformedItems = (cartData.cartItemProducts || []).map(
             (cartItem) => {
               const registryProduct = cartItem.registryProduct;
-              console.log(
-                'DetailsForm: Cart Item (full):',
-                JSON.stringify(cartItem, null, 2),
-              );
-              console.log(
-                'DetailsForm: Registry Product (full):',
-                JSON.stringify(registryProduct, null, 2),
-              );
 
               const isCashFund = registryProduct.productTypeId === 2;
 
@@ -424,6 +557,7 @@ const DetailsForm = ({onNext}) => {
             },
           );
           setCartItems(transformedItems);
+          setCartItemProductsRaw(cartData.cartItemProducts || []);
           const total = roundCurrency(
             transformedItems.reduce(
               (sum, item) => sum + item.price * item.quantity,
@@ -433,10 +567,12 @@ const DetailsForm = ({onNext}) => {
           setCartTotal(total);
         } else {
           setCartItems([]);
+          setCartItemProductsRaw([]);
           setCartTotal(0);
         }
       } catch (error) {
         setCartItems([]);
+        setCartItemProductsRaw([]);
         setCartTotal(0);
       }
       setCartLoading(false);
@@ -444,6 +580,112 @@ const DetailsForm = ({onNext}) => {
 
     fetchCartItems();
   }, [loaderRegistryId, loaderEmail]);
+
+  // Tax: shippingAddress = couple's registry (gift destination); billingAddress = guest billing when filled
+  useEffect(() => {
+    if (cartLoading || !cartItemProductsRaw.length) {
+      return;
+    }
+    if (isAllCashFundCartItems(cartItemProductsRaw)) {
+      const sub = cartItemProductsRaw.reduce((sum, row) => {
+        const unit = Math.round(Number(row.price) * 100) / 100;
+        const qty = Math.max(1, Number(row.quantity) || 1);
+        return sum + unit * qty;
+      }, 0);
+      const rounded = Math.round(sub * 100) / 100;
+      setTaxData({
+        subtotal: rounded,
+        totalTax: 0,
+        total: rounded,
+        taxRate: '0.00',
+        taxPercentage: 0,
+        currency: 'CAD',
+      });
+      setTaxError(null);
+      setTaxLoading(false);
+      return;
+    }
+
+    const baseUrl = apiBaseUrl || getApiBaseUrl();
+    const shippingAddress = buildCoupleRegistryShippingAddress(
+      registryDetail,
+      registryApi,
+    );
+    if (!shippingAddress) {
+      setTaxData(null);
+      setTaxError(
+        registryDetail
+          ? 'Gift registry shipping address is missing or incomplete; tax cannot be calculated.'
+          : null,
+      );
+      return;
+    }
+
+    const billingAddress = buildGuestBillingAddressForTax(fields);
+
+    const lineItems = buildLineItemsForTax(cartItemProductsRaw);
+    if (!lineItems.length) return;
+
+    let cancelled = false;
+    setTaxLoading(true);
+    setTaxError(null);
+
+    (async () => {
+      const registryIdForTax =
+        loaderRegistryId ||
+        (typeof window !== 'undefined'
+          ? localStorage.getItem('registryId') || ''
+          : '');
+      const taxRegistryId = parseRegistryIdForTax(registryIdForTax);
+      const taxRequestBody = {
+        lineItems,
+        shippingAddress,
+        ...(billingAddress ? {billingAddress} : {}),
+        email: fields.email?.trim() || loaderEmail || undefined,
+        shippingLine: {title: 'Standard', price: '0.00'},
+        ...(taxRegistryId != null ? {registryId: taxRegistryId} : {}),
+      };
+      console.log('[calculate-tax-rate] client request', taxRequestBody);
+
+      const {ok, status, json} = await postCalculateTaxRate(
+        baseUrl,
+        taxRequestBody,
+      );
+      if (cancelled) return;
+
+      if (ok && json?.code === 200 && json?.data) {
+        console.log('[calculate-tax-rate] client response (ok)', json.data);
+        setTaxData(json.data);
+        setTaxError(null);
+      } else {
+        console.log('[calculate-tax-rate] client response (error)', {
+          httpStatus: status,
+          body: json,
+        });
+        setTaxData(null);
+        setTaxError(getTaxCalculationErrorForDisplay(json, status));
+      }
+      setTaxLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    cartLoading,
+    cartItemProductsRaw,
+    registryDetail,
+    registryApi,
+    fields.address,
+    fields.city,
+    fields.province,
+    fields.country,
+    fields.postalCode,
+    fields.email,
+    loaderEmail,
+    loaderRegistryId,
+    apiBaseUrl,
+  ]);
 
   // Set email from URL/loader first (this checkout's registry), then localStorage
   useEffect(() => {
@@ -459,9 +701,6 @@ const DetailsForm = ({onNext}) => {
       if (fetcher.data.clearLocalStorage && typeof window !== 'undefined') {
         localStorage.removeItem('guestEmail');
         localStorage.removeItem('registryId');
-        console.log(
-          'DetailsForm: Cleared guestEmail and registryId from localStorage after successful checkout',
-        );
       }
       onNext({
         paypalOrderId: fetcher.data.paypalOrderId,
@@ -478,18 +717,13 @@ const DetailsForm = ({onNext}) => {
       if (name === 'country') {
         next.province = '';
         next.city = '';
+        next.postalCode = '';
       } else if (name === 'province') {
         next.city = '';
       }
       return next;
     });
   };
-
-  // Log cartItems.length and cartLoading in render
-  console.log('DetailsForm: cartItems.length in render:', cartItems.length);
-  console.log('DetailsForm: cartLoading in render:', cartLoading);
-  console.log('DetailsForm: cartItems in render:', cartItems);
-  console.log('DetailsForm: cartTotal in render:', cartTotal);
 
   const handleCartClick = () => {
     setSideCartOpen(true);
@@ -629,11 +863,22 @@ const DetailsForm = ({onNext}) => {
                       required
                     />
                     <input
+                      placeholder="Postal / ZIP *"
+                      name="postalCode"
+                      value={fields.postalCode}
+                      onChange={handleChange}
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full"
+                      required
+                      autoComplete="postal-code"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-4">
+                    <input
                       placeholder="Email *"
                       name="email"
                       value={fields.email}
                       readOnly
-                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-gray-100 text-black w-full cursor-not-allowed"
+                      className="rounded-none p-5 border-[#B9B4AE] border-2 bg-gray-100 text-black w-full cursor-not-allowed col-span-2"
                       required
                     />
                   </div>
@@ -688,8 +933,87 @@ const DetailsForm = ({onNext}) => {
                       <span className="font-bold tracking-wide text-sm uppercase">
                         Subtotal
                       </span>
-                      <span className="text-lg">${cartTotal.toFixed(2)}</span>
+                      <span className="text-lg">
+                        $
+                        {(taxData?.subtotal != null
+                          ? Number(taxData.subtotal)
+                          : cartTotal
+                        ).toFixed(2)}
+                      </span>
                     </div>
+                    <div className="flex justify-between items-center mb-2 min-h-[1.5rem]">
+                      <span className="font-bold tracking-wide text-sm uppercase">
+                        Taxes
+                        {taxData?.taxPercentage != null &&
+                        Number.isFinite(Number(taxData.taxPercentage)) ? (
+                          <span className="font-normal">
+                            {' '}
+                            ({Number(taxData.taxPercentage)}%)
+                          </span>
+                        ) : taxData?.taxRate != null &&
+                          String(taxData.taxRate).trim() !== '' ? (
+                          <span className="font-normal">
+                            {' '}
+                            ({String(taxData.taxRate)}%)
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="text-lg">
+                        {taxLoading ? (
+                          <span className="text-sm font-normal">…</span>
+                        ) : taxData?.totalTax != null ? (
+                          <>${Number(taxData.totalTax).toFixed(2)}</>
+                        ) : taxError ? (
+                          <span className="text-xs text-amber-800">—</span>
+                        ) : (
+                          <span className="text-xs text-gray-500">—</span>
+                        )}
+                      </span>
+                    </div>
+                    {Array.isArray(taxData?.taxLines) &&
+                    taxData.taxLines.length > 0 ? (
+                      <ul className="text-xs text-gray-600 mb-2 pl-1 space-y-0.5 font-normal normal-case tracking-normal">
+                        {taxData.taxLines.map((tl, idx) => {
+                          const title =
+                            tl?.title != null ? String(tl.title) : 'Tax';
+                          const priceStr =
+                            tl?.price != null &&
+                            !Number.isNaN(Number(tl.price)) ? (
+                              <>
+                                ${Number(tl.price).toFixed(2)}
+                                {tl?.currencyCode
+                                  ? ` ${String(tl.currencyCode)}`
+                                  : ''}
+                              </>
+                            ) : null;
+                          const rateLabel =
+                            tl?.rate != null &&
+                            Number.isFinite(Number(tl.rate)) ? (
+                              <span className="text-gray-500">
+                                {' '}
+                                ({(Number(tl.rate) * 100).toFixed(0)}%)
+                              </span>
+                            ) : null;
+                          return (
+                            <li
+                              key={idx}
+                              className="flex justify-between gap-2"
+                            >
+                              <span>
+                                {title}
+                                {rateLabel}
+                              </span>
+                              {priceStr ? (
+                                <span className="shrink-0">{priceStr}</span>
+                              ) : null}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : null}
+                    {taxError && (
+                      <p className="text-xs text-amber-900 mb-2">{taxError}</p>
+                    )}
                     <img
                       src="/assets/Images/cart-sum-bdr.png"
                       alt="Border"
@@ -700,7 +1024,11 @@ const DetailsForm = ({onNext}) => {
                         Total
                       </span>
                       <span className="font-bold text-2xl">
-                        ${cartTotal.toFixed(2)}
+                        $
+                        {(taxData?.total != null
+                          ? Number(taxData.total)
+                          : cartTotal
+                        ).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -753,8 +1081,10 @@ const DetailsForm = ({onNext}) => {
         open={sideCartOpen}
         onClose={onClose}
         cartItems={cartItems}
-        total={cartTotal}
-        subtotal={cartTotal}
+        total={taxData?.total != null ? Number(taxData.total) : cartTotal}
+        subtotal={
+          taxData?.subtotal != null ? Number(taxData.subtotal) : cartTotal
+        }
         onCartChange={() => {}}
         onClearCart={() => {}}
         registryId={
@@ -809,6 +1139,7 @@ const Checkout = () => {
         <PayPalPaymentForm
           paypalOrderId={paypalOrderId}
           paypalClientId={paypalClientId}
+          orderCurrency={orderCurrency}
           onPrev={() => setStep(1)}
         />
       )}
@@ -818,7 +1149,12 @@ const Checkout = () => {
 
 export default Checkout;
 
-const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
+const PayPalPaymentForm = ({
+  paypalOrderId,
+  paypalClientId,
+  orderCurrency = 'CAD',
+  onPrev,
+}) => {
   const navigate = useNavigate();
   const loaderData = useLoaderData();
   const {
@@ -843,9 +1179,6 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('guestEmail');
         localStorage.removeItem('registryId');
-        console.log(
-          'PayPalPaymentForm: Cleared guestEmail and registryId from localStorage after successful checkout',
-        );
       }
       navigate('/thankyou');
     } else if (fetcher.data?.error && fetcher.state === 'idle') {
@@ -1036,7 +1369,7 @@ const PayPalPaymentForm = ({paypalOrderId, paypalClientId, onPrev}) => {
               <PayPalScriptProvider
                 options={{
                   clientId: paypalClientId,
-                  currency: 'CAD',
+                  currency: orderCurrency || 'CAD',
                   intent: 'capture',
                 }}
               >
