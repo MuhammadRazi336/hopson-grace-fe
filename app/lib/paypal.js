@@ -41,6 +41,7 @@ export async function getPayPalAccessToken(credentials) {
 
 /**
  * Create a PayPal order (intent CAPTURE).
+ * Uses NO_SHIPPING so the checkout flow does not collect a shipping address (billing-only / digital-style checkout).
  * @param {string} accessToken
  * @param {{ amount: number, currencyCode?: string }} options
  * @returns {Promise<{ id: string, status: string }>}
@@ -56,6 +57,9 @@ export async function createPayPalOrder(accessToken, options) {
     },
     body: JSON.stringify({
       intent: 'CAPTURE',
+      application_context: {
+        shipping_preference: 'NO_SHIPPING',
+      },
       purchase_units: [
         {
           amount: {
