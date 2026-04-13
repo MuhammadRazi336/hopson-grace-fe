@@ -1,11 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
 import lineImghead from '../assets/Images/heading-bottom-curve.png';
 import { Button } from '@material-tailwind/react';
-import { Check } from 'lucide-react';
-import { Upload } from 'lucide-react';
+import { Check, ChevronDown, Upload } from 'lucide-react';
+
+const REQUEST_TYPE_OPTIONS = [
+  { value: 'damaged-item', label: 'DAMAGED OR DEFECTIVE ITEM', itemClass: 'font-semibold bg-[#F5F2ED] p-6 max-[476px]:p-4' },
+  { value: 'wrong-item', label: 'RECEIVED WRONG ITEM', itemClass: 'font-semibold bg-[#FAF9F6] p-6 max-[476px]:p-4' },
+  { value: 'other', label: 'OTHER', itemClass: 'font-semibold bg-[#F5F2ED] p-6 max-[476px]:p-4' },
+];
 
 const Returns = () => {
     const [formData, setFormData] = useState({
@@ -20,7 +25,19 @@ const Returns = () => {
       })
 
     const fileInputRef = useRef(null)
+    const requestTypeRef = useRef(null)
+    const [requestTypeOpen, setRequestTypeOpen] = useState(false)
+    const [requestTypeError, setRequestTypeError] = useState(false)
     const [isDragActive, setIsDragActive] = useState(false)
+
+    useEffect(() => {
+      if (!requestTypeOpen) return undefined
+      const onPointerDown = (e) => {
+        if (!requestTypeRef.current?.contains(e.target)) setRequestTypeOpen(false)
+      }
+      document.addEventListener('mousedown', onPointerDown)
+      return () => document.removeEventListener('mousedown', onPointerDown)
+    }, [requestTypeOpen])
 
     const [itemsCharacterCount, setItemsCharacterCount] = useState(0)
     const [detailsCharacterCount, setDetailsCharacterCount] = useState(0)
@@ -58,15 +75,35 @@ const Returns = () => {
 
     const handleSubmit = (e) => {
       e.preventDefault()
+      if (!formData.requestType) {
+        setRequestTypeError(true)
+        return
+      }
+      setRequestTypeError(false)
       console.log("Form submitted:", formData)
       console.log("Uploaded files:", uploadedFiles)
     }
+
+    const selectRequestType = (value) => {
+      setFormData((prev) => ({ ...prev, requestType: value }))
+      setRequestTypeOpen(false)
+      setRequestTypeError(false)
+    }
+
+    const requestTypeDisplayLabel =
+      formData.requestType === 'damaged-item'
+        ? 'DAMAGED OR DEFECTIVE ITEM'
+        : formData.requestType === 'wrong-item'
+          ? 'RECEIVED WRONG ITEM'
+          : formData.requestType === 'other'
+            ? 'OTHER'
+            : 'Please select from the dropdown'
 
   return (
     <section>
       <Header />
 
-      <div className="w-full h-fit pt-[5.313vw]">
+      <div className="w-full h-fit pt-[5.313vw] max-[476px]:pt-10">
         <Heading
           text="returns & exchanges"
           classes={
@@ -75,7 +112,7 @@ const Returns = () => {
           image={lineImghead}
           imageClasses={'max-[1024px]:max-w-[330px] lg:w-[21.875vw]'}
         />
-        <p className="text-1xl lg:text-[1.25vw] lg:leading-[1.667vw] font-normal text-center pt-[3.073vw] w-[40%] lg:w-[49.01vw]  mx-auto">
+        <p className="text-1xl lg:text-[1.25vw] lg:leading-[1.667vw] font-normal text-center pt-[3.073vw] w-[90%] lg:w-[49.01vw]  mx-auto">
           If any of your gifts arrive damaged or defective, we’ll replace them
           and cover the return shipping—at no cost to  you. For all other
           returns, shipping fees will apply.  Items must be returned within 60
@@ -83,12 +120,12 @@ const Returns = () => {
         </p>
 
         <div
-              className={`bg-steel-blue mb-[200px] mx-auto mt-[5.833vw] text-white px-[8vw] w-[60.104vw] pb-28 py-[4.635vw] relative -left-[37.5px] max-[768px]:max-w-[100%] max-[1024px]:p-6 max-[768px]:-top-[140px] max-[768px]:left-2.5 max-[768px]:pb-20 max-[768px]:pt-14  max-[768px]:w-full`}
+              className={`bg-steel-blue mb-[200px] mx-auto mt-[5.833vw] text-white px-[8vw] w-[60.104vw] pb-28 py-[4.635vw] relative max-[768px]:max-w-[100%] max-[1024px]:p-6  max-[768px]:pb-20 max-[768px]:pt-14 max-[768px]:w-9/10 max-[768px]:mt-16`}
             >
               {/* <h3 className="text-3xl text-center max-[768px]:text-2xl afterimg w-full">
                 REQUEST A RETURN OR REPLACEMENT
               </h3> */}
-              <p className='text-center text-xl lg:text-[1.146vw] lg:leading-[1.667vw] afterimg'>
+              <p className='text-center text-xl lg:text-[1.146vw] lg:leading-[1.667vw] afterimg max-[476px]:text-base'>
                 To request a return or replacement, please complete the form below and our team will get back to you within 2 business days. If your item arrived damaged, you can upload a photo so we can resolve it quickly. We'll also send you a return shipping label.
                 <br/><br/>
               </p>
@@ -162,19 +199,73 @@ const Returns = () => {
 
           {/* TYPE OF REQUEST */}
           <div className="space-y-2">
-            <label className="text-white font-semibold">TYPE OF REQUEST*</label>
-            <select
-              name="requestType"
-              value={formData.requestType}
-              onChange={handleInputChange}
-              required
-              className="w-full lg:h-[4.271vw] rounded-none p-4 bg-white border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white/20"
-            >
-              <option value="" className='font-semibold bg-[#FAF9F6]'>Please select from the dropdown</option>
-              <option value="damaged-item" className='font-semibold bg-[#F5F2ED]'>DAMAGED OR DEFECTIVE ITEM</option>
-              <option value="wrong-item" className='font-semibold bg-[#FAF9F6]'>RECEIVED WRONG ITEM</option>
-              <option value="other" className='font-semibold bg-[#F5F2ED]'>OTHER</option>
-            </select>
+            <label className="text-white font-semibold" id="returns-request-type-label">
+              TYPE OF REQUEST*
+            </label>
+            <div className="relative" ref={requestTypeRef}>
+              <button
+                type="button"
+                id="returns-request-type-trigger"
+                aria-haspopup="listbox"
+                aria-expanded={requestTypeOpen}
+                aria-labelledby="returns-request-type-label returns-request-type-trigger"
+                aria-controls="returns-request-type-listbox"
+                onClick={() => setRequestTypeOpen((o) => !o)}
+                className="w-full lg:h-[4.271vw] rounded-none p-6 bg-white border-0 text-gray-700 focus:outline-none focus:ring-2 focus:ring-white/20 flex items-center justify-between gap-3 text-left"
+              >
+                <span
+                  className={
+                    formData.requestType
+                      ? 'font-semibold text-gray-700 max-[476px]:text-sm'
+                      : 'font-semibold text-gray-500 max-[476px]:text-sm'
+                  }
+                >
+                  {requestTypeDisplayLabel}
+                </span>
+                <ChevronDown
+                  className={`h-5 w-5 shrink-0 text-gray-600 transition-transform ${requestTypeOpen ? 'rotate-180' : ''}`}
+                  aria-hidden
+                />
+              </button>
+              {requestTypeOpen && (
+                <ul
+                  id="returns-request-type-listbox"
+                  role="listbox"
+                  aria-labelledby="returns-request-type-label"
+                  className="absolute z-30 left-0 right-0 top-full mt-0 max-h-[min(50vh,320px)] overflow-y-auto shadow-lg border-0 bg-white"
+                >
+                  <li role="presentation">
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={formData.requestType === ''}
+                      className="w-full text-left font-semibold bg-[#FAF9F6] p-6 text-gray-700 hover:bg-gray-100 max-[476px]:p-4"
+                      onClick={() => selectRequestType('')}
+                    >
+                      Please select from the dropdown
+                    </button>
+                  </li>
+                  {REQUEST_TYPE_OPTIONS.map((opt) => (
+                    <li key={opt.value} role="presentation">
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={formData.requestType === opt.value}
+                        className={`w-full text-left text-gray-700 hover:brightness-95 ${opt.itemClass}`}
+                        onClick={() => selectRequestType(opt.value)}
+                      >
+                        {opt.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {requestTypeError && (
+              <p className="text-sm text-red-200" role="alert">
+                Please select a request type.
+              </p>
+            )}
           </div>
 
           {/* PHOTO UPLOAD */}

@@ -101,6 +101,7 @@ const Registry = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
+  const [shopAllChecked, setShopAllChecked] = useState(false);
   const [productsToShow, setProductsToShow] = useState(12);
   const productGridRef = useRef(null);
   const topRef = useRef(null);
@@ -146,7 +147,7 @@ const Registry = () => {
   // Reset productsToShow when filtered products change (when categories are selected/deselected)
   useEffect(() => {
     setProductsToShow(12);
-  }, [checkedCollectionIds]);
+  }, [checkedCollectionIds, shopAllChecked]);
   
   // Process products like dashboard addgifts (add collection relationships)
   const processedProducts = React.useMemo(() => {
@@ -213,9 +214,9 @@ const Registry = () => {
     return processedProductsArray;
   }, [collections]);
   
-  // Filter products based on selected collections (like dashboard addgifts)
+  // Filter products based on selected collections (like dashboard addgifts / bestsellers)
   const filteredProducts = React.useMemo(() => {
-    if (checkedCollectionIds.length === 0) {
+    if (shopAllChecked || checkedCollectionIds.length === 0) {
       return collection.products?.edges || [];
     }
     
@@ -240,7 +241,12 @@ const Registry = () => {
     });
     
     return filtered;
-  }, [checkedCollectionIds, processedProducts, collection.products?.edges]);
+  }, [
+    shopAllChecked,
+    checkedCollectionIds,
+    processedProducts,
+    collection.products?.edges,
+  ]);
   
   const handleAddToRegistry = async (product, selectedQuantity) => {
     try {
@@ -347,51 +353,61 @@ const Registry = () => {
     }
   };
 
+  const displayedProducts = filteredProducts.slice(0, productsToShow);
+
   return (
     <section>
         <Header/>
         <div ref={topRef} className="lg:scroll-mt-[92px] scroll-mt-[60px]" />
 
-        <div className="w-full h-[500px] lg:h-[39.58vw] flex flex-row items-center justify-center">
-        <div className="w-[50%] h-full bg-[#F5F2ED] relative">
-          <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%]">
-            <Heading
-              text={collection.title}
-              classes={
-                'prata text-4xl lg:text-[2.29vw] lowercase lg:leading-[1.88vw] font-normal text-center max-[1024px]:m-0 lg:mb-[0.833vw] text-black'
-              }
-              image={lineImghead}
-              imageClasses={'w-[150px] lg:w-[22.14vw]'}
+        <div className="w-full h-[500px] lg:h-[39.58vw] flex flex-row items-center justify-center max-[768px]:flex-col-reverse max-[768px]:h-auto">
+          <div className="w-[50%] h-full bg-[#F5F2ED] relative max-[768px]:w-full max-[768px]:h-auto">
+            <div className="mx-auto text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] lg:w-[80%] max-[768px]:w-full max-[768px]:text-center max-[768px]:static max-[768px]:translate-[initial] max-[768px]:p-5 max-[768px]:py-10">
+              <Heading
+                text={collection.title}
+                classes={
+                  'prata text-4xl lg:text-[2.29vw] lowercase lg:leading-[1.88vw] font-normal text-center max-[1024px]:m-0 lg:mb-[0.833vw] text-black'
+                }
+                image={lineImghead}
+                imageClasses={'w-[150px] lg:w-[22.14vw]'}
+              />
+              <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw]">
+                {collection.description}
+              </p>
+              {collection.blogLinkMetafield?.value && collection.blogLinkMetafield.value.trim() !== '' && (
+                <Link
+                  to={collection.blogLinkMetafield.value}
+                  className="text-lg tracking-widest font-bold uppercase mt-14 inline-block p-5 border-black border-2 px-10 max-[768px]:text-base max-[768px]:px-5 max-[768px]:py-2.5 max-[768px]:mt-5 max-[1025px]:text-sm max-[476px]:text-sm max-[476px]:px-0 max-[476px]:w-full"
+                >
+                  READ ABOUT THEIR WEDDING
+                </Link>
+              )}
+         
+            </div>
+          </div>
+          <div className="w-[50%] h-full flex items-center justify-center max-[768px]:w-full">
+            <img
+              src={collection.image?.url || '/assets/Images/dreamFunds.png'}
+              className="h-full w-full object-cover"
+              alt={collection.image?.altText || collection.title}
             />
-            <p className="text-base lg:w-[28.54vw] lg:max-w-[100%] sm:text-lg lg:text-[1.354vw] lg:leading-[1.98vw] text-black leading-relaxed mx-auto mt-[3.75vw]">
-              {collection.description}
-            </p>
-            <Link to={`${collection.blogLinkMetafield?.value}`} className="text-lg tracking-widest font-bold uppercase mt-14 inline-block p-5 border-black border-2 px-10">
-              READ ABOUT THEIR WEDDING
-            </Link>
           </div>
         </div>
-        <div className="w-[50%] h-full flex items-center justify-center">
-          <img
-            src={collection.image?.url || '/assets/Images/dreamFunds.png'}
-            className="h-full w-full object-cover"
-            alt={collection.image?.altText || collection.title}
-          />
-        </div>
-      </div>
 
-      <section className="px-[8.802vw] mx-auto py-[6.302vw]">
-        <div className="flex flex-col md:flex-row gap-12">
-          <SidebarFilter 
+      <section className="px-[8.802vw] mx-auto py-[6.302vw] max-[1025px]:px-5">
+        <div className="flex flex-row gap-[3.75vw] w-full mx-auto max-[1025px]:gap-2.5 max-[1025px]:flex-col">
+          <SidebarFilter
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}
             setCheckedCollectionIds={setCheckedCollectionIds}
+            shopAllChecked={shopAllChecked}
+            setShopAllChecked={setShopAllChecked}
           />
-                     <div 
-                       className="w-full xl:w-9/12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pt-0 p-4 relative z-0"
-                       ref={productGridRef}
-                     >
-             {filteredProducts.slice(0, productsToShow).map((product, index) => {
+            <div className="w-full xl:w-9/12 grid max-[600px]:grid-cols-1 max-[992px]:grid-cols-2 grid-cols-3 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]"
+            ref={productGridRef}
+          >
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product, index) => {
                // Handle both processed products and edge structure
                const productNode = product.node || product;
                const productId = productNode.id || product.id; // Use productNode.id first, fallback to product.id
@@ -417,59 +433,61 @@ const Registry = () => {
                }
                
                return (
-                 <div key={productId} className="pt-0 relative lg:w-[23.43vw] xl:w-[23.43vw] 2xl:w-[23.43vw]">
-                  <div className="relative group mb-[4.844vw]">
-                   {/* Product Image and Info */}
-                   <div className="z-10 relative">
+                 <div key={productId} className="pt-0 relative w-[23.43vw] max-[1025px]:w-full max-[1025px]:h-auto max-[1025px]:z-1">
+                    <div className="relative group mb-[1.844vw] max-[1025px]:mb-0 max-[1025px]:h-full max-[1025px]:w-full">
+                    {/* Product Image and Info */}
+                   <div className="relative z-0 max-[1025px]:hidden">
                      <img
                        src={firstImage}
                        alt={productNode.title}
-                      className="w-full h-[23.43vw] object-cover max-[1024px]:h-[44vw] max-[475px]:h-[36vw]"
+                      className="w-full object-cover aspect-square"
                      />
-                     <div className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw]">
+                     <div className="text-[18px] font-semibold uppercase mt-3">
                        {productNode.title}
                      </div>
-                     <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">{price}</p>
+                     <p className="text-sm mt-1">{price}</p>
                    </div>
 
                    {/* Expanding Overlay */}
-                <div className="absolute lg:h-[33.5vw] xl:h-[33.5vw] 2xl:h-[37.3vw] lg:min-h-[20vw] xl:min-h-[20vw] 2xl:min-h-[20vw] inset-0 z-40 bg-[#FAF9F6] px-[2.552vw] py-[2.24vw] flex flex-col shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center scale-[1.13]">
-                     <div>
-                        <Link to={`/dashboard/addgifts/${productNode.handle}`}>
+                   <div className="absolute h-[35.313vw] inset-0 z-40 bg-[#FAF9F6] py-[2vw] px-[2.24vw] flex flex-col justify-between shadow-xl border opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto transform origin-center max-[1025px]:opacity-100 max-[1025px]:h-full max-[1025px]:z-10 max-[1025px]:static max-[1025px]:border-gray-300 max-[768px]:p-5 max-[1025px]:h-auto">
+                   <div>
+                        <Link to={`/dashboard/addgifts/${productNode.handle}`}  className="block cursor-pointer">
                        <img
                          src={firstImage}
                          alt={productNode.title}
-                         className="w-full rounded-none h-[18.223vw] mx-auto object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                       />
+                         className="w-full mx-auto object-cover aspect-square mb-[20px]"
+                         />
                        </Link>
                        <Link to={`/dashboard/addgifts/${productNode.handle}`}>
-                       <h4 className="text-base font-medium uppercase text-left mt-[1.135vw] mb-[0.781vw]">
-                         {brandName || 'BRAND NAME'}
+                       <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
+                        {brandName || 'BRAND NAME'}
                        </h4>
                        </Link>
                        <Link to={`/dashboard/addgifts/${productNode.handle}`}>
-                       <div className="text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.146vw] uppercase text-left leading-snug cursor-pointer hover:text-gray-600 transition-colors">
-                         {productNode.title}
+                       <div className="text-[20px] lg:text-[1.146vw] lg:leading-[1.146vw] font-[500] uppercase text-left leading-[22px] m-0 max-[1025px]:text-lg">
+                       {productNode.title}
                        </div>
                        </Link>
                        <p className="text-2xl mt-2 text-left">{price}</p>
                      </div>
 
-                  <div className="flex items-center justify-between mt-[2.3vw]">
-                    {/* Quantity Controls */}
-                      <div className="flex w-full items-center text-xs gap-1.5">
-                          <p className='text-[18px] font-semibold uppercase text-left mb-1'>QTY</p>
+                     <div className="flex flex-col w-full items-center text-xs">
+                     {/* Quantity Controls */}
+                     <div className="flex items-center justify-around w-full mb-4 max-[1025px]:mt-4 max-[1025px]:mb-0 max-[1025px]:flex-wrap max-[1025px]:justify-center">
+                     <p className="text-[18px] font-[500] uppercase text-left mb-1">
+                     QTY
+                     </p>
                           {/* Quantity Selector */}
                           <div className="flex flex-col items-center">
-                            <button 
+                          <button 
                               onClick={() => setQuantities(prev => ({
                                 ...prev,
                                 [productId]: (prev[productId] || 1) + 1
                               }))}
-                              className="flex items-center justify-center bg-white transition-color"
-                            >
+                              className="flex items-center justify-center bg-white transition-colors"
+                              >
                               <img src="/assets/Images/arrowDown.png" 
-                              className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw] rotate-180"
+                              className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw] rotate-180"
                               alt="" />
                             </button>
                             
@@ -485,10 +503,10 @@ const Registry = () => {
                                 [productId]: Math.max(1, (prev[productId] || 1) - 1)
                               }))}
                               className="flex items-center justify-center bg-white transition-colors"
-                            >
+                              >
                               <img src="/assets/Images/arrowDown.png" 
-                              className="w-3 h-3 lg:w-[0.833vw] xl:w-[0.833vw] 2xl:w-[0.833vw] lg:h-[0.833vw] xl:h-[0.833vw] 2xl:h-[0.833vw]"
-                              alt="" />
+                                className="w-3 h-3 lg:w-[0.833vw] lg:h-[0.833vw]"
+                                alt="" />
                             </button>
                           </div>
 
@@ -496,14 +514,14 @@ const Registry = () => {
                            <button 
                              onClick={() => handleAddToRegistry(product, quantities[productId] || 1)}
                              disabled={fetcher.state === 'submitting'}
-                             className={`bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest ${
+                             className={`bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest max-[1025px]:mt-5 ${
                                fetcher.state === 'submitting'
                                  ? 'bg-gray-400 cursor-not-allowed' 
                                  : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
                              }`}
                            >
                              {fetcher.state === 'submitting' ? (
-                               <div className="flex items-center justify-center">
+                               <div className="bg-[#446184] text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:leading-[1.042vw] w-[10.156vw] h-[4.01vw] max-[1025px]:w-full max-[1025px]:mt-4 max-[1025px]:h-auto max-[1025px]:text-[12px] max-[1025px]:mt-5">
                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                                  Adding...
                                </div>
@@ -517,8 +535,13 @@ const Registry = () => {
                   </div>
                  </div>
                );
-             }) || []}
-           </div>
+             })
+            ) : (
+              <div className="col-span-full text-center text-gray-500 py-8">
+                No products found for selected filters.
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-center items-center">
@@ -621,34 +644,39 @@ const Registry = () => {
 
 export default Registry;
 
+const isExcludedFundsCollection = (col) => {
+  const t = (col.title && String(col.title).toUpperCase().trim()) || '';
+  return t === 'CASH FUNDS' || t === 'TRAVEL FUNDS';
+};
+
+const isParentForSidebar = (col) =>
+  col.parentMetafield?.value === 'true' &&
+  col.readyMadeMetafield?.value !== 'true' &&
+  !isExcludedFundsCollection(col);
+
+const STYLE_ORDER = ['MODERN', 'CLASSIC', 'ECLECTIC'];
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
   setCheckedCollectionIds,
+  shopAllChecked,
+  setShopAllChecked,
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    brands: true,
     styles: true,
   });
 
-  // Get parent collections for Product Categories (exactly like dashboard addgifts)
-  // Exclude Cash Funds and Travel Funds collections from the sidebar
-  const parentCollection = collections.filter((col) => {
-    const isParent =
-      col.parentMetafield?.value === 'true' &&
-      col.readyMadeMetafield?.value !== 'true';
-
-    if (!isParent) return false;
-
-    const title = (col.title || '').toLowerCase().trim();
-    if (title === 'cash funds' || title === 'travel funds') {
-      return false;
-    }
-
-    return true;
-  });
-  
+  const parentCollections = collections.filter(isParentForSidebar);
+  const subCollections = STYLE_ORDER.map((styleTitle) =>
+    collections.find(
+      (col) =>
+        col.parentMetafield?.value === 'false' &&
+        col.readyMadeMetafield?.value !== 'true' &&
+        String(col.title || '').toUpperCase().trim() === styleTitle,
+    ),
+  ).filter(Boolean);
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
@@ -658,20 +686,33 @@ function SidebarFilter({
   };
 
   const handleSidebarCheckbox = (colId) => {
-    let newChecked;
+    setShopAllChecked(false);
     if (checkedCollectionIds.includes(colId)) {
-      newChecked = checkedCollectionIds.filter((id) => id !== colId);
-    } else {
-      newChecked = [...checkedCollectionIds, colId];
+      setCheckedCollectionIds((prev) => prev.filter((id) => id !== colId));
+      return;
     }
-    setCheckedCollectionIds(newChecked);
+    setCheckedCollectionIds((prev) => [...prev, colId]);
   };
 
-  return (
-    <div className="w-[400px] h-fit lg:w-[22.28vw] xl:w-[22.28vw] 2xl:w-[22.28vw]">
-      <div className=" bg-[#FAF9F6] px-[1.979vw] pt-[2.865vw] pb-[3.802vw]">
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    if (!filterOpen) return undefined;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [filterOpen]);
+
+  const filterPanelClasses =
+    'w-full py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6] max-[768px]:p-5';
+
+  const filterInner = (
+    <>
+      <div className="mb-6">
         <h2
-            className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
+          className="text-[18px] min-[1025px]:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] min-[1025px]:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
           onClick={() => toggleSection('categories')}
         >
           Product Categories
@@ -680,22 +721,22 @@ function SidebarFilter({
               <img
                 src="/assets/Images/next.png"
                 alt="minus"
-                className="w-[0.833vw] h-[0.833vw] rotate-180"
+                className="w-[0.833vw] h-[0.833vw] rotate-180 max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
               />
             ) : (
               <img
                 src="/assets/Images/next.png"
                 alt="plus"
-                className="w-[0.833vw] h-[0.833vw]"
+                className="w-[0.833vw] h-[0.833vw] max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
               />
             )}
           </span>
         </h2>
         {openSections.categories && (
           <ul className="space-y-2 text-sm">
-            {parentCollection.map((col) => (
-              <li key={col.id} className='mb-[1.69vw]'>
-              <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+            {parentCollections.map((col) => (
+              <li key={col.id} className="mb-[1.69vw] max-[768px]:mb-2.5">
+                <label className="uppercase flex items-center gap-[1.10vw] min-[1025px]:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                   <input
                     type="checkbox"
                     className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
@@ -703,11 +744,118 @@ function SidebarFilter({
                     onChange={() => handleSidebarCheckbox(col.id)}
                   />
                   {col.title}
-              </label>
-            </li>
+                </label>
+              </li>
             ))}
           </ul>
         )}
+      </div>
+
+      <div>
+        <h2
+          className="text-[18px] min-[1025px]:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] min-[1025px]:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+          onClick={() => toggleSection('styles')}
+        >
+          Shop by Style
+          <span className="text-lg relative -top-[3px]">
+            {openSections.styles ? (
+              <img
+                src="/assets/Images/next.png"
+                alt="minus"
+                className="w-[0.833vw] h-[0.833vw] rotate-180 max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
+              />
+            ) : (
+              <img
+                src="/assets/Images/next.png"
+                alt="plus"
+                className="w-[0.833vw] h-[0.833vw] max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
+              />
+            )}
+          </span>
+        </h2>
+        {openSections.styles && (
+          <ul className="space-y-2 text-sm">
+            {subCollections.map((col) => (
+              <li key={col.id} className="mb-[1.69vw] max-[768px]:mb-2.5">
+                <label className="uppercase flex items-center gap-[1.10vw] min-[1025px]:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                  <input
+                    type="checkbox"
+                    className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                    checked={checkedCollectionIds.includes(col.id)}
+                    onChange={() => handleSidebarCheckbox(col.id)}
+                  />
+                  {col.title}
+                </label>
+              </li>
+            ))}
+            <li className="mb-[1.69vw] max-[768px]:mb-2.5">
+              <label className="uppercase flex items-center gap-[1.10vw] min-[1025px]:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
+                <input
+                  type="checkbox"
+                  className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
+                  checked={shopAllChecked}
+                  onChange={() => {
+                    setShopAllChecked((prev) => !prev);
+                    setCheckedCollectionIds([]);
+                  }}
+                />
+                Shop All
+              </label>
+            </li>
+          </ul>
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <div className="w-full min-[1025px]:w-[19.031vw] shrink-0">
+      <div className="min-[1025px]:hidden my-4">
+        <button
+          type="button"
+          onClick={() => setFilterOpen(true)}
+          className="uppercase font-semibold text-sm tracking-wider"
+        >
+          Show Filter
+        </button>
+      </div>
+
+      <div className={`hidden min-[1025px]:block ${filterPanelClasses}`}>
+        {filterInner}
+      </div>
+
+      <div
+        className={`min-[1025px]:hidden fixed inset-0 z-[100] transition-opacity duration-300 ease-out ${
+          filterOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+        aria-hidden={!filterOpen}
+      >
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/50"
+          aria-label="Close filters"
+          onClick={() => setFilterOpen(false)}
+        />
+        <div
+          className={`absolute left-0 top-0 bottom-0 z-10 flex w-[min(100%,22rem)] max-w-[90vw] flex-col bg-[#FAF9F6] shadow-xl transition-transform duration-300 ease-out ${
+            filterOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="flex shrink-0 items-center justify-between border-b border-[#E8E6E3] px-5 py-4 max-[1025px]:justify-end">
+            <button
+              type="button"
+              onClick={() => setFilterOpen(false)}
+              className="text-[13px] font-bold uppercase tracking-wide text-[#1F1D1B] underline underline-offset-2"
+            >
+              Close
+            </button>
+          </div>
+          <div className={`min-h-0 flex-1 overflow-y-auto ${filterPanelClasses}`}>
+            {filterInner}
+          </div>
+        </div>
       </div>
     </div>
   );

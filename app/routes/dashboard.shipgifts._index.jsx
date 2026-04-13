@@ -94,21 +94,21 @@ const ShipGifts = () => {
       </div>
 
       <div className="mb-16 max-[1024px]:mb-[4vw]"></div>
-      <section className="mx-auto mb-10 px-[7.906vw] max-[1024px]:px-[40px]">
-        <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-center justify-center">
-          <div className="lg:w-[35%] w-full lg:h-[82.813vw] xl:h-[82.813vw] 2xl:h-[82.813vw] relative z-10 xl:-right-8 lg:-right-8 2xl:-right-8">
+      <section className="mx-auto mb-10 px-[7.906vw] max-[1025px]:px-[20px] max-[768px]:px-2">
+        <div className="flex lg:gap-8 flex-wrap xl:flex-nowrap gap-2 items-center justify-center max-[1025px]:flex-col max-[768px]:justify-start">
+          <div className="min-[1025px]:w-[35%] w-full lg:h-[82.813vw] xl:h-[82.813vw] 2xl:h-[82.813vw] relative z-10 xl:-right-8 lg:-right-8 2xl:-right-8 max-[1025px]:w-9/10">
             <img
-              className="w-[10.417vw] h-[7.813vw] object-contain absolute top-[3.385vw] left-[-3.5vw]"
+              className="w-[10.417vw] h-[7.813vw] object-contain absolute top-[3.385vw] left-[-3.5vw] max-[1025px]:left-[initial] max-[1025px]:right-[3%] max-[1025px]:top-[40%] max-[1025px]:m-auto max-[1025px]:w-16 max-[1025px]:h-auto max-[1025px]:-translate-y-full"
               src="/assets/Images/imglogo.png"
               alt="image icon"
             />
             <img
               src="/assets/Images/fullshipgifts.jpg"
               alt="Image Banner"
-              className="h-full object-cover object-center"
+              className="h-full object-cover object-center max-[1025px]:w-[90%]"
             />
           </div>
-          <div className="bg-[#446184] lg:h-[92.813vw] xl:h-[92.813vw] 2xl:h-[92.813vw] xl:-left-8 lg:-left-8 2xl:-left-8  left-0 py-[4.688vw] relative flex items-center justify-center flex-col lg:w-[50%] w-full max-[768px]:p-10">
+          <div className="bg-[#446184] lg:h-[92.813vw] xl:h-[92.813vw] 2xl:h-[92.813vw] xl:-left-8 lg:-left-8 2xl:-left-8  left-0 py-[4.688vw] relative flex items-center justify-center flex-col min-[1025px]:w-[50%] max-[1025px]:w-8/10 w-full max-[1025px]:-mt-[160px] max-[1025px]:z-10 max-[768px]:w-[90%] max-[1025px]:ml-auto max-[768px]:p-10 max-[1025px]:px-10">
             <div className="flex flex-col items-center justify-center">
               <h2 className="prata font-normal text-2xl text-white lg:text-[3.75vw] xl:text-[3.75vw] 2xl:text-[3.75vw] 3xl:w-full mb-[1.042vw] max-w-[410px] text-center">
                 1.
@@ -119,7 +119,7 @@ const ShipGifts = () => {
               <img
                 src="/assets/Images/heading-bottom-curve.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[170px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100 max-[1025px]:w-1/2"
               />
               <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] mt-4 mb-4 text-center text-white">
                 When you're ready to fulfill your registry our team will help
@@ -149,7 +149,7 @@ const ShipGifts = () => {
               <img
                 src="/assets/Images/heading-bottom-curve.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100 max-[1025px]:w-1/2"
               />
               <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] mt-4 mb-4 text-center text-white">
                 Withdraw your cash at any time, or wait until after your wedding
@@ -177,7 +177,7 @@ const ShipGifts = () => {
               <img
                 src="/assets/Images/heading-bottom-curve.png"
                 alt="lineimg"
-                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100"
+                className="mb-2 mt-2 max-[768px]:m-1 max-[768px]:w-[220px] lg:w-[12.031vw] xl:w-[12.031vw] 2xl:w-[12.031vw] brightness-0 invert-100 max-[1025px]:w-1/2"
               />
               <p className="text-sm lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] lg:w-[33.021vw] xl:w-[33.021vw] 2xl:w-[33.021vw] mt-4 mb-4 text-center text-white">
                 Ready to begin planning? We'll connect you directly with Porte
@@ -215,7 +215,7 @@ const ShipGifts = () => {
           <br />
           and we’ll do this with you.
         </p>
-        <p className="text-sm max-w-[38.49vw] mt-4 mb-4 text-center min-[1025px]:hidden max-[425px]:max-w-[60%]">
+        <p className="text-sm max-w-[38.49vw] mt-4 mb-4 text-center min-[1025px]:hidden max-[768px]:min-w-[100%] max-[768px]:text-base">
           Book a virtual appointment
           <br />
           with a registry concierge

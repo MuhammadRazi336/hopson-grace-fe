@@ -96,15 +96,11 @@ export default function BlogArticle({article, processedContent}) {
         }
 
         .blog-content-custom blockquote {
-          border-left: 4px solid #446184;
           padding: 1.5rem;
-          margin: 2rem 0;
-          font-style: italic;
-          color: #666;
-          background: #f9f9f9;
-          border-radius: 0 8px 8px 0;
-          font-size: 1.125rem;
-          line-height: 1.6;
+          color: #1F1D1B;
+          font-family: 'ivyora';
+          border: 0 !important;
+          font-size: 60px !important;
         }
 
         .blog-content-custom a {
@@ -153,6 +149,16 @@ export default function BlogArticle({article, processedContent}) {
           background: none;
           padding: 0;
         }
+
+        .blog-content-custom blockquote::before{
+            content: "";
+            background: url(/assets/Images/quotation.png);
+            background-size: 75px;
+            display: block;
+            width: 75px;
+            height: 75px;
+            background-repeat: no-repeat;
+        }
         
 
         /* Responsive adjustments */
@@ -184,6 +190,15 @@ export default function BlogArticle({article, processedContent}) {
           .blog-content-custom h2 img {
             max-width: 100%;
             margin: 10px 0;
+          }
+            .blog-content-custom blockquote {
+              font-size: 30px !important;
+          }
+
+          .blog-content-custom blockquote::before{
+            background-size: 45px;
+            width: 45px;
+            height: 45px;
           }
           
           

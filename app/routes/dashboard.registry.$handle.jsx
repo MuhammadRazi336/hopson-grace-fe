@@ -213,6 +213,14 @@ export default function Index() {
   const editFormRef = useRef(editForm);
   editFormRef.current = editForm;
 
+  const formSectionTopRef = useRef(null);
+
+  const scrollToFormStart = () => {
+    const el = formSectionTopRef.current;
+    if (!el) return;
+    el.scrollIntoView({behavior: 'smooth', block: 'start'});
+  };
+
   // Keep form in sync with loader when data updates (e.g. after save revalidation), not while editing
   useEffect(() => {
     if (editFormRef.current) return;
@@ -348,7 +356,7 @@ export default function Index() {
 
   return (
     <>
-      <div className="mx-auto pt-[50px] lg:pt-[4.792vw] xl:pt-[4.792vw] 2xl:pt-[4.792vw]">
+      <div ref={formSectionTopRef} className="mx-auto pt-[50px] lg:pt-[4.792vw] xl:pt-[4.792vw] 2xl:pt-[4.792vw] scroll-m-[60px]">
         <div className="flex xl:flex-nowrap flex-wrap flex-shrink-0 pb-16">
           <div className="w-full lg:w-9/12 xl:w-9/12 2xl:w-9/12 pl-[24.93vw] max-[1024px]:px-[20px] flex flex-col items-center gap-y-[1.771vw] pb-8">
             <h2 className="mt-0 !pl-0 ivyora uppercase lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
@@ -360,7 +368,10 @@ export default function Index() {
               className="max-w-[630px] w-[39.219vw] h-auto mx-auto"
             />
 
-            <div className="bg-[#446184] w-[60.104vw] max-w-full mt-[1.771vw] text-white min-h-[52.083vw] max-[1024px]:w-full">
+            <div
+              
+              className="bg-[#446184] w-[60.104vw] max-w-full mt-[1.771vw] text-white min-h-[52.083vw] max-[1024px]:w-full scroll-mt-[80px] lg:scroll-mt-[5vw]"
+            >
               {editForm ? (
                 <EditForm
                   state={formState}
@@ -376,14 +387,24 @@ export default function Index() {
             <div className="flex w-[60.104vw] max-w-full justify-end max-[1024px]:w-full">
               {editForm ? (
                 <button
-                  onClick={handleSubmit}
+                  type="button"
+                  onClick={(e) => {
+                    scrollToFormStart();
+                    handleSubmit(e);
+                  }}
                   className="uppercase text-[#000000] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-2 border-[#000000] cursor-pointer font-bold text-lg w-[11.458vw] h-[4.063vw] bg-white max-[768px]:w-40 max-[768px]:h-auto max-[768px]:p-3 max-[768px]:mt-2.5"
                 >
                   Save
                 </button>
               ) : (
                 <button
-                  onClick={() => setEditForm(true)}
+                  type="button"
+                  onClick={() => {
+                    setEditForm(true);
+                    requestAnimationFrame(() => {
+                      requestAnimationFrame(() => scrollToFormStart());
+                    });
+                  }}
                   className="uppercase text-[#223247] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] w-[max-content] border-b border-[#223247] cursor-pointer font-bold text-md block"
                 >
                   Edit my info
@@ -391,7 +412,7 @@ export default function Index() {
               )}
             </div>
           </div>
-          <div className="w-full max-[1024px]:px-[20px] lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4">
+          <div className="w-full max-[1024px]:px-[20px] lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex-col gap-y-4 hidden">
             <div>
               <NotificationCard />
             </div>

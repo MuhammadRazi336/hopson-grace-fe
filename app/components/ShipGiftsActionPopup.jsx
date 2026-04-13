@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import ModalPortal from './ModalPortal';
-import reglogo from '/assets/Images/reglogo.png';
+import reglogo from '/assets/Images/registryLogoLine.png';
 import regLogoLine from '/assets/Images/currencyLine.png';
 
 const ShipGiftsActionPopup = ({onClose}) => {
@@ -28,34 +28,34 @@ const ShipGiftsActionPopup = ({onClose}) => {
         onClick={onClose}
       >
         <div
-          className="relative w-full max-w-[840px] bg-[#446184] text-white text-center px-6 pt-16 pb-10 md:px-10 md:pt-20 md:pb-12"
+          className="relative w-full max-w-[618px] h-[405px] flex flex-col items-center justify-center bg-[#446184] text-white text-center px-6 pt-16 pb-10 md:px-10 md:pt-20 md:pb-12"
           onClick={(event) => event.stopPropagation()}
         >
           <img
             src={reglogo}
             alt="logo"
-            className="absolute left-1/2 -translate-x-1/2 -top-[41px] md:-top-[55px] w-[82px] md:w-[110px]"
+            className="absolute left-1/2 -translate-x-1/2 -top-[41px] md:-top-[65px] w-[122px] md:w-[168px]"
           />
-          <img
+          {/* <img
             src={regLogoLine}
             alt="logo line"
             className="absolute left-1/2 -translate-x-1/2 top-[42px] w-[120px] h-[3px]"
-          />
+          /> */}
 
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-5 top-5 md:right-7 md:top-7 text-white text-[36px] leading-none font-light cursor-pointer"
+            className="absolute right-5 top-5 md:right-7 md:top-7 text-white text-[52px] leading-none font-light cursor-pointer"
             aria-label="Close popup"
           >
             ×
           </button>
 
-          <h2 className="text-[22px] leading-[34px] md:text-[38px] md:leading-[44px] font-semibold tracking-[0.06em] uppercase mb-4">
+          <h2 className="text-[22px] leading-[34px] font-semibold tracking-[0.06em] uppercase mb-4">
             Request Received!
           </h2>
 
-          <p className="text-[16px] leading-[24px] md:text-[24px] md:leading-[32px] font-medium">
+          <p className="text-[22px] leading-[28px] font-medium">
             We&apos;ll be in touch via email
             <br />
             within 24 hours.

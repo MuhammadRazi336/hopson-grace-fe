@@ -195,7 +195,7 @@ const LoginIndex = () => {
                         ? actionData?.message.find(msg => msg.toLowerCase().includes('email'))
                         // User not found error (check message content)
                         : (actionData?.message === 'user not found')
-                        ? 'Email not found'
+                        ? 'User doesn\'t exist. Create your account now.'
                         : undefined
                     }
                   />
@@ -262,7 +262,7 @@ const LoginIndex = () => {
                  !(Array.isArray(actionData?.message) && actionData?.message.some(msg => msg.toLowerCase().includes('email'))) &&
                  !(actionData?.message === 'user not found') &&
                  !(actionData?.message === 'Invalid password') && (
-                  <div className="text-center text-[#FD446F] text-sm">
+                  <div className="text-center text-white text-sm">
                     {actionData?.statusCode === 500 
                       ? 'Server error. Please try again later.'
                       : Array.isArray(actionData?.message)

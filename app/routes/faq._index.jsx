@@ -5,6 +5,7 @@ import {Header} from '~/components/Header';
 import faqBg from '/assets/Images/faqcouple.jpg';
 import Heading from '~/components/Heading';
 import lineImghead from '../assets/Images/heading-bottom-curve.png';
+// import lineImgheadMobile from '../assets/Images/faqMobile.png';
 import RegistryLogo from '/assets/Images/about-us-monogram.png';
 import Button from '~/components/Button.jsx';
 import {Navigate} from '@remix-run/react';
@@ -47,21 +48,27 @@ const FAQ = () => {
       <Header />
 
       {/* Hero Section with Background Image and Text Overlay */}
-      <div className="relative w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px]">
+      <div className="relative w-full h-[510px] lg:h-[27.083vw] max-[1024px]:h-[300px] max-[768px]:h-[400px]">
         <img
           src={faqBg}
           alt=""
-          className="w-full h-full object-cover object-position-[0%_-40vw] max-[1024px]:object-center"
+          className="w-full h-full object-cover object-position-[0%_-40vw] max-[1024px]:object-center max-[768px]:h-[400px]"
         />
         {/* Heading with underline - Left aligned on image */}
         <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] pb-[2.083vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px]">
-          <h1 className="prata text-white text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[20px] max-[1024px]:mb-[0px]">
-            frequently asked questions
+          <h1 className="prata text-white text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-left mb-[1.042vw] max-[1024px]:text-[20px] max-[1024px]:mb-[0px] max-[768px]:mt-[200px] max-[768px]:text-center">
+            <span className="max-[768px]:hidden">frequently asked questions</span>
+            <span className="hidden max-[768px]:inline max-[768px]:text-[20px] ">faqs</span>
           </h1>
           <img
             src={lineImghead}
             alt=""
-            className="max-[1024px]:max-w-[250px] lg:w-[32.24vw] lg:h-[0.400vw] brightness-0 invert"
+            className="max-[1024px]:max-w-[250px] lg:w-[32.24vw] lg:h-[0.400vw] brightness-0 invert max-[768px]:w-[120px] max-[768px]:hidden"
+          />
+          <img
+            src={"/public/assets/Images/faqMobile123.png"}
+            alt=""
+            className="min-[768px]:hidden"
           />
         </div>
       </div>
@@ -681,7 +688,7 @@ const FAQ = () => {
           <img
             src={RegistryLogo}
             alt=""
-            className="w-[100px] object-cover mx-auto"
+            className="w-[100px] object-cover mx-auto max-[768px]:w-[60px]"
           />
           <p className="text-center text-1xl lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[2.865vw] pb-[1.875vw] max-[1024px]:py-[20px]">
             READY TO START YOUR REGISTRY?
@@ -719,7 +726,7 @@ const FAQ = () => {
             buttontext={'Contact Us'}
             buttontype={'link'}
             buttonLink={'/contact-us'}
-            buttonClassName={`text-black uppercase font-[500] tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[20.677vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[200px] max-[1024px]:h-[40px]`}
+            buttonClassName={`text-black uppercase font-[500] tracking-[0.8px] text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] bg-[#446184] py-0 lg:w-[20.677vw] lg:h-[4.063vw] mx-auto w-[280px] rounded-none button-cs max-[1024px]:text-[14px] max-[1024px]:leading-[18px] max-[1024px]:w-[200px] max-[1024px]:h-[40px] max-[500px]:w-full`}
           />
         </div>
 
