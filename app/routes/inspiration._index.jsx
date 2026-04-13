@@ -203,7 +203,7 @@ const Inspiration = () => {
                 </span>
                 {activeStickyCategory === 'wedding' && (
                   <div className="absolute top-[105%] left-0 w-full flex items-end justify-center">
-                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
                   </div>
                 )}
               </button>
@@ -224,7 +224,7 @@ const Inspiration = () => {
                 </span>
                 {activeStickyCategory === 'planning' && (
                   <div className="absolute top-[105%] left-0 w-full flex items-end justify-center">
-                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
                   </div>
                 )}
               </button>
@@ -245,7 +245,7 @@ const Inspiration = () => {
                 </span>
                 {activeStickyCategory === 'design' && (
                   <div className="absolute top-[105%] left-0 w-full flex items-end justify-center">
-                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
                   </div>
                 )}
               </button>
@@ -266,7 +266,7 @@ const Inspiration = () => {
                 </span>
                 {activeStickyCategory === 'taste' && (
                   <div className="absolute top-[105%] left-0 w-full flex items-end justify-center">
-                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain' />
+                    <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
                   </div>
                 )}
               </button>
@@ -404,10 +404,11 @@ const Inspiration = () => {
 
       <div
         ref={blogCategoriesRef}
-        className="blogCategories mx-auto w-full max-[767px]:pb-9"
+        className="blogCategories mx-auto w-full max-[767px]:pb-0 "
       >
         <div className="relative w-full">
-        <div className="h-[10.729vw] max-[767px]:h-auto max-[767px]:pt-3 max-[767px]:pb-5 max-[767px]:overflow-x-auto max-[767px]:justify-start flex items-center justify-center z-50 bg-[#446184] w-full shadow-lg gap-8 lg:gap-16 px-4">
+        <div className="h-[10.729vw] max-[1025px]:h-[106px] max-[767px]:h-auto max-[767px]:pt-3 max-[767px]:overflow-x-auto max-[767px]:[-ms-overflow-style:none] max-[767px]:[scrollbar-width:none] max-[767px]:[&::-webkit-scrollbar]:h-0 max-[767px]:[&::-webkit-scrollbar]:w-0 flex items-center justify-center z-50 bg-[#446184] w-full shadow-lg gap-8 lg:gap-16 px-4 max-[768px]:bg-transparent max-[767px]:pb-[60px] max-[768px]:shadow-none max-[768px]:justify-center max-[545px]:justify-start">
+          <div class="hidden max-[768px]:block max-[768px]:bg-[#446184] max-[768px]:min-w-full max-[768px]:shadow-lg max-[768px]:h-[106px] max-[768px]:absolute max-[768px]:top-0 max-[768px]:left-0 max-[768px]:z-[-1]"></div>
           <div
             className="relative cursor-pointer text-center max-[767px]:min-w-[max-content]"
             onClick={() => { 
@@ -423,7 +424,7 @@ const Inspiration = () => {
             </span>
             {clickedSection === 'wedding' && (
                 <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
+                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
                 </div>
             )}
           </div>
@@ -442,7 +443,7 @@ const Inspiration = () => {
             </span>
             {clickedSection === 'planning' && (
               <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
+                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
               </div>
             )}
           </div>
@@ -461,7 +462,7 @@ const Inspiration = () => {
             </span>
             {clickedSection === 'design' && (
               <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
+                <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
               </div>
             )}
           </div>
@@ -480,12 +481,12 @@ const Inspiration = () => {
             </span>
             {clickedSection === 'taste' && (
                 <div className="absolute top-[102%] left-0 w-full flex items-end justify-center">
-                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] max-[767px]:w-[25px] max-[767px]:h-[25px] object-contain' />
+                  <img src="/assets/Images/active-icon.png" alt="" className='w-[2.917vw] h-[2.917vw] object-contain max-[1025px]:w-14 max-[1025px]:h-14' />
                 </div>
             )}
           </div>
         </div>
-        <div
+        {/* <div
           className="hidden max-[767px]:block pointer-events-none absolute left-[50%] translate-x-[-50%] bottom-[-15px] z-[60] translate-y-1/2"
           aria-hidden="true"
         >
@@ -542,12 +543,12 @@ const Inspiration = () => {
               </filter>
             </defs>
           </svg>
-        </div>
+        </div> */}
         </div>
       </div>
 
-      <div className="py-16 mx-auto max-[767px]:pt-9">
-        <h3 className="text-center text-[1.458vw] font-[500]">
+      <div className="py-16 mx-auto max-[767px]:pt-9 max-[768px]:px-5">
+        <h3 className="text-center text-[1.458vw] font-[500] max-[1025px]:text-[22px]">
           {clickedSection === 'wedding' ? 'WEDDING STORIES' : 
            clickedSection === 'planning' ? 'REGISTRY & PLANNING TIPS' :
            clickedSection === 'design' ? 'DESIGN NOTES' :

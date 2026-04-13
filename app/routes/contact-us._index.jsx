@@ -47,14 +47,17 @@ const ContactUs = () => {
           }
         </p>
 
-        <section className="lg:px-[7.24vw] xl:px-[7.24vw] 2xl:px-[7.24vw] mx-auto mb-10">
-          <div className="flex justify-center flex-wrap xl:flex-nowrap">
-            <div className="lg:w-[37.552vw] xl:w-[37.552vw] 2xl:w-[37.552vw] w-full">
+        <section className="w-full py-16 max-[1024px]:py-[30px] max-[768px]:px-2 container mx-auto">
+          <div className="flex flex-col lg:flex-row max-[1024px]:relative overflow-visible">
+            <div className="lg:w-[37.552vw] relative mb-12 z-0 max-[1024px]:w-9/10 max-[1024px]:mb-0 overflow-visible">
               <img
                 src="/assets/Images/newspapertea.jpg"
                 alt="Image Banner"
-                className="max-[1024px]:h-full object-cover object-[80%]"
+                className="w-full h-full object-cover"
               />
+              <div className='absolute top-8 z-20 min-[1025px]:left-0 min-[1025px]:right-auto min-[1025px]:-translate-x-1/2 max-[1024px]:left-auto max-[1024px]:right-0 max-[1024px]:translate-x-1/2 min-[1024px]:hidden max-[768px]:top-[57%] max-[768px]:-translate-x-[57%] max-[768px]:-right-[64px]'>
+                <img src="/assets/Images/about-us-monogram.png" className='w-[120px] object-cover max-[1024px]:w-[90px] max-[600px]:w-[59px]' alt="" />
+              </div>
             </div>
             {/* <div>
                 <h3 className="text-lg font-bold mb-2">EMAIL</h3>
@@ -68,7 +71,7 @@ const ContactUs = () => {
                 <h3 className="text-lg font-bold mb-2">CHAT</h3>
                 <p className="text-sm">Chat with us live between 10am-6pm (Mon-Sat) or 12pm-5pm (Sun) EST. Offline? Leave a message we'll reply by email.</p>
               </div> */}
-            <div className="bg-[#446184] xl:-bottom-10 xl:-left-16 left-0 bottom-0 py-16 relative flex items-center justify-center flex-col lg:w-[52.083vw] xl:w-[52.083vw] 2xl:w-[52.083vw] w-full max-[768px]:p-10 lg:py-[3.958vw] xl:py-[3.958vw] 2xl:py-[3.958vw]">
+            <div className="lg:w-[52.083vw] flex flex-col items-center justify-center bg-[#446184] text-white p-8 lg:p-12 mt-16 relative z-10 lg:-ml-12 max-[1024px]:w-9/10 max-[1024px]:ml-auto max-[1024px]:-mt-[80px]">
               <div className="flex flex-col items-center justify-center">                
                 <p className="text-[13px] leading-[36px] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] max-w-[500px] mt-4 mb-4 text-center text-white">
                   Our team is on call 7 days a week from 10-6pm EST.
@@ -213,6 +216,9 @@ const ContactUs = () => {
                 alt="Image Banner"
                 className="max-[1024px]:h-full object-cover object-[80%] w-full h-full"
               />
+              <div className='absolute top-8 z-20 min-[1025px]:left-0 min-[1025px]:right-auto min-[1025px]:-translate-x-1/2 max-[1024px]:left-auto max-[1024px]:right-0 max-[1024px]:translate-x-1/2 min-[1024px]:hidden max-[768px]:top-[57%] max-[768px]:-translate-x-[57%] max-[768px]:-right-[64px]'>
+                <img src="/assets/Images/about-us-monogram.png" className='w-[120px] object-cover max-[1024px]:w-[90px] max-[600px]:w-[59px]' alt="" />
+              </div>
             </div>
           </div>
         </section>

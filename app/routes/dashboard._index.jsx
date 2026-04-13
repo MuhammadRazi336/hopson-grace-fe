@@ -8,6 +8,9 @@ import {json, redirect} from '@shopify/remix-oxygen';
 import FooterBottom from '~/components/FooterBottom';
 import NotificationCard from '~/components/NotificationCard';
 import { Footer } from '~/components/Footer';
+import ModalPortal from '~/components/ModalPortal';
+
+const MINI_TUTORIAL_SESSION_KEY = '@DashboardMiniTutorialDismissed';
 import {syncCustomerBalancesToMetafields} from '~/utils/shopify-customer-balances.server';
 import {getApiBaseUrl} from '~/utils/api-url';
 
@@ -229,6 +232,49 @@ const index = () => {
     // Cleanup interval on unmount
     return () => clearInterval(interval);
   }, [user?.user?.id]);
+
+  const [showMiniTutorialModal, setShowMiniTutorialModal] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      setShowMiniTutorialModal(
+        sessionStorage.getItem(MINI_TUTORIAL_SESSION_KEY) !== 'true',
+      );
+    } catch {
+      setShowMiniTutorialModal(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    if (!showMiniTutorialModal) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [showMiniTutorialModal]);
+
+  const dismissMiniTutorialPopup = () => {
+    try {
+      sessionStorage.setItem(MINI_TUTORIAL_SESSION_KEY, 'true');
+    } catch {
+      // ignore private mode / quota
+    }
+    setShowMiniTutorialModal(false);
+  };
+
+  const handleLetsGoTutorial = (e) => {
+    e?.stopPropagation?.();
+    try {
+      sessionStorage.setItem(MINI_TUTORIAL_SESSION_KEY, 'true');
+      localStorage.setItem('showDashboardIntro', 'true');
+    } catch {
+      // ignore
+    }
+    window.location.href = '/dashboard';
+  };
 
   // Handle notification card click
   const handleNotificationView = () => {
@@ -468,7 +514,7 @@ const index = () => {
         ))}
       </div>
 
-      <div className="w-3/12 lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4 pr-[4.271vw] max-[1024px]:w-full max-[1024px]:pr-0">
+      <div className="w-3/12 lg:w-3/12 xl:w-3/12 2xl:w-3/12 flex flex-col gap-y-4 pr-[4.271vw] max-[1024px]:w-full max-[1024px]:pr-0 max-[1025px]:mx-auto max-[1025px]:mb-10 min-[1025px]:hidden">
           <div className='flex justify-end max-[1025px]:hidden'>
             <NotificationCard 
               count={unreadCount} 
@@ -506,6 +552,77 @@ const index = () => {
       </div>
       <Footer />
           {/* <RegistryChecklist registry={registry} /> */}
+
+      {showMiniTutorialModal && (
+        <ModalPortal>
+          <div
+            className="fixed inset-0 z-[240] flex items-center justify-center bg-black/80 p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dashboard-mini-tutorial-title"
+          >
+            <div className="relative flex w-full max-w-[1360px] overflow-hidden flex-row items-center max-[768px]:flex-col ">
+
+              {/* Placeholder image — replace src when final art is ready */}
+              <div className="relative w-full bg-neutral-200 h-[780px] max-[768px]:h-auto max-[768px]:w-9/10 max-[1025px]:h-[600px]">
+                <img
+                  src="/assets/Images/tutorial.png"
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="relative flex flex-col items-center justify-center bg-[#4A6282] px-6 py-10 text-center text-white min-w-[618px] h-[600px] -ml-[200px] max-[768px]:h-auto max-[768px]:ml-auto max-[768px]:w--9/10 max-[1025px]:min-w-[440px] max-[768px]:min-w-auto max-[768px]:-mt-[60px] max-[1025px]:h-[400px]">
+                <button
+                  type="button"
+                  onClick={dismissMiniTutorialPopup}
+                  className="absolute right-2 top-2 z-30 flex h-11 w-11 items-center justify-center text-3xl font-light leading-none text-white drop-shadow-md hover:opacity-90"
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+                
+                <img
+                  src="/assets/Images/registryLogoLine.png"
+                  alt=""
+                  className="w-auto brightness-0 invert absolute -top-14 max-[1025px]:w-[60px] max-[1025px]:-top-8"
+                />
+
+                <p
+                  id="dashboard-mini-tutorial-title"
+                  className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] md:mb-8 md:text-[0.75rem]"
+                >
+                  Don&apos;t know where to start?
+                </p>
+
+                <div className="mb-2 flex flex-col items-center gap-1">
+                  <span className="px-3 py-1 prata text-[52px] lowercase text-white leading-[60px] max-[1025px]:text-[32px] max-[1025px]:leading-[40px]">
+                    take our mini
+                  <br/>
+                    tutorial
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLetsGoTutorial}
+                  className="mt-8 w-full max-w-[320px] bg-white px-6 text-lg font-bold uppercase tracking-widest text-black transition hover:bg-neutral-100 md:mt-10 py-[29px] max-[1025px]:text-base max-[1025px]:px-4 max-[1025px]:py-4 max-[1025px]:max-w-[280px] max-[1025px]:mt-2"
+                >
+                  Let&apos;s go
+                </button>
+
+                <button
+                  type="button"
+                  onClick={dismissMiniTutorialPopup}
+                  className="mt-6 text-xs font-semibold uppercase tracking-widest underline underline-offset-4 hover:opacity-90 md:mt-8"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
     </>
   );
 };

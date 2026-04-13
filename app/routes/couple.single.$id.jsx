@@ -1546,23 +1546,28 @@ export default function CoupleProfile() {
         onCartClick={handleCartClick}
         showCart={hasProducts && registryId}
       />
-      <div className="text-center pt-[80px] lg:max-w-[93.385vw] mx-auto font-sans">
-        <img
-          src={
-            safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl ||
-            '/assets/Images/couple-profile-bg.png'
-          }
-          alt="Couple"
-          className="w-full h-[400px] lg:h-[620px] object-cover"
-        />
+      <div className="text-center pt-[80px] mx-auto font-sans px-10">
+        {safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl ? (
+          <img
+            src={safeResponse.data[0].events[0].backgroundImage.fileUrl}
+            alt="Couple"
+            className="w-full h-[400px] lg:h-[620px] object-cover"
+          />
+        ) : (
+          <div
+            className="w-full h-[400px] lg:h-[620px] bg-[#446184]"
+            role="img"
+            aria-label="Couple"
+          />
+        )}
         <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-16 xl:-translate-y-[200px]">
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
-            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] font-[400] lowercase prata ml-[3.646vw] lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto">
+            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] font-[400] lowercase prata  lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto">
               {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} &{' '}
               {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
             </h1>
           </div>
-          <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[36.979vw] lg:h-[36.979vw] w-full">
+          <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[3.979vw] lg:h-[3.979vw] w-full ">
             {safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl ? (
               <img
                 src={safeResponse.data[0].events[0].image.fileUrl}
@@ -1590,13 +1595,13 @@ export default function CoupleProfile() {
           </div>
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
             <div className="mr-16">
-              <p className="md:text-[42px] text-right my-2 leading-[1.25] prata ml-auto lg:text-[2.5vw] lg:leading-[2.917vw]">
+              <p className="md:text-[42px] my-2 leading-[1.25] prata mx-auto lg:text-[2.5vw] lg:leading-[2.917vw] text-center">
                 {safeResponse?.data?.[0]?.events?.[0]?.eventDate || 'Date TBD'}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
                 alt="Couple"
-                className="max-w-[300px] lg:max-w-[19.219vw] h-auto ml-auto"
+                className="max-w-[300px] lg:max-w-[19.219vw] h-auto mx-auto"
               />
               <div className="text-right ">
                 <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
@@ -1612,7 +1617,7 @@ export default function CoupleProfile() {
           </div>
         </div>
 
-        <p className="prata w-[58.073vw] max-w-[100%] text-[42px] tracking-[0.5px] lg:leading-[2.604vw] mx-auto mb-[7.552vw] leading-relaxed">
+        <p className="prata w-[58.073vw] max-w-[100%] text-[24px] tracking-[0.5px] lg:leading-[2.604vw] mx-auto mb-[7.552vw] leading-relaxed">
           {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage}
         </p>
       </div>
