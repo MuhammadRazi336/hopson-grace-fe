@@ -15,17 +15,17 @@ const MeetOurSisterStore = () => {
     <section>
       <Header />
 
-      <div className="relative h-[33.854vw] max-[1024px]:h-[40vw] banner-overlay">
-        <img src={ShowroomImg} alt="" className="w-full h-[40vw] lg:h-[33.854vw] xl:h-[33.854vw] 2xl:h-[33.854vw] object-cover object-center max-[1024px]:object-position-[0%_50%]" />
+      <div className="relative h-[33.854vw] max-[1024px]:h-[40vw] banner-overlay max-[768px]:h-[400px]">
+        <img src={ShowroomImg} alt="" className="w-full h-[40vw] lg:h-[33.854vw] xl:h-[33.854vw] 2xl:h-[33.854vw] object-cover object-center max-[1024px]:object-position-[0%_50%] max-[768px]:h-[400px]" />
         {/* Heading with underline - Left aligned on image */}
-        <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px] flex flex-col items-center ">
+        <div className="absolute top-[50%] -translate-y-1/2 left-0 px-[11.094vw] max-[1024px]:px-[20px] max-[1024px]:pb-[20px] flex flex-col items-center max-[768px]:-translate-x-1/2 max-[768px]:left-1/2 max-[768px]:top-1/2 max-[768px]:p-0">
           {/* <h1 className="">
             about us
           </h1> */}
           <Heading
             text="meet our sister store"
             classes={
-              'prata text-black text-[20px] leading-[36px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-left mb-[1.719vw] max-[1024px]:mb-[0px]'
+              'prata text-black text-[20px] leading-[36px] lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] font-normal text-left mb-[1.719vw] max-[1024px]:mb-[0px] max-[768px]:text-[22px]'
             }
             imageClasses={'max-[1024px]:max-w-[330px] w-[22.135vw]'}
           />
@@ -34,7 +34,7 @@ const MeetOurSisterStore = () => {
             alt=""
             className="max-[1024px]:max-w-[230px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] brightness-0 max-[1024px]:mx-auto"
           />
-          <h2 className="text-center text-black font-[500] text-[12px] leading-[36px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[1vw] mb-0 max-[1024px]:pt-[5px]">
+          <h2 className="text-center text-black font-[500] text-[12px] leading-[36px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.875vw] xl:leading-[1.875vw] 2xl:leading-[1.875vw] pt-[1vw] mb-0 max-[1024px]:pt-[5px] max-[768px]:text-[14px]">
             HOPSON GRACE
           </h2>
         </div>

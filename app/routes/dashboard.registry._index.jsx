@@ -680,22 +680,22 @@ const index = () => {
         onClose={() => setIsBackgroundEditPopupOpen(false)}
         onSave={handleBackgroundImageSave}
       />
-      <div className="text-center pt-[4.115vw] px-[3.281vw] mx-auto font-sans max-[1024px]:pt-[50px] max-[1024px]:px-[20px]">
+      <div className="text-center pt-[4.115vw] px-[3.281vw] mx-auto font-sans max-[1024px]:pt-[50px] max-[1025px]:px-0">
         <div className="relative">
           <div
-            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] bg-[#446184] bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-            }}
+            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] bg-[#446184] bg-cover bg-center bg-no-repeat max-[1025px]:h-[20vh] max-[768px]:h-[190px]"
+            // style={{
+            //   backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+            // }}
           >
           </div>
           <div
-            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] h-[4vw] max-[768px]:right-[50px]"
+            className="absolute top-[2.396vw] right-[2.396vw] cursor-pointer w-[4vw] h-[4vw] max-[768px]:right-[30px]"
             onClick={() =>
               !isBackgroundUploading && setIsBackgroundEditPopupOpen(true)
             }
           >
-            <div className="bg-white rounded-full p-0 shadow-lg hover:bg-gray-50 max-[1024px]:p-1 max-[768px]:w-[60px] max-[768px]:h-[60px]">
+            <div className="bg-white rounded-full p-0 shadow-lg hover:bg-gray-50 max-[1025px]:w-[36px] max-[1025px]:h-[36px] max-[1025px]:p-0">
               <img
                 src="/assets/Images/edit-icon.png"
                 alt="Edit Background"
@@ -722,9 +722,9 @@ const index = () => {
           />
         </div> */}
 
-        <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 -translate-y-[200px] max-[1025px]:w-[183px] max-[1025px]:h-[183px] max-[1025px]:-translate-x-[50%]">
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-end max-[1024px]:mt-[20px] pr-[40px] max-[1024px]:order-1">
-            <h1 className="lg:text-[3.2vw] xl:text-[3.2vw] 2xl:text-[3.2vw] lg:leading-[3.7vw] xl:leading-[3.7vw] 2xl:leading-[3.7vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px] lowercase">
+        <div className="flex flex-wrap lg:flex-nowrap xl:flex-nowrap 2xl:flex-nowrap justify-center items-start -mb-10 -translate-y-[200px] max-[1025px]:mx-auto max-[1025px]:-translate-y-[100px] max-[1025px]:translate-x-0 max-[1025px]:h-auto max-[1025px]:-mb-[100px] max-[1025px]:items-center max-[1025px]:w-full">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] flex justify-center max-[1024px]:mt-[20px] pr-[40px] max-[1024px]:order-1 max-[1025px]:mt-0 max-[1025px]:w-full max-[1025px]:p-0">
+            <h1 className="lg:text-[3.2vw] xl:text-[3.2vw] 2xl:text-[3.2vw] lg:leading-[3.7vw] xl:leading-[3.7vw] 2xl:leading-[3.7vw] my-2 max-w-[340px] prata ml-auto xl:text-left text-center xl:mx-0 mx-auto max-[1024px]:mb-[20px] lowercase max-[1025px]:text-[36px] max-[1025px]:mx-auto max-[1025px]:text-center max-[1025px]:w-full max-[1025px]:mb-0">
               {userGet?.data?.user?.firstName} &{' '}<br />
               {userGet?.data?.user?.fianceFirstName}
             </h1>
@@ -744,18 +744,18 @@ const index = () => {
                 return (
                   <>
                     {!hasValidImage && (
-                      <div className='placeholders flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none'>
+                      <div className='placeholders flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none max-[1025px]:w-[183px] max-[1025px]:h-[183px] max-[1025px]:mx-auto'>
                         <img 
                           src="/assets/Images/copyrightLogo.png" 
                           alt='placeholder' 
-                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain max-[768px]:w-[120px] max-[768px]:h-[120px]' 
+                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain max-[1025px]:w-[60px] max-[1025px]:h-[60px]' 
                           onError={(e) => console.error('Failed to load copyrightLogo.png', e)}
                           onLoad={() => console.log('copyrightLogo.png loaded successfully')}
                         />
                         <img 
                           src="/assets/Images/placeholder-line.png" 
                           alt='placeholder' 
-                          className='object-contain w-[16.042vw] h-[4px] mt-2 max-[768px]:w-[120px]' 
+                          className='object-contain w-[16.042vw] h-[4px] mt-2 max-[1025px]:w-[60px]' 
                           onError={(e) => console.error('Failed to load placeholder-line.png', e)}
                           onLoad={() => console.log('placeholder-line.png loaded successfully')}
                         />
@@ -774,13 +774,13 @@ const index = () => {
                         }}
                       />
                     ) : (
-                      <div className="rounded-full bg-[#F5F2ED] xl:w-full xl:h-full h-[300px] w-[300px] mx-auto relative z-[1]"></div>
+                      <div className="rounded-full bg-[#F5F2ED] xl:w-full xl:h-full h-[300px] w-[300px] mx-auto relative z-[1] max-[1025px]:w-[183px] max-[1025px]:h-[183px]"></div>
                     )}
                   </>
                 );
               })()}
               <div
-                className="absolute -bottom-[1.604vw] left-[50%] translate-x-[-50%] w-[4vw] h-[4vw] z-1 max-[768px]:w-[60px] max-[768px]:h-[60px]"
+                className="absolute -bottom-[1.604vw] left-[50%] translate-x-[-50%] w-[4vw] h-[4vw] z-1 max-[1025px]:w-[36px] max-[1025px]:h-[36px]"
                 onClick={() => !isUploading && setIsEditPopupOpen(true)}
               >
                 <img
@@ -798,15 +798,20 @@ const index = () => {
               </div>
             </div>
           </div>
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1024px]:mt-[30px] pl-[40px] max-[1024px]:order-2">
-            <div className="mr-16">
-              <p className="lg:text-[2vw] xl:text-[2vw] 2xl:text-[2vw] text-right my-2 lg:leading-[2.3vw] xl:leading-[2.3vw] 2xl:leading-[2.3vw] prata ml-auto">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] pl-[40px] max-[1024px]:order-2 max-[1025px]:w-full max-[1025px]:p-0 max-[1025px]:mt-0">
+            <div className="mr-16 max-[1025px]:mr-0 max-[1025px]:flex max-[1025px]:flex-col max-[1025px]:items-center max-[1025px]:justify-center">
+              <p className="lg:text-[2vw] xl:text-[2vw] 2xl:text-[2vw] text-center my-2 lg:leading-[2.3vw] xl:leading-[2.3vw] 2xl:leading-[2.3vw] prata ml-auto max-[1025px]:text-[24px] max-[1025px]:mx-auto max-[1025px]:text-center max-[1025px]:w-full">
                 {formatRegistryEventDate(eventGet?.data?.eventDate)}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
                 alt="Couple"
-                className="max-w-[16.219vw] h-auto ml-auto max-[1024px]:mb-[50px]"
+                className="max-w-[16.219vw] h-auto mx-auto max-[1024px]:mb-[50px] max-[1025px]:w-[183px] max-[1025px]:mx-auto max-[1025px]:hidden"
+              />
+              <img
+                src="/assets/Images/ProfileImgMobileLine.png"
+                alt="Couple"
+                className="max-w-[16.219vw] h-auto ml-auto max-[1024px]:mb-[50px] max-[1025px]:w-[183px] max-[1025px]:mx-auto min-[1025px]:hidden"
               />
               <div className="uppercase text-right ">
                 {eventGet?.data?.location && (
@@ -824,7 +829,7 @@ const index = () => {
             </div>
           </div>
         </div>
-        <div className="max-w-3xl mx-auto mb-14">
+        <div className="max-w-3xl mx-auto mb-14 max-[1025px]:px-5">
           <div className="border-2 border-[#B9B4AE] rounded p-4">
             <textarea
               className="w-full h-32 resize-none outline-none border-none text-[#948E8A] text-base placeholder-gray-500"
@@ -834,7 +839,7 @@ const index = () => {
               onChange={(e) => setNote(e.target.value)}
             />
           </div>
-          <div className="flex justify-between items-center mt-2 max-[1024px]:flex-wrap max-[1024px]:justify-start">
+          <div className="flex justify-between items-center mt-2 max-[1024px]:flex-wrap max-[1025px]:justify-center max-[1025px]:item-center">
             <span className="text-sm italic text-gray-400 max-[1024px]:w-full">
               {maxLength - note.length}/{maxLength} characters remaining
             </span>

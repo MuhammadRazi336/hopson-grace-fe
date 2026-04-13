@@ -19,7 +19,7 @@ const ExploreMoreRegistriesSlider = ({ otherRegistries, className }) => {
       <Heading
         text="explore more registries"
         classes={
-          'prata text-2xl lg:text-4xl font-normal text-center max-[1024px]:m-0'
+          'prata text-2xl lg:text-[40px] font-normal text-center max-[1024px]:m-0'
         }
         image={lineImghead}
         imageClasses={'max-[1024px]:max-w-[330px] px-4 '}
@@ -58,7 +58,7 @@ const ExploreMoreRegistriesSlider = ({ otherRegistries, className }) => {
                       alt={registry.title} 
                       className="w-full object-cover hover:opacity-90 transition-opacity aspect-square"
                     />
-                    <h3 className="mt-2.5 text-center lg:mt-[30px] uppercase lg:text-2xl text-sm font-medium tracking-wider">
+                    <h3 className="mt-2.5 uppercase lg:mt-[1.354vw] xl:mt-[1.354vw] 2xl:mt-[1.354vw] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] mb-[0.521vw] lg:leading-[1.354vw] xl:leading-[1.354vw] 2xl:leading-[1.354vw] text-sm font-medium tracking-wider cursor-pointer hover:text-gray-600 transition-colors pointer-events-none">
                       {registry.title}
                     </h3>
                   </Link>

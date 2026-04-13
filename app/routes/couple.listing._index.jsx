@@ -70,13 +70,13 @@ export default function FindCoupleForm() {
           >
             <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
               <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184] relative max-[1024px]:top-[300px]">
-                <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
+                <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white max-[1025px]:mb-2">
                   find a couple.
                 </h1>
                 <img
                   src="/assets/Images/white-bdr.png"
                   alt="couple"
-                  className="max-w-[315px] mb-4"
+                  className="max-w-[315px] mb-4 max-[1025px]:max-w-[165px]"
                 />
                 <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
                   Enter either person's <br/>first or last name
@@ -192,13 +192,13 @@ export default function FindCoupleForm() {
           >
             <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
               <div className="flex flex-col items-center justify-center w-full max-w-[clamp(300px,80vw,881px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[8rem] bg-[#446184]">
-                <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
+                <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white max-[1025px]:mb-2">
                   find a couple.
                 </h1>
                 <img
                   src="/assets/Images/white-bdr.png"
                   alt="couple"
-                  className="max-w-[315px] mb-4"
+                  className="max-w-[315px] mb-4 max-[1025px]:max-w-[165px]"
                 />
                 <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
                   Enter either person's <br/>first or last name
@@ -341,13 +341,13 @@ function CoupleListing({data}) {
         >
           <div className="md:ml-20 md:mr-0 ml-auto mr-auto">
             <div className="flex flex-col items-center justify-center w-[800px] max-w-[clamp(300px,82vw,900px)] max-h-[552px] py-10 px-6 md:py-20 md:px-[6rem] lg:px-[5rem] bg-[#446184]">
-              <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white">
+              <h1 className="mt-0 lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-5 text-white max-[1025px]:mb-2">
                 find a couple
               </h1>
               <img
                 src="/assets/Images/white-bdr.png"
                 alt="couple"
-                className="max-w-[315px] mb-4"
+                className="max-w-[315px] mb-4 max-[1025px]:max-w-[165px]"
               />
               <p className="text-center text-white uppercase md:text-xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[25px] max-w-[322px] max-[768px]:max-w-[390px] mx-auto lg:mb-8 mb-8">
                 enter either person's <br/>first or last name
@@ -436,7 +436,7 @@ function CoupleListing({data}) {
                 className="w-32 h-32 mx-auto mt-12 rounded-full object-cover"
               /> */}
 
-              <h3 className="text-center prata md:text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[35px] max-w-[700px] leading-[44px] lowercase">
+              <h3 className="text-center prata text-3xl md:leading-[24px] lg:leading-[28px] xl:leading-[30px] 2xl:leading-[35px] max-w-[700px] leading-[44px] lowercase">
                 {(couple.firstName || '') + ' ' + (couple.lastName || '') + ' & ' + (couple.fianceFirstName || '') + ' ' + (couple.fianceLastName || '')}
               </h3>
 
