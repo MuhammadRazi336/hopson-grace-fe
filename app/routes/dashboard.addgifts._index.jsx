@@ -1388,7 +1388,7 @@ export default function AddGifts() {
       ) : (
         <div className="pt-[3.75vw] relative px-4">
           <h2 className="mt-0 ivyora lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] text-[24px] prata text-center lg:leading-[3.333vw] xl:leading-[3.333vw] 2xl:leading-[3.333vw] font-normal mb-1">
-            <span className="prata">gifts</span>
+            <span className="prata"><span className="italic ivyora">add</span> gifts</span>
           </h2>
           <img
             src={headingBottomCurve}

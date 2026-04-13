@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Footer } from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
@@ -66,8 +66,16 @@ return json({ readyMadeRegistries: [], subCollectionsWithProducts: [] });
 const ReadyMade = () => {
    const { readyMadeRegistries, subCollectionsWithProducts } = useLoaderData();
    const [showPopup, setShowPopup] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
    // State to track which parent collection is selected
    const [selectedParentCollection, setSelectedParentCollection] = React.useState(null);
+
+   useEffect(() => {
+     if (typeof window === 'undefined') return;
+     const token =
+       localStorage.getItem('@Token') || localStorage.getItem('@token');
+     setIsLoggedIn(!!token);
+   }, []);
 
    const handleOpenPopup = () => {
      setShowPopup(true);
@@ -88,7 +96,7 @@ const ReadyMade = () => {
 
   <div className="w-full h-fit pt-[4.375vw]">
     <Heading text={"ready-made registries"}
-      classes={ 'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0' }
+      classes={ 'prata text-4xl lg:text-[2.5vw] lg:leading-[1.875vw] font-normal text-center max-[1024px]:m-0 max-[500px]:text-[32px] max-[500px]:px-5' }
       image={lineImghead} imageClasses={'max-[1024px]:max-w-[330px] lg:w-[37.5vw] lg:h-[0.417vw]'} />
     {/* <p
       className="text-center text-2xl lg:text-[1.354vw] lg:leading-[1.979vw] font-normal w-[80%] lg:w-[60%] mx-auto mb-[5.26vw] mt-[1.771vw]">
@@ -97,11 +105,11 @@ const ReadyMade = () => {
     </p> */}
   </div>
 
-  <div className='w-full flex flex-row justify-center lg:w-[61.354vw] mx-auto gap-6 mt-12 max-[767px]:gap-2.5 max-[375px]:flex-col max-[375px]:px-[9.323vw]'>
+  <div className='w-full flex flex-row justify-center lg:w-[61.354vw] mx-auto gap-6 mt-12 max-[767px]:gap-2.5 max-[391px]:flex-col max-[375px]:px-[9.323vw] max-[500px]:px-5'>
     {readyMadeRegistries.length > 0 ? (
     readyMadeRegistries.map((collection, index) => (
-    <div key={collection.id} className='flex flex-col items-center'>
-      <div className={`p-6 w-[300px] border-black border-2 cursor-pointer max-[767px]:w-[100%] max-[767px]:p-2.5 ${
+    <div key={collection.id} className='flex flex-col items-center max-[500px]:w-full'>
+      <div className={`p-6 w-[300px] border-black border-2 cursor-pointer max-[767px]:w-[100%] max-[767px]:p-2.5 max-[500px]:w-full ${
         selectedParentCollection?.id===collection.id ? 'bg-[#1F1D1B] text-white' : '' }`} onClick={()=>
         setSelectedParentCollection(selectedParentCollection?.id === collection.id ? null : collection)}
         >
@@ -109,7 +117,7 @@ const ReadyMade = () => {
           className='w-full h-full rounded-full object-cover lg:w-[16.563vw] xl:w-[16.563vw] 2xl:w-[16.563vw] lg:h-[16.563vw] xl:h-[16.563vw] 2xl:h-[16.563vw]'
           alt={collection.image?.altText || collection.title} /> */}
         <div className='text-center'>
-          <h2 className='text-base lg:text-base m-0 uppercase lg:leading-[1.458vw] tracking-widest font-bold max-[767px]:text-[14px]'>
+          <h2 className='text-base lg:text-base m-0 uppercase lg:leading-[1.458vw] tracking-widest font-bold max-[767px]:text-[14px] max-[476px]:text-[12px]'>
             {collection.title}</h2>
           {/* <p className='text-xl lg:text-[1.25vw] lg:leading-[1.875vw] font-normal max-w-2xl mx-auto'>
             {collection.description}</p> */}
@@ -125,19 +133,22 @@ const ReadyMade = () => {
     )}
   </div>
 
-  <div className="mt-[4.95vw] px-[9.323vw]">
+  <div className="mt-[4.95vw] px-[9.323vw] max-[500px]:px-5">
     <div className="grid grid-cols-1 lg:gap-[1.25vw] sm:grid-cols-2 lg:grid-cols-4">
       {filteredSubCollections.map((item) => {
       const { parentCollection, subCollection } = item;
 
+      const registryHref = `/registry/${subCollection.handle}`;
+      const subCollectionLinkTo = isLoggedIn ? registryHref : '/login';
+
       return (
       <div key={subCollection.id} className="mb-[5.469vw] max-[767px]:w-full">
         <div className="">
-          <Link to={`/registry/${subCollection.handle}`}> <img src={subCollection.image?.url
+          <Link to={subCollectionLinkTo}> <img src={subCollection.image?.url
             || '/assets/Images/placeholder.png' } alt={subCollection.image?.altText || subCollection.title}
             className='aspect-square rounded-none max-[767px]:h-[70vw] w-full object-cover' />
           </Link>
-          <Link to={`/registry/${subCollection.handle}`}> <h4
+          <Link to={subCollectionLinkTo}> <h4
             className="text-xl text-[#1F1D1B] lg:mb-[0.573vw] font-medium tracking-[0.5px] mt-[1.667vw] uppercase lg:text-[1.146vw] lg:leading-[1.458vw]">
           {subCollection.title}</h4>
           </Link>
@@ -146,7 +157,7 @@ const ReadyMade = () => {
             {subCollection.description?.slice(0, 95)}...</p>
 
           <div className='flex items-center justify-start mt-3'>
-            <Link to={`/registry/${subCollection.handle}`}> <p
+            <Link to={subCollectionLinkTo}> <p
               className='font-bold lg:text-[0.938vw] lg:leading-[1.458vw] uppercase flex items-center gap-[0.7vw]'>View
             Registry <img src={readMoreIcon} className='w-[0.833vw] h-[0.833vw] relative -top-[2px]' alt="" /></p>
             </Link>

@@ -1695,9 +1695,9 @@ export function Header() {
                   </div>
                 </a>
                 <a className={`text-center px-1 py-1 lg:tracking-[0.067vw] xl:tracking-[0.067vw] 2xl:tracking-[0.067vw] text-[14px] leading-[36px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] transition-all ease-in-out relative hover:font-bold group max-[1024px]:min-w-max max-[1024px]:px-4 ${location.pathname === '/dashboard/addgifts' ? 'font-bold text-black' : 'font-normal text-gray-600'}`} data-discover="true" href="/dashboard/addgifts">
-                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD OR EDIT GIFTS">
+                  <div className="flex items-center justify-center text-center h-full relative text-blue-gray-900 antialiased font-sans max-[1024px]:text-sm font-normal leading-relaxed select-none cursor-pointer w-full shadow-none p-0 min-w-0 !bg-transparent" data-value="ADD GIFTS">
                     <div className="z-20 text-inherit">
-                      <span className="relative inline-block leading-6">ADD OR EDIT GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/addgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
+                      <span className="relative inline-block leading-6">ADD GIFTS<span className={`block h-0.5 mt-1 rounded transition-all duration-300 mx-auto ${location.pathname === '/dashboard/addgifts' ? 'bg-black w-full' : 'bg-transparent group-hover:bg-gray-300 group-hover:w-full w-0'}`} style={{minWidth: '24px'}}></span></span>
                     </div>
                   </div>
                 </a>
@@ -1784,7 +1784,7 @@ export function Header() {
                       href="/dashboard/addgifts"
                       onClick={toggleMobileDrawer}
                     >
-                      ADD OR EDIT GIFTS
+                      ADD GIFTS
                     </a>
                     <a 
                       className={`block px-4 py-3 rounded-lg transition-colors ${

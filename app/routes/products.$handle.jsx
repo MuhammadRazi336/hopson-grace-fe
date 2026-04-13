@@ -340,19 +340,33 @@ function SidebarFilter({
     let newChecked;
     if (checkedCollectionIds.includes(colId)) {
       newChecked = checkedCollectionIds.filter((id) => id !== colId);
-  } else {
+    } else {
       newChecked = [...checkedCollectionIds, colId];
     }
     setCheckedCollectionIds(newChecked);
   };
 
-  return (
-    <div className="w-full lg:w-[19.031vw] xl:w-[19.031vw] 2xl:w-[19.031vw] py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6]">
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  useEffect(() => {
+    if (!filterOpen) return undefined;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [filterOpen]);
+
+  const filterPanelClasses =
+    'w-full py-[2.865vw] px-[1.979vw] h-fit bg-[#FAF9F6] max-[768px]:p-5';
+
+  const filterInner = (
+    <>
       {/* When no collection selected: Product Categories + Shop by Style (Shop All + sub-collections) */}
       {!selectedSwiperCollectionId && (
         <div className="mb-6">
           <h2
-            className="text-[18px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] lg:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
+            className="text-[18px] min-[1025px]:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] gap-[0.833vw] min-[1025px]:leading-[0.938vw] font-bold uppercase mb-[2.292vw] cursor-pointer flex items-center"
             onClick={() => toggleSection('categories')}
           >
             Product Categories
@@ -361,13 +375,13 @@ function SidebarFilter({
                 <img
                   src="/assets/Images/next.png"
                   alt="minus"
-                  className="w-[0.833vw] h-[0.833vw] rotate-180"
+                  className="w-[0.833vw] h-[0.833vw] rotate-180 max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
                 />
               ) : (
                 <img
                   src="/assets/Images/next.png"
                   alt="plus"
-                  className="w-[0.833vw] h-[0.833vw]"
+                  className="w-[0.833vw] h-[0.833vw] max-[768px]:w-[8px] max-[768px]:h-[8px] max-[768px]:ml-2.5"
                 />
               )}
             </span>
@@ -375,7 +389,7 @@ function SidebarFilter({
           {openSections.categories && (
             <ul className="space-y-2 text-sm">
               {parentCollection.map((col) => (
-                <li key={col.id} className="mb-[1.69vw]">
+                <li key={col.id} className="mb-[1.69vw] max-[768px]:mb-2.5">
                   <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                     <input
                       type="checkbox"
@@ -576,6 +590,58 @@ function SidebarFilter({
           )}
         </div>
       )}
+    </>
+  );
+
+  return (
+    <div className="w-full min-[1025px]:w-[19.031vw] xl:w-[19.031vw] 2xl:w-[19.031vw] shrink-0">
+      <div className="min-[1025px]:hidden my-4">
+        <button
+          type="button"
+          onClick={() => setFilterOpen(true)}
+          className="uppercase font-semibold text-sm tracking-wider"
+        >
+          Show Filter
+        </button>
+      </div>
+
+      <div className={`hidden min-[1025px]:block ${filterPanelClasses}`}>
+        {filterInner}
+      </div>
+
+      <div
+        className={`min-[1025px]:hidden fixed inset-0 z-[100] transition-opacity duration-300 ease-out ${
+          filterOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
+        aria-hidden={!filterOpen}
+      >
+        <button
+          type="button"
+          className="absolute inset-0 bg-black/50"
+          aria-label="Close filters"
+          onClick={() => setFilterOpen(false)}
+        />
+        <div
+          className={`absolute left-0 top-0 bottom-0 z-10 flex w-[min(100%,22rem)] max-w-[90vw] flex-col bg-[#FAF9F6] shadow-xl transition-transform duration-300 ease-out ${
+            filterOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="flex shrink-0 items-center justify-between border-b border-[#E8E6E3] px-5 py-4 max-[1025px]:justify-end">
+            <button
+              type="button"
+              onClick={() => setFilterOpen(false)}
+              className="text-[13px] font-bold uppercase tracking-wide text-[#1F1D1B] underline underline-offset-2"
+            >
+              Close
+            </button>
+          </div>
+          <div className={`min-h-0 flex-1 overflow-y-auto ${filterPanelClasses}`}>
+            {filterInner}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1117,8 +1183,8 @@ export default function ProductCollection() {
         </div>
       </section>
 
-      <section className="px-[8.594vw] mx-auto">
-        <div className="flex flex-row max-[1024px]:flex-col gap-[3.75vw] w-full mx-auto pt-[5vw]">
+      <section className="px-[8.594vw] mx-auto max-[1025px]:px-5">
+        <div className="flex flex-row max-[1024px]:flex-col gap-[3.75vw] w-full mx-auto pt-[5vw] max-[1025px]:gap-2.5 items-start">
           <SidebarFilter
             collections={collections}
             checkedCollectionIds={checkedCollectionIds}

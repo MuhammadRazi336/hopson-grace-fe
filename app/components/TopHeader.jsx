@@ -60,21 +60,9 @@ const TopHeader = () => {
             />
           </a>
         </div>
-        <div className="flex-1 flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px] max-[1024px]:justify-start max-[767px]:tracking-[1px] max-[767px]:justify-center">
+        <div className="flex-1 flex items-center justify-center text-[1.042vw] leading-[1.875vw] max-[1024px]:text-[9px] max-[1024px]:leading-[14px] max-[1024px]:justify-start max-[767px]:tracking-[3.6px] max-[767px]:justify-start max-[390px]:tracking-[1px]">
           {isLoggedIn ? (
-            <>
-              IT’S NEVER TOO LATE TO ADD GIFTS!
-              <span className="lg:px-2 px-1">|</span>
-              <Link
-                to="/dashboard/addgifts"
-                className="text-white px-1 lg:tracking-[3.6px] tracking-[0] font-bold"
-              >
-                ADD GIFTS{' '}
-                <span className="lg:text-[0.833vw] ml-[8px] text-[14px] max-[1024px]:text-[8px] max-[1024px]:ml-[5px]">
-                  ▶
-                </span>
-              </Link>
-            </>
+            <>IT’S NEVER TOO LATE TO ADD GIFTS!</>
           ) : (
             <>
               REGISTRY, REDEFINED

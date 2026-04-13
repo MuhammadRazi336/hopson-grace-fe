@@ -774,11 +774,11 @@ export default function SearchResults() {
       <Header />
       {/* Combined grid: gifts, cash funds, brands, ready-made registries */}
       {totalResults > 0 && (
-        <section className="container mx-auto py-16">
+        <section className="max-w-[1880px] mx-auto py-16">
           <h2 className="text-3xl font-semibold mb-8 text-center">
             {totalResults} search results found for "{searchQuery}"
           </h2>
-          <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]">
+          <div className="w-full grid max-[450px]:grid-cols-1 max-[600px]:grid-cols-2 max-[992px]:grid-cols-3 grid-cols-4 gap-[2.135vw] pt-0 p-0 relative z-0 mb-[4.844vw]">
             {allResults.map((item) => {
               if (item._kind === 'product') {
                 const product = item.data;
