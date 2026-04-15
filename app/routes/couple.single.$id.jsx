@@ -1634,14 +1634,16 @@ export default function CoupleProfile() {
               {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
             </h1>
           </div>
-          <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[3.979vw] lg:h-[3.979vw] w-full ">
             {safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl ? (
+              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] w-full ">
               <img
                 src={safeResponse.data[0].events[0].image.fileUrl}
                 alt="Couple's Image"
                 className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto"
               />
+              </div>
             ) : (
+              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[3.979vw] lg:h-[3.979vw] w-full ">
               <div className='placeholders mt-[70px] flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none rounded-full bg-[#F5F2ED] h-[400px] w-[400px] mx-auto object-cover'>
                         <img 
                           src="/assets/Images/copyrightLogo.png" 
@@ -1658,8 +1660,8 @@ export default function CoupleProfile() {
                           onLoad={() => console.log('placeholder-line.png loaded successfully')}
                         />
                       </div>
+              </div>
             )}
-          </div>
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
             <div className="mr-16">
               <p className="md:text-[42px] my-2 leading-[1.25] prata mx-auto lg:text-[2.5vw] lg:leading-[2.917vw] text-center">

@@ -47,7 +47,7 @@ export default function Checkout() {
         />
       </div>
 
-      <CheckoutSteps />
+      <CheckoutSteps step={2} />
 
       <div className="container mx-auto py-[100px]">
         <div className=" bg-[#446184]  py-16 px-16">

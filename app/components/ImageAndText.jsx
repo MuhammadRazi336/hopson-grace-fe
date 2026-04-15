@@ -20,6 +20,7 @@ const ImageAndText = ({
   showLiveChat = false,
   liveChatProps = {},
   buttonClassName = '',
+  titleClassName = '',
 }) => {
   const location = useLocation();
 
@@ -34,11 +35,11 @@ const ImageAndText = ({
       }`}
     >
       <div
-        className={`bg-[#F5F2ED] py-[3.333vw] relative flex justify-center flex-col lg:w-[36.406vw] w-[55%] lg:px-[4.219vw] xl:px-[4.219vw] 2xl:px-[4.219vw] max-[1024px]:p-[20px] ${
+        className={`bg-[#F5F2ED] py-[3.333vw] relative flex justify-center flex-col lg:w-[44.406vw] w-[55%] lg:px-[4.219vw] xl:px-[4.219vw] 2xl:px-[4.219vw] max-[1024px]:p-[20px] ${
           direction === 'left' ? 'mb-0' : ''
         }`}
       >
-        <h3 className="text-[20px] leading-[36px] text-center lg:mx-auto lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[2.917vw] xl:leading-[2.917vw] 2xl:leading-[2.917vw] prata max-w-[410px]">
+        <h3 className={`text-[20px] leading-[36px] text-center lg:mx-auto lg:text-[2.5vw] xl:text-[2.5vw] 2xl:text-[2.5vw] lg:leading-[2.917vw] xl:leading-[2.917vw] 2xl:leading-[2.917vw] prata max-w-[410px] ${titleClassName}`}>
           {title}
         </h3>
 
@@ -95,7 +96,7 @@ const ImageAndText = ({
       </div>
 
       <div
-        className={`lg:w-[70%] xl:w-[70%] 2xl:w-[70%] w-[45%] min-w-[45%] h-[42vw] max-[767px]:h-[320px] relative ${
+        className={`lg:w-[62.5%] xl:w-[62.5%] 2xl:w-[62.5%] w-[45%] min-w-[45%] h-[40.365vw] max-[767px]:h-[320px] relative ${
           direction === 'left' ? 'lg:mt-[2.24vw] xl:mt-[2.24vw] 2xl:mt-[2.24vw] mt-6 top-[3.229vw]' : 'top-[-3.229vw]'
         }`}
       >

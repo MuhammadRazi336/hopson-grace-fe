@@ -10,7 +10,10 @@ import NotificationCard from '~/components/NotificationCard';
 import { Footer } from '~/components/Footer';
 import ModalPortal from '~/components/ModalPortal';
 
-const MINI_TUTORIAL_SESSION_KEY = '@DashboardMiniTutorialDismissed';
+const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+const MINI_TUTORIAL_RESHOW_AFTER_DAYS = 30;
+const MINI_TUTORIAL_RESHOW_AFTER_MS =
+  MINI_TUTORIAL_RESHOW_AFTER_DAYS * 24 * 60 * 60 * 1000;
 import {syncCustomerBalancesToMetafields} from '~/utils/shopify-customer-balances.server';
 import {getApiBaseUrl} from '~/utils/api-url';
 
@@ -238,9 +241,22 @@ const index = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
-      setShowMiniTutorialModal(
-        sessionStorage.getItem(MINI_TUTORIAL_SESSION_KEY) !== 'true',
-      );
+      const dismissedAtRaw = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
+      if (!dismissedAtRaw) {
+        setShowMiniTutorialModal(true);
+        return;
+      }
+
+      const dismissedAt = Number(dismissedAtRaw);
+      const isValidTimestamp = Number.isFinite(dismissedAt) && dismissedAt > 0;
+      if (!isValidTimestamp) {
+        setShowMiniTutorialModal(true);
+        return;
+      }
+
+      const shouldReshow =
+        Date.now() - dismissedAt >= MINI_TUTORIAL_RESHOW_AFTER_MS;
+      setShowMiniTutorialModal(shouldReshow);
     } catch {
       setShowMiniTutorialModal(true);
     }
@@ -258,7 +274,7 @@ const index = () => {
 
   const dismissMiniTutorialPopup = () => {
     try {
-      sessionStorage.setItem(MINI_TUTORIAL_SESSION_KEY, 'true');
+      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, String(Date.now()));
     } catch {
       // ignore private mode / quota
     }
@@ -268,7 +284,7 @@ const index = () => {
   const handleLetsGoTutorial = (e) => {
     e?.stopPropagation?.();
     try {
-      sessionStorage.setItem(MINI_TUTORIAL_SESSION_KEY, 'true');
+      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, String(Date.now()));
       localStorage.setItem('showDashboardIntro', 'true');
     } catch {
       // ignore

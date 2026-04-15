@@ -747,8 +747,8 @@ const DetailsForm = ({onNext}) => {
       <div className="max-w-4xl mx-auto mt-[80px]">
         <div className="flex items-center justify-around">
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+            <h4 className="text-[60px] text-center prata text-[#1F1D1B40]">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40]">
               Add your messsage
             </p>
           </div>
@@ -759,8 +759,8 @@ const DetailsForm = ({onNext}) => {
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center">
+            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40]">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40]">
               Order Confirmation
             </p>
           </div>
@@ -1340,8 +1340,8 @@ const PayPalPaymentForm = ({
       <div className="max-w-4xl mx-auto mt-[80px]">
         <div className="flex items-center justify-around">
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40]">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40]">
               Add your messsage
             </p>
           </div>
@@ -1352,8 +1352,8 @@ const PayPalPaymentForm = ({
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center">
+            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40]">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40]">
               Order Confirmation
             </p>
           </div>

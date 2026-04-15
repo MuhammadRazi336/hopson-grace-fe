@@ -21,7 +21,7 @@ export default function CheckoutFlow() {
         />
       </div>
 
-      <CheckoutSteps />
+      <CheckoutSteps step={1} />
 
       <div className="xl:mx-20 py-[100px] mx-6">
         <div className="container mx-auto bg-[#446184]  py-16">

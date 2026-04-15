@@ -1,7 +1,7 @@
 import {Swiper, SwiperSlide} from 'swiper/react';
 import 'swiper/swiper-bundle.css';
 
-import {Navigation, Pagination} from 'swiper/modules';
+import {Autoplay, Pagination} from 'swiper/modules';
 import {Link} from '@remix-run/react';
 import {useState, useEffect} from 'react';
 
@@ -72,7 +72,11 @@ const Testimonialslider = ({blogs = []}) => {
         spaceBetween={getSpaceBetween()}
         centeredSlides={true}
         pagination={{clickable: true}}
-        modules={[Pagination]}
+        autoplay={{
+          delay: 6000,
+          disableOnInteraction: false,
+        }}
+        modules={[Pagination, Autoplay]}
         className=""
         breakpoints={{
           320: {
@@ -121,22 +125,22 @@ const Testimonialslider = ({blogs = []}) => {
                         article.handle || 'article'
                       }`}
                     >
-                      <h3 className="lg:text-[1.17vw] xl:text-[1.17vw] 2xl:text-[1.17vw] lg:leading-[1.17vw] xl:leading-[1.17vw] 2xl:leading-[1.17vw] text-[16px] flex items-center gap-2 text-white font-normal mt-[2vw]">
-                        <span className="border-white border-b-2 pb-[3px] max-[1024px]:hidden">
+                      <h3 className="lg:text-[1.17vw] xl:text-[1.17vw] 2xl:text-[1.17vw] lg:leading-[1.17vw] xl:leading-[1.17vw] 2xl:leading-[1.17vw] text-[16px] flex items-center gap-2 text-white font-normal mt-[2vw] max-[1025px]:text-[15px]">
+                        <span className="border-white border-b-2 pb-[3px]">
                           READ ON
                         </span>
                         <img
                           src="/assets/Images/arrow.png"
-                          className=" -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:hidden max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
+                          className=" -mt-1 lg:w-[0.834vw] lg:h-[0.834vw] max-[1024px]:w-[12px] max-[1024px]:h-[12px]"
                           alt="next"
                         />
                       </h3>
                     </Link>
                     <div className="flex flex-col items-end absolute bottom-[3vw] right-[3vw]">
-                      <h3 className="font-bold uppercase my-[2vw] lg:text-[18px] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto">
+                      <h3 className="font-bold uppercase my-[2vw] lg:text-[18px] lg:leading-[1.667vw] text-right max-[1024px]:text-[10px] max-[1024px]:leading-normal max-[1024px]:mt-5 max-[1024px]:w-1/2 max-[1024px]:ml-auto mb-0">
                         {cleanTitle}
                       </h3>
-                      <h4 className="text-right lowercase ivyora text-xl lg:text-[1.875vw] lg:leading-[2.5vw] font-normal m-0 max-[1024px]:hidden">
+                      <h4 className="text-right lowercase ivyora text-xl lg:text-[1.875vw] lg:leading-[2.5vw] font-normal m-0 ">
                         {article.venue || 'Venue TBD'}
                       </h4>
                     </div>

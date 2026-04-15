@@ -443,7 +443,7 @@ const Message = () => {
                         <input
                           type="text"
                           name="couplesName"
-                          placeholder="Couples Name*"
+                          placeholder="Couple's Name*"
                           value={couplesName}
                           onChange={(e) => setCouplesName(e.target.value)}
                           className="w-full prata text-center text-2xl mx-auto mb-4 border border-gray-300 rounded p-2 bg-[#FAF9F6] focus:outline-none focus:ring-2 focus:ring-gray-200"
