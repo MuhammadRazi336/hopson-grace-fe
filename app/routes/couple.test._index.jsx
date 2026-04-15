@@ -431,7 +431,11 @@ export default function CoupleProfileView() {
   );
 }
 
-export function CoupleProfileViewHeader({onCartClick, showCart = true}) {
+export function CoupleProfileViewHeader({
+  onCartClick,
+  showCart = true,
+  cartCount = 0,
+}) {
   return (
     <div className="px-10 mx-auto flex justify-between md:items-start items-center md:pt-6 pt-2 absolute top-0 left-0 right-0">
       <Link to="/home">
@@ -443,12 +447,15 @@ export function CoupleProfileViewHeader({onCartClick, showCart = true}) {
       </Link>
 
       {showCart && (
-        <span className="my-0 cursor-pointer" onClick={onCartClick}>
+        <span className="my-0 cursor-pointer flex items-center gap-2" onClick={onCartClick}>
           <img
             src="/assets/Images/cart-icon.png"
             alt="cart"
             className="w-7 h-7"
           />
+          <span className="text-sm font-semibold text-black">
+            ({Math.max(0, Number(cartCount) || 0)})
+          </span>
         </span>
       )}
     </div>

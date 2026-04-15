@@ -9,6 +9,7 @@ import StepsAndImage from '~/components/StepsAndImage';
 import arrow from '/assets/Images/arrow.png';
 import {Header} from '~/components/Header';
 import {Footer} from '~/components/Footer';
+import Popup from '~/components/Popup';
 export async function action({request, context}) {
   const body = await request.json();
   const {payload} = body;
@@ -41,6 +42,7 @@ export async function action({request, context}) {
 const RegisterIndex = () => {
   const submit = useSubmit();
   const actionData = useActionData();
+  const [showPopup, setShowPopup] = useState(true);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -415,6 +417,7 @@ const RegisterIndex = () => {
 
   return (
     <>
+      {showPopup ? <Popup onClose={() => setShowPopup(false)} /> : null}
       <Header />
       <div className="flex justify-center items-center min-h-screen bg-white">
         <StepsAndImage

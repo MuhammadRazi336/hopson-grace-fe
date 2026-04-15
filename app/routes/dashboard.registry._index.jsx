@@ -14,6 +14,8 @@ import {formatPrice} from '~/utils/priceFormatter';
 import BackToTop from '~/components/BackToTop';
 import {getApiBaseUrl} from '~/utils/api-url';
 
+const MESSAGE_UPDATED_TOAST_ID = 'registry-message-updated-toast';
+
 /** e.g. "6. 30 2026" — numeric month; handles ISO, "2026 06 30", YYYYMMDD, etc. */
 function formatRegistryEventDate(value) {
   if (value == null || value === '') return '';
@@ -59,7 +61,7 @@ function formatRegistryEventDate(value) {
     return s;
   }
 
-  return `${monthIndex + 1}. ${day} ${year}`;
+  return `${monthIndex + 1}. ${day}. ${year}`;
 }
 
 // Collections with products per node (same approach as addgifts: parent -> sub -> products -> parentCollectionId)
@@ -368,7 +370,14 @@ export async function action({request, context}) {
   const contentType = request.headers.get('content-type') || '';
 
   if (contentType.includes('application/json')) {
-    const {payload} = await request.json();
+    const body = await request.json().catch(() => null);
+    const payload = body?.payload;
+    if (!payload?.id) {
+      return json(
+        {success: false, error: 'Invalid payload for event update'},
+        {status: 400},
+      );
+    }
     const response = await context.ClientPut(
       payload,
       `events/${payload.id}`,
@@ -380,7 +389,7 @@ export async function action({request, context}) {
   const formData = await request.formData();
   const intent = formData.get('intent');
 
-  if (intent === 'deleteGift') {
+  if (intent === 'deleteGift' || intent === 'deleteCashFund') {
     const registryProductId = formData.get('registryProductId');
     if (!registryProductId) {
       return json(
@@ -389,11 +398,44 @@ export async function action({request, context}) {
       );
     }
 
-    const response = await context.ClientDelete(
-      `registryProducts/${registryProductId}`,
-      context,
-    );
-    return json({success: true, response});
+    try {
+      const token = context?.session?.get('@User')?.accessToken;
+      const apiBase =
+        context?.env?.API_BASE_URL || process.env.API_BASE_URL;
+      const endpoint = `${String(apiBase).replace(/\/$/, '')}/api/registryProducts/${registryProductId}`;
+      const deleteRes = await fetch(endpoint, {
+        method: 'DELETE',
+        headers: {
+          ...(token ? {Authorization: `Bearer ${token}`} : {}),
+        },
+      });
+
+      if (!deleteRes.ok) {
+        const contentType = deleteRes.headers.get('content-type') || '';
+        const errorPayload = contentType.includes('application/json')
+          ? await deleteRes.json().catch(() => null)
+          : await deleteRes.text().catch(() => '');
+        return json(
+          {
+            success: false,
+            error:
+              errorPayload?.message ||
+              errorPayload ||
+              `Failed to delete gift (HTTP ${deleteRes.status})`,
+          },
+          {status: deleteRes.status || 500},
+        );
+      }
+
+      // DELETE endpoints may return empty body; treat any 2xx as success.
+      return json({success: true});
+    } catch (error) {
+      const message = String(error?.message || '');
+      return json(
+        {success: false, error: message || 'Failed to delete gift'},
+        {status: 500},
+      );
+    }
   }
 
   return json({success: false, error: 'Invalid action'}, {status: 400});
@@ -439,8 +481,11 @@ const index = () => {
 
   // Add state for the note textarea
   const [note, setNote] = useState(eventGet?.data?.welcomeMessage || '');
+  const [isSavingMessage, setIsSavingMessage] = useState(false);
   const maxLength = 500;
   const handleSavePreview = async () => {
+    if (isSavingMessage) return;
+    setIsSavingMessage(true);
     try {
       const payload = {
         id: registryData?.events?.[0]?.id,
@@ -458,13 +503,15 @@ const index = () => {
         },
       );
       if (response.ok) {
-        toast.success('Message updated!');
+        toast.success('Message updated!', {toastId: MESSAGE_UPDATED_TOAST_ID});
       } else {
         console.log('response', response);
         toast.error(response.statusText || 'Error updating message');
       }
     } catch (err) {
       toast.error('Error updating message');
+    } finally {
+      setIsSavingMessage(false);
     }
   };
 
@@ -847,8 +894,9 @@ const index = () => {
               className="uppercase font-bold text-gray-500 border-b-2 border-gray-400 tracking-wider text-sm px-2 py-1 max-[1024px]:text-[14px] max-[1024px]:mx-[10px]"
               onClick={handleSavePreview}
               type="button"
+              disabled={isSavingMessage}
             >
-              Save
+              {isSavingMessage ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
@@ -1222,6 +1270,8 @@ const ProductPage = ({
               }
 
               const fund = item;
+              const fundRegistryProductId =
+                fund.registryProductId || fund.id || '';
               const totalAmount = Number(fund.amount) || 0;
               const collectedAmount = Number(fund.collectedAmount) || 0;
               const remainingAmount = Math.max(0, totalAmount - collectedAmount);
@@ -1281,6 +1331,28 @@ const ProductPage = ({
                         Contributed: ${collectedAmount.toFixed(2)} / $
                         {isAnyAmount ? 'Any Amount' : totalAmount.toFixed(2)}
                       </p>
+                    </div>
+
+                    <div className="mt-4">
+                      <Form method="post">
+                        <input
+                          type="hidden"
+                          name="intent"
+                          value="deleteCashFund"
+                        />
+                        <input
+                          type="hidden"
+                          name="registryProductId"
+                          value={fundRegistryProductId}
+                        />
+                        <button
+                          type="submit"
+                          disabled={!fundRegistryProductId}
+                          className="w-full border border-black py-3 px-4 text-sm font-semibold uppercase hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Delete Fund
+                        </button>
+                      </Form>
                     </div>
 
                     {!isAnyAmount && (

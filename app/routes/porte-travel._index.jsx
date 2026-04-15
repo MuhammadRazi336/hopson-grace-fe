@@ -513,7 +513,7 @@ const PorteTravel = () => {
               imageClasses={'w-[150px] lg:w-[22.135vw] xl:w-[22.135vw] 2xl:w-[22.135vw] lg:h-[0.417vw] xl:h-[0.417vw] 2xl:h-[0.417vw]'}
             />
             <p className="text-[16px] max-[767px]:w-[90%] sm:text-lg lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] w-[29.844vw] lg:max-w-full lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] text-black leading-relaxed mx-auto mt-[1.823vw] max-[1024px]:w-[80%]">
-            This is next-level. Our friends at Porte design fully <br className='max-[767px]:hidden' /> custom trips built around you�whether it's wine <br className='max-[767px]:hidden' /> tasting in Sicily or glamping in the Sahara.
+            This is next-level. Our friends at Porte design fully <br className='max-[767px]:hidden' /> custom trips built around you whether it's wine <br className='max-[767px]:hidden' /> tasting in Sicily or glamping in the Sahara.
             </p>
           </div>
         </div>

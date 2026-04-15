@@ -447,17 +447,13 @@ function CoupleListing({data}) {
                   year: 'numeric',
                 }) : 'Date not available'}
               </p>
-              {couple.registry && couple.registry.status === "published" ? 
+              {couple.registry && couple.registry.status === "published" && (
               <Link to={`/couple/single/${couple.id}`}>
                 <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white w-[225px] max-[1601px]:w-[200px] text-center">
                   View Registry
                 </button>
               </Link>
-              :
-              <p className="text-center text-lg font-semibold  underline">
-                NOTIFY ME WHEN REGISTRY IS LIVE
-              </p>
-              }
+              )}
             </div>
           ))}
         </div>

@@ -1,4 +1,11 @@
-import {defer, json, Link, useFetcher, useLoaderData} from '@remix-run/react';
+import {
+  defer,
+  json,
+  Link,
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+} from '@remix-run/react';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import CoupleProductCard from '~/components/CoupleProductCard';
 import {useState, useRef, useEffect} from 'react';
@@ -28,6 +35,54 @@ query {
     }
   }
 }`;
+
+/** e.g. "6. 30. 2026" — numeric month; handles ISO, "2026 06 30", YYYYMMDD, etc. */
+function formatRegistryEventDate(value) {
+  if (value == null || value === '') return '';
+  const s = String(value).trim();
+
+  let year;
+  let monthIndex; // 0–11
+  let day;
+
+  if (/^\d{8}$/.test(s)) {
+    year = Number(s.slice(0, 4));
+    monthIndex = Number(s.slice(4, 6)) - 1;
+    day = Number(s.slice(6, 8));
+  } else {
+    const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (iso) {
+      year = Number(iso[1]);
+      monthIndex = Number(iso[2]) - 1;
+      day = Number(iso[3]);
+    } else {
+      const spaced = s.match(/^(\d{4})\s+(\d{1,2})\s+(\d{1,2})$/);
+      if (spaced) {
+        year = Number(spaced[1]);
+        monthIndex = Number(spaced[2]) - 1;
+        day = Number(spaced[3]);
+      } else {
+        const d = new Date(s);
+        if (!Number.isNaN(d.getTime())) {
+          return `${d.getMonth() + 1}. ${d.getDate()}. ${d.getFullYear()}`;
+        }
+        return s;
+      }
+    }
+  }
+
+  if (
+    monthIndex < 0 ||
+    monthIndex > 11 ||
+    day < 1 ||
+    day > 31 ||
+    !year
+  ) {
+    return s;
+  }
+
+  return `${monthIndex + 1}. ${day}. ${year}`;
+}
 
 export async function loader({params, context}) {
   try {
@@ -360,6 +415,7 @@ async function hashCartId(cartId) {
 
 export default function CoupleProfile() {
   const loaderData = useLoaderData();
+  const navigate = useNavigate();
   console.log('Component: Loader data received:', loaderData);
 
   // If no loader data, show loading or error state
@@ -1490,6 +1546,16 @@ export default function CoupleProfile() {
   );
 
   const scrollToTopAndShowGiftCards = () => {
+    const hasGiftCardProducts = safeData.some((product) => {
+      const title = String(product?.title || '').toLowerCase();
+      return !product?.isCashFund && title.includes('gift card');
+    });
+
+    if (!hasGiftCardProducts) {
+      navigate('/dashboard/giftcards');
+      return;
+    }
+
     // Set filters to show only gift card products
     setCategoryFilter('gifts');
     setStatusFilter('all');
@@ -1545,6 +1611,7 @@ export default function CoupleProfile() {
       <CoupleProfileViewHeader
         onCartClick={handleCartClick}
         showCart={hasProducts && registryId}
+        cartCount={cartItems.length}
       />
       <div className="text-center pt-[80px] mx-auto font-sans px-10">
         {safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl ? (
@@ -1596,7 +1663,9 @@ export default function CoupleProfile() {
           <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
             <div className="mr-16">
               <p className="md:text-[42px] my-2 leading-[1.25] prata mx-auto lg:text-[2.5vw] lg:leading-[2.917vw] text-center">
-                {safeResponse?.data?.[0]?.events?.[0]?.eventDate || 'Date TBD'}
+                {formatRegistryEventDate(
+                  safeResponse?.data?.[0]?.events?.[0]?.eventDate,
+                ) || 'Date TBD'}
               </p>
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
