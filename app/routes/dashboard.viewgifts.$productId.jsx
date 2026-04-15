@@ -217,10 +217,14 @@ const ViewGifts = () => {
               <button
                 type="submit"
                 disabled={isMarkingComplete || fetcher.state === 'submitting'}
-                className="border border-gray-700 px-6 py-4 text-base font-medium hover:bg-gray-100 w-full max-w-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`border border-gray-700 px-6 py-4 text-base font-medium w-full max-w-xs disabled:cursor-not-allowed ${
+                  isMarkingComplete || fetcher.state === 'submitting'
+                    ? 'bg-black text-white'
+                    : 'hover:bg-gray-100 text-black'
+                }`}
               >
                 {isMarkingComplete || fetcher.state === 'submitting'
-                  ? 'MARKING...'
+                  ? 'COMPLETING...'
                   : 'SENT BY MAIL MARK COMPLETE'}
               </button>
             </fetcher.Form>

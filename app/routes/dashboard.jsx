@@ -155,11 +155,11 @@ const Dashboard_index = ({context}) => {
     }
   };
 
-  // On mount, check localStorage for token and intro flag
+  // On mount, check localStorage intro flag.
   useEffect(() => {
     const token = localStorage.getItem('@Token');
     const showFlag = localStorage.getItem('showDashboardIntro');
-    if (token && showFlag !== 'false') {
+    if (showFlag !== 'false') {
       setShowIntro(true);
     }
 
