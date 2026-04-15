@@ -9,6 +9,8 @@ import {
 import {Link} from '@remix-run/react';
 import {Header} from '~/components/Header';
 
+const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+
 const CustomTabs = ({
   tabsData,
   defaultActive = 1,
@@ -21,11 +23,12 @@ const CustomTabs = ({
   
   // Handle logout functionality
   const handleLogout = () => {
-    // Clear all localStorage
+    const miniTutorialDismissedAt = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
     localStorage.clear();
-    
-    // Clear all sessionStorage
     sessionStorage.clear();
+    if (miniTutorialDismissedAt) {
+      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, miniTutorialDismissedAt);
+    }
     
     // Clear specific items to be sure
     localStorage.removeItem('@token');

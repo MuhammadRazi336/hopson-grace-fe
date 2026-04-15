@@ -14,6 +14,8 @@ import Heading from '~/components/Heading.jsx';
 import arrow from '/assets/Images/arrow.png';
 import Popup from '~/components/Popup';
 
+const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
   const {context} = args;
@@ -82,8 +84,12 @@ const LoginIndex = () => {
     const params = new URLSearchParams(location.search);
     if (params.get('session_expired') === '1' && typeof window !== 'undefined') {
       try {
+        const miniTutorialDismissedAt = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
         localStorage.clear();
         sessionStorage.clear();
+        if (miniTutorialDismissedAt) {
+          localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, miniTutorialDismissedAt);
+        }
         // Clear all cookies accessible to JS (non-HttpOnly)
         document.cookie.split(';').forEach((c) => {
           const name = c.replace(/^\s*|\s*$/g, '').split('=')[0];

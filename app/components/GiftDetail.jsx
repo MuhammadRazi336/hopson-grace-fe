@@ -138,7 +138,7 @@ const GiftDetail = ({
         {/* Right Section: Product Information */}
         <div className="lg:w-[39.063vw] xl:w-[39.063vw] 2xl:w-[39.063vw] w-1/2">
           {/* Brand */}
-          <div className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] font-medium mb-[1.198vw]">
+          <div className="text-[22px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] font-medium mb-[1.198vw] uppercase">
             {productBrand}
           </div>
 

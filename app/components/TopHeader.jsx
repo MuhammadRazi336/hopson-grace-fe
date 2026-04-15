@@ -51,7 +51,7 @@ const TopHeader = () => {
   return (
     <div className="bg-[#1F1D1B] h-[3.333vw] max-[1024px]:h-[36px] max-[1024px]:py-[5px] max-[1024px]:px-[0px] max-[1024px]:mb-0 mb-[2.813vw] flex items-center justify-center text-white py-[15px] text-center text-sm min[767px]:text-[20px] tracking-[3.6px]">
       <div className="px-[2.083vw] text-[1.042vw] max-[1024px]:text-[9px] max-[1024px]:leading-[36px] w-full flex items-center justify-between">
-        <div className="w-[20%] max-[1024px]:hidden">
+        <div className="w-[20%] max-[1024px]:hidden max-[1024px]:invisible">
           <a href="https://www.hopsongrace.com/" target="_blank">
             <img
               src={TopLogo}
