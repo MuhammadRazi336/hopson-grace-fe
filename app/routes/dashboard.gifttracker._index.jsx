@@ -1,4 +1,5 @@
 import {Link, useLoaderData} from '@remix-run/react';
+import {useEffect, useMemo, useState} from 'react';
 import { Footer } from '~/components/Footer';
 
 export async function loader(args) {
@@ -61,6 +62,25 @@ export async function loader(args) {
 const GiftTracker = () => {
   const {giftTrackingData} = useLoaderData();
   console.log( 'giftTrackingData', giftTrackingData);
+  const ITEMS_PER_PAGE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(giftTrackingData.length / ITEMS_PER_PAGE),
+  );
+
+  const paginatedGiftTrackingData = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return giftTrackingData.slice(startIndex, endIndex);
+  }, [giftTrackingData, currentPage]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   return (
     <>
@@ -111,9 +131,9 @@ const GiftTracker = () => {
                 </div>
 
                 {/* Rows */}
-                {giftTrackingData.map((item, idx) => (
+                {paginatedGiftTrackingData.map((item, idx) => (
                   <div
-                    key={idx}
+                    key={item.greetingsId || item.checkoutNumber || idx}
                     className="grid grid-cols-6 items-center  bg-white px-4 py-6 text-sm"
                   >
                     <div className='text-center'>{item.checkoutNumber}</div>
@@ -144,6 +164,36 @@ const GiftTracker = () => {
                     </div>
                   </div>
                 ))}
+
+                {giftTrackingData.length > ITEMS_PER_PAGE && (
+                  <div className="flex items-center justify-between px-4 py-4 bg-[#F5F2ED]">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
+                      }
+                      disabled={currentPage === 1}
+                      className="border border-gray-700 px-4 py-2 text-sm font-medium uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-sm font-medium text-gray-700">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(totalPages, prev + 1),
+                        )
+                      }
+                      disabled={currentPage === totalPages}
+                      className="border border-gray-700 px-4 py-2 text-sm font-medium uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </div>
