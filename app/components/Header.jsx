@@ -23,6 +23,8 @@ import { ToastContainer } from 'react-toastify';
 import {getApiBaseUrl} from '~/utils/api-url';
 import {OPEN_NOTIFICATION_DROPDOWN_EVENT} from '~/constants/UiConstants';
 
+const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+
 export function Header() {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
@@ -63,6 +65,17 @@ export function Header() {
   // User avatar dropdown state
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const userDropdownRef = useRef(null);
+
+  const clearAuthStoragePreservingPreferences = () => {
+    const miniTutorialDismissedAt = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
+
+    localStorage.clear();
+    sessionStorage.clear();
+
+    if (miniTutorialDismissedAt) {
+      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, miniTutorialDismissedAt);
+    }
+  };
 
 
   // Update status when registry data changes
@@ -105,9 +118,8 @@ export function Header() {
               .then(res => {
                 // Check for session expiration
                 if (res.status === 401 || res.status === 403) {
-                  // Clear all localStorage
-                  localStorage.clear();
-                  sessionStorage.clear();
+                  // Clear auth/session state while keeping preference flags.
+                  clearAuthStoragePreservingPreferences();
                   
                   // Clear specific items to be sure
                   localStorage.removeItem('@token');
@@ -140,9 +152,8 @@ export function Header() {
               .then(res => {
                 // Check for session expiration
                 if (res.status === 401 || res.status === 403) {
-                  // Clear all localStorage
-                  localStorage.clear();
-                  sessionStorage.clear();
+                  // Clear auth/session state while keeping preference flags.
+                  clearAuthStoragePreservingPreferences();
                   
                   // Clear specific items to be sure
                   localStorage.removeItem('@token');
@@ -414,11 +425,8 @@ export function Header() {
 
   // Handle logout
   const handleLogout = () => {
-    // Clear all localStorage
-    localStorage.clear();
-    
-    // Clear all sessionStorage
-    sessionStorage.clear();
+    // Clear auth/session state while keeping preference flags.
+    clearAuthStoragePreservingPreferences();
     
     // Clear specific items to be sure
     localStorage.removeItem('@token');

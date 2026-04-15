@@ -1183,7 +1183,7 @@ const ProductPage = ({
                       </Link>
 
                       {(product.isGroupPayment || product.isGroupGift) && (
-                        <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                        <div className="absolute top-2 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
                           <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
                             group <br /> gift
                           </h2>
@@ -1295,7 +1295,7 @@ const ProductPage = ({
                         alt={fund.cashFund?.name || 'Cash Fund'}
                         className="w-full aspect-square object-cover mb-4"
                       />
-                      <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                      <div className="absolute top-2 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
                         <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
                           cash <br /> fund
                         </h2>
