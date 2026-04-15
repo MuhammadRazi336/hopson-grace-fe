@@ -329,7 +329,7 @@ export async function loader({request, context}) {
                     product.variants?.edges?.[0]?.node?.availableForSale ||
                     false,
                   createdAt: product.createdAt,
-                  style: product.styleMetafield?.value || null, // Modern, Classic, Eclectic
+                  styles: parseStylesMetafieldValue(product.styleMetafield?.value),
                   collectionId: subCollection.id, // Use sub-collection ID
                   parentCollectionId: parentCollection.id, // Also track parent collection ID
                   parentCollectionTitle: parentCollection.title, // Track parent collection title
@@ -664,6 +664,42 @@ const SPECIAL_PRODUCT_TYPE_IDS = {
   GIFT_CARDS: '__GIFT_CARDS__',
 };
 
+function parseStylesMetafieldValue(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value
+      .map((v) => String(v || '').trim().toLowerCase())
+      .filter(Boolean);
+  }
+  if (typeof value !== 'string') {
+    return [String(value).trim().toLowerCase()].filter(Boolean);
+  }
+
+  const raw = value.trim();
+  if (!raw) return [];
+
+  // Shopify list metafields are commonly returned as JSON arrays.
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((v) => String(v || '').trim().toLowerCase())
+        .filter(Boolean);
+    }
+  } catch {
+    // Fall through to single/comma-separated formats.
+  }
+
+  if (raw.includes(',')) {
+    return raw
+      .split(',')
+      .map((v) => v.trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  return [raw.toLowerCase()];
+}
+
 function SidebarFilter({
   collections,
   checkedCollectionIds,
@@ -700,6 +736,11 @@ function SidebarFilter({
   // Brand collections (collections flagged as brands via metafield)
   const brandCollections = collections.filter(
     (col) => col.brandMetafield?.value === 'true',
+  );
+  const sortedBrandCollections = [...brandCollections].sort((a, b) =>
+    String(a.title || '').localeCompare(String(b.title || ''), undefined, {
+      sensitivity: 'base',
+    }),
   );
 
   // Get sub-collections for Shop by Style (these are the ones that actually contain products)
@@ -831,7 +872,7 @@ function SidebarFilter({
             </div>
 
             {/* Brands (all brand collections from GraphQL) */}
-            {brandCollections.length > 0 && (
+            {sortedBrandCollections.length > 0 && (
               <div className="mb-[3.438vw]">
                 <h2
                   className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
@@ -856,7 +897,7 @@ function SidebarFilter({
                 </h2>
                 {openSections.brands && (
                   <ul className="space-y-2 text-sm">
-                    {brandCollections.map((brand) => (
+                    {sortedBrandCollections.map((brand) => (
                       <li key={brand.id} className="mb-[1.69vw]">
                         <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                           <input
@@ -924,7 +965,7 @@ function SidebarFilter({
             )}
 
             {/* Brands between Product Type and Style when viewing a parent collection */}
-            {brandCollections.length > 0 && (
+            {sortedBrandCollections.length > 0 && (
               <div className="mb-[3.438vw]">
                 <h2
                   className="text-sm font-bold uppercase mb-[2.344vw] lg:text-[0.938vw] lg:leading-[0.938vw] cursor-pointer flex items-center gap-[0.833vw]"
@@ -949,7 +990,7 @@ function SidebarFilter({
                 </h2>
                 {openSections.brands && (
                   <ul className="space-y-2 text-sm">
-                    {brandCollections.map((brand) => (
+                    {sortedBrandCollections.map((brand) => (
                       <li key={brand.id} className="mb-[1.69vw]">
                         <label className="uppercase flex items-center gap-[1.10vw] lg:text-[1.04vw] xl:text-[1.04vw] 2xl:text-[1.04vw]">
                           <input
@@ -1209,15 +1250,17 @@ export default function AddGifts() {
         });
       }
 
-      // Style filter (when parent selected): filter by style metafield (Modern, Classic, Eclectic)
+      // Style filter (when parent selected): product matches if any selected style is in custom.styles.
       const selectedStyleIds = STYLE_OPTIONS.filter(
         (o) => o.id !== 'shopAll' && checkedStyles[o.id],
       ).map((o) => o.id);
       if (selectedStyleIds.length > 0) {
         list = list.filter((product) => {
-          const productStyle = (product.style || '').trim().toLowerCase();
-          if (!productStyle) return false;
-          return selectedStyleIds.some((id) => productStyle === id);
+          const productStyles = Array.isArray(product.styles)
+            ? product.styles
+            : [];
+          if (!productStyles.length) return false;
+          return selectedStyleIds.some((id) => productStyles.includes(id));
         });
       }
       return list;
@@ -1260,15 +1303,17 @@ export default function AddGifts() {
     } else {
       list = products;
     }
-    // Style filter when no parent selected: same as when parent selected (by style metafield)
+    // Style filter when no parent selected: same as when parent selected (by custom.styles list).
     const selectedStyleIds = STYLE_OPTIONS.filter(
       (o) => o.id !== 'shopAll' && checkedStyles?.[o.id],
     ).map((o) => o.id);
     if (selectedStyleIds.length > 0) {
       list = list.filter((product) => {
-        const productStyle = (product.style || '').trim().toLowerCase();
-        if (!productStyle) return false;
-        return selectedStyleIds.some((id) => productStyle === id);
+        const productStyles = Array.isArray(product.styles)
+          ? product.styles
+          : [];
+        if (!productStyles.length) return false;
+        return selectedStyleIds.some((id) => productStyles.includes(id));
       });
     }
     return list;
@@ -2233,7 +2278,7 @@ const COLLECTION_QUERY = `#graphql
               handle
               description
               createdAt
-              styleMetafield: metafield(namespace: "custom", key: "style") {
+              styleMetafield: metafield(namespace: "custom", key: "styles") {
                 id
                 value
               }
@@ -2400,7 +2445,7 @@ const SUB_COLLECTION_QUERY = `#graphql
             handle
             description
             createdAt
-            styleMetafield: metafield(namespace: "custom", key: "style") {
+            styleMetafield: metafield(namespace: "custom", key: "styles") {
               id
               value
             }
@@ -2442,7 +2487,7 @@ const COLLECTION_PRODUCTS_PAGE_QUERY = `#graphql
             handle
             description
             createdAt
-            styleMetafield: metafield(namespace: "custom", key: "style") {
+            styleMetafield: metafield(namespace: "custom", key: "styles") {
               id
               value
             }

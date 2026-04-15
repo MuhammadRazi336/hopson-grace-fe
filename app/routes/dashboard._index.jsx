@@ -276,6 +276,16 @@ const index = () => {
     window.location.href = '/dashboard';
   };
 
+  const openDashboardTutorial = (e) => {
+    e?.stopPropagation?.();
+    try {
+      localStorage.setItem('showDashboardIntro', 'true');
+    } catch {
+      // ignore
+    }
+    window.location.href = '/dashboard';
+  };
+
   // Handle notification card click
   const handleNotificationView = () => {
     // Refresh notifications when user clicks view
@@ -444,23 +454,17 @@ const index = () => {
           </div>
           {/* Show Intro Card - appears below notification card */}
           <div className='flex justify-end'>
-            <div className="bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px]" onClick={() => {
-              // Trigger intro restart by updating localStorage and navigating
-              localStorage.setItem('showDashboardIntro', 'true');
-              window.location.href = '/dashboard';
-            }}>
+            <div
+              className="bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px]"
+              onClick={openDashboardTutorial}
+            >
               {/* Message */}
               <div className="uppercase text-base lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.042vw] xl:leading-[1.042vw] 2xl:leading-[1.042vw] font-medium tracking-wide text-black mb-[23px] lg:mb-[1.198vw] xl:mb-[1.198vw] 2xl:mb-[1.198vw]">
                 DASHBOARD<br />TUTORIAL
               </div>
               {/* Button */}
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  localStorage.setItem('showDashboardIntro', 'true');
-                  // Navigate to dashboard root to trigger intro
-                  window.location.href = '/dashboard';
-                }}
+                onClick={openDashboardTutorial}
                 className="uppercase cursor-pointer font-bold text-lg tracking-wide text-black lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-b-2 border-[#1F1D1B] hover:text-gray-700"
               >
                 View
@@ -525,23 +529,17 @@ const index = () => {
           </div>
           {/* Show Intro Card - appears below notification card */}
           <div className='flex justify-end'>
-            <div className="bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px]" onClick={() => {
-              // Trigger intro restart by updating localStorage and navigating
-              localStorage.setItem('showDashboardIntro', 'true');
-              window.location.href = '/dashboard';
-            }}>
+            <div
+              className="bg-[#f5f2ed] rounded-sm p-6 lg:p-[1.51vw] xl:p-[1.51vw] 2xl:p-[1.51vw] w-64 lg:-w-[13.542vw] xl:-w-[13.542vw] 2xl:-w-[13.542vw] text-center relative shadow-sm max-[1024px]:w-full max-[1024px]:p-[20px]"
+              onClick={openDashboardTutorial}
+            >
               {/* Message */}
               <div className="uppercase text-base lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[1.042vw] xl:leading-[1.042vw] 2xl:leading-[1.042vw] font-medium tracking-wide text-black mb-[23px] lg:mb-[1.198vw] xl:mb-[1.198vw] 2xl:mb-[1.198vw]">
                 DASHBOARD<br />TUTORIAL
               </div>
               {/* Button */}
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  localStorage.setItem('showDashboardIntro', 'true');
-                  // Navigate to dashboard root to trigger intro
-                  window.location.href = '/dashboard';
-                }}
+                onClick={openDashboardTutorial}
                 className="uppercase cursor-pointer font-bold text-lg tracking-wide text-black lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] border-b-2 border-[#1F1D1B] hover:text-gray-700"
               >
                 View
