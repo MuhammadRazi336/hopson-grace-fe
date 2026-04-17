@@ -30,19 +30,31 @@ export function createClient() {
       const contentType = request.headers.get('content-type');
     
       if (!request.ok) {
-        // Handle session expiration (401 Unauthorized or 403 Forbidden)
-        if (request.status === 401 || request.status === 403) {
-          // Throw a specific error that can be caught by loaders
+        // 401 = unauthenticated → treat as session expiry for loaders.
+        // 403 is often "forbidden for this resource" while still logged in; do NOT clear session.
+        if (request.status === 401) {
           const error = new Error('Session expired. Please login again.');
-          error.status = request.status;
+          error.status = 401;
           error.isSessionExpired = true;
           throw error;
         }
-        
+
         const errorData = contentType?.includes('application/json')
           ? await request.json()
           : await request.text();
-    
+
+        if (request.status === 403) {
+          const message =
+            typeof errorData === 'object' && errorData?.message
+              ? errorData.message
+              : typeof errorData === 'string'
+                ? errorData
+                : 'Request forbidden (403)';
+          const error = new Error(message);
+          error.status = 403;
+          throw error;
+        }
+
         throw new Error(
           errorData?.message || errorData || `API request failed with status ${request.status}`
         );

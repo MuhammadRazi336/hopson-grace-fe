@@ -19,6 +19,13 @@ import AlertPortal from '~/components/AlertPortal';
 import ModalPortal from '~/components/ModalPortal';
 import {getApiBaseUrl} from '~/utils/api-url';
 
+/** Same rule as dashboard.registry / CoupleProductCard for gift-card-as-cash-fund. */
+function isRegistryGiftCardProduct(product) {
+  if (!product) return false;
+  const name = product.cashFund?.name || product.title || '';
+  return name.trim().toUpperCase() === 'THE REGISTRY GIFT CARD';
+}
+
 const COLLECTION_QUERY = `#graphql
 query {
   collections(first: 20) {
@@ -590,6 +597,13 @@ export default function CoupleProfile() {
               amount: Number(registryProduct.amount) || 0, // Keep original amount for reference
               registryProductId: registryProduct.id, // Keep registry product ID for reference
               requestedQuantity: Number(registryProduct.quantity) || 1, // Keep the original requested quantity for reference
+              purchasedQuantity:
+                Number(registryProduct.purchasedQuantity) || 0,
+              stillNeeds: Math.max(
+                0,
+                (Number(registryProduct.quantity) || 1) -
+                  (Number(registryProduct.purchasedQuantity) || 0),
+              ),
               isGroupPayment: registryProduct.isGroupPayment || false,
             };
           },
@@ -1234,8 +1248,10 @@ export default function CoupleProfile() {
       typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '';
     if (!email || !registryId || !itemId) return;
 
-    // Find the cart item to get the registryProductId
-    const cartItem = cartItems.find((item) => item.id === itemId);
+    // Find the cart item to get the registryProductId (API may return string or number ids)
+    const cartItem = cartItems.find(
+      (item) => String(item.id) === String(itemId),
+    );
     if (!cartItem) return;
 
     // Use registryProductId from the cart item
@@ -1249,7 +1265,10 @@ export default function CoupleProfile() {
     }
 
     // If updatedItem is provided, this is a quantity update
-    if (updatedItem && updatedItem.quantity !== cartItem.quantity) {
+    if (
+      updatedItem &&
+      Number(updatedItem.quantity) !== Number(cartItem.quantity)
+    ) {
       // Update quantity in cart
       // Ensure apiBaseUrl is set and encode email for URL
       const baseUrl = apiBaseUrl || getApiBaseUrl();
@@ -1438,6 +1457,12 @@ export default function CoupleProfile() {
     return sum + (Number(item.price) || 0) * (Number(item.quantity) || 1);
   }, 0);
 
+  /** Header cart badge: total units (sum of line quantities), not number of lines */
+  const cartQuantityTotal = cartItems.reduce(
+    (sum, item) => sum + Math.max(1, Number(item?.quantity) || 1),
+    0,
+  );
+
   // Get recommended products (unpurchased products from the same couple, excluding cash funds)
   const recommendedProducts =
     safeData && safeData.length > 0 && hasProducts && registryId
@@ -1611,7 +1636,7 @@ export default function CoupleProfile() {
       <CoupleProfileViewHeader
         onCartClick={handleCartClick}
         showCart={hasProducts && registryId}
-        cartCount={cartItems.length}
+        cartCount={cartQuantityTotal}
       />
       <div className="text-center pt-[80px] mx-auto font-sans px-10">
         {safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl ? (
@@ -2009,20 +2034,32 @@ export default function CoupleProfile() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4">
               {/* Product Image Section */}
               <div className="relative py-8 pl-8 md:pr-0 pr-8">
-                <img
-                  src={
-                    selectedGiftData.images?.edges?.[selectedImageIndex]?.node
-                      ?.url ||
-                    selectedGiftData.cashFund?.image?.fileUrl ||
-                    '/assets/Images/placeholder.png'
-                  }
-                  alt={
-                    selectedGiftData.title ||
-                    selectedGiftData.cashFund?.name ||
-                    'Product'
-                  }
-                  className="w-full h-auto object-cover md:rounded-l-lg"
-                />
+                <div
+                  className={`w-full overflow-hidden md:rounded-l-lg ${
+                    isRegistryGiftCardProduct(selectedGiftData)
+                      ? 'bg-[#446184] min-h-[200px] flex items-center justify-center'
+                      : ''
+                  }`}
+                >
+                  <img
+                    src={
+                      selectedGiftData.images?.edges?.[selectedImageIndex]?.node
+                        ?.url ||
+                      selectedGiftData.cashFund?.image?.fileUrl ||
+                      '/assets/Images/placeholder.png'
+                    }
+                    alt={
+                      selectedGiftData.title ||
+                      selectedGiftData.cashFund?.name ||
+                      'Product'
+                    }
+                    className={`w-full h-auto md:rounded-l-lg ${
+                      isRegistryGiftCardProduct(selectedGiftData)
+                        ? 'max-h-[420px] object-contain'
+                        : 'object-cover'
+                    }`}
+                  />
+                </div>
                 {/* Interactive Thumbnail Display - clicking changes main image */}
                 <div className="flex gap-2 mt-4 px-4 md:px-0">
                   {/* Only show thumbnails if there are multiple images */}
@@ -2052,7 +2089,13 @@ export default function CoupleProfile() {
                     </>
                   ) : (
                     // Fallback: show single thumbnail for cash funds or single images
-                    <div className="p-1 w-20 h-20 border-[#3d5a80] border-2">
+                    <div
+                      className={`p-1 w-20 h-20 border-[#3d5a80] border-2 flex items-center justify-center ${
+                        isRegistryGiftCardProduct(selectedGiftData)
+                          ? 'bg-[#446184]'
+                          : ''
+                      }`}
+                    >
                       <img
                         src={
                           selectedGiftData.images?.edges?.[0]?.node?.url ||
@@ -2060,7 +2103,11 @@ export default function CoupleProfile() {
                           '/assets/Images/placeholder.png'
                         }
                         alt="Product"
-                        className="w-full h-full object-cover"
+                        className={`w-full h-full ${
+                          isRegistryGiftCardProduct(selectedGiftData)
+                            ? 'object-contain'
+                            : 'object-cover'
+                        }`}
                       />
                     </div>
                   )}
@@ -2082,9 +2129,10 @@ export default function CoupleProfile() {
                 </div>
 
                 <div className="flex items-center gap-4 mb-6">
-                  {/* Quantity Selector for Regular Products */}
-                  {!selectedGiftData.isCashFund &&
-                    !selectedGiftData.isGroupGift &&
+                  {/* Quantity Selector for regular products and registry gift card (cash fund styled as gift) */}
+                  {((!selectedGiftData.isCashFund &&
+                    !selectedGiftData.isGroupGift) ||
+                    isRegistryGiftCardProduct(selectedGiftData)) &&
                     selectedGiftData.status !== 'purchased' && (
                       <div className="flex flex-col items-center justify-center mb-4">
                         <button
@@ -2118,28 +2166,27 @@ export default function CoupleProfile() {
 
                   {/* Add to Cart Button */}
                   <button
+                    type="button"
                     onClick={() => {
-                      if (
-                        selectedGiftData.isCashFund ||
-                        selectedGiftData.isGroupGift
-                      ) {
-                        // For cash funds and group gifts, you might want to show a contribution input
-                        // For now, let's just close the popup
+                      const isRegistryGift =
+                        isRegistryGiftCardProduct(selectedGiftData);
+                      if (selectedGiftData.isGroupGift && !isRegistryGift) {
                         closePopup();
-                      } else {
-                        // For regular products, add to cart with quantity
-                        handleAddToCart(selectedGiftData.id, modalQuantity);
-                        closePopup();
+                        return;
                       }
+                      if (selectedGiftData.isCashFund && !isRegistryGift) {
+                        closePopup();
+                        return;
+                      }
+                      handleAddToCart(selectedGiftData.id, modalQuantity);
+                      closePopup();
                     }}
                     className={`bg-[#3d5a80] text-white py-3 px-6 uppercase text-sm tracking-wider flex-grow rounded transition-colors
                       ${
                         selectedGiftData.status === 'purchased' ||
-                        (selectedGiftData.isCashFund &&
-                          (selectedGiftData.amount || 0) -
-                            (selectedGiftData.collectedAmount || 0) <=
-                            0) ||
-                        (selectedGiftData.isGroupGift &&
+                        (((!isRegistryGiftCardProduct(selectedGiftData) &&
+                          selectedGiftData.isCashFund) ||
+                          selectedGiftData.isGroupGift) &&
                           (selectedGiftData.amount || 0) -
                             (selectedGiftData.collectedAmount || 0) <=
                             0)
@@ -2149,25 +2196,29 @@ export default function CoupleProfile() {
                     `}
                     disabled={
                       selectedGiftData.status === 'purchased' ||
-                      (selectedGiftData.isCashFund &&
+                      (((!isRegistryGiftCardProduct(selectedGiftData) &&
+                        selectedGiftData.isCashFund) ||
+                        selectedGiftData.isGroupGift) &&
                         (selectedGiftData.amount || 0) -
                           (selectedGiftData.collectedAmount || 0) <=
                           0) ||
-                      (selectedGiftData.isGroupGift &&
-                        (selectedGiftData.amount || 0) -
-                          (selectedGiftData.collectedAmount || 0) <=
-                          0)
+                      (isRegistryGiftCardProduct(selectedGiftData) &&
+                        getModalStillNeeds() <= 0)
                     }
                   >
                     {selectedGiftData.status === 'purchased'
                       ? 'PURCHASED'
-                      : (selectedGiftData.isCashFund ||
+                      : (((!isRegistryGiftCardProduct(selectedGiftData) &&
+                          selectedGiftData.isCashFund) ||
                           selectedGiftData.isGroupGift) &&
                         (selectedGiftData.amount || 0) -
                           (selectedGiftData.collectedAmount || 0) <=
-                          0
+                          0)
                       ? 'FULLY FUNDED'
-                      : selectedGiftData.buttonLabel || 'ADD TO CART'}
+                      : isRegistryGiftCardProduct(selectedGiftData) &&
+                          getModalStillNeeds() <= 0
+                        ? 'FULLY GIFTED'
+                        : selectedGiftData.buttonLabel || 'ADD TO CART'}
                   </button>
                 </div>
 

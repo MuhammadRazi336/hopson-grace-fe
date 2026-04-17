@@ -38,7 +38,7 @@ export async function loader(args) {
       },
     });
   } catch (err) {
-    if (err?.isSessionExpired || err?.status === 401 || err?.status === 403) {
+    if (err?.isSessionExpired || err?.status === 401) {
       return clearSessionAndRedirect(context);
     }
     throw err;

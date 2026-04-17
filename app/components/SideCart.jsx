@@ -4,6 +4,26 @@ import React, {useEffect, useState, useRef} from 'react';
 import Heading from './Heading';
 import {formatPrice} from '~/utils/priceFormatter';
 import ModalPortal from './ModalPortal';
+import {isRegistryGiftCardTitle} from '~/utils/helpers.js';
+
+/** Max units allowed for this cart line (requested cap + still-needs when reliable). */
+function getMaxCartQuantity(item) {
+  // Cash-fund "The Registry Gift Card" rows often arrive with stillNeeds === 0 because
+  // purchasedQuantity vs quantity does not match physical-gift semantics; cap by requested qty.
+  if (isRegistryGiftCardTitle(item?.title)) {
+    const req = Number(item.requestedQuantity);
+    return Number.isFinite(req) && req > 0 ? req : 999;
+  }
+  const requested = Number(item.requestedQuantity);
+  const requestedCap =
+    Number.isFinite(requested) && requested > 0 ? requested : 999;
+
+  if (typeof item.stillNeeds === 'number' && item.stillNeeds > 0) {
+    return Math.min(item.stillNeeds, requestedCap);
+  }
+  // stillNeeds 0 / missing / unreliable — do not lock max to current line qty (blocks 2→3 when Requested: 3)
+  return requestedCap;
+}
 
 export default function SideCart({
   open,
@@ -23,6 +43,7 @@ export default function SideCart({
   showExtrasSection = true, // Controls "add a little something extra" section
   showFooterActions = true, // Controls Continue/Checkout buttons
   hideExtrasHeading = false, // When true, hide "add a little something extra" heading
+  allowQuantityEdit = true, // When true, +/- adjust quantity via onCartChange(itemId, { ...item, quantity })
 }) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
@@ -95,18 +116,38 @@ export default function SideCart({
     }
   };
 
+  const canEditQuantity =
+    allowQuantityEdit && typeof onCartChange === 'function';
+
   const handleDelete = (itemId) => {
     if (!itemId) return;
 
     console.log('Attempting to delete item:', itemId);
     // Check if the item exists before attempting to remove
-    const itemExists = items.find((item) => item.id === itemId);
+    const itemExists = items.find(
+      (item) => String(item.id) === String(itemId),
+    );
     if (!itemExists) {
       console.error('Item not found in cart:', itemId);
       return;
     }
 
-    onCartChange(itemId);
+    onCartChange?.(itemId);
+  };
+
+  const handleQuantityStep = (item, delta) => {
+    if (!canEditQuantity || !item?.id) return;
+    const current = Number(item.quantity) || 1;
+    const max = getMaxCartQuantity(item);
+    let next;
+    if (delta > 0) {
+      next = Math.min(max, current + 1);
+      if (next <= current) return;
+    } else {
+      next = Math.max(1, current - 1);
+      if (next >= current) return;
+    }
+    onCartChange(item.id, {...item, quantity: next});
   };
 
   const handleClearCart = () => {
@@ -117,9 +158,15 @@ export default function SideCart({
     }
   };
 
-  // Separate regular items, cash funds, and group payment items
-  const regularItems = items.filter((item) => !item?.isCashFund && !item?.isGroupPayment);
-  const cartCashFunds = items.filter((item) => item?.isCashFund);
+  // Separate regular items, cash funds, and group payment items (registry gift card = gift row)
+  const regularItems = items.filter(
+    (item) =>
+      (!item?.isCashFund && !item?.isGroupPayment) ||
+      (item?.isCashFund && isRegistryGiftCardTitle(item.title)),
+  );
+  const cartCashFunds = items.filter(
+    (item) => item?.isCashFund && !isRegistryGiftCardTitle(item.title),
+  );
   const groupPaymentItems = items.filter((item) => item?.isGroupPayment);
 
   console.log('Rendering SideCart with:', {
@@ -211,11 +258,21 @@ export default function SideCart({
                       className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 p-8"
                     >
                       <div className="col-span-5 flex gap-4 items-center">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-[136px] h-[136px] object-cover rounded"
-                        />
+                        {isRegistryGiftCardTitle(item.title) ? (
+                          <div className="w-[136px] h-[136px] shrink-0 bg-[#446184] rounded flex items-center justify-center overflow-hidden">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="max-w-full max-h-full w-full h-full object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-[136px] h-[136px] object-cover rounded"
+                          />
+                        )}
                         <div>
                           <div className="font-semibold text-[20px] leading-tight">
                             {item.title}
@@ -226,13 +283,50 @@ export default function SideCart({
                         </div>
                       </div>
                       <div className="col-span-2 flex justify-center">
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          className="w-12 h-10 border border-gray-400 rounded text-center text-[26px]"
-                          readOnly
-                        />
+                        {canEditQuantity ? (
+                          <div className="flex flex-col items-center justify-center gap-0">
+                            <button
+                              type="button"
+                              onClick={() => handleQuantityStep(item, 1)}
+                              disabled={
+                                (Number(item.quantity) || 1) >=
+                                getMaxCartQuantity(item)
+                              }
+                              className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                              aria-label="Increase quantity"
+                            >
+                              <img
+                                src="/assets/Images/arrowDown.png"
+                                alt=""
+                                className="w-4 h-4 rotate-180"
+                              />
+                            </button>
+                            <span className="text-[26px] leading-tight min-w-[2ch] text-center">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleQuantityStep(item, -1)}
+                              disabled={(Number(item.quantity) || 1) <= 1}
+                              className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                              aria-label="Decrease quantity"
+                            >
+                              <img
+                                src="/assets/Images/arrowDown.png"
+                                alt=""
+                                className="w-4 h-4"
+                              />
+                            </button>
+                          </div>
+                        ) : (
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            className="w-12 h-10 border border-gray-400 rounded text-center text-[26px]"
+                            readOnly
+                          />
+                        )}
                       </div>
                       <div className="col-span-2 text-center text-[26px]">
                         {formatPrice(item.price)}

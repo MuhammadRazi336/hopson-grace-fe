@@ -13,8 +13,8 @@ import youll3 from '/assets/Images/youll-3.png';
 import { Navigation } from 'swiper/modules';
 import { useState, useEffect, useRef } from 'react';
 import {useFetcher} from '@remix-run/react';
-import { extractShopifyId } from '~/utils/helpers.js';
 import { json } from '@shopify/remix-oxygen';
+import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balances.server';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
@@ -62,17 +62,39 @@ export async function loader(args) {
 }
 
 export async function action({request, context}) {
-  const body = await request.json();
-  const {payload} = body;
-  try {
-    const response = await context.ClientPost(
-      JSON.parse(payload),
-      'registryProducts',
-      context,
+  const sessionUser = await context?.session?.get('@User');
+  if (!sessionUser?.user?.id) {
+    return json(
+      {error: 'You must be logged in.', success: false},
+      {status: 401},
     );
-    return json({success: true, response});
+  }
+
+  const formData = await request.formData();
+
+  try {
+    const registryId = Number(formData.get('registryId'));
+    const response = await context.ClientPost(
+      formData,
+      'registryProducts/cash-fund',
+      context,
+      {
+        headers: {},
+      },
+    );
+    if (Number.isFinite(registryId) && registryId > 0) {
+      try {
+        await syncRegistryBalancesByRegistryId(context, {registryId});
+      } catch (syncError) {
+        console.warn('Shopify customer balance sync failed:', syncError?.message);
+      }
+    }
+    return json({response, success: true});
   } catch (e) {
-    return json({success: false, error: e.message}, {status: 400});
+    return json(
+      {error: e.message || 'Failed to add gift card as cash fund', success: false},
+      {status: 400},
+    );
   }
 }
 
@@ -134,44 +156,67 @@ const GiftCards = () => {
   const displayedGiftCards = giftCards.slice(0, productsToShow);
   const hasMoreGiftCards = giftCards.length > productsToShow;
 
-  const handleAddToRegistry = (giftCard, quantity) => {
+  const handleAddToRegistry = async (giftCard, quantity) => {
     try {
-      // Check if user is logged in
       if (!user || !user.user || !user.user.id) {
-        // User not logged in, redirect to login
         window.location.href = '/login';
         return;
       }
 
-      // Check if registry exists and has an id
       if (!registry || !registry.data[0].id) {
         console.error('Registry not found. Please try again.');
         return;
       }
 
       const firstVariant = giftCard?.variants?.edges?.[0]?.node;
-      if (!firstVariant) {
-        console.error('Product variant not found.');
+      if (!firstVariant?.priceV2?.amount) {
+        console.error('Product variant or price not found.');
         return;
       }
 
-      const payload = {
-        productId: Number(extractShopifyId(giftCard.id)),
-        amount: Number(firstVariant.priceV2.amount),
-        registryId: Number(registry.data[0].id),
-        productTypeId: 1,
-        quantity: quantity,
-      };
+      const registryId = String(registry.data[0].id);
+      const unitAmount = Number(firstVariant.priceV2.amount);
+      const quantityValue = Math.max(1, Math.floor(Number(quantity) || 1));
+      const totalAmount = (unitAmount * quantityValue).toFixed(2);
+      const imageUrl =
+        giftCard?.images?.edges?.[0]?.node?.url || '/assets/Images/placeholder.png';
 
       setAddingGiftCardId(giftCard.id);
 
-      fetcher.submit(
-        {payload: JSON.stringify(payload)},
-        {
+      const appendCashFundFields = (formData, imageBlob) => {
+        formData.append('name', giftCard.title);
+        formData.append('amount', totalAmount);
+        formData.append('isAnyAmount', 'false');
+        formData.append('isFixedAmount', 'true');
+        formData.append('isAmountHide', 'false');
+        formData.append('registryId', registryId);
+        formData.append('quantity', String(quantityValue));
+        formData.append(
+          'note',
+          `Gift card (qty ${quantityValue}) — added from registry gift cards`,
+        );
+        if (imageBlob) {
+          formData.append('file', imageBlob, 'gift-card-image.jpg');
+        }
+      };
+
+      try {
+        const imageResponse = await fetch(imageUrl);
+        const imageBlob = await imageResponse.blob();
+        const formData = new FormData();
+        appendCashFundFields(formData, imageBlob);
+        fetcher.submit(formData, {
           method: 'post',
-          encType: 'application/json',
-        },
-      );
+          encType: 'multipart/form-data',
+        });
+      } catch (imageError) {
+        const formData = new FormData();
+        appendCashFundFields(formData, null);
+        fetcher.submit(formData, {
+          method: 'post',
+          encType: 'multipart/form-data',
+        });
+      }
     } catch (error) {
       console.error('Failed to add to registry. Please try again.', error);
     }

@@ -1,7 +1,7 @@
 // import { Link } from "remix";
 import {Outlet, useLoaderData} from '@remix-run/react';
 
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import NotificationCard from '~/components/NotificationCard';
 import { Footer } from '~/components/Footer';
 import lineImg3 from '/assets/Images/heading-bottom-curve.png';
@@ -121,7 +121,10 @@ const introSteps = [
 
 export async function loader({context}) {
   const apiBaseUrl = context.env.API_BASE_URL;
-  return {apiBaseUrl};
+  const sessionUser = await context?.session?.get('@User');
+  /** Only users still in onboarding (`isOnboard === false`) get the automatic tutorial once. */
+  const needsOnboardingTutorial = sessionUser?.user?.isOnboard === false;
+  return {apiBaseUrl, needsOnboardingTutorial};
 }
 
 const Dashboard_index = ({context}) => {
@@ -134,10 +137,42 @@ const Dashboard_index = ({context}) => {
   const introCardRef = useRef(null);
   const overlayRef = useRef(null);
   const [coupleName, setCoupleName] = useState('');
-  const {apiBaseUrl} = useLoaderData();
+  const {apiBaseUrl, needsOnboardingTutorial} = useLoaderData();
 
   const containerRef = useRef(null);
   const [showSVG, setShowSVG] = useState(true);
+
+  // Avoid browser restoring scroll to mid-page when opening the intro after navigation (especially mobile).
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    try {
+      const {history} = window;
+      if (history && 'scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+    } catch {
+      // ignore
+    }
+    return undefined;
+  }, []);
+
+  const scrollDashboardIntroToTop = () => {
+    if (typeof window === 'undefined') return;
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+
+  useLayoutEffect(() => {
+    if (!showIntro) return undefined;
+    scrollDashboardIntroToTop();
+    const t = window.setTimeout(scrollDashboardIntroToTop, 0);
+    const t2 = window.setTimeout(scrollDashboardIntroToTop, 100);
+    return () => {
+      window.clearTimeout(t);
+      window.clearTimeout(t2);
+    };
+  }, [showIntro]);
 
   // Simple SVG positioning for each step
   const getSVGStyle = (stepNumber) => {
@@ -155,13 +190,41 @@ const Dashboard_index = ({context}) => {
     }
   };
 
-  // On mount, check localStorage intro flag.
+  // Tutorial visibility:
+  // - `showDashboardIntro === 'true'` → user tapped "View" (or mini-tutorial CTA); always show on load.
+  // - Automatic tutorial: only when `needsOnboardingTutorial` (session user `isOnboard === false`) and
+  //   `dashboardIntroAutoShownOnce` is not set yet (one-time).
+  // - If `isOnboard === true`, never auto-show (View button only).
+  // - Legacy: users who already dismissed intro (`showDashboardIntro === 'false'`) migrate to auto-once.
   useEffect(() => {
-    const token = localStorage.getItem('@Token');
-    const showFlag = localStorage.getItem('showDashboardIntro');
-    if (showFlag !== 'false') {
-      setShowIntro(true);
+    try {
+      const requestTutorial =
+        localStorage.getItem('showDashboardIntro') === 'true';
+      let autoAlreadyOffered =
+        localStorage.getItem('dashboardIntroAutoShownOnce') === 'true';
+
+      if (
+        localStorage.getItem('showDashboardIntro') === 'false' &&
+        !autoAlreadyOffered
+      ) {
+        localStorage.setItem('dashboardIntroAutoShownOnce', 'true');
+        autoAlreadyOffered = true;
+      }
+
+      if (requestTutorial) {
+        localStorage.setItem('dashboardIntroAutoShownOnce', 'true');
+        setShowIntro(true);
+        requestAnimationFrame(() => scrollDashboardIntroToTop());
+      } else if (needsOnboardingTutorial && !autoAlreadyOffered) {
+        localStorage.setItem('dashboardIntroAutoShownOnce', 'true');
+        setShowIntro(true);
+        requestAnimationFrame(() => scrollDashboardIntroToTop());
+      }
+    } catch {
+      // ignore private mode / quota
     }
+
+    const token = localStorage.getItem('@Token');
 
     // Fetch user data if token exists
     if (token) {
@@ -182,19 +245,12 @@ const Dashboard_index = ({context}) => {
       };
       fetchUserData();
     }
-  }, []);
+  }, [needsOnboardingTutorial, apiBaseUrl]);
 
-  // When intro is finished, set flag so it doesn't show again
+  // When intro is finished, clear manual "replay" request (View button). Auto-once stays recorded separately.
   const handleFinishIntro = () => {
     setShowIntro(false);
     localStorage.setItem('showDashboardIntro', 'false');
-  };
-
-  // Function to restart the intro
-  const handleShowIntro = () => {
-    setShowIntro(true);
-    setCurrentStep(0);
-    // Don't update localStorage so it can be shown again
   };
 
   // Function to find tab elements by their data-value attribute

@@ -38,7 +38,7 @@ export async function loader(args) {
       );
     } catch (apiError) {
       // Check if it's a session expiration error
-      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+      if (apiError.isSessionExpired || apiError.status === 401) {
         const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
         return clearSessionAndRedirect(context);
       }
@@ -93,7 +93,7 @@ export async function loader(args) {
       );
     } catch (apiError) {
       // Check if it's a session expiration error
-      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+      if (apiError.isSessionExpired || apiError.status === 401) {
         const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
         return clearSessionAndRedirect(context);
       }
@@ -127,7 +127,7 @@ export async function loader(args) {
     
   } catch (e) {
     // Check if it's a session expiration error
-    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+    if (e.isSessionExpired || e.status === 401) {
       const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
       return clearSessionAndRedirect(context);
     }
@@ -154,7 +154,7 @@ export async function action({request, context}) {
     return redirect('/dashboard');
   } catch (e) {
     // Check if it's a session expiration error
-    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+    if (e.isSessionExpired || e.status === 401) {
       const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
       return clearSessionAndRedirect(context);
     }
@@ -289,6 +289,9 @@ const index = () => {
     } catch {
       // ignore
     }
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     window.location.href = '/dashboard';
   };
 
@@ -298,6 +301,9 @@ const index = () => {
       localStorage.setItem('showDashboardIntro', 'true');
     } catch {
       // ignore
+    }
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
     }
     window.location.href = '/dashboard';
   };

@@ -40,12 +40,7 @@ export default function ThankYou() {
             prefers – no action is needed on your end
           </p>
 
-          <div className="flex justify-center mt-8">
-            {/* CTA Button */}
-            <button className="py-5 px-2 text-[17px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white hover:opacity-90 uppercase font-[800] text-black w-[350px] max-[1601px]:w-[350px] text-center">
-              view order confirmation
-            </button>
-          </div>
+         
         </div>
       </div>
       <div className="mb-8"></div>

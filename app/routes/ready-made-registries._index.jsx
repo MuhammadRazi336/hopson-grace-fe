@@ -139,7 +139,7 @@ const ReadyMade = () => {
       const { parentCollection, subCollection } = item;
 
       const registryHref = `/registry/${subCollection.handle}`;
-      const subCollectionLinkTo = isLoggedIn ? registryHref : '/login';
+      const subCollectionLinkTo = registryHref;
 
       return (
       <div key={subCollection.id} className="mb-[5.469vw] max-[767px]:w-full">
