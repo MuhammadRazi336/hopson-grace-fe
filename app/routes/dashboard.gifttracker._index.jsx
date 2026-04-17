@@ -22,7 +22,7 @@ export async function loader(args) {
       );
     } catch (apiError) {
       // Check if it's a session expiration error
-      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+      if (apiError.isSessionExpired || apiError.status === 401) {
         const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
         return clearSessionAndRedirect(context);
       }
@@ -41,7 +41,7 @@ export async function loader(args) {
       );
     } catch (apiError) {
       // Check if it's a session expiration error
-      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+      if (apiError.isSessionExpired || apiError.status === 401) {
         const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
         return clearSessionAndRedirect(context);
       }
@@ -51,7 +51,7 @@ export async function loader(args) {
     return {giftTrackingData: data?.data || []};
   } catch (error) {
     // If it's a session expiration error, handle it
-    if (error.isSessionExpired || error.status === 401 || error.status === 403) {
+    if (error.isSessionExpired || error.status === 401) {
       const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
       return clearSessionAndRedirect(context);
     }

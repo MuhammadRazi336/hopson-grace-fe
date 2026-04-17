@@ -883,10 +883,15 @@ export default function ProductCollection() {
     const productIds = new Set(
       displayedProductsBeforeBrandFilter.map((product) => product.id),
     );
-    return selectedBrandCollections.filter((brandCol) =>
+    const filteredBrands = selectedBrandCollections.filter((brandCol) =>
       (brandCol.products?.edges || []).some((edge) =>
         productIds.has(edge?.node?.id),
       ),
+    );
+    return [...filteredBrands].sort((a, b) =>
+      String(a.title || '').localeCompare(String(b.title || ''), undefined, {
+        sensitivity: 'base',
+      }),
     );
   }, [
     selectedSwiperCollectionId,

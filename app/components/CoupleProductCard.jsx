@@ -1,6 +1,11 @@
 import React, {useState} from 'react';
 import {formatPrice} from '~/utils/priceFormatter';
 
+/** Matches dashboard.registry — "THE REGISTRY GIFT CARD" cash funds use gift-style UI. */
+function isRegistryGiftCardCashFundName(name) {
+  return (name || '').trim().toUpperCase() === 'THE REGISTRY GIFT CARD';
+}
+
 const CoupleProductCard = ({
   image,
   name,
@@ -25,6 +30,14 @@ const CoupleProductCard = ({
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
+  const isRegistryGiftCard =
+    isCashFund && isRegistryGiftCardCashFundName(name);
+  const stillNeeds =
+    status === 'purchased'
+      ? 0
+      : Math.max(0, quantity - purchasedQuantity);
+  const isFullyGifted = stillNeeds === 0;
+
   const handleInputChange = (e) => {
     const value = parseFloat(e.target.value);
 
@@ -46,6 +59,11 @@ const CoupleProductCard = ({
   };
 
   const handleButtonClick = () => {
+    if (isRegistryGiftCard) {
+      onAddToCart(selectedQuantity);
+      return;
+    }
+
     const amount = parseFloat(contributionAmount);
 
     if ((isGroupGift || isCashFund) && (isNaN(amount) || amount <= 0)) {
@@ -78,6 +96,22 @@ const CoupleProductCard = ({
         </button>
       );
     }
+    if (isRegistryGiftCard && status !== 'purchased') {
+      return (
+        <button
+          type="button"
+          disabled={isFullyGifted}
+          onClick={handleButtonClick}
+          className={`bg-white w-full border px-4 py-2 lg:h-[4.063vw] tracking-[0.8px] uppercase text-[18px] leading-[18px] font-semibold mt-4 ${
+            isFullyGifted
+              ? 'opacity-50 cursor-not-allowed'
+              : 'cursor-pointer hover:bg-black hover:text-white'
+          }`}
+        >
+          {isFullyGifted ? 'FULLY GIFTED' : 'Add to Cart'}
+        </button>
+      );
+    }
     // Check for group gift first (both status and prop)
     if (status === 'groupGift' || isGroupGift) {
       return (
@@ -100,8 +134,8 @@ const CoupleProductCard = ({
       );
     }
     
-    // Check for cash fund
-    if (status === 'cashFund' || isCashFund) {
+    // Check for cash fund (registry gift card uses Add to Cart above, never this block)
+    if ((status === 'cashFund' || isCashFund) && !isRegistryGiftCard) {
       return (
         <>
           <input
@@ -113,6 +147,7 @@ const CoupleProductCard = ({
           />
           {error && <p className="text-[#FD446F] text-sm mb-2">{error}</p>}
           <button
+            type="button"
             onClick={handleButtonClick}
             className="mt-auto bg-white w-full border px-4 py-4 uppercase text-sm font-semibold hover:bg-black hover:text-white"
           >
@@ -153,10 +188,6 @@ const CoupleProductCard = ({
 
   const progressPercentage = (contributedAmount / maxContribution) * 100;
 
-  // Calculate if the product is fully gifted
-  const stillNeeds = status === 'purchased' ? 0 : Math.max(0, quantity - purchasedQuantity);
-  const isFullyGifted = stillNeeds === 0;
-
   // Keep selector synced with still-needs limits
   React.useEffect(() => {
     if (stillNeeds <= 0) {
@@ -191,27 +222,43 @@ const CoupleProductCard = ({
   // Use original image for cash funds to preserve S3 query parameters
   const finalImageUrl = isCashFund ? image : cleanUrl;
 
+  const showGiftedOverlay =
+    (!isCashFund && !isGroupGift && status === 'purchased') ||
+    (((isCashFund && !isRegistryGiftCard) || isGroupGift) &&
+      !isAnyAmount &&
+      maxContribution - contributedAmount === 0) ||
+    (!isCashFund && !isGroupGift && isFullyGifted) ||
+    (isRegistryGiftCard && isFullyGifted);
+
   return (
     <div
       className={`${
-        (!isCashFund && !isGroupGift && status === 'purchased') || 
-        ((isCashFund || isGroupGift) && !isAnyAmount && maxContribution - contributedAmount === 0) || 
-        (!isCashFund && !isGroupGift && isFullyGifted) ? 'overlay-gifted' : ''
+        showGiftedOverlay ? 'overlay-gifted' : ''
       } p-0 flex flex-col justify-between`}
     >
       <div className="flex flex-col justify-between">
         {image ? (
           <div
             className={`${
-              !finalImageUrl ? 'bg-gray-200 ' : ''
+              isRegistryGiftCard
+                ? 'bg-[#446184] '
+                : !finalImageUrl
+                  ? 'bg-gray-200 '
+                  : ''
             } h-[360px] lg:h-[19.792vw] w-full mb-4 flex items-center justify-center relative`}
           >
             <img
               src={finalImageUrl}
               alt={name}
-              className="w-full h-full object-cover mb-4 cursor-pointer"
+              className={`w-full h-full cursor-pointer ${
+                isRegistryGiftCard
+                  ? 'object-contain mb-0'
+                  : 'object-cover mb-4'
+              }`}
               onClick={() => {
-                if (isCashFund || isGroupGift) {
+                if (isRegistryGiftCard) {
+                  if (!isFullyGifted) onTitleClick(name);
+                } else if (isCashFund || isGroupGift) {
                   if (isAnyAmount || maxContribution - contributedAmount > 0) {
                     onTitleClick(name);
                   }
@@ -229,7 +276,7 @@ const CoupleProductCard = ({
               </div>
             )}
 
-            {!isGroupGift && isCashFund && (
+            {!isGroupGift && isCashFund && !isRegistryGiftCard && (
               <div className="absolute top-0 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
                 <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
                   cash <br /> fund
@@ -244,12 +291,24 @@ const CoupleProductCard = ({
         )}
         <h2
           className={`text-lg lg:text-[1.25vw] font-[500] mb-[8px] ${
-            (isCashFund || isGroupGift) 
-              ? (isAnyAmount ? 'cursor-pointer' : (maxContribution - contributedAmount === 0 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'))
-              : (isFullyGifted ? 'cursor-not-allowed opacity-50' : 'cursor-pointer')
+            isRegistryGiftCard
+              ? isFullyGifted
+                ? 'cursor-not-allowed opacity-50'
+                : 'cursor-pointer'
+              : (isCashFund || isGroupGift)
+                ? isAnyAmount
+                  ? 'cursor-pointer'
+                  : maxContribution - contributedAmount === 0
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'cursor-pointer'
+                : isFullyGifted
+                  ? 'cursor-not-allowed opacity-50'
+                  : 'cursor-pointer'
           }`}
           onClick={() => {
-            if (isCashFund || isGroupGift) {
+            if (isRegistryGiftCard) {
+              if (!isFullyGifted) onTitleClick(name);
+            } else if (isCashFund || isGroupGift) {
               if (isAnyAmount || maxContribution - contributedAmount > 0) {
                 onTitleClick(name);
               }
@@ -260,20 +319,26 @@ const CoupleProductCard = ({
         >
           {name}
         </h2>
-        <div className="flex justify-between items-center">
+        <div
+          className={`flex justify-between items-center ${
+            isRegistryGiftCard ? 'mb-8' : ''
+          }`}
+        >
           {isAnyAmount ? '' : (
             <p className="font-normal text-lg lg:text-[1.25vw]">
               {formatPrice(price)}
             </p>
           )}
 
-          {(isCashFund || isGroupGift) && !isAnyAmount && (
+          {(isCashFund || isGroupGift) &&
+            !isAnyAmount &&
+            !isRegistryGiftCard && (
             <p className="text-sm ivyora lg:text-[1.042vw] italic mt-2 text-right w-full ivyora mb-2 text-[#1F1D1B]">
               ${maxContribution - contributedAmount} Remaining
             </p>
           )}
         </div>
-        {(isGroupGift || isCashFund) && !isAnyAmount && (
+        {(isGroupGift || isCashFund) && !isAnyAmount && !isRegistryGiftCard && (
           <div className="mt-[1.146vw]">
             <p className="text-sm ivyora lg:text-[1.042vw] text-[#1F1D1B]">
               Contributed: ${contributedAmount.toFixed(2)} / $
@@ -282,7 +347,7 @@ const CoupleProductCard = ({
           </div>
         )}
       </div>
-      {(!isGroupGift && !isCashFund) && (
+      {((!isGroupGift && !isCashFund) || isRegistryGiftCard) && (
           <div className="mt-2 flex flex-row items-center gap-6">
             <p className="text-sm italic ivyora lg:text-[1.042vw] text-[#1F1D1B]">
               Requested: {quantity}
@@ -292,7 +357,10 @@ const CoupleProductCard = ({
             </p>
           </div>
         )}
-      {(!isGroupGift && !isCashFund && !isFullyGifted && status !== 'purchased') && (
+      {(!isGroupGift &&
+        (!isCashFund || isRegistryGiftCard) &&
+        !isFullyGifted &&
+        status !== 'purchased') && (
         <div className="mt-2 flex items-center gap-4">
           <p className="text-sm ivyora lg:text-[1.042vw] text-[#1F1D1B] italic">
             QTY

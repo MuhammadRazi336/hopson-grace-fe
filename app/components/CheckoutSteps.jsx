@@ -69,18 +69,18 @@ const CheckoutSteps = ({ step }) => {
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-3xl md:text-5xl lg:text-[60px] font-bold text-center prata">
+            <h4 className="text-3xl md:text-5xl lg:text-[60px] font-bold text-center prata text-[#1F1D1B40]">
               2.
             </h4>
-            <p className="text-sm md:text-lg max-w-24 mx-auto uppercase text-center">
+            <p className="text-sm md:text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40]">
               Billing & Payment
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-3xl md:text-5xl lg:text-[60px] font-bold text-center prata text-[#1F1D1B40]">
+            <h4 className="text-3xl md:text-5xl lg:text-[60px] font-bold text-center prata">
               3.
             </h4>
-            <p className="text-sm md:text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40]">
+            <p className="text-sm md:text-lg max-w-32 mx-auto uppercase text-center">
               Order Confirmation
             </p>
           </div>

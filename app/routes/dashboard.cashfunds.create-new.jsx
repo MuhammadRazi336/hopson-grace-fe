@@ -1,6 +1,6 @@
 import React, {useState, useRef} from 'react';
 import {useFetcher, useLoaderData, useNavigate, Link, useLocation} from '@remix-run/react';
-import {json, redirect} from '@shopify/remix-oxygen';
+import {json} from '@shopify/remix-oxygen';
 import Input from '~/components/Input';
 import { Footer } from '~/components/Footer';
 import Heading from '~/components/Heading';
@@ -21,19 +21,18 @@ import {syncRegistryBalancesByRegistryId} from '~/utils/shopify-customer-balance
 export async function loader(args) {
   const {context} = args;
   const user = await context?.session?.get('@User');
+  const isLoggedIn = !!(user?.user?.id);
 
-  // Check if user is logged in - redirect to login if not
-  if (!user || !user.user || !user.user.id) {
-    return redirect('/login');
-  }
+  let registry = null;
+  if (isLoggedIn) {
+    registry = await context.ClientGet(
+      `registries/by-userId/${user.user.id}`,
+      context,
+    );
 
-  const registry = await context.ClientGet(
-    `registries/by-userId/${user.user.id}`,
-    context,
-  );
-
-  if (!registry || !registry.data[0].id) {
-    throw new Response('Registry not found in session', {status: 404});
+    if (!registry || !registry.data[0].id) {
+      throw new Response('Registry not found in session', {status: 404});
+    }
   }
 
   // Fetch cash fund products (same as cash-funds page: collections with cashfund=true or category match)
@@ -80,10 +79,23 @@ export async function loader(args) {
     console.error('Error loading recommended products:', error);
   }
 
-  return {registry, recommendedProducts: recommendedProducts || [], cashFundProducts: cashFundProducts || []};
+  return json({
+    isLoggedIn,
+    registry,
+    recommendedProducts: recommendedProducts || [],
+    cashFundProducts: cashFundProducts || [],
+  });
 }
 
 export async function action({request, context}) {
+  const sessionUser = await context?.session?.get('@User');
+  if (!sessionUser?.user?.id) {
+    return json(
+      {error: 'You must be logged in to create a cash fund.', success: false},
+      {status: 401},
+    );
+  }
+
   const formData = await request.formData();
   
   try {
@@ -113,7 +125,12 @@ export async function action({request, context}) {
 }
 
 function CreateNewCashFund() {
-  const {registry, recommendedProducts, cashFundProducts} = useLoaderData();
+  const {
+    isLoggedIn = true,
+    registry,
+    recommendedProducts,
+    cashFundProducts,
+  } = useLoaderData();
   const navigate = useNavigate();
   const location = useLocation();
   const [photoFile, setPhotoFile] = useState(null);
@@ -334,6 +351,20 @@ function CreateNewCashFund() {
 
     <div className="pt-[7.356vw] pb-[15.16vw] px-[9.18vw] w-9/10 mx-auto">
         <div className="pt-[6.63vw] pb-[3.143vw] px-[4.356vw] bg-[#446184]">
+          {!isLoggedIn ? (
+            <div className="w-full mx-auto max-w-3xl py-[6vw] max-[767px]:py-12 px-4 text-center">
+              <p className="text-white text-[18px] sm:text-[20px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.667vw] ivyora font-normal tracking-wide mb-[2.5vw] max-[767px]:mb-8">
+                Please log in or create your account to Create your Own Fund
+              </p>
+              <Link
+                to="/login"
+                className="inline-flex items-center justify-center font-bold text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] min-h-[77px] w-full max-w-[360px] lg:w-[18.75vw] lg:min-h-[4.01vw] border-[3px] border-black px-6 bg-[#F5F2ED] text-black hover:bg-[#E5E1DA] bastardogrotesk uppercase tracking-wide"
+              >
+                Log In
+              </Link>
+            </div>
+          ) : (
+            <>
           {/* <h2 className="mt-0 text-white ivyora lg:text-[2.083vw] text-[24px] prata text-center lg:leading-[1.875vw] font-normal mb-[1.667vw]">
             <span className="prata uppercase">NEW CASH</span> or{' '}
             <span className="prata uppercase">TRAVEL</span> fund
@@ -563,6 +594,8 @@ function CreateNewCashFund() {
             </fetcher.Form>
 
           </div>
+            </>
+          )}
         </div>
       </div>
 

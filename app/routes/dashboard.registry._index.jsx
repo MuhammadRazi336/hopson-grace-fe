@@ -358,7 +358,7 @@ export async function loader({request, context}) {
     apiBaseUrl,
   });
   } catch (e) {
-    if (e.isSessionExpired || e.status === 401 || e.status === 403) {
+    if (e.isSessionExpired || e.status === 401) {
       const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
       return clearSessionAndRedirect(context);
     }
@@ -730,10 +730,13 @@ const index = () => {
       <div className="text-center pt-[4.115vw] px-[3.281vw] mx-auto font-sans max-[1024px]:pt-[50px] max-[1025px]:px-0">
         <div className="relative">
           <div
-            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] bg-[#446184] bg-cover bg-center bg-no-repeat max-[1025px]:h-[20vh] max-[768px]:h-[190px]"
-            // style={{
-            //   backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-            // }}
+            className="w-full h-[400px] lg:h-[32.292vw] xl:h-[32.292vw] 2xl:h-[32.292vw] bg-cover bg-center bg-no-repeat max-[1025px]:h-[20vh] max-[768px]:h-[190px]"
+            style={{
+              backgroundColor: backgroundImage ? undefined : '#446184',
+              backgroundImage: backgroundImage
+                ? `url(${backgroundImage})`
+                : 'none',
+            }}
           >
           </div>
           <div
@@ -1018,6 +1021,15 @@ const index = () => {
 };
 
 export default index;
+
+/** Cash funds with this title are shown like standard gifts (no "cash fund" circular badge). */
+function isRegistryGiftCardCashFund(fund) {
+  return (
+    (fund?.cashFund?.name || '').trim().toUpperCase() ===
+    'THE REGISTRY GIFT CARD'
+  );
+}
+
 const ProductPage = ({
   data,
   cashfundData,
@@ -1277,6 +1289,9 @@ const ProductPage = ({
               const remainingAmount = Math.max(0, totalAmount - collectedAmount);
               const isAnyAmount = fund.cashFund?.isAnyAmount || false;
               const isFullyGifted = remainingAmount === 0;
+              const isRegistryGiftCard = isRegistryGiftCardCashFund(fund);
+              const giftCardStillNeeds =
+                isFullyGifted && !isAnyAmount ? 0 : 1;
 
               return (
                 <div
@@ -1287,51 +1302,107 @@ const ProductPage = ({
                 >
                   <div className="flex flex-col justify-between">
                     <div className="h-[inherit] w-full mb-4 flex justify-center relative">
-                      <img
-                        src={
-                          fund.cashFund?.image?.fileUrl ||
-                          '/assets/Images/placeholder.png'
-                        }
-                        alt={fund.cashFund?.name || 'Cash Fund'}
-                        className="w-full aspect-square object-cover mb-4"
-                      />
-                      <div className="absolute top-2 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
-                        <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
-                          cash <br /> fund
-                        </h2>
-                      </div>
-                    </div>
-
-                    <h2
-                      className={`text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw] ${
-                        isFullyGifted && !isAnyAmount
-                          ? 'cursor-not-allowed opacity-50'
-                          : 'cursor-pointer'
-                      }`}
-                    >
-                      {fund.cashFund?.name || 'No Fund Name'}
-                    </h2>
-
-                    <div className="flex justify-between items-center">
-                      {!isAnyAmount && (
-                        <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">
-                          ${totalAmount.toFixed(2)}
-                        </p>
+                      {isRegistryGiftCard ? (
+                        <Link
+                          to="/dashboard/giftcards"
+                          className="block w-full bg-[#446184] mb-4"
+                        >
+                          <img
+                            src={
+                              fund.cashFund?.image?.fileUrl ||
+                              '/assets/Images/placeholder.png'
+                            }
+                            alt={fund.cashFund?.name || 'Gift card'}
+                            className="w-full aspect-square object-contain"
+                          />
+                        </Link>
+                      ) : (
+                        <img
+                          src={
+                            fund.cashFund?.image?.fileUrl ||
+                            '/assets/Images/placeholder.png'
+                          }
+                          alt={fund.cashFund?.name || 'Cash Fund'}
+                          className="w-full aspect-square object-cover mb-4"
+                        />
+                      )}
+                      {!isRegistryGiftCard && (
+                        <div className="absolute top-2 z-0 right-2 rounded-full w-20 h-20 bg-gray-100 flex items-center justify-center">
+                          <h2 className="prata text-black text-sm text-center font-bold mt-3 leading-tight">
+                            cash <br /> fund
+                          </h2>
+                        </div>
                       )}
                     </div>
 
-                    {!isAnyAmount && (
-                      <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
-                        Remaining: ${remainingAmount.toFixed(2)}
-                      </p>
+                    {isRegistryGiftCard ? (
+                      <Link to="/dashboard/giftcards">
+                        <h2
+                          className={`text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw] ${
+                            isFullyGifted && !isAnyAmount
+                              ? 'cursor-not-allowed opacity-50'
+                              : 'cursor-pointer'
+                          }`}
+                        >
+                          {fund.cashFund?.name || 'No Name'}
+                        </h2>
+                      </Link>
+                    ) : (
+                      <h2
+                        className={`text-sm font-[500] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.354vw] uppercase mt-[1.563vw] ${
+                          isFullyGifted && !isAnyAmount
+                            ? 'cursor-not-allowed opacity-50'
+                            : 'cursor-pointer'
+                        }`}
+                      >
+                        {fund.cashFund?.name || 'No Fund Name'}
+                      </h2>
                     )}
 
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Contributed: ${collectedAmount.toFixed(2)} / $
-                        {isAnyAmount ? 'Any Amount' : totalAmount.toFixed(2)}
-                      </p>
-                    </div>
+                    {isRegistryGiftCard ? (
+                      <>
+                        <div className="flex justify-between items-center mb-8">
+                          {!isAnyAmount && (
+                            <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">
+                              {formatPrice(totalAmount)}
+                            </p>
+                          )}
+                        </div>
+                        <div className="mt-2 flex flex-row items-center gap-6">
+                          <p className="text-sm text-gray-500 italic">
+                            Requested: 1
+                          </p>
+                          <p className="text-sm text-gray-500 italic">
+                            Still Needs: {giftCardStillNeeds}
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-center">
+                          {!isAnyAmount && (
+                            <p className="text-sm mt-[0.677vw] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.25vw]">
+                              ${totalAmount.toFixed(2)}
+                            </p>
+                          )}
+                        </div>
+
+                        {!isAnyAmount && (
+                          <p className="text-sm italic my-2 text-right w-full mb-2 text-gray-600">
+                            Remaining: ${remainingAmount.toFixed(2)}
+                          </p>
+                        )}
+
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500">
+                            Contributed: ${collectedAmount.toFixed(2)} / $
+                            {isAnyAmount
+                              ? 'Any Amount'
+                              : totalAmount.toFixed(2)}
+                          </p>
+                        </div>
+                      </>
+                    )}
 
                     <div className="mt-4">
                       <Form method="post">
@@ -1350,12 +1421,12 @@ const ProductPage = ({
                           disabled={!fundRegistryProductId}
                           className="w-full border border-black py-3 px-4 text-sm font-semibold uppercase hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          Delete Fund
+                          {isRegistryGiftCard ? 'Delete Gift' : 'Delete Fund'}
                         </button>
                       </Form>
                     </div>
 
-                    {!isAnyAmount && (
+                    {!isAnyAmount && !isRegistryGiftCard && (
                       <div className="mt-2">
                         <div className="h-2 bg-gray-300 rounded-full overflow-hidden">
                           <div
