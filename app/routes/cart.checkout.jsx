@@ -16,6 +16,7 @@ import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
 import ModalPortal from '~/components/ModalPortal';
 import billingAddressOptions from '~/data/billing-address-options.json';
 import {getApiBaseUrl} from '~/utils/api-url';
+import {isRegistryGiftCardTitle} from '~/utils/helpers.js';
 import SideCart from '~/components/SideCart';
 import {
   buildLineItemsForTax,
@@ -733,9 +734,17 @@ const DetailsForm = ({onNext}) => {
     setSideCartOpen(false);
   };
 
+  const cartQuantityTotal = cartItems.reduce(
+    (sum, item) => sum + Math.max(1, Number(item?.quantity) || 1),
+    0,
+  );
+
   return (
     <div className="pt-[80px]">
-      <CoupleProfileViewHeader onCartClick={handleCartClick} />
+      <CoupleProfileViewHeader
+        onCartClick={handleCartClick}
+        cartCount={cartQuantityTotal}
+      />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
         <img
@@ -899,24 +908,42 @@ const DetailsForm = ({onNext}) => {
                         key={item.id}
                         className="flex items-center py-3 border-b border-[#ececec] last:border-b-0"
                       >
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-[99px] h-[99px] object-cover mr-8"
-                        />
+                        {isRegistryGiftCardTitle(item.title) ? (
+                          <div className="w-[99px] h-[99px] shrink-0 bg-[#446184] rounded mr-8 flex items-center justify-center overflow-hidden">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="max-w-full max-h-full w-full h-full object-contain"
+                            />
+                          </div>
+                        ) : (
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="w-[99px] h-[99px] object-cover mr-8"
+                          />
+                        )}
                         <div className="flex-1">
                           <div className="font-bold uppercase text-md leading-tight tracking-wide">
                             {item.title}
                           </div>
-                          {item.isCashFund && (
+                          {item.isCashFund &&
+                            !isRegistryGiftCardTitle(item.title) && (
                             <div className="text-sm text-gray-600 mt-1">
                               Cash Fund Contribution
                             </div>
                           )}
+                          <div className="text-sm text-gray-600 mt-1 font-medium">
+                            Qty: {Math.max(1, Number(item.quantity) || 1)}
+                          </div>
                         </div>
                         <div className="text-right min-w-[120px]">
                           <div className="text-xl text-black">
-                            ${Number(item.price).toFixed(2)}
+                            $
+                            {(
+                              Number(item.price) *
+                              Math.max(1, Number(item.quantity) || 1)
+                            ).toFixed(2)}
                           </div>
                         </div>
                       </div>
@@ -1100,6 +1127,7 @@ const DetailsForm = ({onNext}) => {
             : '')
         }
         hideDeleteButtons={true}
+        allowQuantityEdit={false}
         showExtrasSection={true}
         showFooterActions={false}
         hideExtrasHeading={true}
@@ -1300,6 +1328,11 @@ const PayPalPaymentForm = ({
     setSideCartOpen(false);
   };
 
+  const cartQuantityTotal = cartItems.reduce(
+    (sum, item) => sum + Math.max(1, Number(item?.quantity) || 1),
+    0,
+  );
+
   return (
     <div className="pt-[80px]">
       {showPopup && (
@@ -1328,7 +1361,10 @@ const PayPalPaymentForm = ({
         </div>
         </ModalPortal>
       )}
-      <CoupleProfileViewHeader onCartClick={handleCartClick} />
+      <CoupleProfileViewHeader
+        onCartClick={handleCartClick}
+        cartCount={cartQuantityTotal}
+      />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
         <img
@@ -1450,6 +1486,7 @@ const PayPalPaymentForm = ({
             : '')
         }
         hideDeleteButtons={true}
+        allowQuantityEdit={false}
         showExtrasSection={true}
         showFooterActions={false}
         hideExtrasHeading={true}

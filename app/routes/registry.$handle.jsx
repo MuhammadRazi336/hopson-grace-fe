@@ -12,7 +12,6 @@ import Marquee from '~/components/Marquee'
 import ButtonComponent from '~/components/Button'
 import lineImg4 from '/assets/Images/Vector 14.png';
 import {formatPrice} from '~/utils/priceFormatter';
-import AlertPortal from '~/components/AlertPortal';
 import ExploreMoreRegistriesSlider from '~/components/ExploreMoreRegistriesSlider'
 import BackToTop from '~/components/BackToTop'
 
@@ -78,6 +77,11 @@ export async function loader({params, context}) {
 
 export async function action({request, context}) {
   try {
+    const user = context?.session?.get('@User');
+    if (!user?.user?.id) {
+      return redirect('/login');
+    }
+
     const body = await request.json();
     const {payload} = body;
     
@@ -97,9 +101,8 @@ export async function action({request, context}) {
 const Registry = () => {
   const { collection, registry, otherRegistries, collections, products, user } = useLoaderData();
   const [quantities, setQuantities] = useState({});
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState('success');
+  const [addingProductId, setAddingProductId] = useState(null);
+  const [addedProducts, setAddedProducts] = useState({});
   const [checkedCollectionIds, setCheckedCollectionIds] = useState([]);
   const [shopAllChecked, setShopAllChecked] = useState(false);
   const [productsToShow, setProductsToShow] = useState(12);
@@ -117,32 +120,24 @@ const Registry = () => {
     console.log('Registry query (collection):', collection);
   }, [collection]);
 
-  // Handle fetcher responses
+  // Hold "ADDED!" briefly after successful submit.
   useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.success) {
-        // Success - show green alert
-        setAlertMessage('Product has been added to your registry!');
-        setAlertType('success');
-        setShowAlert(true);
-        
-        // Hide alert after 3 seconds
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
-      } else if (fetcher.data.error) {
-        // Error - show red alert
-        setAlertMessage(`Failed to add to registry: ${fetcher.data.error}`);
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
-      }
+    if (fetcher.state !== 'idle') return undefined;
+    if (!addingProductId) return undefined;
+
+    if (fetcher.data?.success) {
+      const currentProductId = addingProductId;
+      setAddedProducts((prev) => ({...prev, [currentProductId]: true}));
+      setAddingProductId(null);
+      const timer = setTimeout(() => {
+        setAddedProducts((prev) => ({...prev, [currentProductId]: false}));
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [fetcher.data]);
+
+    setAddingProductId(null);
+    return undefined;
+  }, [fetcher.state, fetcher.data, addingProductId]);
   
   // Reset productsToShow when filtered products change (when categories are selected/deselected)
   useEffect(() => {
@@ -262,50 +257,26 @@ const Registry = () => {
       
       // Ensure product has an ID
       if (!productNode || !productNode.id) {
-        setAlertMessage('Product ID not found.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Product ID not found.');
         return;
       }
 
       const firstVariant = productNode?.variants?.edges?.[0]?.node;
       if (!firstVariant) {
-        setAlertMessage('Product variant not found.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Product variant not found.');
         return;
       }
 
       // Check if registry exists and has an ID
       if (!registry || !registry.data || !registry.data[0] || !registry.data[0].id) {
-        setAlertMessage('Registry not found. Please create a registry first.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Registry not found. Please create a registry first.');
         return;
       }
       
       // Extract product ID safely
       const productId = extractShopifyId(productNode.id);
       if (!productId) {
-        setAlertMessage('Invalid product ID format.');
-        setAlertType('error');
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-          setAlertMessage('');
-        }, 3000);
+        console.error('Invalid product ID format.');
         return;
       }
       
@@ -333,6 +304,7 @@ const Registry = () => {
       });
 
       // Submit to action using fetcher
+      setAddingProductId(productNode.id);
       fetcher.submit(
         {payload: JSON.stringify(payload)},
         {
@@ -343,13 +315,7 @@ const Registry = () => {
       
     } catch (error) {
       console.error('Error adding to registry:', error);
-      setAlertMessage('Failed to add to registry. Please try again.');
-      setAlertType('error');
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-        setAlertMessage('');
-      }, 3000);
+      setAddingProductId(null);
     }
   };
 
@@ -414,6 +380,10 @@ const Registry = () => {
                const firstImage = productNode.images?.edges?.[0]?.node?.url || productNode.images?.edges?.[0]?.node?.src || '/assets/Images/placeholder.png';
                const firstVariant = productNode.variants?.edges?.[0]?.node;
                const price = formatPrice(firstVariant?.priceV2?.amount || product.price || productNode.price);
+               const isSubmittingCurrent =
+                 addingProductId === productNode.id && fetcher.state !== 'idle';
+               const isAddedCurrent = Boolean(addedProducts[productNode.id]);
+               const showAdded = isSubmittingCurrent || isAddedCurrent;
 
                // Derive brand name: among this product's collections, find a collection marked as a brand
                let brandName = productNode.vendor || '';
@@ -513,21 +483,14 @@ const Registry = () => {
                                                      {/* Add to Registry Button */}
                            <button 
                              onClick={() => handleAddToRegistry(product, quantities[productId] || 1)}
-                             disabled={fetcher.state === 'submitting'}
-                             className={`bg-[#446184] cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 disabled:opacity-50 tracking-widest max-[1025px]:mt-5 ${
-                               fetcher.state === 'submitting'
-                                 ? 'bg-gray-400 cursor-not-allowed' 
+                             disabled={showAdded}
+                             className={`cursor-pointer uppercase w-full lg:h-[4.31vw] xl:h-[4.31vw] 2xl:h-[4.31vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] block text-white text-sm font-semibold py-4 tracking-widest max-[1025px]:mt-5 ${
+                               showAdded
+                                 ? 'bg-[#1F1D1B] cursor-default'
                                  : 'bg-[#446184] hover:bg-[#2c4a6b] transition-colors duration-200'
                              }`}
                            >
-                             {fetcher.state === 'submitting' ? (
-                               <div className="bg-[#446184] text-white text-[14px] leading-[20px] font-bold py-4 px-6 lg:px-0 lg:leading-[1.042vw] w-[10.156vw] h-[4.01vw] max-[1025px]:w-full max-[1025px]:mt-4 max-[1025px]:h-auto max-[1025px]:text-[12px] max-[1025px]:mt-5">
-                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                 Adding...
-                               </div>
-                             ) : (
-                               'ADD TO REGISTRY'
-                             )}
+                             {showAdded ? 'ADDED!' : 'ADD TO REGISTRY'}
                            </button>
                         </div>
                      </div>
@@ -571,71 +534,6 @@ const Registry = () => {
        <ExploreMoreRegistriesSlider otherRegistries={otherRegistries} className={''} />
 
     <div className='mt-16'></div>
-
-       {/* Alert Component - Rendered outside app-scale via portal */}
-       {showAlert && (
-         <AlertPortal>
-           <div
-             className={`fixed top-4 right-4 ${
-               alertType === 'success' ? 'bg-green-500' : 'bg-red-500'
-             } text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out`}
-           >
-             <div className="flex items-center">
-               {alertType === 'success' && (
-                 <svg
-                   className="w-5 h-5 mr-2"
-                   fill="none"
-                   strokeLinecap="round"
-                   strokeLinejoin="round"
-                   strokeWidth="2"
-                   viewBox="0 0 24 24"
-                   stroke="currentColor"
-                 >
-                   <path d="M5 13l4 4L19 7"></path>
-                 </svg>
-               )}
-               {alertType === 'error' && (
-                 <svg
-                   className="w-5 h-5 mr-2"
-                   fill="none"
-                   strokeLinecap="round"
-                   strokeLinejoin="round"
-                   strokeWidth="2"
-                   viewBox="0 0 24 24"
-                   stroke="currentColor"
-                 >
-                   <path d="M6 18L18 6M6 6l12 12"></path>
-                 </svg>
-               )}
-               <span>{alertMessage}</span>
-             </div>
-           </div>
-         </AlertPortal>
-       )}
-
-       <style jsx>{`
-         @keyframes fadeInOut {
-           0% {
-             opacity: 0;
-             transform: translateY(-20px);
-           }
-           10% {
-             opacity: 1;
-             transform: translateY(0);
-           }
-           90% {
-             opacity: 1;
-             transform: translateY(0);
-           }
-           100% {
-             opacity: 0;
-             transform: translateY(-20px);
-           }
-         }
-         .animate-fade-in-out {
-           animation: fadeInOut 3s ease-in-out;
-         }
-       `}</style>
 
          <Footer/>
      </section>

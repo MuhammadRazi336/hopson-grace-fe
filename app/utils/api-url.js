@@ -1,5 +1,5 @@
-export const DEFAULT_API_BASE_URL = 'https://api.theregistry.ca';
-// export const DEFAULT_API_BASE_URL = 'https://dev-hopsongrace.codup.io';
+// export const DEFAULT_API_BASE_URL = 'https://api.theregistry.ca';
+export const DEFAULT_API_BASE_URL = 'https://dev-hopsongrace.codup.io';
 
 export function getApiBaseUrl(envLike) {
   const envApiBase = envLike?.API_BASE_URL;

@@ -202,6 +202,11 @@ const Message = () => {
     return sum + item.price * qty;
   }, 0);
 
+  const cartQuantityTotal = cartItems.reduce(
+    (sum, item) => sum + Math.max(1, Number(item?.quantity) || 1),
+    0,
+  );
+
   const fetchCartItems = async () => {
     const registryId = registryIdFromUrl ||
       (typeof window !== 'undefined'
@@ -361,7 +366,10 @@ const Message = () => {
 
   return (
     <div className="pt-[80px]">
-      <CoupleProfileViewHeader onCartClick={handleCartClick} />
+      <CoupleProfileViewHeader
+        onCartClick={handleCartClick}
+        cartCount={cartQuantityTotal}
+      />
       <div className="p-4">
         <h2 className="text-4xl text-center font-bold prata pt-5">checkout</h2>
         <img
@@ -551,6 +559,7 @@ const Message = () => {
         registryId={registryIdFromUrl}
         guestEmail={emailFromUrl}
         hideDeleteButtons={true}
+        allowQuantityEdit={false}
         showExtrasSection={true}
         showFooterActions={false}
         hideExtrasHeading={true}

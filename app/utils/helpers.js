@@ -45,3 +45,8 @@ export function extractShopifyId(id) {
   const match = id.match(/\d+/); // Matches the first sequence of digits
   return match ? match[0] : null; // Returns the number or null if not found
 }
+
+/** Cash fund line item with this title — show as a gift in cart/checkout UI. */
+export function isRegistryGiftCardTitle(title) {
+  return (title || '').trim().toUpperCase() === 'THE REGISTRY GIFT CARD';
+}

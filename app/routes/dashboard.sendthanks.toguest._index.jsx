@@ -27,7 +27,7 @@ export async function loader({context, request}) {
       );
     } catch (apiError) {
       // Check if it's a session expiration error
-      if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+      if (apiError.isSessionExpired || apiError.status === 401) {
         const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
         return clearSessionAndRedirect(context);
       }
@@ -40,13 +40,15 @@ export async function loader({context, request}) {
 
   // Get greetingId from URL params if available
   const url = new URL(request.url);
-  const greetingsId = url.searchParams.get('greetingsId');
+  const greetingsId =
+    url.searchParams.get('greetingsId') || url.searchParams.get('greetingId');
   const emailFromUrl = url.searchParams.get('email') || url.searchParams.get('guestEmail');
   let guestEmail = emailFromUrl || '';
   let guestName = '';
 
   // If greetingId is provided, fetch transaction detail to get guest email and name
   if (greetingsId) {
+    const greetingId = greetingsId;
     try {
       console.log('Fetching guest data for greetingsId:', greetingsId);
       
@@ -60,16 +62,29 @@ export async function loader({context, request}) {
             context,
           );
         } catch (apiError) {
-          if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+          if (apiError.isSessionExpired || apiError.status === 401) {
             const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
             return clearSessionAndRedirect(context);
           }
           throw apiError;
         }
-        console.log('Greeting response:', JSON.stringify(greetingResponse, null, 2));
-        
-        if (greetingResponse?.data) {
-          const greetingData = greetingResponse.data;
+        console.log(
+          `[greetings/${greetingId}] API response:`,
+          greetingResponse,
+        );
+        console.log(
+          `[greetings/${greetingId}] API response (JSON):`,
+          JSON.stringify(greetingResponse, null, 2),
+        );
+
+        // API may return `{ data: { ... } }` or a flat body e.g. `{ email: "..." }` (no `data` wrapper).
+        const greetingData =
+          greetingResponse?.data != null &&
+          typeof greetingResponse.data === 'object'
+            ? greetingResponse.data
+            : greetingResponse;
+
+        if (greetingData && typeof greetingData === 'object') {
           console.log('Greeting data:', JSON.stringify(greetingData, null, 2));
           console.log('All greeting keys:', Object.keys(greetingData));
           
@@ -133,7 +148,10 @@ export async function loader({context, request}) {
             }
           }
         } else {
-          console.log('⚠️ Greeting response structure:', greetingResponse);
+          console.log(
+            '⚠️ Greeting response could not be parsed as object:',
+            greetingResponse,
+          );
         }
       } catch (greetingError) {
         console.error('Error fetching greeting:', greetingError);
@@ -147,7 +165,7 @@ export async function loader({context, request}) {
           context,
         );
       } catch (apiError) {
-        if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+        if (apiError.isSessionExpired || apiError.status === 401) {
           const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
           return clearSessionAndRedirect(context);
         }
@@ -207,7 +225,7 @@ export async function loader({context, request}) {
             context,
           );
         } catch (apiError) {
-          if (apiError.isSessionExpired || apiError.status === 401 || apiError.status === 403) {
+          if (apiError.isSessionExpired || apiError.status === 401) {
             const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
             return clearSessionAndRedirect(context);
           }
@@ -272,7 +290,7 @@ export async function loader({context, request}) {
     return {user, registry: registry.data[0], guestEmail, guestName};
   } catch (error) {
     // If it's a session expiration error, handle it
-    if (error.isSessionExpired || error.status === 401 || error.status === 403) {
+    if (error.isSessionExpired || error.status === 401) {
       const {clearSessionAndRedirect} = await import('~/utils/auth-guard');
       return clearSessionAndRedirect(context);
     }
@@ -337,7 +355,10 @@ const ThankYou = () => {
   const processedResponseRef = useRef(null);
   
   // Get guest email and name from loader (from API) or URL params (fallback)
-  const guestEmailFromUrl = searchParams.get('email') || searchParams.get('guestEmail') || '';
+  const guestEmailFromUrl =
+    searchParams.get('email') ||
+    searchParams.get('guestEmail') ||
+    '';
   const guestEmail = guestEmailFromLoader || guestEmailFromUrl || '';
   const guestName = guestNameFromLoader || '';
   
@@ -452,7 +473,7 @@ const ThankYou = () => {
   }
 
   const [formData, setFormData] = useState({
-    to: '',
+    to: guestName || '',
     email: '',
     subject: `Thank's from ${user?.user?.firstName} & ${user?.user?.fianceFirstName}`,
     message: '',
@@ -601,7 +622,9 @@ const ThankYou = () => {
           </div>
         </AlertPortal>
       )}
-      <style jsx>{`
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes fadeInOut {
           0% {
             opacity: 0;
@@ -623,7 +646,9 @@ const ThankYou = () => {
         .animate-fade-in-out {
           animation: fadeInOut 5s ease-in-out;
         }
-      `}</style>
+      `,
+        }}
+      />
     <div className="mx-20 py-[80px]">
     <h2 className="mt-0 ivyora lg:text-3xl xl:text-4xl 2xl:text-[48px] text-[24px] prata text-center lg:leading-[60px] font-normal mb-1">
           send your <span className="prata uppercase">Thank you</span> here
@@ -691,7 +716,9 @@ const ThankYou = () => {
                     </div>
                   ) : (
                     <div className="relative max-w-4xl mx-auto">
-                      <h3 className="text-center text-3xl font-bold italic prata">{formData.to}</h3>
+                      <h3 className="text-center text-3xl font-bold italic prata">
+                        {formData.to}
+                      </h3>
                       <p className="text-center prata italic leading-relaxed text-xl mt-10">
                         {formData.message}
                       </p>

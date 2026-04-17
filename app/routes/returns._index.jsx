@@ -1,10 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {json} from '@shopify/remix-oxygen';
+import {Form, useActionData, useNavigation} from '@remix-run/react';
 import {Footer} from '~/components/Footer';
 import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
 import lineImghead from '../assets/Images/heading-bottom-curve.png';
 import { Button } from '@material-tailwind/react';
 import { Check, ChevronDown, Upload } from 'lucide-react';
+import {getApiBaseUrl} from '~/utils/api-url';
 
 const REQUEST_TYPE_OPTIONS = [
   { value: 'damaged-item', label: 'DAMAGED OR DEFECTIVE ITEM', itemClass: 'font-semibold bg-[#F5F2ED] p-6 max-[476px]:p-4' },
@@ -12,11 +15,126 @@ const REQUEST_TYPE_OPTIONS = [
   { value: 'other', label: 'OTHER', itemClass: 'font-semibold bg-[#F5F2ED] p-6 max-[476px]:p-4' },
 ];
 
+const REQUEST_TYPE_TO_API_VALUE = {
+  'damaged-item': 'Damaged item',
+  'wrong-item': 'Received wrong item',
+  other: 'Other',
+};
+
+export async function action({request, context}) {
+  const formData = await request.formData();
+
+  const firstName = String(formData.get('firstName') || '').trim();
+  const lastName = String(formData.get('lastName') || '').trim();
+  const fullName = `${firstName} ${lastName}`.trim();
+  const email = String(formData.get('email') || '').trim();
+  const orderNumber = String(formData.get('orderNumber') || '').trim();
+  const rawItems = String(formData.get('items') || '').trim();
+  const requestType = String(formData.get('requestType') || '').trim();
+  const additionalDetails = String(
+    formData.get('additionalDetails') || '',
+  ).trim();
+
+  if (!fullName || !email || !rawItems || !requestType) {
+    return json(
+      {success: false, error: 'Please complete all required fields.'},
+      {status: 400},
+    );
+  }
+
+  const itemsArray = rawItems
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (!itemsArray.length) {
+    return json(
+      {success: false, error: 'Please add at least one item.'},
+      {status: 400},
+    );
+  }
+
+  const photos = formData
+    .getAll('photos')
+    .filter((file) => file && typeof file === 'object' && file.size > 0);
+
+  if (photos.length > 5) {
+    return json(
+      {success: false, error: 'You can upload up to 5 photos only.'},
+      {status: 400},
+    );
+  }
+
+  for (const file of photos) {
+    if (!(file.type || '').startsWith('image/')) {
+      return json(
+        {success: false, error: 'Only image files are allowed.'},
+        {status: 400},
+      );
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return json(
+        {
+          success: false,
+          error: 'Each photo must be 5MB or smaller.',
+        },
+        {status: 400},
+      );
+    }
+  }
+
+  const apiFormData = new FormData();
+  apiFormData.append('fullName', fullName);
+  apiFormData.append('email', email);
+  if (orderNumber) apiFormData.append('orderNumber', orderNumber);
+  apiFormData.append('items', JSON.stringify(itemsArray));
+  apiFormData.append(
+    'typeOfRequest',
+    REQUEST_TYPE_TO_API_VALUE[requestType] || requestType,
+  );
+  if (additionalDetails) {
+    apiFormData.append('additionalDetails', additionalDetails);
+  }
+  photos.forEach((file) => {
+    apiFormData.append('photos', file);
+  });
+
+  const apiBaseUrl = getApiBaseUrl(context?.env);
+  const response = await fetch(`${apiBaseUrl}/api/returns`, {
+    method: 'POST',
+    body: apiFormData,
+  });
+
+  const responseBody = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    return json(
+      {
+        success: false,
+        error:
+          responseBody?.message ||
+          responseBody?.error ||
+          'Failed to submit return request.',
+      },
+      {status: response.status || 500},
+    );
+  }
+
+  return json({
+    success: true,
+    message: responseBody?.message || 'Return request submitted successfully.',
+    data: responseBody?.data || null,
+  });
+}
+
 const Returns = () => {
+    const actionData = useActionData();
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === 'submitting';
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
-        email: "JANETANDJON@ICLOUD.COM",
+        email: "",
         orderNumber: "",
         items: "",
         requestType: "",
@@ -38,6 +156,30 @@ const Returns = () => {
       document.addEventListener('mousedown', onPointerDown)
       return () => document.removeEventListener('mousedown', onPointerDown)
     }, [requestTypeOpen])
+
+    useEffect(() => {
+      if (!actionData?.success) return
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        orderNumber: "",
+        items: "",
+        requestType: "",
+        additionalDetails: "",
+        agreedToReturn: false,
+      })
+      setUploadedFiles([])
+      setItemsCharacterCount(0)
+      setDetailsCharacterCount(0)
+      setRequestTypeError(false)
+      setRequestTypeOpen(false)
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }, [actionData])
 
     const [itemsCharacterCount, setItemsCharacterCount] = useState(0)
     const [detailsCharacterCount, setDetailsCharacterCount] = useState(0)
@@ -74,14 +216,12 @@ const Returns = () => {
     }
 
     const handleSubmit = (e) => {
-      e.preventDefault()
       if (!formData.requestType) {
+        e.preventDefault()
         setRequestTypeError(true)
         return
       }
       setRequestTypeError(false)
-      console.log("Form submitted:", formData)
-      console.log("Uploaded files:", uploadedFiles)
     }
 
     const selectRequestType = (value) => {
@@ -130,7 +270,12 @@ const Returns = () => {
                 <br/><br/>
               </p>
               <div className="mb-10">
-              <form className="space-y-6 pt-10" onSubmit={handleSubmit}>
+              <Form
+                method="post"
+                encType="multipart/form-data"
+                className="space-y-6 pt-10"
+                onSubmit={handleSubmit}
+              >
           {/* FULL NAME */}
           <div className="space-y-2">
             <label className="text-white font-semibold">FULL NAME*</label>
@@ -202,6 +347,7 @@ const Returns = () => {
             <label className="text-white font-semibold" id="returns-request-type-label">
               TYPE OF REQUEST*
             </label>
+            <input type="hidden" name="requestType" value={formData.requestType} />
             <div className="relative" ref={requestTypeRef}>
               <button
                 type="button"
@@ -323,6 +469,7 @@ const Returns = () => {
                     id="photo-upload"
                     ref={fileInputRef}
                     type="file"
+                    name="photos"
                     multiple
                     accept="image/jpeg,image/png"
                     onChange={handleFileUpload}
@@ -385,12 +532,23 @@ const Returns = () => {
           <div className="pt-7 w-full flex justify-center">
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full lg:h-[4.063vw] lg:w-[18.073vw] mx-auto md:w-auto px-[10px] py-5 rounded-none bg-[#F5F2ED] hover:bg-gray-100 text-black text-[18px] leading-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] font-bold tracking-wider uppercase transition-colors"
             >
-              REQUEST A RETURN LABEL
+              {isSubmitting ? 'SUBMITTING...' : 'REQUEST A RETURN LABEL'}
             </Button>
           </div>
-        </form>
+          {actionData?.error ? (
+            <p className="text-red-200 text-center text-sm" role="alert">
+              {actionData.error}
+            </p>
+          ) : null}
+          {actionData?.success ? (
+            <p className="text-white text-center text-sm" role="status">
+              {actionData.message}
+            </p>
+          ) : null}
+        </Form>
               </div>
               <div className="step absolute bottom-6 max-[768px]:bottom-2.5 right-0 left-0 text-center flex items-center gap-2 justify-center">
               </div>

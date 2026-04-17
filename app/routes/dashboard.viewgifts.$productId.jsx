@@ -1,10 +1,11 @@
-import {Link, useLoaderData, useFetcher} from '@remix-run/react';
-import React, {useState} from 'react';
+import {Link, useLoaderData, useFetcher, useNavigate} from '@remix-run/react';
+import React, {useEffect} from 'react';
 import {Footer} from '~/components/Footer';
 import ImageAndText from '~/components/ImageAndText';
 import teaImg from '/assets/Images/reading-image.png';
 import lineImg3 from '/assets/Images/line.png';
 import {fetchProducts} from '~/graphql/product-query/GetProductsQuery';
+import {json} from '@shopify/remix-oxygen';
 
 export async function loader({params, context}) {
   const {productId} = params;
@@ -73,7 +74,7 @@ export async function action({request, context}) {
   if (intent === 'markComplete') {
     const greetingsId = formData.get('greetingsId');
     if (!greetingsId) {
-      return {success: false, message: 'Missing greeting reference'};
+      return json({success: false, message: 'Missing greeting reference'});
     }
     try {
       await context.ClientPut(
@@ -81,28 +82,39 @@ export async function action({request, context}) {
         `greetings/${greetingsId}`,
         context,
       );
-      return {success: true, message: 'Greeting marked as sent successfully'};
+      return json({
+        success: true,
+        message: 'Greeting marked as sent successfully',
+      });
     } catch (error) {
       console.error('Error marking greeting as sent:', error);
-      return {success: false, message: `Error marking greeting as sent: ${error.message}`};
+      return json(
+        {success: false, message: `Error marking greeting as sent: ${error.message}`},
+        {status: 400},
+      );
     }
   }
 
-  return null;
+  return json({success: false, message: 'Invalid action'}, {status: 400});
 }
 
 const ViewGifts = () => {
   const {viewGifts, registry, greetingsId} = useLoaderData();
   console.log(viewGifts, 'viewGifts');
   const fetcher = useFetcher();
-  const [isMarkingComplete, setIsMarkingComplete] = useState(false);
+  const navigate = useNavigate();
 
-  // Handle action response
-  React.useEffect(() => {
-    if (fetcher.data) {
-      setIsMarkingComplete(false);
-    }
-  }, [fetcher.data]);
+  const isSubmitting = fetcher.state === 'submitting';
+  const isCompleted =
+    fetcher.data?.success === true && fetcher.state === 'idle';
+
+  useEffect(() => {
+    if (fetcher.data?.success !== true || fetcher.state !== 'idle') return undefined;
+    const t = window.setTimeout(() => {
+      navigate('/dashboard/gifttracker');
+    }, 2000);
+    return () => window.clearTimeout(t);
+  }, [fetcher.data, fetcher.state, navigate]);
 
   console.log(registry);
 
@@ -216,16 +228,18 @@ const ViewGifts = () => {
               )}
               <button
                 type="submit"
-                disabled={isMarkingComplete || fetcher.state === 'submitting'}
+                disabled={isSubmitting || isCompleted}
                 className={`border border-gray-700 px-6 py-4 text-base font-medium w-full max-w-xs disabled:cursor-not-allowed ${
-                  isMarkingComplete || fetcher.state === 'submitting'
+                  isSubmitting || isCompleted
                     ? 'bg-black text-white'
                     : 'hover:bg-gray-100 text-black'
                 }`}
               >
-                {isMarkingComplete || fetcher.state === 'submitting'
-                  ? 'COMPLETING...'
-                  : 'SENT BY MAIL MARK COMPLETE'}
+                {isCompleted
+                  ? 'COMPLETED'
+                  : isSubmitting
+                    ? 'COMPLETING...'
+                    : 'SENT BY MAIL MARK COMPLETE'}
               </button>
             </fetcher.Form>
             <Link
