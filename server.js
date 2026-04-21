@@ -69,7 +69,7 @@ export default {
           "child-src 'self' https://*.tawk.to https://*.jsdelivr.net https://*.unpkg.com https://*.calendly.com https://*.klaviyo.com",
           // Allow backend API hosts for XHR/fetch (dev and production)
           "connect-src 'self' http://localhost:* ws://localhost:* wss://localhost:* https://cdn.shopify.com https://monorail-edge.shopifysvc.com https://dev-hopsongrace.codup.io/api/forms/upload https://dev-hopsongrace.codup.io wss://dev-hopsongrace.codup.io https://api.theregistry.ca https://api.paypal.com https://api.sandbox.paypal.com https://www.paypal.com https://www.google.com/ https://*.tawk.to wss://*.tawk.to https://*.jsdelivr.net https://*.unpkg.com https://*.calendly.com https://*.klaviyo.com",
-          "img-src 'self' blob: data: https://www.dummyimage.co.uk https://cdn.shopify.com https://hopsongrace.s3.us-west-2.amazonaws.com https://gc.kis.v2.scr.kaspersky-labs.com https://*.tawk.to https://*.jsdelivr.net https://*.unpkg.com https://*.calendly.com https://*.klaviyo.com",
+          "img-src 'self' blob: data: https://www.dummyimage.co.uk https://cdn.shopify.com https://hopsongrace.s3.us-west-2.amazonaws.com https://the-registry-prod.s3.us-west-2.amazonaws.com https://gc.kis.v2.scr.kaspersky-labs.com https://*.tawk.to https://*.jsdelivr.net https://*.unpkg.com https://*.calendly.com https://*.klaviyo.com",
           "media-src 'self' blob: data: https://*.tawk.to https://*.jsdelivr.net https://*.unpkg.com https://*.calendly.com",
           "worker-src 'self' blob: https://*.tawk.to https://*.jsdelivr.net https://*.unpkg.com https://*.calendly.com",
           "manifest-src 'self' https://*.tawk.to https://*.jsdelivr.net https://*.unpkg.com https://*.calendly.com",

@@ -6,7 +6,7 @@ import {Header} from '~/components/Header';
 import Heading from '~/components/Heading';
 import lineImghead from '../assets/Images/heading-bottom-curve.png';
 import { Button } from '@material-tailwind/react';
-import { Check, ChevronDown, Upload } from 'lucide-react';
+import { Check, ChevronDown, Upload, Plus, X } from 'lucide-react';
 import {getApiBaseUrl} from '~/utils/api-url';
 
 const REQUEST_TYPE_OPTIONS = [
@@ -20,6 +20,8 @@ const REQUEST_TYPE_TO_API_VALUE = {
   'wrong-item': 'Received wrong item',
   other: 'Other',
 };
+
+const MAX_UPLOAD_FILES = 5;
 
 export async function action({request, context}) {
   const formData = await request.formData();
@@ -185,6 +187,17 @@ const Returns = () => {
     const [detailsCharacterCount, setDetailsCharacterCount] = useState(0)
     const [uploadedFiles, setUploadedFiles] = useState([])
 
+    const syncInputFiles = (fileEntries) => {
+      if (!fileInputRef.current) return
+      const dataTransfer = new DataTransfer()
+      fileEntries.forEach((entry) => {
+        if (entry?.file) {
+          dataTransfer.items.add(entry.file)
+        }
+      })
+      fileInputRef.current.files = dataTransfer.files
+    }
+
     const handleInputChange = (e) => {
       const { name, value } = e.target
       setFormData((prev) => ({ ...prev, [name]: value }))
@@ -201,19 +214,50 @@ const Returns = () => {
       setFormData((prev) => ({ ...prev, agreedToReturn: e.target.checked }))
     }
 
-    const MAX_UPLOAD_FILES = 5
     const handleAddFiles = (fileList) => {
       const files = Array.from(fileList || [])
 
       // Only accept images (users may drop non-image files by mistake)
       const imageFiles = files.filter((f) => (f.type || '').startsWith('image/'))
 
-      setUploadedFiles((prev) => [...prev, ...imageFiles].slice(0, MAX_UPLOAD_FILES))
+      setUploadedFiles((prev) => {
+        const remainingSlots = Math.max(MAX_UPLOAD_FILES - prev.length, 0)
+        const nextEntries = imageFiles.slice(0, remainingSlots).map((file) => ({
+          id: `${file.name}-${file.size}-${file.lastModified}-${Date.now()}-${Math.random()}`,
+          file,
+          previewUrl: URL.createObjectURL(file),
+        }))
+        const updated = [...prev, ...nextEntries]
+        syncInputFiles(updated)
+        return updated
+      })
     }
 
     const handleFileUpload = (e) => {
       handleAddFiles(e.target?.files)
     }
+
+    const handleRemoveFile = (idToRemove) => {
+      setUploadedFiles((prev) => {
+        const removed = prev.find((entry) => entry.id === idToRemove)
+        if (removed?.previewUrl) {
+          URL.revokeObjectURL(removed.previewUrl)
+        }
+        const updated = prev.filter((entry) => entry.id !== idToRemove)
+        syncInputFiles(updated)
+        return updated
+      })
+    }
+
+    useEffect(() => {
+      return () => {
+        uploadedFiles.forEach((entry) => {
+          if (entry?.previewUrl) {
+            URL.revokeObjectURL(entry.previewUrl)
+          }
+        })
+      }
+    }, [uploadedFiles])
 
     const handleSubmit = (e) => {
       if (!formData.requestType) {
@@ -418,7 +462,7 @@ const Returns = () => {
           <div className="space-y-2">
             <label className="text-white font-semibold">PHOTO UPLOAD</label>
             <div
-              className={`bg-white border-2 border-dashed p-8 pt-5 mt-2 lg:h-[15.573vw] ${
+              className={`bg-white border-2 border-dashed p-8 pt-5 mt-2 lg:min-h-[15.573vw] ${
                 isDragActive ? 'border-[#446184]' : 'border-gray-300'
               }`}
               onDragEnter={(e) => {
@@ -453,30 +497,71 @@ const Returns = () => {
               onClick={() => fileInputRef.current?.click()}
             >
             <p className="text-black/70 text-sm">If your item arrived damaged, please upload a photo so we can take care of it quickly.</p>
-              <div className="space-y-4 text-center">
-                <div className="mx-auto w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mt-3">
-                  <Upload className="w-6 h-6 text-black" />
+              {uploadedFiles.length === 0 ? (
+                <div className="space-y-4 text-center">
+                  <div className="mx-auto w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mt-3">
+                    <Upload className="w-6 h-6 text-black" />
+                  </div>
+                  <div>
+                    <label htmlFor="photo-upload" className="cursor-pointer">
+                      <span className="text-black font-medium">
+                        {isDragActive ? 'Drop photos here' : 'Upload up to 5 photos *'}
+                      </span>
+                      <br />
+                      <span className="text-black/70 text-sm">(JPEG/PNG max 5MB each)</span>
+                    </label>
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="photo-upload" className="cursor-pointer">
-                    <span className="text-black font-medium">
-                      {isDragActive ? 'Drop photos here' : 'Upload up to 5 photos *'}
-                    </span>
-                    <br />
-                    <span className="text-black/70 text-sm">(JPEG/PNG max 5MB each)</span>
-                  </label>
-                  <input
-                    id="photo-upload"
-                    ref={fileInputRef}
-                    type="file"
-                    name="photos"
-                    multiple
-                    accept="image/jpeg,image/png"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
+              ) : (
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {uploadedFiles.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="relative w-20 h-20 rounded border border-gray-300 overflow-hidden bg-gray-50"
+                    >
+                      <img
+                        src={entry.previewUrl}
+                        alt={entry.file?.name || 'Uploaded image'}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleRemoveFile(entry.id)
+                        }}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center"
+                        aria-label="Remove image"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                  {uploadedFiles.length < MAX_UPLOAD_FILES && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        fileInputRef.current?.click()
+                      }}
+                      className="w-20 h-20 rounded border border-dashed border-gray-400 flex items-center justify-center bg-white hover:bg-gray-50"
+                      aria-label="Add another image"
+                    >
+                      <Plus className="w-5 h-5 text-gray-700" />
+                    </button>
+                  )}
                 </div>
-              </div>
+              )}
+              <input
+                id="photo-upload"
+                ref={fileInputRef}
+                type="file"
+                name="photos"
+                multiple
+                accept="image/jpeg,image/png"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
             </div>
             {uploadedFiles.length > 0 && (
               <div className="text-white/70 text-sm">{uploadedFiles.length} file(s) uploaded</div>

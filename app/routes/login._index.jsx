@@ -12,7 +12,6 @@ import {Footer} from '~/components/Footer';
 import StepsAndImage from '~/components/StepsAndImage';
 import Heading from '~/components/Heading.jsx';
 import arrow from '/assets/Images/arrow.png';
-import Popup from '~/components/Popup';
 
 const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
 
@@ -76,7 +75,6 @@ const LoginIndex = () => {
   const actionData = useActionData();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showPopup, setShowPopup] = useState(false);
   console.log(actionData, 'ActionData');
 
   // When redirected after session expiry: clear all client storage and cookies, then clean URL
@@ -102,14 +100,6 @@ const LoginIndex = () => {
     }
   }, [location.search, navigate]);
 
-  const handleOpenPopup = () => {
-    setShowPopup(true);
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
-  
   // Debug error conditions
   if (actionData?.statusCode >= 400) {
     console.log('Error conditions:', {
@@ -170,7 +160,7 @@ const LoginIndex = () => {
           showPagination={false}
           customImageFooter={
             <h5 className="text-black lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
-              Not you? <Link to="#" onClick={handleOpenPopup} className="font-bold underline">CREATE AN ACCOUNT</Link>
+              Not you? <Link to="/register" className="font-bold underline">CREATE AN ACCOUNT</Link>
             </h5>
           }
           content={
@@ -292,7 +282,6 @@ const LoginIndex = () => {
         />
       </div>
       <Footer />
-      {showPopup && <Popup onClose={handleClosePopup} />}
     </>
   );
 };

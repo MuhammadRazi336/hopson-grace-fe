@@ -32,7 +32,7 @@ export default function ThankYou() {
             </svg>
           </div>
           <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
-            Your will receive a confirmation of your order at xxx@xxx.
+            Your will receive a confirmation of your order at your email.
           </p>
           <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
             The couple is being notified right now of your gift and message. As

@@ -681,9 +681,17 @@ query GetRecommendedProductsByCollection($first: Int!) {
             }
           }
         }
-        collections(first: 30) {
+        collections(first: 250) {
           nodes {
             id
+            title
+            handle
+            parentMetafield: metafield(namespace: "parent", key: "collection") {
+              value
+            }
+            readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+              value
+            }
           }
         }
       }
@@ -724,6 +732,7 @@ const COLLECTION_QUERY = `#graphql
         description
         title
         id
+        handle
         image {
           id
           url

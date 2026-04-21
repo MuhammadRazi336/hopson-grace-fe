@@ -6,23 +6,16 @@ import {formatPrice} from '~/utils/priceFormatter';
 import ModalPortal from './ModalPortal';
 import {isRegistryGiftCardTitle} from '~/utils/helpers.js';
 
-/** Max units allowed for this cart line (requested cap + still-needs when reliable). */
-function getMaxCartQuantity(item) {
-  // Cash-fund "The Registry Gift Card" rows often arrive with stillNeeds === 0 because
-  // purchasedQuantity vs quantity does not match physical-gift semantics; cap by requested qty.
-  if (isRegistryGiftCardTitle(item?.title)) {
-    const req = Number(item.requestedQuantity);
-    return Number.isFinite(req) && req > 0 ? req : 999;
+/** Max units allowed for this cart line (still-needs driven). */
+function getMaxCartQuantity(item, currentQuantity = 1) {
+  // Quantity changes in sidecart should follow still-needs only.
+  if (typeof item.stillNeeds === 'number') {
+    if (item.stillNeeds <= 0) return currentQuantity;
+    return item.stillNeeds;
   }
-  const requested = Number(item.requestedQuantity);
-  const requestedCap =
-    Number.isFinite(requested) && requested > 0 ? requested : 999;
-
-  if (typeof item.stillNeeds === 'number' && item.stillNeeds > 0) {
-    return Math.min(item.stillNeeds, requestedCap);
-  }
-  // stillNeeds 0 / missing / unreliable — do not lock max to current line qty (blocks 2→3 when Requested: 3)
-  return requestedCap;
+  // Fallback only when stillNeeds is missing.
+  const req = Number(item.requestedQuantity);
+  return Number.isFinite(req) && req > 0 ? req : currentQuantity;
 }
 
 export default function SideCart({
@@ -48,40 +41,12 @@ export default function SideCart({
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const overlayRef = useRef(null);
-  const [items, setItems] = useState(() => {
-    try {
-      console.log('Initial cart items:', initialCartItems);
-      const parsedItems =
-        typeof initialCartItems === 'string'
-          ? JSON.parse(initialCartItems)
-          : initialCartItems;
-      console.log('Parsed initial items:', parsedItems);
-      return parsedItems;
-    } catch (e) {
-      console.error('Error parsing initial cart items:', e);
-      return [];
-    }
-  });
+  const [items, setItems] = useState([]);
 
   // Update items when cartItems prop changes
   useEffect(() => {
-    try {
-      console.log('Cart items prop changed:', initialCartItems);
-      const parsedItems =
-        typeof initialCartItems === 'string'
-          ? JSON.parse(initialCartItems)
-          : initialCartItems;
-      console.log('New parsed items:', parsedItems);
-      setItems(parsedItems);
-    } catch (e) {
-      console.error('Error parsing cartItems:', e);
-    }
+    setItems(initialCartItems);
   }, [initialCartItems]);
-
-  // Log items state changes
-  useEffect(() => {
-    console.log('Items state updated:', items);
-  }, [items]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -122,13 +87,11 @@ export default function SideCart({
   const handleDelete = (itemId) => {
     if (!itemId) return;
 
-    console.log('Attempting to delete item:', itemId);
     // Check if the item exists before attempting to remove
     const itemExists = items.find(
       (item) => String(item.id) === String(itemId),
     );
     if (!itemExists) {
-      console.error('Item not found in cart:', itemId);
       return;
     }
 
@@ -138,7 +101,7 @@ export default function SideCart({
   const handleQuantityStep = (item, delta) => {
     if (!canEditQuantity || !item?.id) return;
     const current = Number(item.quantity) || 1;
-    const max = getMaxCartQuantity(item);
+    const max = getMaxCartQuantity(item, current);
     let next;
     if (delta > 0) {
       next = Math.min(max, current + 1);
@@ -153,7 +116,6 @@ export default function SideCart({
   const handleClearCart = () => {
     // Only clear if there are items
     if (items.length > 0) {
-      console.log('Clearing cart');
       onClearCart();
     }
   };
@@ -168,14 +130,6 @@ export default function SideCart({
     (item) => item?.isCashFund && !isRegistryGiftCardTitle(item.title),
   );
   const groupPaymentItems = items.filter((item) => item?.isGroupPayment);
-
-  console.log('Rendering SideCart with:', {
-    regularItems,
-    cashFunds,
-    groupPaymentItems,
-    total,
-    subtotal,
-  });
 
   return (
     <ModalPortal>
@@ -277,9 +231,12 @@ export default function SideCart({
                           <div className="font-semibold text-[20px] leading-tight">
                             {item.title}
                           </div>
-                          <div className='ivyora italic text-[16px] tracking-wider pt-2'>
-                            Requested: {item.requestedQuantity}
-                          </div>
+                          {/* <div className='ivyora italic text-[16px] tracking-wider pt-2'>
+                            Still Needs:{' '}
+                            {typeof item.stillNeeds === 'number'
+                              ? item.stillNeeds
+                              : item.requestedQuantity}
+                          </div> */}
                         </div>
                       </div>
                       <div className="col-span-2 flex justify-center">
@@ -290,7 +247,7 @@ export default function SideCart({
                               onClick={() => handleQuantityStep(item, 1)}
                               disabled={
                                 (Number(item.quantity) || 1) >=
-                                getMaxCartQuantity(item)
+                                getMaxCartQuantity(item, Number(item.quantity) || 1)
                               }
                               className="w-8 h-8 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                               aria-label="Increase quantity"
@@ -553,7 +510,6 @@ export default function SideCart({
                       const path = query
                         ? `/cart/message?${query}`
                         : '/cart/message';
-                      console.log('SideCart: Navigating to', path);
                       navigate(path);
                     }}
                     className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white max-[1601px]:w-[200px] text-center"

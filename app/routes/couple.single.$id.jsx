@@ -98,11 +98,9 @@ export async function loader({params, context}) {
       sessionUser?.accessToken || sessionUser?.token || sessionUser?.user?.id,
     );
     const coupleId = params.id;
-    console.log('Loader: Starting with coupleId:', coupleId);
 
     // Safety check: Ensure coupleId exists
     if (!coupleId) {
-      console.log('Loader: No couple ID provided');
       throw new Response('Couple ID is required', {status: 400});
     }
 
@@ -110,24 +108,19 @@ export async function loader({params, context}) {
       `registries/by-userId/${coupleId}`,
       context,
     );
-    console.log('Loader: Registry response:', response);
 
     // Check if registry exists
     if (!response.data || response.data.length === 0) {
-      console.log('Loader: No registry data found');
       throw new Response('Registry not found', {status: 404});
     }
 
     const registryId = response.data[0]?.id;
     if (!registryId) {
-      console.log('Loader: Invalid registry ID');
       throw new Response('Invalid registry', {status: 400});
     }
-    console.log('Loader: Registry ID:', registryId);
 
     // Safety check: Ensure context has required methods
     if (!context.ClientGet || typeof context.ClientGet !== 'function') {
-      console.log('Loader: ClientGet method not available');
       throw new Response('Service unavailable', {status: 503});
     }
 
@@ -159,25 +152,19 @@ export async function loader({params, context}) {
       }),
     ]);
 
-    console.log('Loader: Gift products response:', res);
-    console.log('Loader: Cash fund response:', cashRes);
-
     // Get API base URL from environment with fallback
     const apiBaseUrl = getApiBaseUrl(context?.env);
 
     // Handle case where there are no gift products
     let mergedArray = [];
     if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-      console.log('Loader: Processing gift products, count:', res.data.length);
       const ids = res.data
         .map((product) => `gid://shopify/Product/${product.productId}`)
         .filter(Boolean); // Filter out any undefined/null IDs
 
       if (ids.length > 0) {
         try {
-          console.log('Loader: Fetching Shopify products for IDs:', ids);
           const products = await fetchProducts(context.storefront, ids);
-          console.log('Loader: Shopify products response:', products);
 
           mergedArray = res.data.map((item1) => {
             const product = products?.nodes?.find(
@@ -212,10 +199,7 @@ export async function loader({params, context}) {
             ...item1,
           }));
         }
-        console.log('Loader: Merged gift products:', mergedArray);
       }
-    } else {
-      console.log('Loader: No gift products found');
     }
 
     // Handle case where there are no cash fund products
@@ -228,12 +212,9 @@ export async function loader({params, context}) {
             availableForSale: true,
           }))
         : [];
-    console.log('Loader: Cash fund products:', cashFundProducts);
 
     // Combine all products
     const allProducts = [...mergedArray, ...cashFundProducts];
-    console.log('Loader: All products combined:', allProducts);
-    console.log('Loader: Total product count:', allProducts.length);
 
     // Safety check: Ensure we have valid data structure
     const safeResponse = response || {};
@@ -252,7 +233,6 @@ export async function loader({params, context}) {
       isLoggedIn,
     });
   } catch (error) {
-    console.error('Loader: Error occurred:', error);
     // If it's already a Response object, re-throw it
     if (error instanceof Response) {
       throw error;
@@ -396,7 +376,6 @@ export async function action({request, context}) {
       message: `${cartItem.title} added to cart`,
     });
   } catch (error) {
-    console.error('Action error:', error);
     return json(
       {
         success: false,
@@ -423,7 +402,6 @@ async function hashCartId(cartId) {
 export default function CoupleProfile() {
   const loaderData = useLoaderData();
   const navigate = useNavigate();
-  console.log('Component: Loader data received:', loaderData);
 
   // If no loader data, show loading or error state
   if (!loaderData) {
@@ -946,10 +924,6 @@ export default function CoupleProfile() {
     // Store registryId in localStorage when first item is added to cart
     if (typeof window !== 'undefined' && product.registryId) {
       localStorage.setItem('registryId', product.registryId);
-      console.log(
-        'CoupleProfile: Stored registryId in localStorage:',
-        product.registryId,
-      );
     }
 
     // Use the correct product ID for registryProductId
@@ -1029,10 +1003,6 @@ export default function CoupleProfile() {
     // Store registryId in localStorage when first item is added to cart
     if (typeof window !== 'undefined' && product.registryId) {
       localStorage.setItem('registryId', product.registryId);
-      console.log(
-        'CoupleProfile: Stored registryId in localStorage:',
-        product.registryId,
-      );
     }
     // Use the correct product ID for registryProductId
     const registryProductId = product.productId || product.id;
@@ -1066,7 +1036,6 @@ export default function CoupleProfile() {
     }
     if (typeof window !== 'undefined') {
       localStorage.setItem('guestEmail', email);
-      console.log('handleEmailSubmit: Stored email in localStorage:', email);
     }
     // First call the initial cart API
     await callCartApi(email);
@@ -1264,45 +1233,25 @@ export default function CoupleProfile() {
       return;
     }
 
-    // If updatedItem is provided, this is a quantity update
+    // If updatedItem is provided, this is a quantity update.
+    // This environment does not expose cart quantity update APIs, so update local state only.
     if (
       updatedItem &&
       Number(updatedItem.quantity) !== Number(cartItem.quantity)
     ) {
-      // Update quantity in cart
-      // Ensure apiBaseUrl is set and encode email for URL
-      const baseUrl = apiBaseUrl || getApiBaseUrl();
-      const encodedEmail = encodeURIComponent(email);
-      fetch(
-        `${baseUrl}/api/cart/update-quantity/${registryProductId}/${registryId}/${encodedEmail}`,
-        {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({quantity: updatedItem.quantity}),
-        },
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.code === 200) {
-            // Refresh cart items after successful update
-            fetchCartItems();
-            setAlertMessage('Quantity updated successfully');
-            setAlertType('success');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
-          } else {
-            setAlertMessage('Failed to update quantity');
-            setAlertType('error');
-            setShowAlert(true);
-            setTimeout(() => setShowAlert(false), 3000);
-          }
-        })
-        .catch((error) => {
-          setAlertMessage('Error updating quantity');
-          setAlertType('error');
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        });
+      setCartItems((prev) => {
+        const next = prev.map((item) =>
+          String(item.id) === String(itemId)
+            ? {...item, quantity: Number(updatedItem.quantity) || 1}
+            : item,
+        );
+        cartItemsRef.current = next;
+        return next;
+      });
+      setAlertMessage('Quantity updated');
+      setAlertType('success');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
     } else {
       // Remove item from cart
       // Ensure apiBaseUrl is set and encode email for URL
@@ -1675,14 +1624,12 @@ export default function CoupleProfile() {
                           alt='placeholder' 
                           className='w-[8vw] h-[7.5vw] brightness-0 object-contain' 
                           onError={(e) => console.error('Failed to load copyrightLogo.png', e)}
-                          onLoad={() => console.log('copyrightLogo.png loaded successfully')}
                         />
                         <img 
                           src="/assets/Images/placeholder-line.png" 
                           alt='placeholder' 
                           className='object-contain w-[16.042vw] h-[4px] mt-2' 
                           onError={(e) => console.error('Failed to load placeholder-line.png', e)}
-                          onLoad={() => console.log('placeholder-line.png loaded successfully')}
                         />
                       </div>
               </div>
@@ -1886,10 +1833,8 @@ export default function CoupleProfile() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] p-0 mt-[5.885vw]">
             {filteredData
               .map((product, index) => {
-                console.log('Product:', product);
                 // Safety check: Ensure product has required properties
                 if (!product || !product.id) {
-                  console.warn('Skipping invalid product:', product);
                   return null;
                 }
 

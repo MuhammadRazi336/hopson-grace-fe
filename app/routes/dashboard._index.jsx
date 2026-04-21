@@ -522,7 +522,10 @@ const index = () => {
                 <span className="text-5xl mr-1 self-start lg:text-[3.333vw] xl:text-[3.333vw] 2xl:text-[3.333vw]">$</span>
               )}
               <span className="text-5xl lg:text-[3.333vw] xl:text-[3.333vw] 2xl:text-[3.333vw]">{card.value}</span>
-              {card.total && (
+              {card.total !== '' &&
+                card.total !== null &&
+                card.total !== undefined &&
+                !(Number(card.value) === 0 && Number(card.total) === 0) && (
                 <span className="ml-1 text-6xl lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw]">
                   /<span className="text-2xl lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw]">{card.total}</span>
                 </span>

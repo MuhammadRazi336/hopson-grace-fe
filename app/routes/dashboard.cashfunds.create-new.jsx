@@ -357,10 +357,10 @@ function CreateNewCashFund() {
                 Please log in or create your account to Create your Own Fund
               </p>
               <Link
-                to="/login"
+                to="/register"
                 className="inline-flex items-center justify-center font-bold text-[18px] lg:text-[0.938vw] lg:leading-[0.938vw] min-h-[77px] w-full max-w-[360px] lg:w-[18.75vw] lg:min-h-[4.01vw] border-[3px] border-black px-6 bg-[#F5F2ED] text-black hover:bg-[#E5E1DA] bastardogrotesk uppercase tracking-wide"
               >
-                Log In
+                Register
               </Link>
             </div>
           ) : (

@@ -985,6 +985,9 @@ export default function ProductCollection() {
     });
 
   const parentCollectionForSwiper = collections.filter((col) => isParentForSlides(col));
+  const exploreCategoriesCollections = collections.filter((col) =>
+    isParentForSlides(col),
+  );
 
   useEffect(() => {
     if (!selectedSwiperCollectionId) setShopAllChecked(false);
@@ -1310,7 +1313,7 @@ export default function ProductCollection() {
         )}
 
       <div className="py-[5.26vw] px-0">
-          <ExploreCategories collections={collections} />
+          <ExploreCategories collections={exploreCategoriesCollections} />
         </div>
 
       <style jsx>{`
