@@ -114,10 +114,10 @@ const Testimonialslider = ({blogs = []}) => {
                   <img
                     src={article.image?.url || '/assets/Images/couple-logo.png'}
                     alt={article.image?.altText || cleanTitle}
-                    className="max[1024px]:w-full h-full relative object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] rounded-none"
+                    className="max[1024px]:w-full h-8/10 relative object-cover max-[1024px]:w-[45vw] max-[1024px]:h-[450px] lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[39.92vw] xl:h-[39.92vw] 2xl:h-[39.92vw] rounded-none"
                   />
-                  <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[50px] absolute lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[44.92vw] xl:h-[44.92vw] 2xl:h-[44.92vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
-                    <p className="text-xl lg:text-[1.56vw] xl:text-[1.56vw] 2xl:text-[1.56vw] lg:leading-[2.86vw] xl:leading-[2.86vw] 2xl:leading-[2.86vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
+                  <div className="bg-[#446184] max-[1024px]:w-[50vw] text-white h-auto p-[50px] absolute lg:w-[36.45vw] xl:w-[36.45vw] 2xl:w-[36.45vw] lg:h-[39.92vw] xl:h-[39.92vw] 2xl:h-[39.92vw] right-0 top-[2.917vw] max-[1024px]:p-[20px] max-[1024px]:-bottom-[25px] max-[1024px]:top-[26px] max-[1024px]:right-[20px] ">
+                    <p className="text-xl lg:text-[1.4vw] xl:text-[1.56vw] 2xl:text-[1.56vw] lg:leading-[2.86vw] xl:leading-[2.86vw] 2xl:leading-[2.86vw] font-normal tracking-wider leading-[38px] max-[1024px]:text-[15px] max-[1024px]:mt-0 max-[1024px]:leading-normal">
                       {excerpt}
                     </p>
                     <Link

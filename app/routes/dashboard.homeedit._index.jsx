@@ -291,7 +291,7 @@ export default function CoupleProfileView() {
 
 export function CoupleProfileViewHeader({onCartClick}) {
   return (
-    <div className="container mx-auto flex justify-between md:items-start items-center md:pt-6 pt-2 absolute top-0 left-0 right-0">
+    <div className="container mx-auto flex justify-between md:items-start items-center md:pt-6 pt-2 fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm">
       <img
         src="/assets/Images/couple-header-logo.png"
         alt="Hamburger"
