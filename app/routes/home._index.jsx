@@ -30,10 +30,8 @@ import Testimonialslider from '~/components/Testimonialslider';
 import {Header} from '~/components/Header';
 import {useState, useEffect} from 'react';
 import arrowUp from '/assets/Images/arrowDown.png';
-import { Link, useLoaderData, json } from '@remix-run/react';
+import { Link, useLoaderData, json, useNavigate } from '@remix-run/react';
 import LiveChat from '~/components/LiveChat';
-import Popup from '~/components/Popup';
-import ModalPortal from '~/components/ModalPortal';
 import BestsellersSection from '~/components/BestsellersSection';
 export async function loader({ context }) {
   try {
@@ -182,15 +180,11 @@ export async function loader({ context }) {
 
 const Home = () => {
   const { realRegistries, featuredRegistryData, brands, user, bestsellerProducts, blogs } = useLoaderData();
+  const navigate = useNavigate();
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
 
   const handleOpenModal = () => {
-    setShowPopup(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowPopup(false);
+    navigate('/register');
   };
 
   // Handle scroll to show/hide back to top button
@@ -386,11 +380,6 @@ const Home = () => {
         <span className="text-white text-sm">Back to Top</span>
       </button>
       */}
-      {showPopup && (
-        <ModalPortal>
-          <Popup onClose={handleCloseModal} />
-        </ModalPortal>
-      )}
     </div>
   );
 };

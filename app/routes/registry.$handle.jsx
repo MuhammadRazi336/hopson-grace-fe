@@ -15,6 +15,35 @@ import {formatPrice} from '~/utils/priceFormatter';
 import ExploreMoreRegistriesSlider from '~/components/ExploreMoreRegistriesSlider'
 import BackToTop from '~/components/BackToTop'
 
+async function fetchAllCollectionProducts(storefront, collectionId) {
+  const pageSize = 100;
+  const maxPages = 20;
+  let hasNextPage = true;
+  let cursor = null;
+  let pageCount = 0;
+  const allEdges = [];
+
+  while (hasNextPage && pageCount < maxPages) {
+    const result = await storefront.query(COLLECTION_PRODUCTS_PAGE_QUERY, {
+      variables: {
+        id: collectionId,
+        first: pageSize,
+        after: cursor,
+      },
+    });
+
+    const connection = result?.collection?.products;
+    const edges = connection?.edges || [];
+    allEdges.push(...edges);
+
+    hasNextPage = Boolean(connection?.pageInfo?.hasNextPage);
+    cursor = connection?.pageInfo?.endCursor || null;
+    pageCount += 1;
+  }
+
+  return allEdges;
+}
+
 export async function loader({params, context}) {
   const {handle} = params;
   const user = context?.session?.get('@User');
@@ -31,6 +60,18 @@ export async function loader({params, context}) {
     if (!collection) {
       throw new Response('Not Found', { status: 404 });
     }
+
+    const allRegistryProductEdges = await fetchAllCollectionProducts(
+      context.storefront,
+      collection.id,
+    );
+    const hydratedRegistryCollection = {
+      ...collection,
+      products: {
+        ...(collection.products || {}),
+        edges: allRegistryProductEdges,
+      },
+    };
 
     // Only fetch registry data if user is logged in
     let registry = null;
@@ -62,13 +103,35 @@ export async function loader({params, context}) {
         context.storefront.query(COLLECTION_QUERY),
         context.storefront.query(PRODUCT_QUERY),
       ]);
-      allCollections = collectionsData?.nodes || [];
+      const collectionNodes = collectionsData?.nodes || [];
+      const hydratedCollections = [];
+      for (const col of collectionNodes) {
+        const allProductEdges = await fetchAllCollectionProducts(
+          context.storefront,
+          col.id,
+        );
+        hydratedCollections.push({
+          ...col,
+          products: {
+            ...(col.products || {}),
+            edges: allProductEdges,
+          },
+        });
+      }
+      allCollections = hydratedCollections;
       allProducts = productsData?.edges || [];
     } catch (error) {
       console.error('Error fetching collections and products for category filtering:', error);
     }
 
-    return json({ collection, registry, otherRegistries, collections: allCollections, products: allProducts, user });
+    return json({
+      collection: hydratedRegistryCollection,
+      registry,
+      otherRegistries,
+      collections: allCollections,
+      products: allProducts,
+      user,
+    });
   } catch (error) {
     console.error('Error loading registry:', error);
     throw new Response('Not Found', { status: 404 });
@@ -79,7 +142,7 @@ export async function action({request, context}) {
   try {
     const user = context?.session?.get('@User');
     if (!user?.user?.id) {
-      return redirect('/login');
+      return redirect('/register');
     }
 
     const body = await request.json();
@@ -247,8 +310,8 @@ const Registry = () => {
     try {
       // Check if user is logged in
       if (!user || !user.user || !user.user.id) {
-        // User not logged in, redirect to login
-        window.location.href = '/login';
+        // User not logged in, redirect to register
+        window.location.href = '/register';
         return;
       }
 
@@ -563,7 +626,7 @@ function SidebarFilter({
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    styles: true,
+    styles: false,
   });
 
   const parentCollections = collections.filter(isParentForSidebar);
@@ -944,3 +1007,47 @@ const COLLECTION_QUERY = `#graphql
       }
     }
   }`;
+
+const COLLECTION_PRODUCTS_PAGE_QUERY = `#graphql
+  query getCollectionProductsPage($id: ID!, $first: Int!, $after: String) {
+    collection(id: $id) {
+      id
+      products(first: $first, after: $after) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            vendor
+            createdAt
+            images(first: 10) {
+              edges {
+                node {
+                  id
+                  url
+                }
+              }
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+`;

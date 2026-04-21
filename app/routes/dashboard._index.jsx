@@ -10,10 +10,7 @@ import NotificationCard from '~/components/NotificationCard';
 import { Footer } from '~/components/Footer';
 import ModalPortal from '~/components/ModalPortal';
 
-const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
-const MINI_TUTORIAL_RESHOW_AFTER_DAYS = 30;
-const MINI_TUTORIAL_RESHOW_AFTER_MS =
-  MINI_TUTORIAL_RESHOW_AFTER_DAYS * 24 * 60 * 60 * 1000;
+const MINI_TUTORIAL_STORAGE_KEY_PREFIX = '@DashboardMiniTutorialDismissed';
 import {syncCustomerBalancesToMetafields} from '~/utils/shopify-customer-balances.server';
 import {getApiBaseUrl} from '~/utils/api-url';
 
@@ -238,29 +235,23 @@ const index = () => {
 
   const [showMiniTutorialModal, setShowMiniTutorialModal] = useState(false);
 
+  const userId = user?.user?.id;
+  const miniTutorialStorageKey = userId
+    ? `${MINI_TUTORIAL_STORAGE_KEY_PREFIX}-${userId}`
+    : null;
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (!miniTutorialStorageKey) return;
     try {
-      const dismissedAtRaw = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
-      if (!dismissedAtRaw) {
-        setShowMiniTutorialModal(true);
-        return;
-      }
-
-      const dismissedAt = Number(dismissedAtRaw);
-      const isValidTimestamp = Number.isFinite(dismissedAt) && dismissedAt > 0;
-      if (!isValidTimestamp) {
-        setShowMiniTutorialModal(true);
-        return;
-      }
-
-      const shouldReshow =
-        Date.now() - dismissedAt >= MINI_TUTORIAL_RESHOW_AFTER_MS;
-      setShowMiniTutorialModal(shouldReshow);
+      const hasSeenMiniTutorial = Boolean(
+        localStorage.getItem(miniTutorialStorageKey),
+      );
+      setShowMiniTutorialModal(!hasSeenMiniTutorial);
     } catch {
       setShowMiniTutorialModal(true);
     }
-  }, []);
+  }, [miniTutorialStorageKey]);
 
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
@@ -273,8 +264,9 @@ const index = () => {
   }, [showMiniTutorialModal]);
 
   const dismissMiniTutorialPopup = () => {
+    if (!miniTutorialStorageKey) return;
     try {
-      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, String(Date.now()));
+      localStorage.setItem(miniTutorialStorageKey, 'true');
     } catch {
       // ignore private mode / quota
     }
@@ -283,8 +275,9 @@ const index = () => {
 
   const handleLetsGoTutorial = (e) => {
     e?.stopPropagation?.();
+    if (!miniTutorialStorageKey) return;
     try {
-      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, String(Date.now()));
+      localStorage.setItem(miniTutorialStorageKey, 'true');
       localStorage.setItem('showDashboardIntro', 'true');
     } catch {
       // ignore
@@ -522,7 +515,10 @@ const index = () => {
                 <span className="text-5xl mr-1 self-start lg:text-[3.333vw] xl:text-[3.333vw] 2xl:text-[3.333vw]">$</span>
               )}
               <span className="text-5xl lg:text-[3.333vw] xl:text-[3.333vw] 2xl:text-[3.333vw]">{card.value}</span>
-              {card.total && (
+              {card.total !== '' &&
+                card.total !== null &&
+                card.total !== undefined &&
+                !(Number(card.value) === 0 && Number(card.total) === 0) && (
                 <span className="ml-1 text-6xl lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw]">
                   /<span className="text-2xl lg:text-[1.875vw] xl:text-[1.875vw] 2xl:text-[1.875vw]">{card.total}</span>
                 </span>

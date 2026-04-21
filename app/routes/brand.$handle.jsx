@@ -66,6 +66,35 @@ function buildAllowedCatalogSubCollectionIds(collectionNodes) {
   return [...ids];
 }
 
+async function fetchAllBrandProducts(storefront, collectionId) {
+  const pageSize = 100;
+  const maxPages = 20;
+  let hasNextPage = true;
+  let cursor = null;
+  let pageCount = 0;
+  const allEdges = [];
+
+  while (hasNextPage && pageCount < maxPages) {
+    const result = await storefront.query(BRAND_PRODUCTS_PAGE_QUERY, {
+      variables: {
+        id: collectionId,
+        first: pageSize,
+        after: cursor,
+      },
+    });
+
+    const connection = result?.collection?.products;
+    const edges = connection?.edges || [];
+    allEdges.push(...edges);
+
+    hasNextPage = Boolean(connection?.pageInfo?.hasNextPage);
+    cursor = connection?.pageInfo?.endCursor || null;
+    pageCount += 1;
+  }
+
+  return allEdges;
+}
+
 export async function loader({params, context}) {
   const {handle} = params;
 
@@ -88,6 +117,18 @@ export async function loader({params, context}) {
     if (!collection) {
       throw new Response('Not Found', {status: 404});
     }
+
+    const allBrandProductEdges = await fetchAllBrandProducts(
+      context.storefront,
+      collection.id,
+    );
+    const hydratedCollection = {
+      ...collection,
+      products: {
+        ...(collection.products || {}),
+        edges: allBrandProductEdges,
+      },
+    };
 
     const catalogNodes = catalogCollectionsRes?.collections?.nodes || [];
     const allowedSubCollectionIds = buildAllowedCatalogSubCollectionIds(catalogNodes);
@@ -112,7 +153,13 @@ export async function loader({params, context}) {
         (collection) => collection.metafield?.value === 'true',
       ) || [];
 
-    return json({collection, registry, brands, user, allowedSubCollectionIds});
+    return json({
+      collection: hydratedCollection,
+      registry,
+      brands,
+      user,
+      allowedSubCollectionIds,
+    });
   } catch (error) {
     throw new Response('Not Found', {status: 404});
   }
@@ -714,6 +761,75 @@ const BRAND_QUERY = `#graphql
               }
             }
           }
+        }
+      }
+    }
+  }
+`;
+
+const BRAND_PRODUCTS_PAGE_QUERY = `#graphql
+  query getBrandProductsPage($id: ID!, $first: Int!, $after: String) {
+    collection(id: $id) {
+      id
+      products(first: $first, after: $after) {
+        edges {
+          node {
+            id
+            title
+            handle
+            description
+            images(first: 10) {
+              edges {
+                node {
+                  id
+                  url
+                  altText
+                  width
+                  height
+                }
+              }
+            }
+            collections(first: 10) {
+              edges {
+                node {
+                  id
+                  title
+                  parentMetafield: metafield(namespace: "parent", key: "collection") {
+                    id
+                    value
+                  }
+                  readyMadeMetafield: metafield(namespace: "custom", key: "ready_made") {
+                    id
+                    value
+                  }
+                  brandMetafield: metafield(namespace: "custom", key: "brand") {
+                    id
+                    value
+                  }
+                }
+              }
+            }
+            styleMetafield: metafield(namespace: "custom", key: "style") {
+              id
+              value
+            }
+            variants(first: 1) {
+              edges {
+                node {
+                  id
+                  availableForSale
+                  priceV2 {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
         }
       }
     }

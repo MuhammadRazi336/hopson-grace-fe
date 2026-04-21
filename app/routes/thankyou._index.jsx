@@ -24,7 +24,7 @@ export default function ThankYou() {
       <div className="container mx-auto py-[100px]">
         <div className=" bg-[#446184]  py-16 px-16">
           <h2 className="md:text-[36px] font-normal text-center text-white prata">
-            Thank You <span className="italic ">for your order</span>
+            <span className="uppercase">Thank You</span> <span className="italic ">for your order</span>
           </h2>
           <div class="flex item-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="29" height="26" viewBox="0 0 29 26" fill="none">
@@ -32,7 +32,7 @@ export default function ThankYou() {
             </svg>
           </div>
           <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
-            Your will receive a confirmation of your order at xxx@xxx.
+            Your will receive a confirmation of your order at your email.
           </p>
           <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
             The couple is being notified right now of your gift and message. As

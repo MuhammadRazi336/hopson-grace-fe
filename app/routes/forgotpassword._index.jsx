@@ -102,7 +102,7 @@ const ForgotPassword = () => {
         <Header />
         <div className="flex justify-center items-center min-h-screen bg-white">
           <StepsAndImage
-            title={actionData?.success ? `welcome back, ${extractNameFromEmail(formData.email)}.` : "forgot password?"}
+            title={actionData?.success ? `welcome back.` : "forgot password?"}
             stepNo="1"
             totalSteps="1"
             showLoginLink={false}

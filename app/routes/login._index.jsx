@@ -12,9 +12,8 @@ import {Footer} from '~/components/Footer';
 import StepsAndImage from '~/components/StepsAndImage';
 import Heading from '~/components/Heading.jsx';
 import arrow from '/assets/Images/arrow.png';
-import Popup from '~/components/Popup';
 
-const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+const MINI_TUTORIAL_STORAGE_KEY_PREFIX = '@DashboardMiniTutorialDismissed';
 
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
@@ -76,7 +75,6 @@ const LoginIndex = () => {
   const actionData = useActionData();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showPopup, setShowPopup] = useState(false);
   console.log(actionData, 'ActionData');
 
   // When redirected after session expiry: clear all client storage and cookies, then clean URL
@@ -84,12 +82,14 @@ const LoginIndex = () => {
     const params = new URLSearchParams(location.search);
     if (params.get('session_expired') === '1' && typeof window !== 'undefined') {
       try {
-        const miniTutorialDismissedAt = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
+        const preservedMiniTutorialEntries = Object.entries(localStorage).filter(
+          ([key]) => key.startsWith(MINI_TUTORIAL_STORAGE_KEY_PREFIX),
+        );
         localStorage.clear();
         sessionStorage.clear();
-        if (miniTutorialDismissedAt) {
-          localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, miniTutorialDismissedAt);
-        }
+        preservedMiniTutorialEntries.forEach(([key, value]) => {
+          localStorage.setItem(key, value);
+        });
         // Clear all cookies accessible to JS (non-HttpOnly)
         document.cookie.split(';').forEach((c) => {
           const name = c.replace(/^\s*|\s*$/g, '').split('=')[0];
@@ -102,14 +102,6 @@ const LoginIndex = () => {
     }
   }, [location.search, navigate]);
 
-  const handleOpenPopup = () => {
-    setShowPopup(true);
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
-  
   // Debug error conditions
   if (actionData?.statusCode >= 400) {
     console.log('Error conditions:', {
@@ -170,7 +162,7 @@ const LoginIndex = () => {
           showPagination={false}
           customImageFooter={
             <h5 className="text-black lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw]">
-              Not you? <Link to="#" onClick={handleOpenPopup} className="font-bold underline">CREATE AN ACCOUNT</Link>
+              Not you? <Link to="/register" className="font-bold underline">CREATE AN ACCOUNT</Link>
             </h5>
           }
           content={
@@ -201,7 +193,14 @@ const LoginIndex = () => {
                         ? actionData?.message.find(msg => msg.toLowerCase().includes('email'))
                         // User not found error (check message content)
                         : (actionData?.message === 'user not found')
-                        ? 'User doesn\'t exist. Create your account now.'
+                        ? (
+                          <>
+                            User doesn&apos;t exist.{' '}
+                            <Link to="/register" className="text-white underline">
+                            CREATE AN ACCOUNT.
+                            </Link>
+                          </>
+                        )
                         : undefined
                     }
                   />
@@ -292,7 +291,6 @@ const LoginIndex = () => {
         />
       </div>
       <Footer />
-      {showPopup && <Popup onClose={handleClosePopup} />}
     </>
   );
 };

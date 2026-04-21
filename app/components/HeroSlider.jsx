@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Pagination} from 'swiper/modules';
 import 'swiper/swiper-bundle.css'; // Import Swiper styles
@@ -7,17 +7,8 @@ import vectorImg from '/assets/Images/Vector 22.png';
 import 'swiper/css/pagination';
 import Button from '~/components/Button.jsx';
 import { NavLink } from '@remix-run/react';
-import Popup from './Popup';
-import ModalPortal from './ModalPortal';
 
 const HeroSlider = () => {
-  const [showPopup, setShowPopup] = useState(false);
-  const handleOpenPopup = () => {
-    setShowPopup(true);
-  };
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
   const slides = [
     {
       id: 1,
@@ -54,14 +45,12 @@ const HeroSlider = () => {
               {slide.description}
             </p>
             <div className="mx-auto flex lg:flex-row flex-col gap-[15px] mt-[2.604vw] max-[1024px]:mt-[18px] justify-center items-center ">
-              <Button
-                onClick={handleOpenPopup}
-                text="Begin Your Journey"
-                className="text-white tracking-[1.28px] max-[1024px]:w-[224px] max-[1024px]:h-[44px] cursor-pointer text-[16px] lg:px-[5px] lg:text-[0.833vw] lg:leading-[0.938vw] leading-[18px] bg-[#446184] py-[2px] lg:h-[4.063vw] lg:w-[14.353vw] w-[275.58px] rounded-none button-cs max-[1024px]:text-[10px]"
-              />
-              {showPopup && (
-                <Popup onClose={handleClosePopup} />
-              )}
+              <NavLink to="/register">
+                <Button
+                  text="Begin Your Journey"
+                  className="text-white tracking-[1.28px] max-[1024px]:w-[224px] max-[1024px]:h-[44px] cursor-pointer text-[16px] lg:px-[5px] lg:text-[0.833vw] lg:leading-[0.938vw] leading-[18px] bg-[#446184] py-[2px] lg:h-[4.063vw] lg:w-[14.353vw] w-[275.58px] rounded-none button-cs max-[1024px]:text-[10px]"
+                />
+              </NavLink>
 
               <NavLink to="/couple">
               <Button
