@@ -13,7 +13,7 @@ import StepsAndImage from '~/components/StepsAndImage';
 import Heading from '~/components/Heading.jsx';
 import arrow from '/assets/Images/arrow.png';
 
-const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+const MINI_TUTORIAL_STORAGE_KEY_PREFIX = '@DashboardMiniTutorialDismissed';
 
 export async function loader(args) {
   // Start fetching non-critical data without blocking time to first byte
@@ -82,12 +82,14 @@ const LoginIndex = () => {
     const params = new URLSearchParams(location.search);
     if (params.get('session_expired') === '1' && typeof window !== 'undefined') {
       try {
-        const miniTutorialDismissedAt = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
+        const preservedMiniTutorialEntries = Object.entries(localStorage).filter(
+          ([key]) => key.startsWith(MINI_TUTORIAL_STORAGE_KEY_PREFIX),
+        );
         localStorage.clear();
         sessionStorage.clear();
-        if (miniTutorialDismissedAt) {
-          localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, miniTutorialDismissedAt);
-        }
+        preservedMiniTutorialEntries.forEach(([key, value]) => {
+          localStorage.setItem(key, value);
+        });
         // Clear all cookies accessible to JS (non-HttpOnly)
         document.cookie.split(';').forEach((c) => {
           const name = c.replace(/^\s*|\s*$/g, '').split('=')[0];
@@ -191,7 +193,14 @@ const LoginIndex = () => {
                         ? actionData?.message.find(msg => msg.toLowerCase().includes('email'))
                         // User not found error (check message content)
                         : (actionData?.message === 'user not found')
-                        ? 'User doesn\'t exist. Create your account now.'
+                        ? (
+                          <>
+                            User doesn&apos;t exist.{' '}
+                            <Link to="/register" className="text-white underline">
+                            CREATE AN ACCOUNT.
+                            </Link>
+                          </>
+                        )
                         : undefined
                     }
                   />

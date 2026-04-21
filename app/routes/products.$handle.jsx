@@ -301,9 +301,9 @@ function SidebarFilter({
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    styles: true,
-    productType: true,
-    brands: true,
+    styles: false,
+    productType: false,
+    brands: false,
   });
 
   const parentCollection = collections.filter(isParentForSlides);

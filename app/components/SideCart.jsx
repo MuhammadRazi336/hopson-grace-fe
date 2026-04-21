@@ -200,7 +200,8 @@ export default function SideCart({
               {regularItems.length > 0 && (
                 <div>
                   <div className="grid grid-cols-12 gap-4 text-xs font-bold uppercase mb-4">
-                    <div className="col-span-5 text-center text-[18px] font-bold">Item</div>
+                    <div className="col-span-2"></div>
+                    <div className="col-span-3 text-left text-[18px] font-bold">Item</div>
                     <div className="col-span-2 text-center text-[18px] font-bold">Qty</div>
                     <div className="col-span-2 text-center text-[18px] font-bold">Price</div>
                     <div className="col-span-2 text-center text-[18px] font-bold">Subtotal</div>
@@ -211,7 +212,7 @@ export default function SideCart({
                       key={item.id}
                       className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 p-8"
                     >
-                      <div className="col-span-5 flex gap-4 items-center">
+                      <div className="col-span-5 flex gap-[30px] items-center">
                         {isRegistryGiftCardTitle(item.title) ? (
                           <div className="w-[136px] h-[136px] shrink-0 bg-[#446184] rounded flex items-center justify-center overflow-hidden">
                             <img
@@ -310,7 +311,8 @@ export default function SideCart({
               {cartCashFunds.length > 0 && (
                 <div>
                   <div className="grid grid-cols-12 gap-4 text-xs font-bold uppercase mb-4">
-                    <div className="col-span-5 text-center text-[18px] font-bold">Cash/Travel Funds</div>
+                    <div className="col-span-2"></div>
+                    <div className="col-span-3 text-left text-[18px] font-bold">Cash/Travel Funds</div>
                     <div className="col-span-2 text-center"></div>
                     <div className="col-span-2 text-center text-[18px] font-bold">Amount</div>
                     <div className="col-span-2 text-center"></div>
@@ -319,13 +321,13 @@ export default function SideCart({
                   {cartCashFunds.map((item) => (
                     <div
                       key={item.id}
-                      className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 py-8 px-4"
+                      className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 p-8"
                     >
-                      <div className="col-span-5 flex gap-4 items-center">
+                      <div className="col-span-5 flex gap-[30px] items-center">
                         <img
                           src={item.image}
                           alt={item.title}
-                          className="w-32 h-32 object-cover rounded"
+                          className="w-[136px] h-[136px] object-cover rounded"
                         />
                         <div>
                           <div className="font-bold text-lg leading-tight">
@@ -357,7 +359,8 @@ export default function SideCart({
               {groupPaymentItems.length > 0 && (
                 <div>
                   <div className="grid grid-cols-12 gap-4 text-xs font-bold uppercase mb-4">
-                    <div className="col-span-5 text-center text-[18px] font-bold">Group Gift</div>
+                    <div className="col-span-2"></div>
+                    <div className="col-span-3 text-left text-[18px] font-bold">Group Gift</div>
                     <div className="col-span-2 text-center"></div>
                     <div className="col-span-2 text-center text-[18px] font-bold">Contribution</div>
                     <div className="col-span-2 text-center"></div>
@@ -366,13 +369,13 @@ export default function SideCart({
                   {groupPaymentItems.map((item) => (
                     <div
                       key={item.id}
-                      className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 py-8 px-4"
+                      className="grid grid-cols-12 gap-4 items-center bg-[#FAF9F6] rounded mb-4 p-8"
                     >
-                      <div className="col-span-5 flex gap-4 items-center">
+                      <div className="col-span-5 flex gap-[30px] items-center">
                         <img
                           src={item.image}
                           alt={item.title}
-                          className="w-32 h-32 object-cover rounded"
+                          className="w-[136px] h-[136px] object-cover rounded"
                         />
                         <div>
                           <div className="font-bold text-lg leading-tight">
