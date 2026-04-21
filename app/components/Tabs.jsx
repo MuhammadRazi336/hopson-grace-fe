@@ -9,7 +9,7 @@ import {
 import {Link} from '@remix-run/react';
 import {Header} from '~/components/Header';
 
-const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+const MINI_TUTORIAL_STORAGE_KEY_PREFIX = '@DashboardMiniTutorialDismissed';
 
 const CustomTabs = ({
   tabsData,
@@ -23,12 +23,14 @@ const CustomTabs = ({
   
   // Handle logout functionality
   const handleLogout = () => {
-    const miniTutorialDismissedAt = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
+    const preservedMiniTutorialEntries = Object.entries(localStorage).filter(
+      ([key]) => key.startsWith(MINI_TUTORIAL_STORAGE_KEY_PREFIX),
+    );
     localStorage.clear();
     sessionStorage.clear();
-    if (miniTutorialDismissedAt) {
-      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, miniTutorialDismissedAt);
-    }
+    preservedMiniTutorialEntries.forEach(([key, value]) => {
+      localStorage.setItem(key, value);
+    });
     
     // Clear specific items to be sure
     localStorage.removeItem('@token');

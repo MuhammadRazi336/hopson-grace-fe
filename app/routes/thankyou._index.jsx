@@ -24,7 +24,7 @@ export default function ThankYou() {
       <div className="container mx-auto py-[100px]">
         <div className=" bg-[#446184]  py-16 px-16">
           <h2 className="md:text-[36px] font-normal text-center text-white prata">
-            Thank You <span className="italic ">for your order</span>
+            <span className="uppercase">Thank You</span> <span className="italic ">for your order</span>
           </h2>
           <div class="flex item-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="29" height="26" viewBox="0 0 29 26" fill="none">

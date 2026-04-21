@@ -23,7 +23,7 @@ import { ToastContainer } from 'react-toastify';
 import {getApiBaseUrl} from '~/utils/api-url';
 import {OPEN_NOTIFICATION_DROPDOWN_EVENT} from '~/constants/UiConstants';
 
-const MINI_TUTORIAL_STORAGE_KEY = '@DashboardMiniTutorialDismissed';
+const MINI_TUTORIAL_STORAGE_KEY_PREFIX = '@DashboardMiniTutorialDismissed';
 
 export function Header() {
   const [user, setUser] = useState(null);
@@ -67,14 +67,16 @@ export function Header() {
   const userDropdownRef = useRef(null);
 
   const clearAuthStoragePreservingPreferences = () => {
-    const miniTutorialDismissedAt = localStorage.getItem(MINI_TUTORIAL_STORAGE_KEY);
+    const preservedMiniTutorialEntries = Object.entries(localStorage).filter(
+      ([key]) => key.startsWith(MINI_TUTORIAL_STORAGE_KEY_PREFIX),
+    );
 
     localStorage.clear();
     sessionStorage.clear();
 
-    if (miniTutorialDismissedAt) {
-      localStorage.setItem(MINI_TUTORIAL_STORAGE_KEY, miniTutorialDismissedAt);
-    }
+    preservedMiniTutorialEntries.forEach(([key, value]) => {
+      localStorage.setItem(key, value);
+    });
   };
 
 

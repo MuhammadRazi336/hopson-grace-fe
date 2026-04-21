@@ -13,11 +13,11 @@ const Textandbutton = () => {
         funds, <br className="max-[767px]:hidden" /> The Registry is for modern
         couples who value style, sustainability and service.
       </p>
-      <img
+      {/* <img
         src={lonelingImg}
         alt="line"
         className="md:max-w-[320px] lg:max-w-[540px] xl:max-w-[767px] 2xl:max-w-[1020px] mx-auto  max-[1024px]:hidden"
-      />
+      /> */}
     </div>
   );
 };

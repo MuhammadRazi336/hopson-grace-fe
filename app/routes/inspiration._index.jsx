@@ -18,6 +18,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import Popup from '~/components/Popup';
 import ModalPortal from '~/components/ModalPortal';
+import lineImgWhiteHead from '/assets/Images/line.png';
+
 
 const BLOGS_QUERY = `#graphql
 query GetAllBlogsAndArticlesForInspiration {
@@ -299,14 +301,13 @@ const Inspiration = () => {
               {/* Text Overlay - Left Side */}
               <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
                 <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
-                    lorem ipsum title
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+                  emilie & charlie
                   </h2>
-                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
-                    LOREM IPSUM SUB-TITLE BLURB
-                    <br />DOLR SIT AMIT LOREM
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw] [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+                    EASTERN TOWNSHIPS, QUEBEC
                   </p>
-                  <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
+                  <Link to="/blogs/weddings/emilie-charlie" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
                   </Link>
                 </div>
@@ -318,23 +319,22 @@ const Inspiration = () => {
 
           {/* Slide 2 */}
           <SwiperSlide>
-            <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
+          <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/inspiration-carousel-img2.jpg"
+                src="/assets/Images/blogno2.png"
                 alt="Wedding couple"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover max-[768px]:object-position-[75%_0%]"
               />
               {/* Text Overlay - Left Side */}
               <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
                 <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
-                    lorem ipsum title
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+                  emily & josh
                   </h2>
-                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
-                    LOREM IPSUM SUB-TITLE BLURB
-                    <br />DOLR SIT AMIT LOREM
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw] [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+                    A CLASSIC EAST COAST CELEBRATION IN NOVA SCOTIA
                   </p>
-                  <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
+                  <Link to="/blogs/weddings/emily-josh" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
                   </Link>
                 </div>
@@ -346,23 +346,23 @@ const Inspiration = () => {
 
           {/* Slide 3 */}
           <SwiperSlide>
-            <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
+          <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/inspiration-carousel-img2.jpg"
+                src="/assets/Images/blogno3.png"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
               {/* Text Overlay - Left Side */}
               <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
                 <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
-                    lorem ipsum title
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+             
+                  madison & oisin
                   </h2>
-                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
-                    LOREM IPSUM SUB-TITLE BLURB
-                    <br />DOLR SIT AMIT LOREM
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw] [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+                  AN INTIMATE DESTINATION WEDDING IN ANGUILLA
                   </p>
-                  <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
+                  <Link to="/blogs/weddings/madison-oisin" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
                   </Link>
                 </div>
@@ -374,23 +374,22 @@ const Inspiration = () => {
 
           {/* Slide 4 */}
           <SwiperSlide>
-            <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
+          <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/inspiration-carousel-img2.jpg"
+                src="/assets/Images/blogno4.png"
                 alt="Wedding couple"
                 className="w-full h-full object-cover"
               />
               {/* Text Overlay - Left Side */}
               <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
                 <div className="text-white max-[767px]:min-w-[100%] text-center px-8 lg:ml-[11vw] lg:mr-[4.167vw] xl:ml-[11vw] xl:mr-[4.167vw] 2xl:ml-[11vw] 2xl:mr-[4.167vw] max-w-[50%] w-[577px] lg:w-[30.052vw] xl:w-[30.052vw] 2xl:w-[30.052vw]">
-                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal">
-                    lorem ipsum title
+                  <h2 className="text-[20px] leading-[36px] max-[767px]:text-[20px] lg:text-[2.396vw] xl:text-[2.396vw] 2xl:text-[2.396vw] prata leading-tight lg:leading-[3.125vw] xl:leading-[3.125vw] 2xl:leading-[3.125vw] mb-2 lg:mb-[1.042vw] xl:mb-[1.042vw] 2xl:mb-[1.042vw] font-normal [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+                  designing a life together
                   </h2>
-                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw]">
-                    LOREM IPSUM SUB-TITLE BLURB
-                    <br />DOLR SIT AMIT LOREM
+                  <p className="text-[12px] max-[767px]:text-[10px] lg:text-[1.146vw] xl:text-[1.146vw] 2xl:text-[1.146vw] lg:leading-[1.458vw] xl:leading-[1.458vw] 2xl:leading-[1.458vw] uppercase tracking-[0.1em] lg:tracking-[0.057vw] xl:tracking-[0.057vw] 2xl:tracking-[0.057vw] font-medium mb-2 lg:mb-[1.354vw] xl:mb-[1.354vw] 2xl:mb-[1.354vw] [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
+                    CLARIES LLANEZA’s GUIDE TO BUILDING A THOUGHTFUL REGISTRY
                   </p>
-                  <Link to="#" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity">
+                  <Link to="/blogs/weddings/meet-the-designer-clarisa-llaneza-2" className="inline-flex items-center text-[12px] lg:text-[0.938vw] xl:text-[0.938vw] 2xl:text-[0.938vw] lg:leading-[0.938vw] xl:leading-[0.938vw] 2xl:leading-[0.938vw] uppercase tracking-[0.1em] lg:tracking-[0.075vw] xl:tracking-[0.075vw] 2xl:tracking-[0.075vw] text-white font-bold hover:opacity-80 transition-opacity [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]">
                     READ MORE <span className="ml-2 text-[10px] lg:text-[0.625vw]">►</span>
                   </Link>
                 </div>
