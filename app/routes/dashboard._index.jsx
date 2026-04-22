@@ -282,6 +282,7 @@ const index = () => {
     } catch {
       // ignore
     }
+    setShowMiniTutorialModal(false);
     if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
