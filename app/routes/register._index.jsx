@@ -417,7 +417,7 @@ const RegisterIndex = () => {
 
   return (
     <>
-      {/* {showPopup ? <Popup onClose={() => setShowPopup(false)} /> : null} */}
+      {showPopup ? <Popup onClose={() => setShowPopup(false)} /> : null}
       <Header />
       <div className="flex justify-center items-center min-h-screen bg-white">
         <StepsAndImage
