@@ -321,9 +321,9 @@ const Inspiration = () => {
           <SwiperSlide>
           <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/blogno2.png"
+                src="/assets/Images/blogno3.png"
                 alt="Wedding couple"
-                className="w-full h-full object-cover max-[768px]:object-position-[75%_0%]"
+                className="w-full h-full object-cover"
               />
               {/* Text Overlay - Left Side */}
               <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">
@@ -348,9 +348,9 @@ const Inspiration = () => {
           <SwiperSlide>
           <div className="relative w-full h-[42vw] max-[767px]:h-[380px] max-h-[800px] overflow-hidden">
               <img
-                src="/assets/Images/blogno3.png"
+                src="/assets/Images/blogno2.png"
                 alt="Wedding couple"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover max-[768px]:object-position-[75%_0%]"
               />
               {/* Text Overlay - Left Side */}
               <div className="absolute left-[50%] translate-x-[-50%] top-0 h-full w-full flex items-center">

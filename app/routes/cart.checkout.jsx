@@ -1396,9 +1396,9 @@ const PayPalPaymentForm = ({
         </div>
       </div>
       <div className="container mx-auto py-[100px]">
-        <div className="bg-[#446184] py-16 px-16">
+        <div className="bg-[#F6F3ED] py-16 px-16">
           <div className="grid grid-cols-1 gap-6">
-            <label className="block text-sm text-center text-white font-medium mb-1">
+            <label className="block text-sm text-center text-black font-medium mb-1">
               PAYMENT
             </label>
             <div className="flex justify-center min-w-[400px] [&_[id^='zoid-paypal-buttons']]:!min-w-[400px]">

@@ -4,7 +4,7 @@ import {CoupleProfileViewHeader} from '~/routes/couple.test._index';
 import {Footer} from '~/components/Footer';
 import ImageAndText from '~/components/ImageAndText';
 import thankyou from '/assets/Images/thankyou-img.png';
-import lineImg3 from '/assets/Images/line.png';
+import lineImg3 from '/assets/Images/didyouseesomethingyouloved.png';
 import CheckoutSteps from '~/components/CheckoutSteps';
 export default function ThankYou() {
   return (
@@ -56,7 +56,7 @@ something you loved? "
           buttontype={'link'}
           buttonLink={'https://hopsongrace.com/pages/registry-hg-discount'}
           titleClassName='max-w-[500px]'
-          buttonClassName="text-black"
+          buttonClassName="text-black uppercase"
         />
       </section>
       <Footer />
