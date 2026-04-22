@@ -54,7 +54,7 @@ function SidebarFilter({
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    styles: false,
+    styles: true,
   });
 
   const parentCollections = collections.filter(isParentForSidebar);
