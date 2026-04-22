@@ -301,8 +301,8 @@ function SidebarFilter({
 }) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    styles: false,
-    productType: false,
+    styles: true,
+    productType: true,
     brands: false,
   });
 

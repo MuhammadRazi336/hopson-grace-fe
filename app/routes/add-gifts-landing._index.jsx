@@ -417,7 +417,7 @@ export default function AddGiftsLanding() {
 function SidebarFilter() {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    brands: true,
+    brands: false,
     styles: true,
   });
 
