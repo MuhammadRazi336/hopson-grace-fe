@@ -829,7 +829,7 @@ const Card = ({title, amount, buttonLabel, onButtonClick, id, image, registryId,
 function SidebarFilter({collections = [], checkedCategories = [], setCheckedCategories}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    brands: true,
+    brands: false,
     styles: true,
   });
 

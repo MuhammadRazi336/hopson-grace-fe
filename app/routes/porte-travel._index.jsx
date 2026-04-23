@@ -618,7 +618,7 @@ export default PorteTravel;
 function SidebarFilter({collections = [], checkedCategories = [], setCheckedCategories}) {
   const [openSections, setOpenSections] = useState({
     categories: true,
-    brands: true,
+    brands: false,
     styles: true,
   });
 

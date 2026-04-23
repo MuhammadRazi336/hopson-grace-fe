@@ -51,7 +51,7 @@ export default function ThankYou() {
           lineimg={lineImg3}
           title="did you see 
 something you loved? "
-          description="Visit our sister brand, Hopson Grace, where elevated living meets modern luxury, and <span class='semibold'>unlock 15% off your first order</span>."
+          description="Visit our sister brand, Hopson Grace, where elevated living meets modern luxury, and <span class='font-medium'>unlock 15% off your first order</span>."
           buttontext={'take me there'}
           buttontype={'link'}
           buttonLink={'https://hopsongrace.com/pages/registry-hg-discount'}
