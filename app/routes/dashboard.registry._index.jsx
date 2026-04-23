@@ -1024,10 +1024,11 @@ export default index;
 
 /** Cash funds with this title are shown like standard gifts (no "cash fund" circular badge). */
 function isRegistryGiftCardCashFund(fund) {
-  return (
-    (fund?.cashFund?.name || '').trim().toUpperCase() ===
-    'THE REGISTRY GIFT CARD'
-  );
+  const normalizedName = String(fund?.cashFund?.name || '')
+    .toUpperCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+  return normalizedName.includes('THE REGISTRY GIFT CARD');
 }
 
 const ProductPage = ({

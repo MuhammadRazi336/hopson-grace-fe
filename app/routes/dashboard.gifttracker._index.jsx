@@ -143,9 +143,9 @@ const GiftTracker = () => {
                       day: 'numeric', 
                       year: 'numeric'
                     })}</div>
-                    <div className='text-center'>${item.amount}</div>
+                    <div className='text-center'>${item.totalAmount}</div>
                     <div className='text-center'>
-                      <Link to={`/dashboard/viewgifts/${item.productId}`}>
+                      <Link to={`/dashboard/viewgifts/${item.checkoutNumber}`}>
                       <button className="border border-gray-700 px-3 py-3 text-sm font-medium hover:bg-gray-100 uppercase">
                         View Gifts/Message
                       </button>
