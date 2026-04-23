@@ -624,6 +624,7 @@ const Inspiration = () => {
             <WhiteThemeButton
               Text="View more" 
                     onClick={() => setArticlesToShow(prev => Math.min(prev + 12, filteredArticles.length))}
+                    buttonClassName={`border-3 lg:w-[450px] lg:h-auto lg:p-[37px] lg:text-lg max-[768px]:w-[236px] max-[768px]:p-[14px] max-[768px]:text-[14px]`}
                   />
                 )}
 
