@@ -22,8 +22,11 @@ import {getApiBaseUrl} from '~/utils/api-url';
 /** Same rule as dashboard.registry / CoupleProductCard for gift-card-as-cash-fund. */
 function isRegistryGiftCardProduct(product) {
   if (!product) return false;
-  const name = product.cashFund?.name || product.title || '';
-  return name.trim().toUpperCase() === 'THE REGISTRY GIFT CARD';
+  const normalizedName = String(product.cashFund?.name || product.title || '')
+    .toUpperCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+  return normalizedName.includes('THE REGISTRY GIFT CARD');
 }
 
 const COLLECTION_QUERY = `#graphql
