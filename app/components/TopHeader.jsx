@@ -5,6 +5,9 @@ import CurrencyNoticePopup from './CurrencyNoticePopup';
 import {useState, useEffect} from 'react';
 import TopLogo from '/assets/Images/Hopson-toplogo.png';
 
+const CURRENCY_NOTICE_SHOWN_KEY = '@CurrencyNoticeShown';
+const CURRENCY_NOTICE_PENDING_KEY = '@CurrencyNoticePendingAfterRegister';
+
 const TopHeader = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showCurrencyPopup, setShowCurrencyPopup] = useState(false);
@@ -26,26 +29,28 @@ const TopHeader = () => {
     setShowPopup(false);
   };
   const handleOpenCurrencyPopup = () => {
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('@CurrencyNoticeShown', 'true');
-      localStorage.setItem('@CurrencyNoticeShown', 'true');
-    }
     setShowCurrencyPopup(true);
   };
   const handleCloseCurrencyPopup = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CURRENCY_NOTICE_SHOWN_KEY, 'true');
+      localStorage.removeItem(CURRENCY_NOTICE_PENDING_KEY);
+    }
     setShowCurrencyPopup(false);
   };
 
-  // Auto-show currency popup only once after login/register
+  // Auto-show currency popup once after registration, never again after dismissal.
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     if (!isLoggedIn) return undefined;
 
-    const alreadyShown = localStorage.getItem('@CurrencyNoticeShown') === 'true';
-    if (alreadyShown) return undefined;
+    const alreadyShown = localStorage.getItem(CURRENCY_NOTICE_SHOWN_KEY) === 'true';
+    const shouldShowAfterRegister =
+      localStorage.getItem(CURRENCY_NOTICE_PENDING_KEY) === 'true';
+
+    if (!shouldShowAfterRegister || alreadyShown) return undefined;
 
     setShowCurrencyPopup(true);
-    localStorage.setItem('@CurrencyNoticeShown', 'true');
     return undefined;
   }, [isLoggedIn]);
   return (
@@ -69,11 +74,11 @@ const TopHeader = () => {
               <span className="lg:px-2 px-1">|</span>
               <Link
                 onClick={handleOpenPopup}
-                className="text-white px-1 lg:tracking-[3.6px] tracking-[0] font-bold"
+                className="text-white px-1 lg:tracking-[3.6px] tracking-[0] font-bold flex items-center"
               >
                 START YOUR JOURNEY{' '}
                 <span className="lg:text-[0.833vw] ml-[8px] text-[14px] max-[1024px]:text-[8px] max-[1024px]:ml-[5px]">
-                  ▶
+                <div className="w-4 h-4 max-[1200px]:w-[10px] max-[1200px]:h-[10px] max-[1024px]:w-[8px] max-[1024px]:h-[8px] bg-white [clip-path:polygon(50%_0%,0%_100%,100%_100%)] rotate-90"></div>
                 </span>
               </Link>
             </>

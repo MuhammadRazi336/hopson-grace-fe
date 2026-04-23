@@ -38,6 +38,8 @@ import classic from '/assets/Images/classic.png';
 import electic from '/assets/Images/electic.jpg';
 import {STATES_BY_COUNTRY} from '~/constants/StatesByCountry';
 
+const CURRENCY_NOTICE_PENDING_KEY = '@CurrencyNoticePendingAfterRegister';
+
 const OnboardingClient = ({onStepChange}) => {
   const {user, collections} = useLoaderData();
   const navigate = useNavigate();
@@ -430,6 +432,7 @@ const OnboardingClient = ({onStepChange}) => {
       try {
         const collectionsString = JSON.stringify(selectedSubCollections || []);
         localStorage.setItem('@SelectedSubCollections', collectionsString);
+        localStorage.setItem(CURRENCY_NOTICE_PENDING_KEY, 'true');
       } catch (storageError) {
         // Continue even if storage fails
         console.log('Storage error:', storageError);
@@ -932,7 +935,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
       <div className="text-center">
         {/* <Heading text={'How many guests are you inviting?'} /> */}
         <h2 className="font-normal  w-[80%] text-[24px] lg:text-[1.25vw] xl:text-[1.25vw] 2xl:text-[1.25vw] lg:leading-[1.563vw] xl:leading-[1.563vw] 2xl:leading-[1.563vw] max-[768px]:text-lg mx-auto">
-        This will help us calculate the magic number of gifts so that guests have a variety to choose from
+        This will help us calculate the magic number of gifts so that guests have a variety to choose from.
         </h2>
       </div>
       {/* Event Name Input */}
