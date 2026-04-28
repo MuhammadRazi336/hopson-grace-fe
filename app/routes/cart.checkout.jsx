@@ -26,7 +26,6 @@ import {
   getCalculateTaxRateErrorMessage,
   getTaxCalculationErrorForDisplay,
   parseRegistryIdForTax,
-  isAllCashFundCartItems,
 } from '~/utils/checkout-tax';
 
 export async function loader({context, request}) {
@@ -282,85 +281,61 @@ export async function action({request, context}) {
       return json({error: 'Could not build line items for tax.'}, {status: 400});
     }
 
-    const cashFundOnly = isAllCashFundCartItems(rawCartItemProducts);
     let taxData;
-    let payCurrency;
+    let payCurrency = 'CAD';
     let amount;
+    const taxRegistryId = parseRegistryIdForTax(registryId);
+    const taxRequestBody = {
+      lineItems: taxLinePayload,
+      shippingAddress,
+      ...(billingAddress ? {billingAddress} : {}),
+      email: email || undefined,
+      shippingLine: {title: 'Standard', price: '0.00'},
+      ...(taxRegistryId != null ? {registryId: taxRegistryId} : {}),
+    };
+    console.log('[calculate-tax-rate] action request', taxRequestBody);
 
-    if (cashFundOnly) {
-      payCurrency = 'CAD';
-      amount = Math.round(
-        apiCartItems.reduce(
-          (sum, item) =>
-            sum +
-            Number(item.price) * Math.max(1, Number(item.quantity) || 1),
-          0,
-        ) * 100,
-      ) / 100;
-      taxData = {
-        subtotal: amount,
-        totalTax: 0,
-        total: amount,
-        taxRate: '0.00',
-        taxPercentage: 0,
-        currency: payCurrency,
-      };
-      console.log('[calculate-tax-rate] action skipped (all cash fund)', {
-        total: amount,
-        currency: payCurrency,
+    const taxRes = await postCalculateTaxRate(
+      apiBaseUrl,
+      taxRequestBody,
+    );
+
+    const taxJson = taxRes.json;
+    taxData = taxJson?.data;
+    if (
+      !taxRes.ok ||
+      taxJson?.code !== 200 ||
+      taxData == null ||
+      !Number.isFinite(Number(taxData.total))
+    ) {
+      console.log('[calculate-tax-rate] action response (error)', {
+        httpStatus: taxRes.status,
+        body: taxJson,
       });
-    } else {
-      const taxRegistryId = parseRegistryIdForTax(registryId);
-      const taxRequestBody = {
-        lineItems: taxLinePayload,
-        shippingAddress,
-        ...(billingAddress ? {billingAddress} : {}),
-        email: email || undefined,
-        shippingLine: {title: 'Standard', price: '0.00'},
-        ...(taxRegistryId != null ? {registryId: taxRegistryId} : {}),
-      };
-      console.log('[calculate-tax-rate] action request', taxRequestBody);
-
-      const taxRes = await postCalculateTaxRate(
-        apiBaseUrl,
-        taxRequestBody,
+      return json(
+        {
+          error: getCalculateTaxRateErrorMessage(
+            taxJson,
+            taxRes.status,
+          ),
+        },
+        {status: 400},
       );
-
-      const taxJson = taxRes.json;
-      taxData = taxJson?.data;
-      if (
-        !taxRes.ok ||
-        taxJson?.code !== 200 ||
-        taxData == null ||
-        !Number.isFinite(Number(taxData.total))
-      ) {
-        console.log('[calculate-tax-rate] action response (error)', {
-          httpStatus: taxRes.status,
-          body: taxJson,
-        });
-        return json(
-          {
-            error: getCalculateTaxRateErrorMessage(
-              taxJson,
-              taxRes.status,
-            ),
-          },
-          {status: 400},
-        );
-      }
-
-      payCurrency = taxData.currency || 'CAD';
-      amount = Math.round(Number(taxData.total) * 100) / 100;
-
-      console.log('[calculate-tax-rate] action response (ok)', {
-        subtotal: taxData.subtotal,
-        totalTax: taxData.totalTax,
-        total: taxData.total,
-        taxRate: taxData.taxRate,
-        taxPercentage: taxData.taxPercentage,
-        currency: payCurrency,
-      });
     }
+
+    payCurrency = taxData.currency || 'CAD';
+    amount = Math.round(Number(taxData.total) * 100) / 100;
+
+    console.log('[calculate-tax-rate] action response (ok)', {
+      subtotal: taxData.subtotal,
+      processingFee: taxData.processingFee,
+      processingFeeRate: taxData.processingFeeRate,
+      totalTax: taxData.totalTax,
+      total: taxData.total,
+      taxRate: taxData.taxRate,
+      taxPercentage: taxData.taxPercentage,
+      currency: payCurrency,
+    });
 
     // Step 1: Create PayPal order (server-side only; credentials never sent to browser)
     const clientId =
@@ -413,6 +388,8 @@ export async function action({request, context}) {
           amount,
           currency: payCurrency,
           subtotal: taxData.subtotal,
+          processingFee: taxData.processingFee,
+          processingFeeRate: taxData.processingFeeRate,
           totalTax: taxData.totalTax,
           taxRate: taxData.taxRate,
           taxPercentage: taxData.taxPercentage,
@@ -462,6 +439,11 @@ const DetailsForm = ({onNext}) => {
   const [taxData, setTaxData] = useState(null);
   const [taxLoading, setTaxLoading] = useState(false);
   const [taxError, setTaxError] = useState(null);
+  const [resolvedRegistryId, setResolvedRegistryId] = useState(
+    loaderRegistryId ||
+      (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') ||
+      '',
+  );
   const [fields, setFields] = useState({
     firstName: '',
     lastName: '',
@@ -474,6 +456,11 @@ const DetailsForm = ({onNext}) => {
     subscribe: false,
   });
   const [sideCartOpen, setSideCartOpen] = useState(false);
+
+  useEffect(() => {
+    console.log('[cart.checkout] loader productData', productData);
+    console.log('[cart.checkout] loader cashFundData', cashFundData);
+  }, [productData, cashFundData]);
 
   // Normalize country key so dropdown data is always found (handles case / alternate names)
   const countryRaw = (fields.country || 'Canada').trim();
@@ -496,7 +483,13 @@ const DetailsForm = ({onNext}) => {
   useEffect(() => {
     const fetchCartItems = async () => {
       const email = loaderEmail || (typeof window !== 'undefined' ? localStorage.getItem('guestEmail') : '') || '';
-      const registryId = loaderRegistryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') : '') || '';
+      const registryId =
+        resolvedRegistryId ||
+        loaderRegistryId ||
+        (typeof window !== 'undefined'
+          ? localStorage.getItem('registryId')
+          : '') ||
+        '';
 
       if (!email || !registryId) {
         setCartItems([]);
@@ -517,6 +510,19 @@ const DetailsForm = ({onNext}) => {
 
         if (apiData.code === 200 && apiData.data && apiData.data.length > 0) {
           const cartData = apiData.data[0];
+          const fallbackRegistryId =
+            String(
+              cartData?.registryId ||
+                cartData?.coupleId ||
+                cartData?.registry?.id ||
+                '',
+            ).trim() || '';
+          if (fallbackRegistryId && fallbackRegistryId !== resolvedRegistryId) {
+            setResolvedRegistryId(fallbackRegistryId);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('registryId', fallbackRegistryId);
+            }
+          }
 
           // Transform the API data to match SideCart expectations
           const transformedItems = (cartData.cartItemProducts || []).map(
@@ -557,6 +563,7 @@ const DetailsForm = ({onNext}) => {
               };
             },
           );
+          console.log('[cart.checkout] details step transformed cart items', transformedItems);
           setCartItems(transformedItems);
           setCartItemProductsRaw(cartData.cartItemProducts || []);
           const total = roundCurrency(
@@ -580,30 +587,11 @@ const DetailsForm = ({onNext}) => {
     };
 
     fetchCartItems();
-  }, [loaderRegistryId, loaderEmail]);
+  }, [loaderRegistryId, loaderEmail, resolvedRegistryId]);
 
   // Tax: shippingAddress = couple's registry (gift destination); billingAddress = guest billing when filled
   useEffect(() => {
     if (cartLoading || !cartItemProductsRaw.length) {
-      return;
-    }
-    if (isAllCashFundCartItems(cartItemProductsRaw)) {
-      const sub = cartItemProductsRaw.reduce((sum, row) => {
-        const unit = Math.round(Number(row.price) * 100) / 100;
-        const qty = Math.max(1, Number(row.quantity) || 1);
-        return sum + unit * qty;
-      }, 0);
-      const rounded = Math.round(sub * 100) / 100;
-      setTaxData({
-        subtotal: rounded,
-        totalTax: 0,
-        total: rounded,
-        taxRate: '0.00',
-        taxPercentage: 0,
-        currency: 'CAD',
-      });
-      setTaxError(null);
-      setTaxLoading(false);
       return;
     }
 
@@ -633,6 +621,7 @@ const DetailsForm = ({onNext}) => {
 
     (async () => {
       const registryIdForTax =
+        resolvedRegistryId ||
         loaderRegistryId ||
         (typeof window !== 'undefined'
           ? localStorage.getItem('registryId') || ''
@@ -646,6 +635,12 @@ const DetailsForm = ({onNext}) => {
         shippingLine: {title: 'Standard', price: '0.00'},
         ...(taxRegistryId != null ? {registryId: taxRegistryId} : {}),
       };
+      if (taxRegistryId == null) {
+        console.warn(
+          '[calculate-tax-rate] registryId missing; processingFee may be 0 for cash funds',
+          {registryIdForTax},
+        );
+      }
       console.log('[calculate-tax-rate] client request', taxRequestBody);
 
       const {ok, status, json} = await postCalculateTaxRate(
@@ -684,6 +679,7 @@ const DetailsForm = ({onNext}) => {
     fields.postalCode,
     fields.email,
     loaderEmail,
+    resolvedRegistryId,
     loaderRegistryId,
     apiBaseUrl,
   ]);
@@ -799,7 +795,13 @@ const DetailsForm = ({onNext}) => {
             <input
               type="hidden"
               name="registryId"
-              value={loaderRegistryId || (typeof window !== 'undefined' ? localStorage.getItem('registryId') || '' : '')}
+              value={
+                resolvedRegistryId ||
+                loaderRegistryId ||
+                (typeof window !== 'undefined'
+                  ? localStorage.getItem('registryId') || ''
+                  : '')
+              }
             />
             <div className="flex items-start gap-x-4 w-full">
               <div className="w-1/2">
@@ -970,6 +972,25 @@ const DetailsForm = ({onNext}) => {
                     </div>
                     <div className="flex justify-between items-center mb-2 min-h-[1.5rem]">
                       <span className="font-bold tracking-wide text-sm uppercase">
+                        Processing Fee
+                        {taxData?.processingFeeRate != null &&
+                        Number.isFinite(Number(taxData.processingFeeRate)) ? (
+                          <span className="font-normal">
+                            {' '}
+                            ({Number(taxData.processingFeeRate)}%)
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="text-lg">
+                        {taxData?.processingFee != null ? (
+                          <>${Number(taxData.processingFee).toFixed(2)}</>
+                        ) : (
+                          <span className="text-xs text-gray-500">—</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center mb-2 min-h-[1.5rem]">
+                      <span className="font-bold tracking-wide text-sm uppercase">
                         Taxes
                         {taxData?.taxPercentage != null &&
                         Number.isFinite(Number(taxData.taxPercentage)) ? (
@@ -1115,6 +1136,7 @@ const DetailsForm = ({onNext}) => {
         onCartChange={() => {}}
         onClearCart={() => {}}
         registryId={
+          resolvedRegistryId ||
           loaderRegistryId ||
           (typeof window !== 'undefined'
             ? localStorage.getItem('registryId') || ''
@@ -1201,6 +1223,11 @@ const PayPalPaymentForm = ({
   const [sideCartOpen, setSideCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
+
+  useEffect(() => {
+    console.log('[cart.checkout] payment step loader productData', productData);
+    console.log('[cart.checkout] payment step loader cashFundData', cashFundData);
+  }, [productData, cashFundData]);
 
   useEffect(() => {
     if (fetcher.data?.success && fetcher.state === 'idle') {
@@ -1300,6 +1327,8 @@ const PayPalPaymentForm = ({
               };
             },
           );
+
+          console.log('[cart.checkout] payment step transformed cart items', transformedItems);
 
           setCartItems(transformedItems);
           const total = transformedItems.reduce(

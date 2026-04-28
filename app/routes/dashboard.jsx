@@ -8,6 +8,9 @@ import lineImg3 from '/assets/Images/heading-bottom-curve.png';
 import { Header } from '~/components/Header';
 import AnimatedSVG from '~/components/AnimatedSVG'
 
+const SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY =
+  '@ShowCurrencyNoticeAfterDashboardTutorial';
+
 const introSteps = [
   {
     tab: 'MY DETAILS',
@@ -251,6 +254,7 @@ const Dashboard_index = ({context}) => {
   const handleFinishIntro = () => {
     setShowIntro(false);
     localStorage.setItem('showDashboardIntro', 'false');
+    localStorage.setItem(SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY, 'true');
   };
 
   // Function to find tab elements by their data-value attribute

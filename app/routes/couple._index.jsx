@@ -9,6 +9,15 @@ import {useNavigate} from 'react-router-dom';
 import {Header} from '~/components/Header';
 import { Footer } from '~/components/Footer';
 
+function normalizeNameInput(value) {
+  const withoutLeadingSpaces = String(value || '').replace(/^\s+/, '');
+  if (!withoutLeadingSpaces) return '';
+  return (
+    withoutLeadingSpaces.charAt(0).toUpperCase() +
+    withoutLeadingSpaces.slice(1)
+  );
+}
+
 export async function loader({request, context}) {
   const url = new URL(request.url);
   const firstName = url.searchParams.get('firstName');
@@ -32,12 +41,20 @@ export default function FindCoupleForm() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!firstName.trim() && !fianceFirstName.trim()) {
+    const normalizedFirstName = firstName.trim();
+    const normalizedFianceFirstName = fianceFirstName.trim();
+
+    setFirstName(normalizedFirstName);
+    setFianceFirstName(normalizedFianceFirstName);
+
+    if (!normalizedFirstName && !normalizedFianceFirstName) {
       setValidationError('Please fill in at least one name field before searching.');
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
+    navigate(
+      `/couple/listing?firstName=${normalizedFirstName}&fianceFirstName=${normalizedFianceFirstName}#results`,
+    );
   };
 
   return (
@@ -81,12 +98,11 @@ export default function FindCoupleForm() {
                         className="w-full border lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] outline-none bg-white border-[#B9B4AE] rounded-none px-3"
                         
                         onChange={(e) => {
-                          const value = e.target.value;
-                          if (value.length > 0) {
-                            setFirstName(value.charAt(0).toUpperCase() + value.slice(1));
-                          } else {
-                            setFirstName(value);
-                          }
+                          setFirstName(normalizeNameInput(e.target.value));
+                          if (validationError) setValidationError('');
+                        }}
+                        onBlur={(e) => {
+                          setFirstName(normalizeNameInput(e.target.value).trim());
                           if (validationError) setValidationError('');
                         }}
                       />
@@ -101,12 +117,11 @@ export default function FindCoupleForm() {
                         className="w-full border outline-none lg:text-[1.042vw] lg:h-[4.271vw] h-[50px] text-[16px] bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-5"
                         
                         onChange={(e) => {
-                          const value = e.target.value;
-                          if (value.length > 0) {
-                            setFianceFirstName(value.charAt(0).toUpperCase() + value.slice(1));
-                          } else {
-                            setFianceFirstName(value);
-                          }
+                          setFianceFirstName(normalizeNameInput(e.target.value));
+                          if (validationError) setValidationError('');
+                        }}
+                        onBlur={(e) => {
+                          setFianceFirstName(normalizeNameInput(e.target.value).trim());
                           if (validationError) setValidationError('');
                         }}
                       />
@@ -162,12 +177,20 @@ export function FindCoupleFormBanner() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!firstName.trim() && !fianceFirstName.trim()) {
+    const normalizedFirstName = firstName.trim();
+    const normalizedFianceFirstName = fianceFirstName.trim();
+
+    setFirstName(normalizedFirstName);
+    setFianceFirstName(normalizedFianceFirstName);
+
+    if (!normalizedFirstName && !normalizedFianceFirstName) {
       setValidationError('Please fill in at least one name field before searching.');
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
+    navigate(
+      `/couple/listing?firstName=${normalizedFirstName}&fianceFirstName=${normalizedFianceFirstName}#results`,
+    );
   };
 
   return (
@@ -204,12 +227,11 @@ export function FindCoupleFormBanner() {
                   value={firstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 lg:px-[1.042vw] py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length > 0) {
-                      setFirstName(value.charAt(0).toUpperCase() + value.slice(1));
-                    } else {
-                      setFirstName(value);
-                    }
+                    setFirstName(normalizeNameInput(e.target.value));
+                    if (validationError) setValidationError('');
+                  }}
+                  onBlur={(e) => {
+                    setFirstName(normalizeNameInput(e.target.value).trim());
                     if (validationError) setValidationError('');
                   }}
                 />
@@ -223,12 +245,11 @@ export function FindCoupleFormBanner() {
                   value={fianceFirstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 lg:px-[1.042vw] py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length > 0) {
-                      setFianceFirstName(value.charAt(0).toUpperCase() + value.slice(1));
-                    } else {
-                      setFianceFirstName(value);
-                    }
+                    setFianceFirstName(normalizeNameInput(e.target.value));
+                    if (validationError) setValidationError('');
+                  }}
+                  onBlur={(e) => {
+                    setFianceFirstName(normalizeNameInput(e.target.value).trim());
                     if (validationError) setValidationError('');
                   }}
                 />
@@ -260,12 +281,20 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (!firstName.trim() && !fianceFirstName.trim()) {
+    const normalizedFirstName = firstName.trim();
+    const normalizedFianceFirstName = fianceFirstName.trim();
+
+    setFirstName(normalizedFirstName);
+    setFianceFirstName(normalizedFianceFirstName);
+
+    if (!normalizedFirstName && !normalizedFianceFirstName) {
       setValidationError('Please fill in at least one name field before searching.');
       return;
     }
     setValidationError('');
-    navigate(`/couple/listing?firstName=${firstName}&fianceFirstName=${fianceFirstName}#results`);
+    navigate(
+      `/couple/listing?firstName=${normalizedFirstName}&fianceFirstName=${normalizedFianceFirstName}#results`,
+    );
   };
 
   return (
@@ -301,12 +330,11 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
                   value={firstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length > 0) {
-                      setFirstName(value.charAt(0).toUpperCase() + value.slice(1));
-                    } else {
-                      setFirstName(value);
-                    }
+                    setFirstName(normalizeNameInput(e.target.value));
+                    if (validationError) setValidationError('');
+                  }}
+                  onBlur={(e) => {
+                    setFirstName(normalizeNameInput(e.target.value).trim());
                     if (validationError) setValidationError('');
                   }}
                 />
@@ -320,12 +348,11 @@ function FindCoupleBanner({firstName, setFirstName, fianceFirstName, setFianceFi
                   value={fianceFirstName}
                   className="w-full border outline-none bg-white border-[#B9B4AE] rounded-none px-3 py-4 sm:py-5 lg:py-6 xl:py-5 2xl:py-6"
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value.length > 0) {
-                      setFianceFirstName(value.charAt(0).toUpperCase() + value.slice(1));
-                    } else {
-                      setFianceFirstName(value);
-                    }
+                    setFianceFirstName(normalizeNameInput(e.target.value));
+                    if (validationError) setValidationError('');
+                  }}
+                  onBlur={(e) => {
+                    setFianceFirstName(normalizeNameInput(e.target.value).trim());
                     if (validationError) setValidationError('');
                   }}
                 />

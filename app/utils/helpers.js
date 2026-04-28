@@ -48,5 +48,13 @@ export function extractShopifyId(id) {
 
 /** Cash fund line item with this title — show as a gift in cart/checkout UI. */
 export function isRegistryGiftCardTitle(title) {
-  return (title || '').trim().toUpperCase() === 'THE REGISTRY GIFT CARD';
+  const normalizedTitle = String(title || '')
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, ' ');
+  return (
+    normalizedTitle.includes('THE REGISTRY GIFT CARD') ||
+    normalizedTitle.includes('REGISTRY GIFT CARD') ||
+    normalizedTitle.includes('The Registry Gift Card')
+  );
 }

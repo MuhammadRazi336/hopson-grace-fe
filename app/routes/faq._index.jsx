@@ -6,6 +6,7 @@ import faqBg from '/assets/Images/faqcouple.jpg';
 import Heading from '~/components/Heading';
 import lineImghead from '../assets/Images/heading-bottom-curve.png';
 // import lineImgheadMobile from '../assets/Images/faqMobile.png';
+import faqMobile123 from '/assets/Images/faqMobile.png';
 import RegistryLogo from '/assets/Images/about-us-monogram.png';
 import Button from '~/components/Button.jsx';
 import {Navigate} from '@remix-run/react';
@@ -66,7 +67,7 @@ const FAQ = () => {
             className="max-[1024px]:max-w-[250px] lg:w-[32.24vw] lg:h-[0.400vw] brightness-0 invert max-[768px]:w-[120px] max-[768px]:hidden"
           />
           <img
-            src={"/public/assets/Images/faqMobile123.png"}
+            src={faqMobile123}
             alt=""
             className="min-[768px]:hidden"
           />

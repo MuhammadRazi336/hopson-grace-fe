@@ -206,9 +206,9 @@ const ViewGifts = () => {
                   }`}
                       >
                         <img
-                          src="/assets/Images/couple-header-logo.png"
+                          src="/assets/Images/heart.png"
                           alt="checkout-bg-1"
-                          className="w-[96px] h-auto mx-auto xl:mb-6 md:mb-4 lg:mb-4 mb-1"
+                          className="w-[200px] mx-auto mb-[-40px]"
                         />
 
                         <PreviewForm />
@@ -287,10 +287,10 @@ const PreviewForm = () => {
       <p className="text-center prata leading-relaxed text-xl sm:text-lg xl:mt-4 md:mt-5 mt-5">
         {viewGifts[0]?.message}
       </p>
-      <p className="text-center prata text-xl sm:text-lg mt-6">All our love,</p>
+      {/* <p className="text-center prata text-xl sm:text-lg mt-6">All our love,</p>
       <p className="text-center prata text-xl sm:text-lg mt-2">
         {viewGifts[0]?.name}
-      </p>
+      </p> */}
     </div>
   );
 };
