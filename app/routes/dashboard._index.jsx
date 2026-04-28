@@ -9,8 +9,13 @@ import FooterBottom from '~/components/FooterBottom';
 import NotificationCard from '~/components/NotificationCard';
 import { Footer } from '~/components/Footer';
 import ModalPortal from '~/components/ModalPortal';
+import CurrencyNoticePopup from '~/components/CurrencyNoticePopup';
 
 const MINI_TUTORIAL_STORAGE_KEY_PREFIX = '@DashboardMiniTutorialDismissed';
+const SHOW_MINI_TUTORIAL_FROM_ONBOARDING_KEY =
+  '@ShowDashboardMiniTutorialFromOnboarding';
+const SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY =
+  '@ShowCurrencyNoticeAfterDashboardTutorial';
 import {syncCustomerBalancesToMetafields} from '~/utils/shopify-customer-balances.server';
 import {getApiBaseUrl} from '~/utils/api-url';
 
@@ -234,6 +239,7 @@ const index = () => {
   }, [user?.user?.id]);
 
   const [showMiniTutorialModal, setShowMiniTutorialModal] = useState(false);
+  const [showCurrencyNoticePopup, setShowCurrencyNoticePopup] = useState(false);
 
   const userId = user?.user?.id;
   const miniTutorialStorageKey = userId
@@ -244,14 +250,34 @@ const index = () => {
     if (typeof window === 'undefined') return;
     if (!miniTutorialStorageKey) return;
     try {
+      const shouldShowFromOnboarding =
+        localStorage.getItem(SHOW_MINI_TUTORIAL_FROM_ONBOARDING_KEY) === 'true';
       const hasSeenMiniTutorial = Boolean(
         localStorage.getItem(miniTutorialStorageKey),
       );
-      setShowMiniTutorialModal(!hasSeenMiniTutorial);
+      setShowMiniTutorialModal(shouldShowFromOnboarding && !hasSeenMiniTutorial);
+      if (shouldShowFromOnboarding) {
+        localStorage.removeItem(SHOW_MINI_TUTORIAL_FROM_ONBOARDING_KEY);
+      }
     } catch {
-      setShowMiniTutorialModal(true);
+      setShowMiniTutorialModal(false);
     }
   }, [miniTutorialStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const shouldShowCurrency =
+        localStorage.getItem(SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY) ===
+        'true';
+      if (shouldShowCurrency) {
+        setShowCurrencyNoticePopup(true);
+        localStorage.removeItem(SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof document === 'undefined') return undefined;
@@ -271,6 +297,7 @@ const index = () => {
       // ignore private mode / quota
     }
     setShowMiniTutorialModal(false);
+    setShowCurrencyNoticePopup(true);
   };
 
   const handleLetsGoTutorial = (e) => {
@@ -279,6 +306,10 @@ const index = () => {
     try {
       localStorage.setItem(miniTutorialStorageKey, 'true');
       localStorage.setItem('showDashboardIntro', 'true');
+      localStorage.setItem(
+        SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY,
+        'true',
+      );
     } catch {
       // ignore
     }
@@ -639,6 +670,9 @@ const index = () => {
             </div>
           </div>
         </ModalPortal>
+      )}
+      {showCurrencyNoticePopup && (
+        <CurrencyNoticePopup onClose={() => setShowCurrencyNoticePopup(false)} />
       )}
     </>
   );

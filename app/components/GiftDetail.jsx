@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {Money} from '@shopify/hydrogen';
 
 const GiftDetail = ({
@@ -40,10 +40,32 @@ const GiftDetail = ({
     ? allProductImages.slice(-4) 
     : allProductImages;
   
-  const hasExactlyFourImages = safeProductImages.length === 4;
   const [selectedImage, setSelectedImage] = useState(safeProductImages[0]); // Default to the first image
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
+
+  // Keep hero image in sync with selected variant image.
+  useEffect(() => {
+    const variantImageUrl = selectedVariant?.image?.url;
+    if (!variantImageUrl) return;
+
+    const matchingProductImage = allProductImages.find(
+      (img) => img?.node?.url === variantImageUrl,
+    );
+
+    if (matchingProductImage) {
+      setSelectedImage(matchingProductImage);
+      return;
+    }
+
+    // If variant image isn't part of product gallery, still show it in hero.
+    setSelectedImage({
+      node: {
+        url: variantImageUrl,
+        altText: selectedVariant?.image?.altText || productTitle || 'Product image',
+      },
+    });
+  }, [selectedVariant, allProductImages, productTitle]);
 
   const incrementQuantity = () => {
     setQuantity((prev) => prev + 1);
@@ -76,62 +98,36 @@ const GiftDetail = ({
       <div className="flex flex-col lg:flex-row gap-[3.438vw] w-full">
         {/* Left Section: Product Images */}
         <div className="lg:min-w-[42%] xl:min-w-[42%] 2xl:min-w-[42%] lg:w-[42%] xl:w-[42%] 2xl:w-[42%] w-1/2">
-          {hasExactlyFourImages ? (
-            /* 2x2 Grid Layout for 4 Images */
-            <div className="grid grid-cols-2 gap-3 w-full">
+          {/* Main Product Image */}
+          <div className="w-full bg-gray-50 rounded-none overflow-hidden mb-6">
+            <img
+              src={heroImageUrl}
+              alt={heroImageAlt}
+              className="w-full h-full object-contain"
+            />
+          </div>
+
+          {/* Thumbnail Images */}
+          {safeProductImages.length > 1 && (
+            <div className="flex flex-wrap gap-3">
               {safeProductImages.map((image, index) => (
                 <div
                   key={index}
-                  className={`cursor-pointer w-full aspect-square overflow-hidden border-2 transition-all bg-gray-50 ${
+                  className={`cursor-pointer w-[125px] h-[125px] overflow-hidden border-b-2 transition-all ${
                     selectedImage?.node?.url === image?.node?.url
-                      ? 'border-gray-800'
-                      : 'border-gray-200 hover:border-gray-400'
+                      ? 'border-b-gray-800'
+                      : 'border-b-gray-200 hover:border-b-gray-400'
                   }`}
                   onClick={() => setSelectedImage(image)}
                 >
                   <img
                     src={image?.node?.url || '/fallback-image.jpg'}
-                    alt={image?.node?.altText || `Product image ${index + 1}`}
+                    alt={image?.node?.altText || `Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
               ))}
             </div>
-          ) : (
-            /* Current Layout for Less Than 4 Images */
-            <>
-              {/* Main Product Image */}
-              <div className="w-full bg-gray-50 rounded-none overflow-hidden mb-6">
-                <img
-                  src={heroImageUrl}
-                  alt={heroImageAlt}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-
-              {/* Thumbnail Images */}
-              {safeProductImages.length > 1 && (
-                <div className="flex w-[36.08vw] gap-3">
-                  {safeProductImages.map((image, index) => (
-                    <div
-                      key={index}
-                      className={`cursor-pointer w-[125px] h-[125px] overflow-hidden border-b-2 transition-all ${
-                        selectedImage?.node?.url === image?.node?.url
-                          ? 'border-b-gray-800'
-                          : 'border-b-gray-200 hover:border-b-gray-400'
-                      }`}
-                      onClick={() => setSelectedImage(image)}
-                    >
-                      <img
-                        src={image?.node?.url || '/fallback-image.jpg'}
-                        alt={image?.node?.altText || `Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
           )}
         </div>
 

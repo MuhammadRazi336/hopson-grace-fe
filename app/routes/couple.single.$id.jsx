@@ -26,7 +26,7 @@ function isRegistryGiftCardProduct(product) {
     .toUpperCase()
     .replace(/\s+/g, ' ')
     .trim();
-  return normalizedName.includes('THE REGISTRY GIFT CARD');
+  return normalizedName.includes('THE REGISTRY GIFT CARD' || 'The Registry Gift Card');
 }
 
 const COLLECTION_QUERY = `#graphql
