@@ -379,6 +379,64 @@ export function Header() {
     }
   };
 
+  const handleNotificationClick = (notification) => {
+    if (!notification) return;
+
+    if (notification.status === 'unread') {
+      markNotificationAsRead(notification.id);
+    }
+
+    if (notification.type === 'gift_purchased') {
+      navigate('/dashboard/gifttracker');
+      return;
+    }
+
+    if (notification.type === 'registry') {
+      navigate(`/couple/single/${notification.userId}`);
+      return;
+    }
+
+    if (notification.type === 'signup' || notification.type === 'login') {
+      navigate('/dashboard');
+      return;
+    }
+
+    if (
+      notification.type === 'product_discontinued' ||
+      notification.type === 'product_new_added' ||
+      notification.type === 'gift'
+    ) {
+      navigate('/dashboard/addgifts');
+      return;
+    }
+
+    if (notification.type === 'event') {
+      const normalizedTitle = String(notification.title || '')
+        .trim()
+        .toLowerCase();
+
+      if (normalizedTitle === 'complete your event setup') {
+        navigate('/dashboard/registry');
+        return;
+      }
+
+      const eventId =
+        notification.data?.eventId ||
+        notification.eventId ||
+        registryData?.events?.[0]?.id;
+      const registryId =
+        notification.data?.registryId ||
+        notification.registryId ||
+        registryData?.id;
+
+      if (eventId) {
+        navigate(
+          `/dashboard/registry/${eventId}${registryId ? `?registryId=${registryId}` : ''}`,
+        );
+      }
+    }
+  };
+
   // Toggle notification dropdown
   const toggleNotificationDropdown = () => {
     setShowNotificationDropdown(prev => !prev);
@@ -958,7 +1016,7 @@ export function Header() {
                         {unreadCount > 0 && (
                           <button
                             onClick={markAllAsRead}
-                            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            className="text-sm text-[#C52248] hover:text-[#911b36] font-medium"
                           >
                             Mark all as read
                           </button>
@@ -979,9 +1037,7 @@ export function Header() {
                                 notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
                               }`}
                               onClick={() => {
-                                if (notification.status === 'unread') {
-                                  markNotificationAsRead(notification.id);
-                                }
+                                handleNotificationClick(notification);
                               }}
                             >
                               <div className="flex items-start space-x-3">
@@ -1503,30 +1559,7 @@ export function Header() {
                                   notification.status === 'unread' ? 'bg-[#F5F2ED]' : ''
                                 }`}
                                 onClick={() => {
-                                  if (notification.status === 'unread') {
-                                    markNotificationAsRead(notification.id);
-                                  }
-                                  if (notification.type === "gift_purchased"){
-                                    navigate("/dashboard/gifttracker")
-                                  }
-                                  if (notification.type === "registry"){
-                                    navigate(`/couple/single/${notification.userId}`)
-                                  }
-                                  if (notification.type === "signup" || notification.type === "login"){
-                                    navigate(`/dashboard`)
-                                  }
-                                  if (notification.type === "product_discontinued" || notification.type === "product_new_added" || notification.type === "gift"){
-                                    navigate(`/dashboard/addgifts`)
-                                  }
-                                  if (notification.type === "event"){
-                                    const eventId = registryData?.events?.[0]?.id;
-                                    const registryId = registryData?.id;
-                                    if (eventId) {
-                                      navigate(
-                                        `/dashboard/registry/${eventId}${registryId ? `?registryId=${registryId}` : ''}`,
-                                      );
-                                    }
-                                  }
+                                  handleNotificationClick(notification);
                                 }}
                               >
                                 <div className="flex items-start space-x-3">

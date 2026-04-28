@@ -682,9 +682,9 @@ const ThankYou = () => {
               <div className="flex items-center justify-start h-full flex-row">
                 <div className={`w-9/12 pl-16 ${!showPreview ? 'pt-16' : 'pt-10'}`}>
                   <img
-                    src="/assets/Images/greeting-flower-checkout.png"
+                    src="/assets/Images/couple-header-logo.png"
                     alt="checkout-bg-1"
-                    className="w-auto h-auto mx-auto mb-8"
+                    className="w-[120px] mx-auto mb-[20px]"
                   />
 
                   {!showPreview ? (

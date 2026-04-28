@@ -568,7 +568,11 @@ function SidebarFilter({
                     type="checkbox"
                     className="m-0 w-[1.56vw] h-[1.56vw] rounded-none appearance-none border-[#1F1D1B] checked:bg-[#1F1D1B]"
                     checked={shopAllChecked}
-                    onChange={() => setShopAllChecked((prev) => !prev)}
+                    onChange={() => {
+                      if (typeof window !== 'undefined') {
+                        window.location.href = '/products';
+                      }
+                    }}
                   />
                   Shop All
                 </label>
