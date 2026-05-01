@@ -441,11 +441,19 @@ function CoupleListing({data}) {
               </h3>
 
               <p className="text-center text-lg text-[#1F1D1B] uppercase">
-                {couple.events.eventDate ? new Date(couple.events.eventDate).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                }) : 'Date not available'}
+                {(() => {
+                  const eventDate =
+                    couple?.registry?.events?.[0]?.eventDate ||
+                    couple?.events?.eventDate ||
+                    couple?.event?.eventDate;
+                  return eventDate
+                    ? new Date(eventDate).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })
+                    : 'Date not available';
+                })()}
               </p>
               {couple.registry && couple.registry.status === "published" && (
               <Link to={`/couple/single/${couple.id}`}>
