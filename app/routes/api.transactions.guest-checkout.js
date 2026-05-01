@@ -40,6 +40,7 @@ export async function action({request, context}) {
       context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID;
     const clientSecret =
       context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
+    const paypalEnv = context.env?.PAYPAL_ENV || process.env.PAYPAL_ENV;
 
     if (!clientId || !clientSecret) {
       return json(
@@ -54,8 +55,9 @@ export async function action({request, context}) {
     const accessToken = await getPayPalAccessToken({
       clientId,
       clientSecret,
+      paypalEnv,
     });
-    await capturePayPalOrder(accessToken, paypalOrderId);
+    await capturePayPalOrder(accessToken, paypalOrderId, {paypalEnv});
 
     // Forward to external API for order persistence (same payload; external API must accept paypalOrderId)
     try {
