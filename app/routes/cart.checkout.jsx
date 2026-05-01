@@ -1222,6 +1222,7 @@ const PayPalPaymentForm = ({
   } = loaderData || {};
 
   const [error, setError] = useState(null);
+  const [errorDetails, setErrorDetails] = useState(null);
   const [success, setSuccess] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const fetcher = useFetcher();
@@ -1244,6 +1245,13 @@ const PayPalPaymentForm = ({
       navigate('/thankyou');
     } else if (fetcher.data?.error && fetcher.state === 'idle') {
       setError(fetcher.data.error);
+      const details =
+        typeof fetcher.data.details === 'string'
+          ? fetcher.data.details
+          : fetcher.data.details
+            ? JSON.stringify(fetcher.data.details)
+            : null;
+      setErrorDetails(details);
       setShowPopup(true);
     }
   }, [fetcher.data, fetcher.state, navigate]);
@@ -1251,6 +1259,7 @@ const PayPalPaymentForm = ({
   const handleApprove = (data) => {
     if (!data?.orderID) {
       setError('PayPal order ID not received');
+      setErrorDetails(null);
       setShowPopup(true);
       return;
     }
@@ -1386,6 +1395,11 @@ const PayPalPaymentForm = ({
                 ? error || 'There was an error processing your payment.'
                 : 'Thank you for your payment.'}
             </p>
+            {!success && errorDetails && (
+              <p className="mb-6 text-xs leading-5 text-white/90 break-words">
+                {errorDetails}
+              </p>
+            )}
             <button
               className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
               onClick={() => setShowPopup(false)}
@@ -1450,6 +1464,7 @@ const PayPalPaymentForm = ({
                   onApprove={(data) => handleApprove(data)}
                   onError={(err) => {
                     setError(err?.message || 'PayPal error');
+                    setErrorDetails(null);
                     setShowPopup(true);
                   }}
                   style={{layout: 'vertical', color: 'black', shape: 'rect'}}
@@ -1482,6 +1497,11 @@ const PayPalPaymentForm = ({
                   ? error || 'There was an error processing your payment.'
                   : 'Thank you for your payment.'}
               </p>
+              {!success && errorDetails && (
+                <p className="mb-6 text-xs leading-5 text-white/90 break-words">
+                  {errorDetails}
+                </p>
+              )}
               <button
                 className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
                 onClick={() => setShowPopup(false)}
