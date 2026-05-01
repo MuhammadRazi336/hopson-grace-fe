@@ -3,10 +3,11 @@
  * Set PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, and optionally PAYPAL_ENV=sandbox|live.
  */
 
-const PAYPAL_API_BASE =
-  process.env.PAYPAL_ENV === 'live'
+function getPayPalApiBase(paypalEnv) {
+  return paypalEnv === 'live'
     ? 'https://api-m.paypal.com'
     : 'https://api-m.sandbox.paypal.com';
+}
 
 /**
  * Get OAuth2 access token from PayPal.
@@ -14,7 +15,8 @@ const PAYPAL_API_BASE =
  * @returns {Promise<string>} access token
  */
 export async function getPayPalAccessToken(credentials) {
-  const {clientId, clientSecret} = credentials;
+  const {clientId, clientSecret, paypalEnv} = credentials;
+  const apiBase = getPayPalApiBase(paypalEnv || process.env.PAYPAL_ENV);
   if (!clientId || !clientSecret) {
     throw new Error('PayPal credentials missing: PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET');
   }
@@ -23,7 +25,7 @@ export async function getPayPalAccessToken(credentials) {
     typeof Buffer !== 'undefined'
       ? Buffer.from(credentialsString, 'utf8').toString('base64')
       : btoa(credentialsString);
-  const res = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
+  const res = await fetch(`${apiBase}/v1/oauth2/token`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -47,9 +49,10 @@ export async function getPayPalAccessToken(credentials) {
  * @returns {Promise<{ id: string, status: string }>}
  */
 export async function createPayPalOrder(accessToken, options) {
-  const {amount, currencyCode = 'CAD'} = options;
+  const {amount, currencyCode = 'CAD', paypalEnv} = options;
+  const apiBase = getPayPalApiBase(paypalEnv || process.env.PAYPAL_ENV);
   const value = typeof amount === 'number' ? amount.toFixed(2) : String(amount);
-  const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
+  const res = await fetch(`${apiBase}/v2/checkout/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -84,8 +87,10 @@ export async function createPayPalOrder(accessToken, options) {
  * @param {string} orderId
  * @returns {Promise<{ id: string, status: string }>}
  */
-export async function capturePayPalOrder(accessToken, orderId) {
-  const res = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${orderId}/capture`, {
+export async function capturePayPalOrder(accessToken, orderId, options = {}) {
+  const {paypalEnv} = options;
+  const apiBase = getPayPalApiBase(paypalEnv || process.env.PAYPAL_ENV);
+  const res = await fetch(`${apiBase}/v2/checkout/orders/${orderId}/capture`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

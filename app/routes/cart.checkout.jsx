@@ -342,6 +342,7 @@ export async function action({request, context}) {
       context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID;
     const clientSecret =
       context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
+    const paypalEnv = context.env?.PAYPAL_ENV || process.env.PAYPAL_ENV;
 
     if (!clientId || !clientSecret) {
       return json(
@@ -359,10 +360,15 @@ export async function action({request, context}) {
 
     let order;
     try {
-      const accessToken = await getPayPalAccessToken({clientId, clientSecret});
+      const accessToken = await getPayPalAccessToken({
+        clientId,
+        clientSecret,
+        paypalEnv,
+      });
       order = await createPayPalOrder(accessToken, {
         amount,
         currencyCode: payCurrency,
+        paypalEnv,
       });
     } catch (paypalErr) {
       return json(

@@ -43,6 +43,7 @@ export async function action({request, context}) {
       context.env?.PAYPAL_CLIENT_ID || process.env.PAYPAL_CLIENT_ID;
     const clientSecret =
       context.env?.PAYPAL_CLIENT_SECRET || process.env.PAYPAL_CLIENT_SECRET;
+    const paypalEnv = context.env?.PAYPAL_ENV || process.env.PAYPAL_ENV;
 
     if (!clientId || !clientSecret) {
       return json(
@@ -55,8 +56,12 @@ export async function action({request, context}) {
 
     // Capture PayPal order on server (credentials never sent to browser)
     try {
-      const accessToken = await getPayPalAccessToken({ clientId, clientSecret });
-      await capturePayPalOrder(accessToken, paypalOrderId);
+      const accessToken = await getPayPalAccessToken({
+        clientId,
+        clientSecret,
+        paypalEnv,
+      });
+      await capturePayPalOrder(accessToken, paypalOrderId, {paypalEnv});
     } catch (paypalErr) {
       console.error('PayPal capture error:', paypalErr);
       return json(
