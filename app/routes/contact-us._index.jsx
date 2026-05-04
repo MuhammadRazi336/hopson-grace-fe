@@ -166,7 +166,7 @@ const ContactUs = () => {
                   <>
                     <Link
                       to={
-                        'https://calendly.com/concierge-theregistry/setting-up-your-registry'
+                        'https://calendly.com/d/cymt-wpm-g8p/new-meeting'
                       }
                       target="_blank"
                       rel="noopener noreferrer"
@@ -198,8 +198,8 @@ const ContactUs = () => {
                 <Link
                   to={`${
                     user
-                      ? 'https://calendly.com/concierge-theregistry/30min'
-                      : 'https://calendly.com/concierge-theregistry/learn-more'
+                      ? 'https://calendly.com/d/cymt-wpm-g8p/new-meeting'
+                      : 'https://calendly.com/d/cymt-wpm-g8p/new-meeting'
                   }`}
                   target="_blank"
                   rel="noopener noreferrer"
