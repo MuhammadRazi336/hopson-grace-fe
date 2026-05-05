@@ -114,7 +114,7 @@ const NavBarLinks = (mobileClasses) => {
                     </li>
                     <li className='flex items-center gap-2'>
                       <NavLink
-                        to="/dashboard/addgifts"
+                        to="/products"
                         className="mb-[26px] text-black font-semibold underline flex items-center gap-2"
                       >
                         SHOP ALL
