@@ -49,11 +49,15 @@ const ImageAndText = ({
 
         {stepsCheck ? (
           <Steps className="max-w-[520px]" />
-        ) : (
+        ) : typeof description === 'string' ? (
           <p
             className="text-[12px] leading-[18px] font-[400] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center ml-auto mr-auto"
             dangerouslySetInnerHTML={{__html: description}}
           />
+        ) : (
+          <div className="text-[12px] leading-[18px] font-[400] lg:text-[1.354vw] xl:text-[1.354vw] 2xl:text-[1.354vw] lg:leading-[2.292vw] xl:leading-[2.292vw] 2xl:leading-[2.292vw] max-w-[488px] lg:mt-[2.042vw] mt-4 mb-[25px] text-center ml-auto mr-auto">
+            {description}
+          </div>
         )}
 
       <div className="lg:mx-auto text-center">
