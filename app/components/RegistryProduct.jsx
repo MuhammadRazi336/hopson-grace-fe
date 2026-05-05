@@ -1,11 +1,14 @@
 import { Link } from '@remix-run/react';
 import React, {useEffect, useRef, useState} from 'react';
 import {formatPrice} from '~/utils/priceFormatter';
+import {Swiper, SwiperSlide} from 'swiper/react';
+import {FreeMode} from 'swiper/modules';
 
 const ProductCard = ({
   image,
   productName,
   price,
+  images = [],
   description: _description,
   onAddToRegistry,
   productHandle,
@@ -16,6 +19,7 @@ const ProductCard = ({
   const [quantity, setQuantity] = useState(1);
   const [isGroupGift, setIsGroupGift] = useState(false);
   const [addedHold, setAddedHold] = useState(false);
+  const [activeImage, setActiveImage] = useState(image);
   const prevSubmittingRef = useRef(false);
 
   useEffect(() => {
@@ -32,7 +36,81 @@ const ProductCard = ({
     prevSubmittingRef.current = isSubmitting;
   }, [isSubmitting]);
 
+  useEffect(() => {
+    setActiveImage(image);
+  }, [image]);
+
+  const imageList = (Array.isArray(images) ? images : [])
+    .map((img) => (typeof img === 'string' ? img : img?.url))
+    .filter(Boolean);
+  const fallbackImage = image || '/assets/Images/placeholder.jpg';
+  const galleryImages = imageList.length > 0 ? imageList : [fallbackImage];
+  const mainImage = activeImage || galleryImages[0];
+
   const showAdded = isSubmitting || addedHold;
+
+  const renderThumbnails = () => {
+    if (galleryImages.length <= 1) return null;
+
+    if (galleryImages.length > 5) {
+      return (
+        <Swiper
+          modules={[FreeMode]}
+          freeMode
+          slidesPerView={5}
+          spaceBetween={8}
+          className="mt-2"
+        >
+          {galleryImages.map((thumb, idx) => (
+            <SwiperSlide key={`${productName}-thumb-${idx}`}>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setActiveImage(thumb);
+                }}
+                className={`w-full border ${
+                  mainImage === thumb ? 'border-[#1F1D1B]' : 'border-transparent'
+                }`}
+              >
+                <img
+                  src={thumb}
+                  alt={`${productName} thumbnail ${idx + 1}`}
+                  className="w-full object-cover aspect-square"
+                />
+              </button>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      );
+    }
+
+    return (
+      <div className="mt-2 grid grid-cols-5 gap-2">
+        {galleryImages.map((thumb, idx) => (
+          <button
+            key={`${productName}-thumb-${idx}`}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveImage(thumb);
+            }}
+            className={`border ${
+              mainImage === thumb ? 'border-[#1F1D1B]' : 'border-transparent'
+            }`}
+          >
+            <img
+              src={thumb}
+              alt={`${productName} thumbnail ${idx + 1}`}
+              className="w-full object-cover aspect-square"
+            />
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   const incrementQuantity = () => {
     setQuantity((prev) => prev + 1);
@@ -60,10 +138,11 @@ const ProductCard = ({
           {productDetailUrl ? (
             <Link to={productDetailUrl} className="block cursor-pointer">
               <img
-                src={image}
+                src={mainImage}
                 alt={productName}
                 className="w-full object-cover aspect-square"
               />
+              {renderThumbnails()}
               <h3 className="text-[18px] font-semibold uppercase mt-3">
                 {productName}
               </h3>
@@ -71,10 +150,11 @@ const ProductCard = ({
           ) : (
             <>
               <img
-                src={image}
+                src={mainImage}
                 alt={productName}
                 className="w-full object-cover aspect-square"
               />
+              {renderThumbnails()}
               <h3 className="text-[18px] font-semibold uppercase mt-3">
                 {productName}
               </h3>
@@ -89,10 +169,11 @@ const ProductCard = ({
             {productDetailUrl ? (
               <Link to={productDetailUrl} className="block cursor-pointer">
                 <img
-                  src={image}
+                  src={mainImage}
                   alt={productName}
                   className="w-full mx-auto object-cover aspect-square mb-[20px]"
                 />
+                {renderThumbnails()}
                 <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
                   {brandName}
                 </h4>
@@ -103,10 +184,11 @@ const ProductCard = ({
             ) : (
               <>
                 <img
-                  src={image}
+                  src={mainImage}
                   alt={productName}
                   className="w-full mx-auto object-cover mb-[20px] aspect-square"
                 />
+                {renderThumbnails()}
                 <h4 className="text-[16px] lg:text-[0.833vw] leading-[16px] lg:leading-[0.833vw] font-normal uppercase text-left m-0 mb-[10px]">
                   {brandName}
                 </h4>
