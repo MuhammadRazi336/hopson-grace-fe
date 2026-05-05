@@ -1590,7 +1590,7 @@ export default function CoupleProfile() {
         showCart={hasProducts && registryId}
         cartCount={cartQuantityTotal}
       />
-      <div className="text-center pt-[80px] mx-auto font-sans px-10">
+      <div className="text-center pt-[80px] mx-auto font-sans px-10 max-[1025px]:px-5">
         {safeResponse?.data?.[0]?.events?.[0]?.backgroundImage?.fileUrl ? (
           <img
             src={safeResponse.data[0].events[0].backgroundImage.fileUrl}
@@ -1604,24 +1604,31 @@ export default function CoupleProfile() {
             aria-label="Couple"
           />
         )}
-        <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-16 xl:-translate-y-[200px]">
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
-            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] font-[400] lowercase prata  lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto">
-              {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} &{' '}
+        <div className="flex flex-wrap xl:flex-nowrap justify-center items-start -mb-16 xl:-translate-y-[200px] max-[1025px]:-mb-0">
+          <div
+            className={`lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] ${
+              safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl
+                ? 'max-[1025px]:mt-3'
+                : 'max-[1025px]:mt-20'
+            }  max-[1025px]:order-1`}
+          >
+            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] font-[400] lowercase prata  lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto max-[1025px]:text-[36px]">
+              {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} &{' '}<br/>
               {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
             </h1>
           </div>
+     
             {safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl ? (
-              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] w-full ">
+              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] w-full max-[1025px]:order-0 max-[1025px]:-mt-[90px]">
               <img
                 src={safeResponse.data[0].events[0].image.fileUrl}
                 alt="Couple's Image"
-                className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto"
+                className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto max-[1025px]:h-[183px] max-[1025px]:w-[183px] max-[1025px]:top-[290px]"
               />
               </div>
             ) : (
-              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[3.979vw] lg:h-[3.979vw] w-full ">
-              <div className='placeholders mt-[70px] flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none rounded-full bg-[#F5F2ED] h-[400px] w-[400px] mx-auto object-cover'>
+              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[3.979vw] lg:h-[3.979vw] w-full">
+              <div className='placeholders mt-[70px] flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none rounded-full bg-[#F5F2ED] h-[400px] w-[400px] mx-auto object-cover max-[1025px]:h-[183px] max-[1025px]:w-[183px] max-[1025px]:top-[290px]'>
                         <img 
                           src="/assets/Images/copyrightLogo.png" 
                           alt='placeholder' 
@@ -1637,9 +1644,9 @@ export default function CoupleProfile() {
                       </div>
               </div>
             )}
-          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px]">
-            <div className="mr-16">
-              <p className="md:text-[42px] my-2 leading-[1.25] prata mx-auto lg:text-[2.5vw] lg:leading-[2.917vw] text-center">
+          <div className="lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] max-[1025px]:mt-0 max-[1025px]:order-2">
+            <div className="mr-16 max-[1025px]:mr-0 max-[1025px]:mt-0">
+              <p className="md:text-[42px] my-2 leading-[1.25] prata mx-auto lg:text-[2.5vw] lg:leading-[2.917vw] text-center max-[1025px]:text-[24px]">
                 {formatRegistryEventDate(
                   safeResponse?.data?.[0]?.events?.[0]?.eventDate,
                 ) || 'Date TBD'}

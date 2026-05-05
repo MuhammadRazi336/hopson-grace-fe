@@ -1881,6 +1881,10 @@ export default function AddGifts() {
                   .map((product) => {
                     const firstImage =
                       product.image || '/assets/Images/placeholder.jpg';
+                    const productImages =
+                      product.images?.edges
+                        ?.map((edge) => edge?.node?.url)
+                        .filter(Boolean) || [];
 
                     // Derive brand name: among this product's collections, find a collection marked as a brand
                     let brandName = '';
@@ -1904,6 +1908,7 @@ export default function AddGifts() {
                         key={product.id}
                         id={product.id}
                         image={firstImage}
+                        images={productImages}
                         productName={product.title}
                         price={product.price}
                         description={product.description}
