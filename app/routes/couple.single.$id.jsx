@@ -1595,11 +1595,11 @@ export default function CoupleProfile() {
           <img
             src={safeResponse.data[0].events[0].backgroundImage.fileUrl}
             alt="Couple"
-            className="w-full h-[400px] lg:h-[620px] object-cover"
+            className="w-full h-[400px] lg:h-[620px] object-cover max-[1025px]:hidden"
           />
         ) : (
           <div
-            className="w-full h-[400px] lg:h-[620px] bg-[#446184]"
+            className="w-full h-[400px] lg:h-[620px] bg-[#446184] max-[1025px]:hidden"
             role="img"
             aria-label="Couple"
           />
@@ -1608,31 +1608,31 @@ export default function CoupleProfile() {
           <div
             className={`lg:w-[calc(100% - 36.979vw)] w-full mt-[250px] ${
               safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl
-                ? 'max-[1025px]:mt-3'
+                ? 'max-[1025px]:mt-20'
                 : 'max-[1025px]:mt-20'
             }  max-[1025px]:order-1`}
           >
-            <h1 className="md:text-[75px] my-2 max-w-[340px] leading-[1.25] font-[400] lowercase prata  lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto max-[1025px]:text-[36px]">
+            <h1 className="md:text-[75px] my-2 max-w-[370px] leading-[1.25] font-[400] lowercase prata  lg:text-[4.479vw] lg:leading-[4.792vw] text-center mx-auto max-[1025px]:text-[36px]">
               {safeResponse?.data?.[0]?.user?.firstName || 'Couple'} &{' '}<br/>
               {safeResponse?.data?.[0]?.user?.fianceFirstName || 'Partner'}
             </h1>
           </div>
      
             {safeResponse?.data?.[0]?.events?.[0]?.image?.fileUrl ? (
-              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] w-full max-[1025px]:order-0 max-[1025px]:-mt-[90px]">
+              <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] w-full max-[1025px]:order-0">
               <img
                 src={safeResponse.data[0].events[0].image.fileUrl}
                 alt="Couple's Image"
-                className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto max-[1025px]:h-[183px] max-[1025px]:w-[183px] max-[1025px]:top-[290px]"
+                className="rounded-full xl:w-full xl:h-full h-[300px] w-[100px] mx-auto max-[1025px]:h-[183px] max-[1025px]:w-[183px] max-[1025px]:top-[290px] max-[1025px]:mt-[70px]"
               />
               </div>
             ) : (
               <div className="lg:w-[36.979vw] lg:min-w-[36.979vw] lg:min-h-[3.979vw] lg:h-[3.979vw] w-full">
-              <div className='placeholders mt-[70px] flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none rounded-full bg-[#F5F2ED] h-[400px] w-[400px] mx-auto object-cover max-[1025px]:h-[183px] max-[1025px]:w-[183px] max-[1025px]:top-[290px]'>
+              <div className='placeholders mt-[70px] flex flex-col items-center justify-center absolute inset-0 z-[20] pointer-events-none rounded-full bg-[#F5F2ED] h-[400px] w-[400px] mx-auto object-cover max-[1025px]:h-[183px] max-[1025px]:w-[183px] max-[1025px]:top-[290px] max-[1025px]:static'>
                         <img 
                           src="/assets/Images/copyrightLogo.png" 
                           alt='placeholder' 
-                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain' 
+                          className='w-[8vw] h-[7.5vw] brightness-0 object-contain max-[1025px]:w-[60px] max-[1025px]:h-[60px]' 
                           onError={(e) => console.error('Failed to load copyrightLogo.png', e)}
                         />
                         <img 
@@ -1654,13 +1654,13 @@ export default function CoupleProfile() {
               <img
                 src="/assets/Images/profile-view-page-bdr.png"
                 alt="Couple"
-                className="max-w-[300px] lg:max-w-[19.219vw] h-auto mx-auto"
+                className="max-w-[19.219vw] h-auto mx-auto max-[1025px]:max-w-[160px]"
               />
-              <div className="text-right ">
-                <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
+              <div className="text-center max-[1025px]:mt-5">
+                <p className="text-lg my-1 uppercase font-[500] text-[24px] leading-[32px] max-[1025px]:text-[16px] max-[1025px]:leading-[24px]">
                   {safeResponse?.data?.[0]?.events?.[0]?.location || ''}
                 </p>
-                <p className="text-lg my-1 uppercase font-[500] lg:text-[1.146vw] lg:leading-[1.563vw]">
+                <p className="text-lg my-1 uppercase font-[500] text-[24px] leading-[32px] max-[1025px]:text-[16px] max-[1025px]:leading-[24px]">
                   {eventCity}
                   {eventCity && eventProvince ? ', ' : ''}
                   {eventProvince}
@@ -1670,7 +1670,7 @@ export default function CoupleProfile() {
           </div>
         </div>
 
-        <p className="prata w-[58.073vw] max-w-[100%] text-[24px] tracking-[0.5px] lg:leading-[2.604vw] mx-auto mb-[7.552vw] leading-relaxed">
+        <p className="prata w-[58.073vw] max-w-[100%] text-[24px] tracking-[0.5px] lg:leading-[2.604vw] mx-auto mb-[7.552vw] leading-relaxed max-[1025px]:text-[16px] max-[1025px]:mt-8">
           {safeResponse?.data?.[0]?.events?.[0]?.welcomeMessage}
         </p>
       </div>
@@ -1840,7 +1840,7 @@ export default function CoupleProfile() {
 
         {/* Show products if they exist, otherwise show no products message */}
         {hasProducts && registryId && safeData.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] p-0 mt-[5.885vw]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[2.083vw] p-0 mt-[5.885vw] max-[1025px]:gap-10">
             {filteredData
               .map((product, index) => {
                 // Safety check: Ensure product has required properties
