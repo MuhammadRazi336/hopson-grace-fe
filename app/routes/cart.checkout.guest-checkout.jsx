@@ -7,6 +7,7 @@ export async function action({request, context}) {
   try {
     const formData = await request.formData();
     const paypalOrderId = formData.get('paypalOrderId')?.trim();
+    const finalizePayloadRaw = formData.get('finalizePayload')?.toString();
 
     if (!paypalOrderId || paypalOrderId.length < 10) {
       return json(
@@ -15,13 +16,27 @@ export async function action({request, context}) {
       );
     }
 
-    // Get data from session
-    const lineItems = JSON.parse(context.session.get('lineItems') || '[]');
-    const message = context.session.get('message') || '';
-    const firstName = context.session.get('firstName') || '';
-    const lastName = context.session.get('lastName') || '';
-    const email = context.session.get('email') || '';
-    const registryId = context.session.get('registryId') || '';
+    let parsedPayload = null;
+    if (finalizePayloadRaw) {
+      try {
+        parsedPayload = JSON.parse(finalizePayloadRaw);
+      } catch {
+        return json({error: 'Invalid finalize payload'}, {status: 400});
+      }
+    }
+
+    // Get data from payload first (retry-safe), then session
+    const lineItems =
+      parsedPayload?.lineItems || JSON.parse(context.session.get('lineItems') || '[]');
+    const message =
+      parsedPayload?.message ?? context.session.get('message') ?? '';
+    const firstName =
+      parsedPayload?.firstName ?? context.session.get('firstName') ?? '';
+    const lastName =
+      parsedPayload?.lastName ?? context.session.get('lastName') ?? '';
+    const email = parsedPayload?.email ?? context.session.get('email') ?? '';
+    const registryId =
+      parsedPayload?.registryId ?? context.session.get('registryId') ?? '';
 
     if (!lineItems.length || !firstName || !lastName || !email || !registryId) {
       return json(
@@ -63,11 +78,18 @@ export async function action({request, context}) {
       });
       await capturePayPalOrder(accessToken, paypalOrderId, {paypalEnv});
     } catch (paypalErr) {
-      console.error('PayPal capture error:', paypalErr);
-      return json(
-        { error: paypalErr.message || 'PayPal capture failed' },
-        { status: 502 }
-      );
+      const captureMessage = String(paypalErr?.message || '');
+      const isAlreadyCaptured =
+        captureMessage.includes('ORDER_ALREADY_CAPTURED') ||
+        captureMessage.includes('ORDER_NOT_APPROVED') ||
+        captureMessage.includes('422');
+      if (!isAlreadyCaptured) {
+        console.error('PayPal capture error:', paypalErr);
+        return json(
+          {error: paypalErr.message || 'PayPal capture failed'},
+          {status: 502},
+        );
+      }
     }
 
     // Use the same per-registry message key used on the message step
@@ -97,12 +119,29 @@ export async function action({request, context}) {
       if (!response.ok) {
         const errText = await response.text();
         console.error('External guest-checkout failed:', response.status, errText);
+
+        const lowerErrText = String(errText || '').toLowerCase();
+        if (
+          response.status === 403 &&
+          lowerErrText.includes('registry is already closed')
+        ) {
+          return json(
+            {
+              error:
+                'This registry is already closed, so we could not complete this order automatically.',
+              details: errText,
+              code: 'REGISTRY_CLOSED',
+            },
+            {status: 403},
+          );
+        }
+
         return json(
           {
             error: 'Payment captured but order completion failed. Contact support with your PayPal order ID.',
-            details: errText
+            details: errText,
           },
-          { status: 502 }
+          {status: 502},
         );
       }
 
