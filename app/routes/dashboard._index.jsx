@@ -424,7 +424,7 @@ const index = () => {
       description:
         'Gifts convert to cash, giving you the flexibility to finalize your registry after the wedding.',
       value: registry?.registryFundBalance || 0,
-      label: 'FUNDS ADDED',
+      label: 'FUNDS RECEIVED',
       showIcon: true,
       icon: '/assets/Images/BESPOKETRAVEL.png',
       buttonText: 'ADD FUNDS',

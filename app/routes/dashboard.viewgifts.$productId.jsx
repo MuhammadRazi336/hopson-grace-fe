@@ -202,7 +202,7 @@ const ViewGifts = () => {
                   <div className="absolute top-0 left-0 w-full h-full">
                     <div className="flex items-center justify-start h-full flex-row">
                       <div
-                        className={`w-9/12 xl:pl-16 pl-8  xl:pt-16 pt-8 
+                        className={`w-9/12 xl:pl-16 pl-8
                   }`}
                       >
                         <img

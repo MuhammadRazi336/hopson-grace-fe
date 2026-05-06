@@ -38,7 +38,10 @@ import classic from '/assets/Images/classic.png';
 import electic from '/assets/Images/electic.jpg';
 import {STATES_BY_COUNTRY} from '~/constants/StatesByCountry';
 
-const CURRENCY_NOTICE_PENDING_KEY = '@CurrencyNoticePendingAfterRegister';
+const SHOW_MINI_TUTORIAL_FROM_ONBOARDING_KEY =
+  '@ShowDashboardMiniTutorialFromOnboarding';
+const SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY =
+  '@ShowCurrencyNoticeAfterDashboardTutorial';
 
 const OnboardingClient = ({onStepChange}) => {
   const {user, collections} = useLoaderData();
@@ -432,7 +435,11 @@ const OnboardingClient = ({onStepChange}) => {
       try {
         const collectionsString = JSON.stringify(selectedSubCollections || []);
         localStorage.setItem('@SelectedSubCollections', collectionsString);
-        localStorage.setItem(CURRENCY_NOTICE_PENDING_KEY, 'true');
+        // Force dashboard flow after onboarding:
+        // 1) show mini tutorial popup once, 2) then show currency popup.
+        localStorage.setItem(SHOW_MINI_TUTORIAL_FROM_ONBOARDING_KEY, 'true');
+        localStorage.removeItem(SHOW_CURRENCY_AFTER_DASHBOARD_TUTORIAL_KEY);
+        localStorage.removeItem('@CurrencyNoticePendingAfterRegister');
       } catch (storageError) {
         // Continue even if storage fails
         console.log('Storage error:', storageError);
@@ -968,11 +975,7 @@ const Step3 = ({value, onChange, step3Error, onSkip}) => {
   );
 };
 
-const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
-  const handleSkipLater = () => {
-    onSkip();
-  };
-
+const Step4 = ({formData, handleInputChange, step4Errors}) => {
   return (
     <div className="">
       <div className="text-center">
@@ -1140,15 +1143,6 @@ const Step4 = ({formData, handleInputChange, step4Errors, onSkip}) => {
           error={step4Errors?.postalCode}
         />
       </div>
-      <div className="mt-4 text-center">
-        <button
-          onClick={handleSkipLater}
-          className="font-normal text-[22px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[1.25vw] xl:leading-[1.25vw] 2xl:leading-[1.25vw] max-[768px]:text-base text-white underline hover:opacity-80"
-        >
-          I'LL  ADD  THIS  LATER
-        </button>
-      </div>
-
     </div>
   );
 };

@@ -911,28 +911,30 @@ const BlogDetails = () => {
           </div>
           )}
 
-          <div className="text-center mt-16">
-            <p className="text-[24px] font-semibold mx-auto mb-2 uppercase mt-28 w-[90%]">
-              {metafields.couple_name || 'THEIR'} FAVOURITE GIFTS
-            </p>
-            <img
-              src={BlackLine}
-              alt=""
-              className="w-[100px] h-[4px] mx-auto mb-20"
-            />
-             <div className="flex flex-col">
-               {products.slice(0, 3).map((product, index) => (
-                <ProductCard
-                  key={product.id || index}
-                  product={product}
-                  index={index}
-                  onAddToRegistry={(quantity) =>
-                    handleAddToRegistry(product, quantity)
-                  }
-                />
-               ))}
-             </div>
-          </div>
+          {Array.isArray(products) && products.length > 0 && (
+            <div className="text-center mt-16">
+              <p className="text-[24px] font-semibold mx-auto mb-2 uppercase mt-28 w-[90%]">
+                {metafields.couple_name || 'THEIR'} FAVOURITE GIFTS
+              </p>
+              <img
+                src={BlackLine}
+                alt=""
+                className="w-[100px] h-[4px] mx-auto mb-20"
+              />
+              <div className="flex flex-col">
+                {products.slice(0, 3).map((product, index) => (
+                  <ProductCard
+                    key={product.id || index}
+                    product={product}
+                    index={index}
+                    onAddToRegistry={(quantity) =>
+                      handleAddToRegistry(product, quantity)
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+          )}
                
 
           {richTextBlock.title && richTextBlock.content && metafields.category !== 'The Planning Edit' && (
