@@ -752,6 +752,8 @@ const DetailsForm = ({onNext}) => {
     (sum, item) => sum + Math.max(1, Number(item?.quantity) || 1),
     0,
   );
+  const hasCashFundItems = cartItems.some((item) => Boolean(item?.isCashFund));
+  const hasGiftItems = cartItems.some((item) => !item?.isCashFund);
 
   return (
     <div className="pt-[80px]">
@@ -988,54 +990,58 @@ const DetailsForm = ({onNext}) => {
                         ).toFixed(2)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center mb-2 min-h-[1.5rem]">
-                      <span className="font-bold tracking-wide text-sm uppercase">
-                        Processing Fee
-                        {taxData?.processingFeeRate != null &&
-                        Number.isFinite(Number(taxData.processingFeeRate)) ? (
-                          <span className="font-normal">
-                            {' '}
-                            ({Number(taxData.processingFeeRate)}%)
-                          </span>
-                        ) : null}
-                      </span>
-                      <span className="text-lg">
-                        {taxData?.processingFee != null ? (
-                          <>${Number(taxData.processingFee).toFixed(2)}</>
-                        ) : (
-                          <span className="text-xs text-gray-500">—</span>
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center mb-2 min-h-[1.5rem]">
-                      <span className="font-bold tracking-wide text-sm uppercase">
-                        Taxes
-                        {taxData?.taxPercentage != null &&
-                        Number.isFinite(Number(taxData.taxPercentage)) ? (
-                          <span className="font-normal">
-                            {' '}
-                            ({Number(taxData.taxPercentage)}%)
-                          </span>
-                        ) : taxData?.taxRate != null &&
-                          String(taxData.taxRate).trim() !== '' ? (
-                          <span className="font-normal">
-                            {' '}
-                            ({String(taxData.taxRate)}%)
-                          </span>
-                        ) : null}
-                      </span>
-                      <span className="text-lg">
-                        {taxLoading ? (
-                          <span className="text-sm font-normal">…</span>
-                        ) : taxData?.totalTax != null ? (
-                          <>${Number(taxData.totalTax).toFixed(2)}</>
-                        ) : taxError ? (
-                          <span className="text-xs text-amber-800">—</span>
-                        ) : (
-                          <span className="text-xs text-gray-500">—</span>
-                        )}
-                      </span>
-                    </div>
+                    {hasCashFundItems && (
+                      <div className="flex justify-between items-center mb-2 min-h-[1.5rem]">
+                        <span className="font-bold tracking-wide text-sm uppercase">
+                          Processing Fee
+                          {taxData?.processingFeeRate != null &&
+                          Number.isFinite(Number(taxData.processingFeeRate)) ? (
+                            <span className="font-normal">
+                              {' '}
+                              ({Number(taxData.processingFeeRate)}%)
+                            </span>
+                          ) : null}
+                        </span>
+                        <span className="text-lg">
+                          {taxData?.processingFee != null ? (
+                            <>${Number(taxData.processingFee).toFixed(2)}</>
+                          ) : (
+                            <span className="text-xs text-gray-500">—</span>
+                          )}
+                        </span>
+                      </div>
+                    )}
+                    {hasGiftItems && (
+                      <div className="flex justify-between items-center mb-2 min-h-[1.5rem]">
+                        <span className="font-bold tracking-wide text-sm uppercase">
+                          Taxes
+                          {taxData?.taxPercentage != null &&
+                          Number.isFinite(Number(taxData.taxPercentage)) ? (
+                            <span className="font-normal">
+                              {' '}
+                              ({Number(taxData.taxPercentage)}%)
+                            </span>
+                          ) : taxData?.taxRate != null &&
+                            String(taxData.taxRate).trim() !== '' ? (
+                            <span className="font-normal">
+                              {' '}
+                              ({String(taxData.taxRate)}%)
+                            </span>
+                          ) : null}
+                        </span>
+                        <span className="text-lg">
+                          {taxLoading ? (
+                            <span className="text-sm font-normal">…</span>
+                          ) : taxData?.totalTax != null ? (
+                            <>${Number(taxData.totalTax).toFixed(2)}</>
+                          ) : taxError ? (
+                            <span className="text-xs text-amber-800">—</span>
+                          ) : (
+                            <span className="text-xs text-gray-500">—</span>
+                          )}
+                        </span>
+                      </div>
+                    )}
                     {Array.isArray(taxData?.taxLines) &&
                     taxData.taxLines.length > 0 ? (
                       <ul className="text-xs text-gray-600 mb-2 pl-1 space-y-0.5 font-normal normal-case tracking-normal">
