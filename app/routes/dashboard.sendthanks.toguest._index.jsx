@@ -755,7 +755,7 @@ const ThankYou = () => {
       {showPreview && (
         <div className="max-w-4xl mx-auto mt-8 px-4">
           <p className="text-[#223247] text-center text-base leading-relaxed mb-4">
-            Your note will be delivered to the below email. Click to change to add more addresses (for more than one email, separate by a comma).
+            Your note will be delivered to the below email. Click to change address.
           </p>
           <div className="flex items-center gap-4 mb-4">
             <div className="flex-1">
