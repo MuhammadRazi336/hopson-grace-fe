@@ -27,6 +27,12 @@ import {
   getTaxCalculationErrorForDisplay,
   parseRegistryIdForTax,
 } from '~/utils/checkout-tax';
+import {
+  clearPendingFinalization,
+  finalizeWithRetry,
+  loadPendingFinalization,
+  savePendingFinalization,
+} from '~/utils/checkout-finalization.client';
 
 export async function loader({context, request}) {
   try {
@@ -715,6 +721,12 @@ const DetailsForm = ({onNext}) => {
 
   const handleChange = (e) => {
     const {name, value, type, checked} = e.target;
+    if (typeof window !== 'undefined' && (name === 'firstName' || name === 'lastName')) {
+      localStorage.setItem(
+        name === 'firstName' ? 'checkoutFirstName' : 'checkoutLastName',
+        value,
+      );
+    }
     setFields((prev) => {
       const next = {...prev, [name]: type === 'checkbox' ? checked : value};
       if (name === 'country') {
@@ -1225,7 +1237,9 @@ const PayPalPaymentForm = ({
   const [errorDetails, setErrorDetails] = useState(null);
   const [success, setSuccess] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const fetcher = useFetcher();
+  const [isFinalizing, setIsFinalizing] = useState(false);
+  const [finalizeExhausted, setFinalizeExhausted] = useState(false);
+  const [pendingFinalization, setPendingFinalization] = useState(null);
 
   const [sideCartOpen, setSideCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -1236,38 +1250,200 @@ const PayPalPaymentForm = ({
     console.log('[cart.checkout] payment step loader cashFundData', cashFundData);
   }, [productData, cashFundData]);
 
-  useEffect(() => {
-    if (fetcher.data?.success && fetcher.state === 'idle') {
+  const logFinalizeEvent = (name, fields) => {
+    console.log('[checkout.finalization]', {event: name, ...fields});
+  };
+
+  const buildFinalizePayload = (orderId) => {
+    const runtimeRegistryId =
+      loaderRegistryId ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('registryId') || ''
+        : '');
+    const runtimeEmail =
+      loaderEmail ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('guestEmail') || ''
+        : '');
+
+    const lineItems = cartItems.map((item) => ({
+      productId: Number(item.productId),
+      amount: Number(item.price) || 0,
+      quantity: Math.max(1, Number(item.quantity) || 1),
+    }));
+
+    return {
+      registryId: Number(runtimeRegistryId),
+      email: runtimeEmail,
+      firstName:
+        typeof window !== 'undefined'
+          ? localStorage.getItem('checkoutFirstName') || ''
+          : '',
+      lastName:
+        typeof window !== 'undefined'
+          ? localStorage.getItem('checkoutLastName') || ''
+          : '',
+      lineItems,
+      message:
+        typeof window !== 'undefined'
+          ? localStorage.getItem(`message_${runtimeRegistryId}`) || ''
+          : '',
+      paypalOrderId: orderId,
+    };
+  };
+
+  const attemptFinalizeRequest = async ({payload, paypalOrderId: orderId}) => {
+    const formData = new FormData();
+    formData.append('paypalOrderId', orderId);
+    formData.append('finalizePayload', JSON.stringify(payload));
+
+    try {
+      const response = await fetch('/cart/checkout/guest-checkout', {
+        method: 'POST',
+        body: formData,
+      });
+      const body = await response.json().catch(() => ({}));
+      const details =
+        typeof body?.details === 'string'
+          ? body.details
+          : body?.details
+            ? JSON.stringify(body.details)
+            : null;
+
+      return {
+        ok: response.ok,
+        status: response.status,
+        data: body,
+        error:
+          details ||
+          body?.error ||
+          body?.message ||
+          (response.ok ? null : 'Finalize request failed'),
+      };
+    } catch (requestError) {
+      return {
+        ok: false,
+        status: 0,
+        data: null,
+        error: requestError?.message || 'Network request failed',
+      };
+    }
+  };
+
+  const runFinalization = async ({orderId, payload, resumeMeta = null}) => {
+    setIsFinalizing(true);
+    setFinalizeExhausted(false);
+    setError(null);
+    setErrorDetails(null);
+    setShowPopup(false);
+
+    const pendingState = {
+      paypalOrderId: orderId,
+      registryId: payload?.registryId,
+      payload,
+      attempts: resumeMeta?.attempts || 0,
+      lastError: resumeMeta?.lastError || null,
+      createdAt: resumeMeta?.createdAt || new Date().toISOString(),
+    };
+    setPendingFinalization(pendingState);
+    savePendingFinalization(pendingState);
+
+    const retryResult = await finalizeWithRetry({
+      payload,
+      paypalOrderId: orderId,
+      attemptFinalize: async ({attemptNumber}) => {
+        const res = await attemptFinalizeRequest({
+          payload,
+          paypalOrderId: orderId,
+        });
+        const nextPending = {
+          ...pendingState,
+          attempts: attemptNumber,
+          lastError: res?.error || null,
+        };
+        setPendingFinalization(nextPending);
+        savePendingFinalization(nextPending);
+        return res;
+      },
+      onEvent: logFinalizeEvent,
+    });
+
+    if (retryResult.success) {
+      clearPendingFinalization();
+      setPendingFinalization(null);
+      setIsFinalizing(false);
+      setSuccess(true);
       if (typeof window !== 'undefined') {
         localStorage.removeItem('guestEmail');
         localStorage.removeItem('registryId');
       }
       navigate('/thankyou');
-    } else if (fetcher.data?.error && fetcher.state === 'idle') {
-      setError(fetcher.data.error);
-      const details =
-        typeof fetcher.data.details === 'string'
-          ? fetcher.data.details
-          : fetcher.data.details
-            ? JSON.stringify(fetcher.data.details)
-            : null;
-      setErrorDetails(details);
-      setShowPopup(true);
+      return;
     }
-  }, [fetcher.data, fetcher.state, navigate]);
 
-  const handleApprove = (data) => {
+    const finalStatus = retryResult?.lastFailure?.result?.status || 0;
+    const finalErrorText = String(
+      retryResult?.lastFailure?.result?.error || '',
+    ).toLowerCase();
+    const isRegistryClosed =
+      finalStatus === 403 && finalErrorText.includes('registry is already closed');
+
+    const exhaustedError =
+      retryResult?.lastFailure?.result?.error ||
+      "Payment received, but we're still confirming your order.";
+    setIsFinalizing(false);
+    setFinalizeExhausted(!isRegistryClosed);
+    setError(
+      isRegistryClosed
+        ? 'This registry is already closed and your order cannot be completed for this registry.'
+        : "Payment received, but we're still confirming your order.",
+    );
+    setErrorDetails(exhaustedError);
+    setShowPopup(true);
+  };
+
+  useEffect(() => {
+    const persisted = loadPendingFinalization();
+    if (!persisted || !persisted.paypalOrderId || !persisted.payload) {
+      return;
+    }
+    setFinalizeExhausted(false);
+    runFinalization({
+      orderId: persisted.paypalOrderId,
+      payload: persisted.payload,
+      resumeMeta: persisted,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isFinalizing) return;
+    const onBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue =
+        'Payment received. Finalizing your order. Please do not close this page.';
+      return event.returnValue;
+    };
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, [isFinalizing]);
+
+  const handleApprove = async (data) => {
     if (!data?.orderID) {
       setError('PayPal order ID not received');
       setErrorDetails(null);
       setShowPopup(true);
       return;
     }
-    const formData = new FormData();
-    formData.append('paypalOrderId', data.orderID);
-    fetcher.submit(formData, {
-      method: 'POST',
-      action: '/cart/checkout/guest-checkout',
+    logFinalizeEvent('capture_succeeded', {
+      paypalOrderId: data.orderID,
+      registryId: loaderRegistryId,
+      email: loaderEmail,
+      timestamp: new Date().toISOString(),
+    });
+    const payload = buildFinalizePayload(data.orderID);
+    await runFinalization({
+      orderId: data.orderID,
+      payload,
     });
   };
 
@@ -1379,37 +1555,6 @@ const PayPalPaymentForm = ({
 
   return (
     <div className="pt-[80px]">
-      {showPopup && (
-        <ModalPortal>
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#000000b0] bg-opacity-50">
-          <div
-            className={`rounded-lg shadow-lg px-8 py-16 max-w-xl w-full text-center ${
-              success ? 'bg-green-500 text-white' : 'bg-yellow-500 text-white'
-            }`}
-          >
-            <h2 className="text-2xl font-bold mb-4">
-              {!success ? 'Sorry for the Inconvenience' : 'Payment Successful!'}
-            </h2>
-            <p className="mb-6">
-              {!success
-                ? error || 'There was an error processing your payment.'
-                : 'Thank you for your payment.'}
-            </p>
-            {!success && errorDetails && (
-              <p className="mb-6 text-xs leading-5 text-white/90 break-words">
-                {errorDetails}
-              </p>
-            )}
-            <button
-              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200"
-              onClick={() => setShowPopup(false)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-        </ModalPortal>
-      )}
       <CoupleProfileViewHeader
         onCartClick={handleCartClick}
         cartCount={cartQuantityTotal}
@@ -1468,10 +1613,15 @@ const PayPalPaymentForm = ({
                     setShowPopup(true);
                   }}
                   style={{layout: 'vertical', color: 'black', shape: 'rect'}}
-                  disabled={fetcher.state === 'submitting' || !paypalOrderId}
+                  disabled={isFinalizing || !paypalOrderId}
                 />
               </PayPalScriptProvider>
             </div>
+            {isFinalizing && (
+              <div className="text-center text-black mt-4 font-medium">
+                Payment received. Finalizing your order... Please do not close this page.
+              </div>
+            )}
             {error && <div className="text-[#FD446F] text-center mt-4">{error}</div>}
             {success && (
               <div className="text-white bg-green-500 px-2 py-4 text-center mt-4">
@@ -1508,6 +1658,20 @@ const PayPalPaymentForm = ({
               >
                 Close
               </button>
+              {finalizeExhausted && pendingFinalization && (
+                <button
+                  className="bg-black text-white px-4 py-2 rounded hover:bg-[#333] ml-2"
+                  onClick={() =>
+                    runFinalization({
+                      orderId: pendingFinalization.paypalOrderId,
+                      payload: pendingFinalization.payload,
+                      resumeMeta: pendingFinalization,
+                    })
+                  }
+                >
+                  Retry now
+                </button>
+              )}
             </div>
           </div>
         </ModalPortal>
