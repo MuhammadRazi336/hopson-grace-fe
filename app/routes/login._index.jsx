@@ -1,12 +1,9 @@
 import {redirect, json} from '@shopify/remix-oxygen';
 import {requireAuth} from '~/utils/auth-guard.js';
-import {Link, useActionData, useFetcher, useSubmit, useNavigate, useLocation} from '@remix-run/react';
-import {toast} from 'react-toastify';
+import {Link, useActionData, useSubmit, useNavigate, useLocation} from '@remix-run/react';
 
 import Input from '~/components/Input.jsx';
 import {useState, useEffect} from 'react';
-import ButtonComponent from '~/components/Button.jsx';
-import {jsonWithError} from 'remix-toast';
 import {Header} from '~/components/Header';
 import {Footer} from '~/components/Footer';
 import StepsAndImage from '~/components/StepsAndImage';
@@ -27,8 +24,21 @@ export async function action({request, context}) {
   const body = await request.json();
   const {payload} = body;
   try {
-    const response = await context.ClientPost(payload, 'auth/login', context);
-    if (response?.code == 200) {
+    const apiBase = context?.env?.API_BASE_URL || process.env.API_BASE_URL;
+    const endpoint = `${String(apiBase).replace(/\/$/, '')}/api/auth/login`;
+
+    const loginRes = await fetch(endpoint, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+    });
+
+    const contentType = loginRes.headers.get('content-type') || '';
+    const response = contentType.includes('application/json')
+      ? await loginRes.json()
+      : {message: await loginRes.text()};
+
+    if (loginRes.ok && response?.code == 200) {
       const user = response.data;
       context.session.set('@User', user);
       const cookie = await context.session.commit();
@@ -53,19 +63,39 @@ export async function action({request, context}) {
       });
     } else {
       // Return error response with proper structure
+      const responseStatusCode =
+        loginRes.status || response?.statusCode || response?.status || response?.code || 400;
+      const responseMessage =
+        response?.message ||
+        response?.data?.message ||
+        response?.error ||
+        'Login failed';
       return json({
-        statusCode: response?.code || response?.statusCode || 400,
-        message: response?.message || response?.data?.message || 'Login failed',
-        ...response
+        ...response,
+        statusCode: responseStatusCode,
+        message: responseMessage,
       });
     }
   } catch (e) {
     console.log('Login error:', e);
+    // Prefer transport-layer HTTP status first.
+    const backendStatusCode =
+      e?.response?.status ||
+      e?.response?.data?.statusCode ||
+      e?.statusCode ||
+      e?.code ||
+      500;
+    const backendMessage =
+      e?.response?.data?.message ||
+      e?.response?.data?.error ||
+      e?.message ||
+      'An error occurred during login';
+
     // Return error response with proper structure
     return json({
-      statusCode: e?.statusCode || e?.code || 500,
-      message: e?.message || 'An error occurred during login',
-      ...e
+      ...e,
+      statusCode: backendStatusCode,
+      message: backendMessage,
     });
   }
 }
@@ -102,17 +132,45 @@ const LoginIndex = () => {
     }
   }, [location.search, navigate]);
 
-  // Debug error conditions
-  if (actionData?.statusCode >= 400) {
-    console.log('Error conditions:', {
-      statusCode: actionData.statusCode,
-      message: actionData.message,
-      isArray: Array.isArray(actionData.message),
-      hasEmailError: Array.isArray(actionData.message) && actionData.message.some(msg => msg.toLowerCase().includes('email')),
-      isUserNotFound: actionData.message === 'user not found',
-      isInvalidPassword: actionData.message === 'Invalid password'
-    });
-  }
+  const statusCode = Number(actionData?.statusCode || 0);
+  const rawMessage = actionData?.message;
+  const normalizedMessage = Array.isArray(rawMessage)
+    ? rawMessage.join(' | ')
+    : String(rawMessage || '');
+  const lowerMessage = normalizedMessage.toLowerCase();
+
+  const isInvalidEmailFormat =
+    statusCode === 400 &&
+    (lowerMessage.includes('please enter valid email format') ||
+      lowerMessage.includes('valid email format'));
+  const isEmailNotFound =
+    statusCode === 404 && lowerMessage.includes('user not found');
+  const isInvalidPassword =
+    statusCode === 401 && lowerMessage.includes('invalid password');
+
+  const emailError = isInvalidEmailFormat
+    ? 'Please enter valid email format'
+    : isEmailNotFound
+      ? (
+        <>
+          User doesn&apos;t exist.{' '}
+          <Link to="/register" className="text-white underline">
+            CREATE AN ACCOUNT.
+          </Link>
+        </>
+      )
+      : undefined;
+
+  const passwordError = isInvalidPassword ? 'Password Not Recognized' : undefined;
+
+  const genericError =
+    statusCode >= 400 && !emailError && !passwordError
+      ? statusCode === 500
+        ? 'Server error. Please try again later.'
+        : Array.isArray(rawMessage)
+          ? rawMessage[0]
+          : normalizedMessage || 'Login failed'
+      : null;
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -186,23 +244,7 @@ const LoginIndex = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0"
-                    error={
-                      // Email validation errors (check message content)
-                      (Array.isArray(actionData?.message) && 
-                       actionData?.message.some(msg => msg.toLowerCase().includes('email')))
-                        ? actionData?.message.find(msg => msg.toLowerCase().includes('email'))
-                        // User not found error (check message content)
-                        : (actionData?.message === 'user not found')
-                        ? (
-                          <>
-                            User doesn&apos;t exist.{' '}
-                            <Link to="/register" className="text-white underline">
-                            CREATE AN ACCOUNT.
-                            </Link>
-                          </>
-                        )
-                        : undefined
-                    }
+                    error={emailError}
                   />
                   <div className="relative">
                     <Input
@@ -213,12 +255,7 @@ const LoginIndex = () => {
                       value={formData.password}
                       onChange={handleInputChange}
                       className="rounded-none p-5 border-[#B9B4AE] border-2 bg-white text-black w-full text-[20px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:h-[4.271vw] xl:h-[4.271vw] 2xl:h-[4.271vw] max-[1024px]:h-[47px] max-[1024px]:py-0 pr-12"
-                      error={
-                        // Invalid password error (check message content)
-                        (actionData?.message === 'Invalid password')
-                          ? 'Password Not Recognized'
-                          : undefined
-                      }
+                      error={passwordError}
                     />
                     <button
                       type="button"
@@ -263,16 +300,9 @@ const LoginIndex = () => {
                     Forgot Password?
                   </Link>
                 </div>
-                {actionData?.statusCode >= 400 && 
-                 !(Array.isArray(actionData?.message) && actionData?.message.some(msg => msg.toLowerCase().includes('email'))) &&
-                 !(actionData?.message === 'user not found') &&
-                 !(actionData?.message === 'Invalid password') && (
+                {genericError && (
                   <div className="text-center text-white text-sm">
-                    {actionData?.statusCode === 500 
-                      ? 'Server error. Please try again later.'
-                      : Array.isArray(actionData?.message)
-                        ? actionData?.message[0]
-                        : actionData?.message}
+                    {genericError}
                   </div>
                 )}
 
