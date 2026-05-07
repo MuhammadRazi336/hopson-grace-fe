@@ -170,7 +170,7 @@ export default function SideCart({
         
         {/* Side cart panel */}
         <div
-          className={`absolute top-0 right-0 h-full w-[65%] bg-white shadow-lg transform transition-transform duration-300 ease-out ${
+          className={`absolute top-0 right-0 h-full w-[65%] bg-white shadow-lg transform transition-transform duration-300 ease-out max-[768px]:w-[90%] ${
             open ? 'translate-x-0' : 'translate-x-full'
           }`}
           style={{willChange: 'transform'}}
@@ -198,7 +198,7 @@ export default function SideCart({
             <>
               {/* Regular Items */}
               {regularItems.length > 0 && (
-                <div>
+                <div className='max-[768px]:overflow-auto max-[767px]:w-[350%]'>
                   <div className="grid grid-cols-12 gap-4 text-xs font-bold uppercase mb-4">
                     <div className="col-span-2"></div>
                     <div className="col-span-3 text-left text-[18px] font-bold">Item</div>
@@ -445,8 +445,8 @@ export default function SideCart({
 
                   {/* Combined Recommended Items Section */}
                   {[...recommendedProducts, ...cashFunds].length > 0 && (
-                    <div className="mt-6">
-                      <div className="grid grid-cols-4 gap-3">
+                    <div className="mt-6 max-[768px]:overflow-auto">
+                      <div className="grid grid-cols-4 gap-3 max-[768px]:w-[300%]">
                         {[...recommendedProducts, ...cashFunds]
                           .slice(0, 4)
                           .map((item) => (
@@ -484,10 +484,10 @@ export default function SideCart({
               )}
 
               {showFooterActions && (
-                <div className="flex justify-center gap-x-10 my-16">
+                <div className="flex justify-center gap-x-10 my-16 max-[768px]:flex-col max-[768px]:gap-y-4">
                   <button
                     onClick={onClose}
-                    className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white border-2 border-black hover:opacity-90 uppercase font-[800] text-black max-[1601px]:w-[200px] text-center"
+                    className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-white border-2 border-black hover:opacity-90 uppercase font-[800] text-black max-[1601px]:w-[200px] text-center max-[768px]:w-full"
                   >
                     continue shopping
                   </button>
@@ -515,7 +515,7 @@ export default function SideCart({
                         : '/cart/message';
                       navigate(path);
                     }}
-                    className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white max-[1601px]:w-[200px] text-center"
+                    className="w-[360px] h-[77px] text-[18px] max-[1601px]:text-[15px] max-[1601px]:py-4 bg-[#446184] hover:opacity-90 uppercase font-[800] text-white max-[1601px]:w-[200px] text-center max-[768px]:w-full"
                   >
                     checkout now
                   </button>

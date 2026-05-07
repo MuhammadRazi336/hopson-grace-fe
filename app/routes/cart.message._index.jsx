@@ -379,31 +379,31 @@ const Message = () => {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto mt-[80px]">
+      <div className="max-w-4xl mx-auto mt-[80px] max-[768px]:mt-8">
         <div className="flex items-center justify-around">
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">1.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+            <h4 className="text-[60px] font-bold text-center prata max-[768px]:text-4xl">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center max-[768px]:text-sm">
               Add your messsage
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] text-center prata text-[#1F1D1B40]">2.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40]">
+            <h4 className="text-[60px] text-center prata text-[#1F1D1B40] max-[768px]:text-4xl">2.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40] max-[768px]:text-sm">
               Billing & Payment
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] text-center prata text-[#1F1D1B40]">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40]">
+            <h4 className="text-[60px] text-center prata text-[#1F1D1B40] max-[768px]:text-4xl">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40] max-[768px]:text-sm">
               Order Confirmation
             </p>
           </div>
         </div>
       </div>
 
-      <div className="mx-20 py-[100px]">
-        <div className="container mx-auto bg-[#446184] py-16">
+      <div className="mx-20 py-[100px] max-[768px]:py-8 max-[768px]:mx-4">
+        <div className="container mx-auto bg-[#446184] py-16 max-[768px]:px-5">
           <h2 className="md:text-[36px] font-normal text-center text-white ivyora">
             enclose your <span className="font-italic">PERSONAL MESSAGE</span>{' '}
             here
@@ -435,15 +435,15 @@ const Message = () => {
               <img
                 src="/assets/Images/checkout-bg.png"
                 alt="checkout-flow"
-                className="w-full object-contain"
+                className="w-full object-contain max-[768px]:hidden"
               />
-              <div className="absolute top-0 left-0 w-full h-full">
+              <div className="absolute top-0 left-0 w-full h-full max-[768px]:static">
                 <div className="flex items-center justify-start h-full flex-row">
-                  <div className={`w-9/12 pl-16 ${!showPreview ? 'pt-16' : 'pt-10'}`}>
+                  <div className={`w-9/12 pl-16 max-[768px]:p-0 max-[768px]:px-5 max-[768px]:w-full ${!showPreview ? 'pt-16' : 'pt-10'}`}>
                     <img
                       src="/assets/Images/checkoutHeart.png"
                       alt="checkout-bg-1"
-                      className="w-auto h-auto mx-auto mb-2.5"
+                      className="w-auto h-auto mx-auto mb-2.5 max-[768px]:invert max-[768px]:w-1/2"
                     />
 
                     {!showPreview ? (
@@ -454,7 +454,7 @@ const Message = () => {
                           placeholder="Couple's Name*"
                           value={couplesName}
                           onChange={(e) => setCouplesName(e.target.value)}
-                          className="w-full prata text-center text-2xl mx-auto mb-4 border border-gray-300 rounded p-2 bg-[#FAF9F6] focus:outline-none focus:ring-2 focus:ring-gray-200"
+                          className="w-full prata text-center text-2xl mx-auto mb-4 border border-gray-300 rounded p-2 bg-[#FAF9F6] focus:outline-none focus:ring-2 focus:ring-gray-200 max-[768px]:placeholder:text-base"
                         />
                         <div className="w-full flex justify-center">
                           <div className="w-full">
@@ -465,7 +465,7 @@ const Message = () => {
                               rows={7}
                               value={message}
                               onChange={(e) => setMessage(e.target.value)}
-                              className="w-full border italic border-gray-300 prata text-center text-xl outline-none p-3 bg-[#FAF9F6] resize-none focus:outline-none focus:ring-2 focus:ring-gray-200"
+                              className="w-full border italic border-gray-300 prata text-center text-xl outline-none p-3 bg-[#FAF9F6] resize-none focus:outline-none focus:ring-2 focus:ring-gray-200 max-[768px]:placeholder:text-base"
                             />
                             <div className="text-xs text-gray-400 mt-1 text-left">
                               {maxLength - message.length}/{maxLength} characters remaining
@@ -475,8 +475,8 @@ const Message = () => {
                       </div>
                     ) : (
                       <div className="relative max-w-4xl mx-auto">
-                        <h3 className="text-center text-3xl font-bold italic prata">{couplesName}</h3>
-                        <p className="text-center prata italic leading-relaxed text-xl mt-10">
+                        <h3 className="text-center text-3xl font-bold italic prata max-[768px]:text-white">{couplesName}</h3>
+                        <p className="text-center prata italic leading-relaxed text-xl mt-10 max-[768px]:text-white">
                           {message}
                         </p>
                       </div>
@@ -499,7 +499,7 @@ const Message = () => {
                 <button
                   type="button"
                   onClick={() => setShowPreview(false)}
-                  className="text-[#ffffff] uppercase border-b border-[#ffffff] cursor-pointer font-bold text-lg"
+                  className="text-[#ffffff] uppercase border-b border-[#ffffff] cursor-pointer font-bold text-lg max-[768px]:text-sm"
                 >
                   BACK TO EDIT 
                 </button>
@@ -507,7 +507,7 @@ const Message = () => {
             )}
 
             <div className="relative">
-              <div className="flex items-center gap-x-12 mt-8 justify-center">
+              <div className="flex items-center gap-x-12 mt-8 justify-center max-[768px]:gap-x-4 max-[768px]:text-sm">
                 <h4 className="text-[60px] text-white text-center">{showPreview ? '2' : '1'}</h4>
                 <h4 className="text-[30px] text-white text-center">/</h4>
                 <h4 className="text-[30px] text-white text-center">2</h4>
