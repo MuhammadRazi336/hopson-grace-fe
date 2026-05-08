@@ -772,38 +772,38 @@ const DetailsForm = ({onNext}) => {
       <div className="max-w-4xl mx-auto mt-[80px]">
         <div className="flex items-center justify-around">
           <div className="w-4/12">
-            <h4 className="text-[60px] text-center prata text-[#1F1D1B40]">1.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40]">
+            <h4 className="text-[60px] text-center prata text-[#1F1D1B40] max-[768px]:text-4xl">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40] max-[768px]:text-sm">
               Add your messsage
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+            <h4 className="text-[60px] font-bold text-center prata max-[768px]:text-4xl">2.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center max-[768px]:text-sm">
               Billing & Payment
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40]">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40]">
+            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40] max-[768px]:text-4xl">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40] max-[768px]:text-sm">
               Order Confirmation
             </p>
           </div>
         </div>
       </div>
       <div className="container mx-auto py-[100px]">
-        <div className="bg-[#446184] py-16 px-16">
+        <div className="bg-[#446184] py-16 px-16 max-[768px]:px-5">
           <h2 className="md:text-[36px] font-normal text-center text-white ivyora">
             <span className="">BILLING</span>{' '} details
           </h2>
           <p className="max-w-xl mx-auto text-center text-white my-5 font-normal leading-relaxed">
           Enter your billing address connected to your credit card. We don’t require shipping information as your gift will be shipped to the couple when they’re ready.
           </p>
-          <div className="flex mt-[100px]">
-            <div className="w-1/2">
+          <div className="flex mt-[100px] max-[768px]:mt-8">
+            <div className="w-1/2 max-[768px]:w-full">
               <h4 className="text-xl text-white text-center">Billing</h4>
             </div>
-            <div className="w-1/2">
+            <div className="w-1/2 max-[768px]:hidden">
               <h4 className="text-xl text-white text-center">Order Summary</h4>
             </div>
           </div>
@@ -823,8 +823,8 @@ const DetailsForm = ({onNext}) => {
                   : '')
               }
             />
-            <div className="flex items-start gap-x-4 w-full">
-              <div className="w-1/2">
+            <div className="flex items-start gap-x-4 w-full max-[768px]:flex-col max-[768px]:gap-y-4">
+              <div className="w-1/2 max-[768px]:w-full">
                 <div className="flex flex-col gap-y-4">
                   <div className="grid grid-cols-2 gap-x-4">
                     <input
@@ -918,7 +918,10 @@ const DetailsForm = ({onNext}) => {
                   </div>
                 </div>
               </div>
-              <div className="w-1/2 bg-white p-6">
+              <div className="min-[768px]:hidden">
+                <h4 className="text-xl text-white text-center">Order Summary</h4>
+              </div>
+              <div className="w-1/2 bg-white p-6 max-[768px]:w-full">
                 <div className="max-h-[440px] overflow-y-auto bg-[#FAF9F6] px-4 py-2">
                   {cartLoading ? (
                     <div className="text-center py-8">
@@ -946,7 +949,7 @@ const DetailsForm = ({onNext}) => {
                           />
                         )}
                         <div className="flex-1">
-                          <div className="font-bold uppercase text-md leading-tight tracking-wide">
+                          <div className="font-bold uppercase text-md leading-tight tracking-wide text-sm">
                             {item.title}
                           </div>
                           {item.isCashFund &&
@@ -1576,32 +1579,32 @@ const PayPalPaymentForm = ({
       <div className="max-w-4xl mx-auto mt-[80px]">
         <div className="flex items-center justify-around">
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40]">1.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40]">
+            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40] max-[768px]:text-4xl">1.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center text-[#1F1D1B40] max-[768px]:text-sm">
               Add your messsage
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata">2.</h4>
-            <p className="text-lg max-w-24 mx-auto uppercase text-center">
+            <h4 className="text-[60px] font-bold text-center prata max-[768px]:text-4xl">2.</h4>
+            <p className="text-lg max-w-24 mx-auto uppercase text-center max-[768px]:text-sm">
               Billing & Payment
             </p>
           </div>
           <div className="w-4/12">
-            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40]">3.</h4>
-            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40]">
+            <h4 className="text-[60px] font-bold text-center prata text-[#1F1D1B40] max-[768px]:text-4xl">3.</h4>
+            <p className="text-lg max-w-32 mx-auto uppercase text-center text-[#1F1D1B40] max-[768px]:text-sm">
               Order Confirmation
             </p>
           </div>
         </div>
       </div>
-      <div className="container mx-auto py-[100px]">
-        <div className="bg-[#F6F3ED] py-16 px-16">
+      <div className="container mx-auto py-[100px] max-[768px]:py-8 max-[768px]:px-4">
+        <div className="bg-[#F6F3ED] py-16 px-16 max-[768px]:px-5">
           <div className="grid grid-cols-1 gap-6">
             <label className="block text-sm text-center text-black font-medium mb-1">
               PAYMENT
             </label>
-            <div className="flex justify-center min-w-[400px] [&_[id^='zoid-paypal-buttons']]:!min-w-[400px]">
+            <div className="flex justify-center min-w-[400px] [&_[id^='zoid-paypal-buttons']]:!min-w-[400px] max-[768px]:[&_[id^='zoid-paypal-buttons']]:!min-w-[300px] max-[768px]:w-full max-[768px]:min-w-[230px]">
               <PayPalScriptProvider
                 options={{
                   clientId: paypalClientId,
