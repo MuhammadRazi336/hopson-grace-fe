@@ -975,6 +975,8 @@ const index = () => {
             categoryFilter={categoryFilter}
             priceSort={priceSort}
             statusFilter={statusFilter}
+            apiBaseUrl={finalApiBaseUrl}
+            accessToken={user?.accessToken}
           />
         </div>
       </div>
@@ -1037,15 +1039,87 @@ const ProductPage = ({
   categoryFilter,
   priceSort,
   statusFilter,
+  apiBaseUrl,
+  accessToken,
 }) => {
   const safeGifts = Array.isArray(data) ? data : [];
   const safeFunds = Array.isArray(cashfundData) ? cashfundData : [];
   const [itemsToShow, setItemsToShow] = useState(12);
+  const [giftQuantityOverrides, setGiftQuantityOverrides] = useState({});
+  const [quantityUpdateLoading, setQuantityUpdateLoading] = useState({});
   const topRef = useRef(null);
 
   useEffect(() => {
     setItemsToShow(12);
   }, [categoryFilter, priceSort, statusFilter]);
+
+  const getRequestedQuantity = (product) => {
+    const registryProductId = String(product?.registryProductId || '');
+    const override = giftQuantityOverrides[registryProductId];
+    return Number.isFinite(override) ? override : Number(product?.quantity) || 1;
+  };
+
+  const updateRegistryProductQuantity = async (product, nextQuantity) => {
+    const registryProductId = product?.registryProductId;
+    const purchasedQuantity = Number(product?.purchasedQuantity) || 0;
+    const minimumAllowedQuantity = Math.max(1, purchasedQuantity);
+    const clampedNextQuantity = Math.max(minimumAllowedQuantity, Number(nextQuantity) || 1);
+
+    if (!registryProductId) {
+      toast.error('Unable to update quantity for this gift.');
+      return;
+    }
+
+    const quantityBeforeUpdate = getRequestedQuantity(product);
+    const key = String(registryProductId);
+
+    setGiftQuantityOverrides((prev) => ({
+      ...prev,
+      [key]: clampedNextQuantity,
+    }));
+    setQuantityUpdateLoading((prev) => ({
+      ...prev,
+      [key]: true,
+    }));
+
+    try {
+      const endpoint = `${String(apiBaseUrl || '').replace(/\/$/, '')}/api/registryProducts/${registryProductId}`;
+      const response = await fetch(endpoint, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? {Authorization: `Bearer ${accessToken}`} : {}),
+        },
+        body: JSON.stringify({quantity: clampedNextQuantity}),
+      });
+
+      const responseData = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(
+          responseData?.message ||
+            responseData?.error ||
+            `Failed to update quantity (HTTP ${response.status})`,
+        );
+      }
+
+      const updatedQuantity = Number(responseData?.data?.quantity);
+      setGiftQuantityOverrides((prev) => ({
+        ...prev,
+        [key]: Number.isFinite(updatedQuantity) ? updatedQuantity : clampedNextQuantity,
+      }));
+    } catch (error) {
+      setGiftQuantityOverrides((prev) => ({
+        ...prev,
+        [key]: quantityBeforeUpdate,
+      }));
+      toast.error(error?.message || 'Failed to update quantity');
+    } finally {
+      setQuantityUpdateLoading((prev) => ({
+        ...prev,
+        [key]: false,
+      }));
+    }
+  };
 
   // Helper: determine if a gift product is gifted
   const isProductGifted = (product) => {
@@ -1170,10 +1244,15 @@ const ProductPage = ({
                   : null;
 
               // Calculate if product is fully gifted
-              const quantity = product.quantity || 1;
+              const quantity = getRequestedQuantity(product);
               const purchasedQuantity = Number(product.purchasedQuantity) || 0;
               const stillNeeds = Math.max(0, quantity - purchasedQuantity);
               const isFullyGifted = stillNeeds === 0;
+              const registryProductId = String(product.registryProductId || '');
+              const isQuantityUpdating = Boolean(
+                quantityUpdateLoading[registryProductId],
+              );
+              const minQuantity = Math.max(1, purchasedQuantity);
 
               return (
                 <div
@@ -1221,9 +1300,46 @@ const ProductPage = ({
                     </div>
 
                     <div className="mt-2 flex flex-row items-center gap-6">
-                      <p className="text-sm text-gray-500 italic">
-                        Requested: {quantity}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-500 italic">
+                          Requested:
+                        </p>
+                        <div className="flex flex-col items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateRegistryProductQuantity(product, quantity + 1)
+                            }
+                            disabled={isQuantityUpdating}
+                            className="w-5 h-5 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Increase requested quantity"
+                          >
+                            <img
+                              src="/assets/Images/arrowDown.png"
+                              alt="increase requested quantity"
+                              className="w-3 h-3 rotate-180"
+                            />
+                          </button>
+                          <span className="text-sm text-gray-500 italic leading-none">
+                            {quantity}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateRegistryProductQuantity(product, quantity - 1)
+                            }
+                            disabled={isQuantityUpdating || quantity <= minQuantity}
+                            className="w-5 h-5 border-none flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Decrease requested quantity"
+                          >
+                            <img
+                              src="/assets/Images/arrowDown.png"
+                              alt="decrease requested quantity"
+                              className="w-3 h-3"
+                            />
+                          </button>
+                        </div>
+                      </div>
                       <p className="text-sm text-gray-500 italic">
                         Still Needs: {stillNeeds}
                       </p>
