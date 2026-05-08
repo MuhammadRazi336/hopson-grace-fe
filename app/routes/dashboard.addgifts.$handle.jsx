@@ -181,6 +181,26 @@ const GiftDetailHandle = () => {
   const fetcher = useFetcher();
   const {collections, product, registry, user, recommendedProducts, vendorProducts} = useLoaderData();
   const [isAdding, setIsAdding] = useState(false);
+  const mergedProductImages = [
+    ...(Array.isArray(product?.images?.edges) ? product.images.edges : []),
+    ...(
+      Array.isArray(product?.media?.nodes)
+        ? product.media.nodes
+            .filter((mediaNode) => mediaNode?.image?.url)
+            .map((mediaNode) => ({
+              node: {
+                id: mediaNode.id,
+                url: mediaNode.image.url,
+                altText: mediaNode.image.altText || product?.title || 'Product image',
+              },
+            }))
+        : []
+    ),
+  ].filter(
+    (img, index, arr) =>
+      img?.node?.url &&
+      arr.findIndex((candidate) => candidate?.node?.url === img.node.url) === index,
+  );
 
   console.log('Product data:', product);
   console.log('Product variants:', product?.variants);
@@ -240,7 +260,7 @@ const GiftDetailHandle = () => {
         productTitle={product.title}
         productPrice={product.variants?.edges?.[0]?.node?.priceV2 || product.priceRange?.minVariantPrice || {amount: '0', currencyCode: 'USD'}}
         productDescription={product.descriptionHtml}
-        productImages={product.images.edges}
+        productImages={mergedProductImages}
         variants={product.variants?.edges?.map((e) => e.node) ?? []}
         onRegistryPress={({quantity, isGroupGift, variant}) => {
           const v = variant || product.variants?.edges?.[0]?.node;
@@ -597,6 +617,17 @@ query getProductByHandle($handle: String!) {
           id
           url
           altText
+        }
+      }
+    }
+    media(first: 10) {
+      nodes {
+        ... on MediaImage {
+          id
+          image {
+            url
+            altText
+          }
         }
       }
     }
