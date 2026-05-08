@@ -1036,7 +1036,7 @@ const Step4 = ({formData, handleInputChange, step4Errors}) => {
               value={formData.country}
               onChange={handleInputChange}
               className={`rounded-none mt-2 p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
-                step4Errors?.country ? 'border-[#FD446F] focus:border-[#FD446F] focus:ring-[#FD446F]' : ''
+                step4Errors?.country ? 'border-white focus:border-white focus:ring-white' : ''
               }`}
               aria-invalid={!!step4Errors?.country}
               aria-describedby={step4Errors?.country ? 'country-error' : undefined}
@@ -1065,7 +1065,7 @@ const Step4 = ({formData, handleInputChange, step4Errors}) => {
           </div>
           {step4Errors?.country && (
             <div id="country-error" role="alert" className="mt-1 text-left">
-              <span className="text-[#FD446F] font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
+              <span className="text-white font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
                 {step4Errors.country}
               </span>
             </div>
@@ -1084,7 +1084,7 @@ const Step4 = ({formData, handleInputChange, step4Errors}) => {
               className={`rounded-none mt-2 p-5 border-[#B9B4AE] border-2 bg-white text-black w-full appearance-none cursor-pointer ${
                 !formData.country ? 'bg-gray-100 cursor-not-allowed opacity-50' : ''
               } ${
-                step4Errors?.province ? 'border-[#FD446F] focus:border-[#FD446F] focus:ring-[#FD446F]' : ''
+                step4Errors?.province ? 'border-white focus:border-white focus:ring-white' : ''
               }`}
               aria-invalid={!!step4Errors?.province}
               aria-describedby={step4Errors?.province ? 'province-error' : undefined}
@@ -1116,7 +1116,7 @@ const Step4 = ({formData, handleInputChange, step4Errors}) => {
           </div>
           {step4Errors?.province && (
             <div id="province-error" role="alert" className="mt-1 text-left">
-              <span className="text-[#FD446F] font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
+              <span className="text-white font-medium text-[18px] lg:text-[1.042vw] xl:text-[1.042vw] 2xl:text-[1.042vw] lg:leading-[2.083vw] xl:leading-[2.083vw] 2xl:leading-[2.083vw] max-[1024px]:text-[17px]">
                 {step4Errors.province}
               </span>
             </div>
