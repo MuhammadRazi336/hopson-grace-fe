@@ -225,6 +225,8 @@ const RegisterIndex = () => {
       password: formData.password,
       confirmPassword: formData.confirmPassword,
       confirmEmail: formData.confirmEmail,
+      // SMS list opt-in (Klaviyo); mirrors preferTextNotifications on step 3
+      subscribeKlaviyoSms: Boolean(formData.preferTextNotifications),
     };
     submit({payload}, {method: 'post', encType: 'application/json'});
   };
