@@ -226,6 +226,10 @@ const RegisterIndex = () => {
       confirmPassword: formData.confirmPassword,
       confirmEmail: formData.confirmEmail,
     };
+    // Klaviyo SMS list opt-in (POST /api/auth/signup); omit when false = email-only flow
+    if (formData.preferTextNotifications) {
+      payload.subscribeKlaviyoSms = true;
+    }
     submit({payload}, {method: 'post', encType: 'application/json'});
   };
   // Step 1: User Names
