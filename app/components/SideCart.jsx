@@ -309,13 +309,13 @@ export default function SideCart({
 
               {/* Cash Funds */}
               {cartCashFunds.length > 0 && (
-                <div>
+                <div className='max-[768px]:overflow-auto max-[767px]:w-[350%]'>
                   <div className="grid grid-cols-12 gap-4 text-xs font-bold uppercase mb-4">
                     <div className="col-span-2"></div>
                     <div className="col-span-3 text-left text-[18px] font-bold">Cash/Travel Funds</div>
-                    <div className="col-span-2 text-center"></div>
+                    <div className="col-span-2 text-center text-[18px] font-bold"></div>
                     <div className="col-span-2 text-center text-[18px] font-bold">Amount</div>
-                    <div className="col-span-2 text-center"></div>
+                    <div className="col-span-2 text-center text-[18px] font-bold"></div>
                     <div className="col-span-1"></div>
                   </div>
                   {cartCashFunds.map((item) => (
@@ -357,13 +357,13 @@ export default function SideCart({
 
               {/* Group Payment Items */}
               {groupPaymentItems.length > 0 && (
-                <div>
+                <div className='max-[768px]:overflow-auto max-[767px]:w-[350%]'>
                   <div className="grid grid-cols-12 gap-4 text-xs font-bold uppercase mb-4">
                     <div className="col-span-2"></div>
                     <div className="col-span-3 text-left text-[18px] font-bold">Group Gift</div>
-                    <div className="col-span-2 text-center"></div>
+                    <div className="col-span-2 text-center text-[18px] font-bold"></div>
                     <div className="col-span-2 text-center text-[18px] font-bold">Contribution</div>
-                    <div className="col-span-2 text-center"></div>
+                    <div className="col-span-2 text-center text-[18px] font-bold"></div>
                     <div className="col-span-1"></div>
                   </div>
                   {groupPaymentItems.map((item) => (
