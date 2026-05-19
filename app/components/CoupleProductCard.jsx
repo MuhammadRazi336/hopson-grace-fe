@@ -19,6 +19,8 @@ const CoupleProductCard = ({
   maxContribution,
   purchasedQuantity = 0, // Add this prop for partial purchases
   isAnyAmount = false, // Add this prop for cash funds
+  /** When true (cash funds only), hide price, remaining, and contributed lines for guests */
+  isAmountHide = false,
   onAddToCart,
   onContribute,
   onTitleClick,
@@ -32,6 +34,7 @@ const CoupleProductCard = ({
 
   const isRegistryGiftCard =
     isCashFund && isRegistryGiftCardCashFundName(name);
+  const hideCashFundAmountDisplay = isCashFund && isAmountHide;
   const stillNeeds =
     status === 'purchased'
       ? 0
@@ -324,7 +327,9 @@ const CoupleProductCard = ({
             isRegistryGiftCard ? 'mb-8' : ''
           }`}
         >
-          {isAnyAmount ? '' : (
+          {isAnyAmount || hideCashFundAmountDisplay ? (
+            ''
+          ) : (
             <p className="font-normal text-lg lg:text-[1.25vw]">
               {formatPrice(price)}
             </p>
@@ -332,13 +337,17 @@ const CoupleProductCard = ({
 
           {(isCashFund || isGroupGift) &&
             !isAnyAmount &&
-            !isRegistryGiftCard && (
+            !isRegistryGiftCard &&
+            !hideCashFundAmountDisplay && (
             <p className="text-sm ivyora lg:text-[1.042vw] italic mt-2 text-right w-full ivyora mb-2 text-[#1F1D1B]">
               ${maxContribution - contributedAmount} Remaining
             </p>
           )}
         </div>
-        {(isGroupGift || isCashFund) && !isAnyAmount && !isRegistryGiftCard && (
+        {(isGroupGift || isCashFund) &&
+          !isAnyAmount &&
+          !isRegistryGiftCard &&
+          !hideCashFundAmountDisplay && (
           <div className="mt-[1.146vw]">
             <p className="text-sm ivyora lg:text-[1.042vw] text-[#1F1D1B]">
               Contributed: ${contributedAmount.toFixed(2)} / $
