@@ -29,6 +29,11 @@ function isRegistryGiftCardProduct(product) {
   return normalizedName.includes('THE REGISTRY GIFT CARD' || 'The Registry Gift Card');
 }
 
+function isCashFundAmountHidden(product) {
+  const value = product?.isAmountHide ?? product?.cashFund?.isAmountHide;
+  return value === true || value === 'true';
+}
+
 const COLLECTION_QUERY = `#graphql
 query {
   collections(first: 20) {
@@ -1875,6 +1880,7 @@ export default function CoupleProfile() {
                     maxContribution={Number(product.amount) || 0}
                     purchasedQuantity={Number(product.purchasedQuantity) || 0}
                     isAnyAmount={product.cashFund?.isAnyAmount || false}
+                    isAmountHide={isCashFundAmountHidden(product)}
                     onAddToCart={(selectedQuantity) =>
                       handleAddToCart(product.id, selectedQuantity)
                     }
